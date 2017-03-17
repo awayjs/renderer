@@ -1,8 +1,6 @@
-import {IEventDispatcher, Matrix3D} from "@awayjs/core";
+import {IEventDispatcher, Matrix3D, ProjectionBase} from "@awayjs/core";
 
 import {TextureBase} from "@awayjs/graphics";
-
-import {Camera} from "@awayjs/scene";
 
 import {GL_RenderableBase} from "../../renderables/GL_RenderableBase";
 import {AnimationSetBase} from "../../animators/AnimationSetBase";
@@ -44,9 +42,9 @@ export interface IPass extends IEventDispatcher
 	 * @param camera The camera from which the scene is viewed.
 	 * @private
 	 */
-	_iActivate(camera:Camera);
+	_iActivate(projection:ProjectionBase);
 
-	_setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D)
+	_setRenderState(renderable:GL_RenderableBase, projection:ProjectionBase)
 
 	/**
 	 * Clears the surface state for the pass. This needs to be called before activating another pass.

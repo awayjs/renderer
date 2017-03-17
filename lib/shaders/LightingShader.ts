@@ -1,6 +1,6 @@
-import {Matrix3D, Vector3D}	 from "@awayjs/core";
+import {Matrix3D, Vector3D, ProjectionBase}	 from "@awayjs/core";
 
-import {Camera, DirectionalLight, LightProbe, PointLight, LightSources} from "@awayjs/scene";
+import {DirectionalLight, LightProbe, PointLight, LightSources} from "@awayjs/scene";
 
 import {ContextGLProfile, Stage, GL_ImageBase} from "@awayjs/stage";
 
@@ -147,9 +147,9 @@ export class LightingShader extends ShaderBase
 	 * @param stage
 	 * @param camera
 	 */
-	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D):void
+	public _setRenderState(renderable:GL_RenderableBase, projection:ProjectionBase):void
 	{
-		super._setRenderState(renderable, camera, viewProjection);
+		super._setRenderState(renderable, projection);
 
 		if (this._lightingPass.lightPicker)
 			this._lightingPass.lightPicker.collectLights(renderable.sourceEntity);

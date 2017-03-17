@@ -1,6 +1,6 @@
 import {Vector3D} from "@awayjs/core";
 
-import {Camera} from "@awayjs/scene";
+import {ProjectionBase} from "@awayjs/core";
 
 import {Stage, ContextGLVertexBufferFormat} from "@awayjs/stage";
 
@@ -66,7 +66,7 @@ export class ParticleBezierCurveState extends ParticleStateBase
 		this._endPoint = this._particleBezierCurveNode._iEndPoint;
 	}
 
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage):void
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, projection:ProjectionBase, stage:Stage):void
 	{
 		var controlIndex:number = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleBezierCurveState.BEZIER_CONTROL_INDEX);
 		var endIndex:number = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleBezierCurveState.BEZIER_END_INDEX);

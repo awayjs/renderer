@@ -1,8 +1,8 @@
-import {AssetEvent, Matrix3D} from "@awayjs/core";
+import {AssetEvent, Matrix3D, ProjectionBase} from "@awayjs/core";
 
 import {BlendMode} from "@awayjs/graphics";
 
-import {Camera, Skybox} from "@awayjs/scene";
+import {Skybox} from "@awayjs/scene";
 
 import {ContextGLCompareMode} from "@awayjs/stage";
 
@@ -76,18 +76,18 @@ export class GL_SkyboxMaterial extends GL_MaterialPassBase
 	}
 
 
-	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D):void
+	public _setRenderState(renderable:GL_RenderableBase, projection:ProjectionBase):void
 	{
-		super._setRenderState(renderable, camera, viewProjection);
+		super._setRenderState(renderable, projection);
 
 		this._texture._setRenderState(renderable);
 	}
 	/**
 	 * @inheritDoc
 	 */
-	public _iActivate(camera:Camera):void
+	public _iActivate(projection:ProjectionBase):void
 	{
-		super._iActivate(camera);
+		super._iActivate(projection);
 
 		this._stage.context.setDepthTest(false, ContextGLCompareMode.LESS);
 

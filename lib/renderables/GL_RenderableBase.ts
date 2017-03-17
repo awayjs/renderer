@@ -1,8 +1,6 @@
-import {AbstractMethodError, AssetEvent, Matrix, Matrix3D, AbstractionBase} from "@awayjs/core";
+import {AbstractMethodError, AssetEvent, Matrix, Matrix3D, AbstractionBase, ProjectionBase} from "@awayjs/core";
 
 import {ImageBase, SamplerBase, IRenderable, IEntity, IMaterial, Style, RenderableEvent, TextureBase} from "@awayjs/graphics";
-
-import {Camera} from "@awayjs/scene";
 
 import {Stage, GL_ImageBase, GL_SamplerBase} from "@awayjs/stage";
 
@@ -190,23 +188,23 @@ export class GL_RenderableBase extends AbstractionBase
 	 *
 	 * @private
 	 */
-	public _iRender(pass:IPass, camera:Camera, viewProjection:Matrix3D):void
+	public _iRender(pass:IPass, projection:ProjectionBase):void
 	{
-		this._setRenderState(pass, camera, viewProjection);
+		this._setRenderState(pass, projection);
 
-		this._elementsGL.draw(this, pass.shader, camera, viewProjection, this._count, this._offset)
+		this._elementsGL.draw(this, pass.shader, projection, this._count, this._offset)
 	}
 
-	public _setRenderState(pass:IPass, camera:Camera, viewProjection:Matrix3D):void
+	public _setRenderState(pass:IPass, projection:ProjectionBase):void
 	{
 		if (this._elementsDirty)
 			this._updateElements();
 
-		pass._setRenderState(this, camera, viewProjection);
+		pass._setRenderState(this, projection);
 		
 		if (pass.shader.activeElements != this._elementsGL) {
 			pass.shader.activeElements = this._elementsGL;
-			this._elementsGL._setRenderState(this, pass.shader, camera, viewProjection);
+			this._elementsGL._setRenderState(this, pass.shader, projection);
 		}
 	}
 

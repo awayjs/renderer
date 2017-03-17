@@ -1,6 +1,4 @@
-import {Matrix3D} from "@awayjs/core";
-
-import {Camera} from "@awayjs/scene";
+import {Matrix3D, ProjectionBase} from "@awayjs/core";
 
 import {AnimationSetBase} from "../animators/AnimationSetBase";
 import {PassEvent} from "../events/PassEvent";
@@ -60,9 +58,9 @@ export class GL_MaterialPassBase extends GL_MaterialBase implements IPass
 	 *
 	 * @internal
 	 */
-	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D):void
+	public _setRenderState(renderable:GL_RenderableBase, projection:ProjectionBase):void
 	{
-		this._shader._setRenderState(renderable, camera, viewProjection);
+		this._shader._setRenderState(renderable, projection);
 	}
 
 	/**
@@ -72,9 +70,9 @@ export class GL_MaterialPassBase extends GL_MaterialBase implements IPass
 	 * @param camera The camera from which the scene is viewed.
 	 * @private
 	 */
-	public _iActivate(camera:Camera):void
+	public _iActivate(projection:ProjectionBase):void
 	{
-		this._shader._iActivate(camera);
+		this._shader._iActivate(projection);
 	}
 
 	/**

@@ -1,8 +1,8 @@
-import {Matrix3D, Plane3D, Point, Rectangle, Vector3D, IAbstractionPool, ByteArray} from "@awayjs/core";
+import {Matrix3D, Plane3D, Point, Rectangle, Vector3D, IAbstractionPool, ByteArray, ProjectionBase} from "@awayjs/core";
 
 import {ImageBase, BitmapImage2D, TraverserBase, IRenderable, INode, IEntity} from "@awayjs/graphics";
 
-import {IRenderer, Camera, IView} from "@awayjs/scene";
+import {IRenderer, IView} from "@awayjs/scene";
 
 import {ContextGLProfile, ContextMode, AGALMiniAssembler, ContextGLBlendFactor, ContextGLCompareMode, ContextGLStencilAction, ContextGLTriangleFace, IContextGL, Stage, StageEvent, StageManager, ProgramData} from "@awayjs/stage";
 
@@ -43,8 +43,7 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 	public _pContext:IContextGL;
 	public _pStage:Stage;
 	private _materialClassGL:IMaterialClassGL;
-	
-	private _cameraPosition:Vector3D;
+
 	public _cameraTransform:Matrix3D;
 	private _cameraForward:Vector3D = new Vector3D();
 
@@ -71,8 +70,6 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 	private _snapshotBitmapImage2D:BitmapImage2D;
 	private _snapshotRequired:boolean;
 
-	public _pRttViewProjectionMatrix:Matrix3D = new Matrix3D();
-
 	private _localPos:Point = new Point();
 	private _globalPos:Point = new Point();
 	public _pScissorRect:Rectangle = new Rectangle();
@@ -96,6 +93,7 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 	private _renderablePool:RenderablePool;
 	private _zIndex:number;
 	private _renderSceneTransform:Matrix3D;
+	private _renderProjection:ProjectionBase;
 
 	
 	/**
@@ -314,7 +312,7 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 		return this._materialPools[elements.elementsType] || (this._materialPools[elements.elementsType] = new MaterialPool(elements.elementsClass, this._pStage, this._materialClassGL));
 	}
 
-	public activatePass(pass:IPass, camera:Camera):void
+	public activatePass(pass:IPass, projection:ProjectionBase):void
 	{
 		//clear unused vertex streams
 		var i:number
@@ -339,7 +337,7 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 		this._pContext.setProgram(programData.program);
 
 		//activate shader object through pass
-		pass._iActivate(camera);
+		pass._iActivate(projection);
 	}
 
 	public deactivatePass(pass:IPass):void
@@ -456,7 +454,7 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
-	public _iRender(camera:Camera, view:IView, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0):void
+	public _iRender(projection:ProjectionBase, view:IView, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0):void
 	{
 		//TODO refactor setTarget so that rendertextures are created before this check
 		if (!this._pStage || !this._pContext)
@@ -467,10 +465,9 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 		this._pOpaqueRenderableHead = null;
 		this._pNumElements = 0;
 
-		this._cameraPosition = camera.scenePosition;
-		this._cameraTransform = camera.transform.concatenatedMatrix3D;
-		this._cameraForward = camera.transform.forwardVector;
-		this._cullPlanes = this._customCullPlanes? this._customCullPlanes : camera.projection.frustumPlanes;
+		this._cameraTransform = projection.transform.concatenatedMatrix3D;
+		this._cameraForward = projection.transform.forwardVector;
+		this._cullPlanes = this._customCullPlanes? this._customCullPlanes : projection.frustumPlanes;
 		this._numCullPlanes = this._cullPlanes? this._cullPlanes.length : 0;
 
 		RendererBase._iCollectionMark++;
@@ -483,10 +480,10 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 			this._pBlendedRenderableHead = <GL_RenderableBase> this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
 		}
 
-		this._pRttViewProjectionMatrix.copyFrom(camera.projection.viewMatrix3D);
-		this._pRttViewProjectionMatrix.appendScale(this.textureRatioX, this.textureRatioY, 1);
+		// this._pRttViewProjectionMatrix.copyFrom(projection.viewMatrix3D);
+		// this._pRttViewProjectionMatrix.appendScale(this.textureRatioX, this.textureRatioY, 1);
 
-		this.pExecuteRender(camera, view, target, scissorRect, surfaceSelector);
+		this.pExecuteRender(projection, view, target, scissorRect, surfaceSelector);
 
 		// invalidate target (if target exists) to regenerate mipmaps (if required)
 		if (target)
@@ -499,7 +496,7 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 		}
 	}
 
-	public _iRenderCascades(camera:Camera, view:IView, target:ImageBase, numCascades:number, scissorRects:Array<Rectangle>, cameras:Array<Camera>):void
+	public _iRenderCascades(projection:ProjectionBase, view:IView, target:ImageBase, numCascades:number, scissorRects:Array<Rectangle>, projections:Array<ProjectionBase>):void
 	{
 		this._pStage.setRenderTarget(target, true, 0);
 		this._pContext.clear(1, 1, 1, 1, 1, 0);
@@ -531,7 +528,7 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
-	public pExecuteRender(camera:Camera, view:IView, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0):void
+	public pExecuteRender(projection:ProjectionBase, view:IView, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0):void
 	{
 		this._pStage.setRenderTarget(target, true, surfaceSelector);
 
@@ -547,7 +544,7 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 
 		this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
 
-		this.pDraw(camera);
+		this.pDraw(projection);
 
 		//line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
 		//this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //oopsie
@@ -574,17 +571,17 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 	/**
 	 * Performs the actual drawing of geometry to the target.
 	 */
-	public pDraw(camera:Camera):void
+	public pDraw(projection:ProjectionBase):void
 	{
 		this._pContext.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
 
 		if (this._disableColor)
 			this._pContext.setColorMask(false, false, false, false);
 
-		this.drawRenderables(camera, this._pOpaqueRenderableHead);
+		this.drawRenderables(projection, this._pOpaqueRenderableHead);
 
 		if (this._renderBlended)
-			this.drawRenderables(camera, this._pBlendedRenderableHead);
+			this.drawRenderables(projection, this._pBlendedRenderableHead);
 
 		if (this._disableColor)
 			this._pContext.setColorMask(true, true, true, true);
@@ -627,7 +624,7 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 	 *
 	 * @param renderables The renderables to draw.
 	 */
-	public drawRenderables(camera:Camera, renderableGL:GL_RenderableBase):void
+	public drawRenderables(projection:ProjectionBase, renderableGL:GL_RenderableBase):void
 	{
 		var i:number;
 		var len:number;
@@ -673,7 +670,7 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 
 						//}
 					} else {
-						this._renderMasks(camera, renderableGL.sourceEntity._iAssignedMasks());
+						this._renderMasks(projection, renderableGL.sourceEntity._iAssignedMasks());
 					}
 					this._activeMasksDirty = false;
 				}
@@ -685,14 +682,14 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 					renderableGL2 = renderableGL;
 					pass = passes[i];
 
-					this.activatePass(pass, camera);
+					this.activatePass(pass, projection);
 
 					do {
 						if (renderableGL2.maskId !== -1) {
 							if (i == 0)
 								this._registerMask(renderableGL2);
 						} else {
-							renderableGL2._iRender(pass, camera, this._pRttViewProjectionMatrix);
+							renderableGL2._iRender(pass, projection);
 						}
 
 						renderableGL2 = renderableGL2.next;
@@ -855,7 +852,7 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 		this._renderablePool = this.getAbstraction(entity);
 
 		// project onto camera's z-axis
-		this._zIndex = entity.zOffset + this._cameraPosition.subtract(entity.scenePosition).dotProduct(this._cameraForward);
+		this._zIndex = entity.zOffset + this._cameraTransform.position.subtract(entity.scenePosition).dotProduct(this._cameraForward);
 
 		//save sceneTransform
 		this._renderSceneTransform = entity.getRenderSceneTransform(this._cameraTransform);
@@ -927,7 +924,7 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 		this._registeredMasks.push(obj);
 	}
 
-	public _renderMasks(camera:Camera, masks:IEntity[][]):void
+	public _renderMasks(projection:ProjectionBase, masks:IEntity[][]):void
 	{
 		//var gl = this._pContext["_gl"];
 		//f (!gl)
@@ -973,7 +970,7 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 					//console.log("testing for " + mask["hierarchicalMaskID"] + ", " + mask.name);
 					if (renderableGL.maskId == mask.id) {
 						//console.log("Rendering hierarchicalMaskID " + mask["hierarchicalMaskID"]);
-						this._drawMask(camera, renderableGL);
+						this._drawMask(projection, renderableGL);
 					}
 				}
 			}
@@ -989,17 +986,17 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 		//this._stage.setRenderTarget(oldRenderTarget);
 	}
 
-	private _drawMask(camera:Camera, renderableGL:GL_RenderableBase):void
+	private _drawMask(projection:ProjectionBase, renderableGL:GL_RenderableBase):void
 	{
 		var materialGL = renderableGL.materialGL;
 		var passes = materialGL.passes;
 		var len = passes.length;
 		var pass = passes[len-1];
 
-		this.activatePass(pass, camera);
+		this.activatePass(pass, projection);
 		this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //TODO: setup so as not to override activate
 		// only render last pass for now
-		renderableGL._iRender(pass, camera, this._pRttViewProjectionMatrix);
+		renderableGL._iRender(pass, projection);
 		this.deactivatePass(pass);
 	}
 

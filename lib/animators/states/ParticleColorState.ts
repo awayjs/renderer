@@ -1,6 +1,6 @@
 import {Vector3D, ColorTransform} from "@awayjs/core";
 
-import {Camera} from "@awayjs/scene";
+import {ProjectionBase} from "@awayjs/core";
 
 import {Stage, ContextGLVertexBufferFormat} from "@awayjs/stage";
 
@@ -129,7 +129,7 @@ export class ParticleColorState extends ParticleStateBase
 		this.updateColorData();
 	}
 
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage):void
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, projection:ProjectionBase, stage:Stage):void
 	{
 		if (shader.usesFragmentAnimation) {
 			var dataOffset:number = this._particleColorNode._iDataOffset;

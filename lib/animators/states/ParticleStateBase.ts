@@ -1,6 +1,6 @@
 import {Vector3D} from "@awayjs/core";
 
-import {Camera} from "@awayjs/scene";
+import {ProjectionBase} from "@awayjs/core";
 
 import {Stage} from "@awayjs/stage";
 
@@ -43,7 +43,7 @@ export class ParticleStateBase extends AnimationStateBase
 		return this._pNeedUpdateTime;
 	}
 
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage):void
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, projection:ProjectionBase, stage:Stage):void
 	{
 
 	}

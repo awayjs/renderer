@@ -1,6 +1,8 @@
+import {ProjectionBase} from "@awayjs/core";
+
 import {ElementsBase, Graphics, Shape} from "@awayjs/graphics";
 
-import {Camera, Sprite} from "@awayjs/scene";
+import {Sprite} from "@awayjs/scene";
 
 import {Stage} from "@awayjs/stage";
 
@@ -75,7 +77,7 @@ export class ParticleAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera):void
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, projection:ProjectionBase):void
 	{
 		var animationRegisterData:AnimationRegisterData = this._particleAnimationSet._iAnimationRegisterData;
 
@@ -90,13 +92,13 @@ export class ParticleAnimator extends AnimatorBase
 		var i:number;
 		
 		for (i = 0; i < this._animationParticleStates.length; i++)
-			this._animationParticleStates[i].setRenderState(shader, renderable, animationElements, animationRegisterData, camera, stage);
+			this._animationParticleStates[i].setRenderState(shader, renderable, animationElements, animationRegisterData, projection, stage);
 
 		//process animator subgeometries
 		var animatorElements:AnimationElements = this.getAnimatorElements(graphics, shape);
 
 		for (i = 0; i < this._animatorParticleStates.length; i++)
-			this._animatorParticleStates[i].setRenderState(shader, renderable, animatorElements, animationRegisterData, camera, stage);
+			this._animatorParticleStates[i].setRenderState(shader, renderable, animatorElements, animationRegisterData, projection, stage);
 	}
 
 	/**

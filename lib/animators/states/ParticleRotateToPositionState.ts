@@ -1,6 +1,6 @@
 import {Matrix3D, Vector3D} from "@awayjs/core";
 
-import {Camera} from "@awayjs/scene";
+import {ProjectionBase} from "@awayjs/core";
 
 import {Stage, ContextGLVertexBufferFormat} from "@awayjs/stage";
 
@@ -53,13 +53,13 @@ export class ParticleRotateToPositionState extends ParticleStateBase
 		this._position = this._particleRotateToPositionNode._iPosition;
 	}
 
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage):void
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, projection:ProjectionBase, stage:Stage):void
 	{
 		var index:number = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleRotateToPositionState.POSITION_INDEX);
 
 		if ((<ParticleAnimationSet> this._pParticleAnimator.animationSet).hasBillboard) {
 			this._matrix.copyFrom(renderable.sourceEntity.transform.concatenatedMatrix3D);
-			this._matrix.append(camera.transform.inverseConcatenatedMatrix3D);
+			this._matrix.append(projection.transform.inverseConcatenatedMatrix3D);
 			shader.setVertexConstFromMatrix(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleRotateToPositionState.MATRIX_INDEX), this._matrix);
 		}
 

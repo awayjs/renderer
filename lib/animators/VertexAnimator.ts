@@ -1,6 +1,8 @@
+import {ProjectionBase} from "@awayjs/core";
+
 import {ElementsBase, TriangleElements, Shape, Graphics} from "@awayjs/graphics";
 
-import {Camera, Sprite} from "@awayjs/scene";
+import {Sprite} from "@awayjs/scene";
 
 import {Stage} from "@awayjs/stage";
 
@@ -109,7 +111,7 @@ export class VertexAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(shader:ShaderBase, renderable:GL_ShapeRenderable, stage:Stage, camera:Camera):void
+	public setRenderState(shader:ShaderBase, renderable:GL_ShapeRenderable, stage:Stage, projection:ProjectionBase):void
 	{
 		// todo: add code for when running on cpu
 		// this type of animation can only be Shape

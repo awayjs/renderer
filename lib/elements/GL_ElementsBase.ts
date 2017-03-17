@@ -1,8 +1,6 @@
-import {Short3Attributes, AttributesView, AbstractionBase, AbstractMethodError, AssetEvent, Matrix3D} from "@awayjs/core";
+import {Short3Attributes, AttributesView, AbstractionBase, AbstractMethodError, AssetEvent, Matrix3D, ProjectionBase} from "@awayjs/core";
 
 import {ElementsBase, ElementsEvent, ElementsUtils} from "@awayjs/graphics";
-
-import {Camera} from "@awayjs/scene";
 
 import {Stage, GL_AttributesBuffer} from "@awayjs/stage";
 
@@ -155,7 +153,7 @@ export class GL_ElementsBase extends AbstractionBase
 		}
 	}
 
-	public _setRenderState(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D):void
+	public _setRenderState(renderable:GL_RenderableBase, shader:ShaderBase, projection:ProjectionBase):void
 	{
 		if (!this._verticesUpdated)
 			this._updateIndices();
@@ -167,7 +165,7 @@ export class GL_ElementsBase extends AbstractionBase
 		// 	this._overflow._iRender(renderable, camera, viewProjection);
 	}
 
-	public draw(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number):void
+	public draw(renderable:GL_RenderableBase, shader:ShaderBase, projection:ProjectionBase, count:number, offset:number):void
 	{
 		throw new AbstractMethodError();
 	}

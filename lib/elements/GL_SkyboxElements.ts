@@ -1,6 +1,4 @@
-import {Matrix3D, Vector3D} from "@awayjs/core";
-
-import {Camera} from "@awayjs/scene";
+import {Matrix3D, Vector3D, ProjectionBase} from "@awayjs/core";
 
 import {ContextGLDrawMode, ContextGLProgramType, IContextGL} from "@awayjs/stage";
 
@@ -81,23 +79,21 @@ export class GL_SkyboxElements extends GL_TriangleElements
 		return "";
 	}
 
-	public draw(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number):void
+	public draw(renderable:GL_RenderableBase, shader:ShaderBase, projection:ProjectionBase, count:number, offset:number):void
 	{
 		var index:number = shader.scenePositionIndex;
-		var pos:Vector3D = camera.scenePosition;
-		shader.vertexConstantData[index++] = 2*pos.x;
-		shader.vertexConstantData[index++] = 2*pos.y;
-		shader.vertexConstantData[index++] = 2*pos.z;
+		var camPos:Vector3D = projection.transform.concatenatedMatrix3D.position;
+		shader.vertexConstantData[index++] = 2*camPos.x;
+		shader.vertexConstantData[index++] = 2*camPos.y;
+		shader.vertexConstantData[index++] = 2*camPos.z;
 		shader.vertexConstantData[index++] = 1;
-		shader.vertexConstantData[index++] = shader.vertexConstantData[index++] = shader.vertexConstantData[index++] = camera.projection.far/Math.sqrt(3);
+		shader.vertexConstantData[index++] = shader.vertexConstantData[index++] = shader.vertexConstantData[index++] = projection.far/Math.sqrt(3);
 		shader.vertexConstantData[index] = 1;
 
 		var near:Vector3D = new Vector3D();
 
-		this._skyboxProjection.copyFrom(viewProjection);
+		this._skyboxProjection.copyFrom(projection.viewMatrix3D);
 		this._skyboxProjection.copyRowTo(2, near);
-
-		var camPos:Vector3D = camera.scenePosition;
 
 		var cx:number = near.x;
 		var cy:number = near.y;

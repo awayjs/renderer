@@ -1,6 +1,6 @@
 import {Matrix3D, Vector3D} from "@awayjs/core";
 
-import {Camera} from "@awayjs/scene";
+import {ProjectionBase} from "@awayjs/core";
 
 import {Stage, ContextGLVertexBufferFormat} from "@awayjs/stage";
 
@@ -114,7 +114,7 @@ export class ParticleOrbitState extends ParticleStateBase
 		this.updateOrbitData();
 	}
 
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage):void
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, projection:ProjectionBase, stage:Stage):void
 	{
 		var index:number = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleOrbitState.ORBIT_INDEX);
 

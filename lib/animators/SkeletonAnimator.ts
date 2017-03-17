@@ -1,8 +1,6 @@
-import {Quaternion, Vector3D} from "@awayjs/core";
+import {Quaternion, Vector3D, ProjectionBase} from "@awayjs/core";
 
 import {TriangleElements, ElementsEvent} from "@awayjs/graphics";
-
-import {Camera} from "@awayjs/scene";
 
 import {Stage} from "@awayjs/stage";
 
@@ -198,7 +196,7 @@ export class SkeletonAnimator extends AnimatorBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera):void
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, projection:ProjectionBase):void
 	{
 		// do on request of globalProperties
 		if (this._globalPropertiesDirty)

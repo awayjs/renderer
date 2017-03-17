@@ -1,8 +1,6 @@
-import {AssetEvent, Matrix3D} from "@awayjs/core";
+import {AssetEvent, Matrix3D, ProjectionBase} from "@awayjs/core";
 
 import {LineElements} from "@awayjs/graphics";
-
-import {Camera} from "@awayjs/scene";
 
 import {ContextGLDrawMode, IContextGL, ContextGLProgramType, Stage} from "@awayjs/stage";
 
@@ -157,9 +155,9 @@ export class GL_LineElements extends GL_ElementsBase
 		this._lineElements = null;
 	}
 
-	public _setRenderState(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D):void
+	public _setRenderState(renderable:GL_RenderableBase, shader:ShaderBase, projection:ProjectionBase):void
 	{
-		super._setRenderState(renderable, shader, camera, viewProjection);
+		super._setRenderState(renderable, shader, projection);
 		
 		if (shader.colorBufferIndex >= 0)
 			this.activateVertexBufferVO(shader.colorBufferIndex, this._lineElements.colors);
@@ -177,21 +175,21 @@ export class GL_LineElements extends GL_ElementsBase
 
 		shader.vertexConstantData[12+16] = this._thickness/((this._stage.scissorRect)? Math.min(this._stage.scissorRect.width, this._stage.scissorRect.height) : Math.min(this._stage.width, this._stage.height));
 		shader.vertexConstantData[13+16] = 1/255;
-		shader.vertexConstantData[14+16] = camera.projection.near;
+		shader.vertexConstantData[14+16] = projection.near;
 
 		var context:IContextGL = this._stage.context;
 	}
 
-	public draw(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number):void
+	public draw(renderable:GL_RenderableBase, shader:ShaderBase, projection:ProjectionBase, count:number, offset:number):void
 	{
 		var context:IContextGL = this._stage.context;
 		
 		// projection matrix
-		shader.viewMatrix.copyFrom(camera.projection.frustumMatrix3D, true);
+		shader.viewMatrix.copyFrom(projection.frustumMatrix3D, true);
 
 		var matrix3D:Matrix3D = Matrix3D.CALCULATION_MATRIX;
 		matrix3D.copyFrom(renderable.sourceEntity.transform.concatenatedMatrix3D);
-		matrix3D.append(camera.transform.inverseConcatenatedMatrix3D);
+		matrix3D.append(projection.transform.inverseConcatenatedMatrix3D);
 		shader.sceneMatrix.copyFrom(matrix3D, true);
 
 		context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, shader.vertexConstantData);

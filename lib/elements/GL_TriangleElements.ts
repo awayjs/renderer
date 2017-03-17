@@ -1,8 +1,6 @@
-import {AssetEvent, Matrix3D} from "@awayjs/core";
+import {AssetEvent, Matrix3D, ProjectionBase} from "@awayjs/core";
 
 import {TriangleElements} from "@awayjs/graphics";
-
-import {Camera} from "@awayjs/scene";
 
 import {ContextGLDrawMode, ContextGLProgramType, IContextGL, Stage} from "@awayjs/stage";
 
@@ -85,9 +83,9 @@ export class GL_TriangleElements extends GL_ElementsBase
 		this._triangleElements = null;
 	}
 
-	public _setRenderState(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D):void
+	public _setRenderState(renderable:GL_RenderableBase, shader:ShaderBase, projection:ProjectionBase):void
 	{
-		super._setRenderState(renderable, shader, camera, viewProjection);
+		super._setRenderState(renderable, shader, projection);
 
 		//set buffers
 		//TODO: find a better way to update a concatenated buffer when autoderiving
@@ -121,16 +119,16 @@ export class GL_TriangleElements extends GL_ElementsBase
 		this.activateVertexBufferVO(0, this._triangleElements.positions);
 	}
 
-	public draw(renderable:GL_RenderableBase, shader:ShaderBase, camera:Camera, viewProjection:Matrix3D, count:number, offset:number):void
+	public draw(renderable:GL_RenderableBase, shader:ShaderBase, projection:ProjectionBase, count:number, offset:number):void
 	{
 		//set constants
 		if (shader.sceneMatrixIndex >= 0) {
 			shader.sceneMatrix.copyFrom(renderable.renderSceneTransform, true);
-			shader.viewMatrix.copyFrom(viewProjection, true);
+			shader.viewMatrix.copyFrom(projection.viewMatrix3D, true);
 		} else {
 			var matrix3D:Matrix3D = Matrix3D.CALCULATION_MATRIX;
 			matrix3D.copyFrom(renderable.renderSceneTransform);
-			matrix3D.append(viewProjection);
+			matrix3D.append(projection.viewMatrix3D);
 			shader.viewMatrix.copyFrom(matrix3D, true);
 		}
 

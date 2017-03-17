@@ -1,8 +1,6 @@
-import {Matrix, Matrix3D, Vector3D, ColorTransform, ArgumentError, IAssetClass, IAbstractionPool} from "@awayjs/core";
+import {Matrix, Matrix3D, Vector3D, ColorTransform, ArgumentError, IAssetClass, IAbstractionPool, ProjectionBase} from "@awayjs/core";
 
 import {BlendMode, TextureBase} from "@awayjs/graphics";
-
-import {Camera} from "@awayjs/scene";
 
 import {ContextGLProfile, ContextGLBlendFactor, ContextGLCompareMode, ContextGLTriangleFace, Stage, ProgramData, GL_IAssetClass} from "@awayjs/stage";
 
@@ -569,12 +567,12 @@ export class ShaderBase implements IAbstractionPool
 	/**
 	 * @inheritDoc
 	 */
-	public _iActivate(camera:Camera):void
+	public _iActivate(projection:ProjectionBase):void
 	{
-		this._stage.context.setCulling(this.useBothSides? ContextGLTriangleFace.NONE : this._defaultCulling, camera.projection.coordinateSystem);
+		this._stage.context.setCulling(this.useBothSides? ContextGLTriangleFace.NONE : this._defaultCulling, projection.coordinateSystem);
 
 		if (!this.usesTangentSpace && this.cameraPositionIndex >= 0) {
-			var pos:Vector3D = camera.scenePosition;
+			var pos:Vector3D = projection.transform.concatenatedMatrix3D.position;
 
 			this.vertexConstantData[this.cameraPositionIndex] = pos.x;
 			this.vertexConstantData[this.cameraPositionIndex + 1] = pos.y;
@@ -608,10 +606,10 @@ export class ShaderBase implements IAbstractionPool
 	 * @param stage
 	 * @param camera
 	 */
-	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D):void
+	public _setRenderState(renderable:GL_RenderableBase, projection:ProjectionBase):void
 	{
 		if (renderable.sourceEntity.animator)
-			(<AnimatorBase> renderable.sourceEntity.animator).setRenderState(this, renderable, this._stage, camera);
+			(<AnimatorBase> renderable.sourceEntity.animator).setRenderState(this, renderable, this._stage, projection);
 
 		var rawData:Float32Array;
 
@@ -669,7 +667,7 @@ export class ShaderBase implements IAbstractionPool
 		if (this.usesTangentSpace && this.cameraPositionIndex >= 0) {
 
 			renderable.sourceEntity.transform.inverseConcatenatedMatrix3D.copyRawDataTo(this._pInverseSceneMatrix);
-			var pos:Vector3D = camera.scenePosition;
+			var pos:Vector3D = projection.transform.concatenatedMatrix3D.position;
 			var x:number = pos.x;
 			var y:number = pos.y;
 			var z:number = pos.z;

@@ -1,6 +1,6 @@
 import {Vector3D} from "@awayjs/core";
 
-import {Camera} from "@awayjs/scene";
+import {ProjectionBase} from "@awayjs/core";
 
 import {Stage, ContextGLVertexBufferFormat} from "@awayjs/stage";
 
@@ -71,7 +71,7 @@ export class ParticleRotationalVelocityState extends ParticleStateBase
 	/**
 	 * @inheritDoc
 	 */
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, camera:Camera, stage:Stage):void
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, animationElements:AnimationElements, animationRegisterData:AnimationRegisterData, projection:ProjectionBase, stage:Stage):void
 	{
 		if (this._particleRotationalVelocityNode.mode == ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationElements._iUniqueId])
 			this._pUpdateDynamicProperties(animationElements);

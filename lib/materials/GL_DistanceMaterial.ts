@@ -1,6 +1,6 @@
-﻿import {IMaterial} from "@awayjs/graphics";
+﻿import {ProjectionBase} from "@awayjs/core";
 
-import {Camera} from "@awayjs/scene";
+import {IMaterial} from "@awayjs/graphics";
 
 import {IElementsClassGL} from "../elements/IElementsClassGL";
 import {ShaderBase} from "../shaders/ShaderBase";
@@ -113,11 +113,11 @@ export class GL_DistanceMaterial extends GL_MaterialPassBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iActivate(camera:Camera):void
+	public _iActivate(projection:ProjectionBase):void
 	{
-		super._iActivate(camera);
+		super._iActivate(projection);
 
-		var f:number = camera.projection.far;
+		var f:number = projection.far;
 
 		f = 1/(2*f*f);
 		// sqrt(f*f+f*f) is largest possible distance for any frustum, so we need to divide by it. Rarely a tight fit, but with 32 bits precision, it's enough.

@@ -1,8 +1,6 @@
-import {AssetEvent, Matrix3D} from "@awayjs/core";
+import {AssetEvent, Matrix3D, ProjectionBase} from "@awayjs/core";
 
 import {IMaterial} from "@awayjs/graphics";
-
-import {Camera} from "@awayjs/scene";
 
 import {Stage} from "@awayjs/stage";
 
@@ -112,9 +110,9 @@ export class BasicMaterialPass extends PassBase
 		return code;
 	}
 
-	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D):void
+	public _setRenderState(renderable:GL_RenderableBase, projection:ProjectionBase):void
 	{
-		super._setRenderState(renderable, camera, viewProjection);
+		super._setRenderState(renderable, projection);
 
 		if (this._textureVO != null)
 			this._textureVO._setRenderState(renderable);
@@ -122,9 +120,9 @@ export class BasicMaterialPass extends PassBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iActivate(camera:Camera):void
+	public _iActivate(projection:ProjectionBase):void
 	{
-		super._iActivate(camera);
+		super._iActivate(projection);
 
 		if (this._textureVO != null) {
 			this._textureVO.activate(this._render);

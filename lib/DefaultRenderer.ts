@@ -1,8 +1,8 @@
-import {Rectangle} from "@awayjs/core";
+import {Rectangle, ProjectionBase} from "@awayjs/core";
 
 import {ImageBase, BitmapImage2D, IEntity, INode} from "@awayjs/graphics";
 
-import {LightBase, Camera, DirectionalLight, PointLight, LightProbe, ShadowMapperBase, IView} from "@awayjs/scene";
+import {LightBase, DirectionalLight, PointLight, LightProbe, ShadowMapperBase, IView} from "@awayjs/scene";
 
 import {ContextGLProfile, ContextMode, Stage, ContextGLClearMask, IContextGL} from "@awayjs/stage";
 
@@ -185,14 +185,14 @@ export class DefaultRenderer extends RendererBase
 		this._lightProbes.length = 0;
 
 		if (this._pFilter3DRenderer && this._pContext) { //TODO
-			this._iRender(view.camera, view, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pFilter3DRenderer.renderToTextureRect);
+			this._iRender(view.camera.projection, view, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pFilter3DRenderer.renderToTextureRect);
 			this._pFilter3DRenderer.render(this._pStage, view.camera, this._pDepthRender);
 		} else {
 
 			if (this.shareContext)
-				this._iRender(view.camera, view, null, this._pScissorRect);
+				this._iRender(view.camera.projection, view, null, this._pScissorRect);
 			else
-				this._iRender(view.camera, view);
+				this._iRender(view.camera.projection, view);
 		}
 
 		if (!this.shareContext && this._pContext)
@@ -202,14 +202,14 @@ export class DefaultRenderer extends RendererBase
 		this._pStage.bufferClear = false;
 	}
 
-	public pExecuteRender(camera:Camera, view:IView, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0):void
+	public pExecuteRender(projection:ProjectionBase, view:IView, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0):void
 	{
-		this.updateLights(camera, view);
+		this.updateLights(projection, view);
 
-		super.pExecuteRender(camera, view, target, scissorRect, surfaceSelector);
+		super.pExecuteRender(projection, view, target, scissorRect, surfaceSelector);
 	}
 
-	private updateLights(camera:Camera, view:IView):void
+	private updateLights(projection:ProjectionBase, view:IView):void
 	{
 		var len:number, i:number;
 		var light:LightBase;
@@ -292,11 +292,11 @@ export class DefaultRenderer extends RendererBase
 		if (this._pFilter3DRenderer) {
 			this._depthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
 			this._depthRenderer.textureRatioY = this._pRttBufferManager.textureRatioY;
-			this._depthRenderer._iRender(view.camera, view, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
+			this._depthRenderer._iRender(view.camera.projection, view, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
 		} else {
 			this._depthRenderer.textureRatioX = 1;
 			this._depthRenderer.textureRatioY = 1;
-			this._depthRenderer._iRender(view.camera, view);
+			this._depthRenderer._iRender(view.camera.projection, view);
 		}
 
 		this._depthRenderer.disableColor = false;
@@ -313,7 +313,7 @@ export class DefaultRenderer extends RendererBase
 
 		this._depthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
 		this._depthRenderer.textureRatioY = this._pRttBufferManager.textureRatioY;
-		this._depthRenderer._iRender(view.camera, view, this._pDepthRender);
+		this._depthRenderer._iRender(view.camera.projection, view, this._pDepthRender);
 	}
 
 

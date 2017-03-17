@@ -1,8 +1,6 @@
-import {Matrix3D, EventDispatcher} from "@awayjs/core";
+import {Matrix3D, EventDispatcher, ProjectionBase} from "@awayjs/core";
 
 import {IMaterial, TextureBase} from "@awayjs/graphics";
-
-import {Camera} from "@awayjs/scene";
 
 import {Stage} from "@awayjs/stage";
 
@@ -138,9 +136,9 @@ export class PassBase extends EventDispatcher implements IPass
 	 *
 	 * @internal
 	 */
-	public _setRenderState(renderable:GL_RenderableBase, camera:Camera, viewProjection:Matrix3D):void
+	public _setRenderState(renderable:GL_RenderableBase, projection:ProjectionBase):void
 	{
-		this._shader._setRenderState(renderable, camera, viewProjection);
+		this._shader._setRenderState(renderable, projection);
 	}
 
 	/**
@@ -150,9 +148,9 @@ export class PassBase extends EventDispatcher implements IPass
 	 * @param camera The camera from which the scene is viewed.
 	 * @private
 	 */
-	public _iActivate(camera:Camera):void
+	public _iActivate(projection:ProjectionBase):void
 	{
-		this._shader._iActivate(camera);
+		this._shader._iActivate(projection);
 	}
 
 	/**

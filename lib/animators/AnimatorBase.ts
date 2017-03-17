@@ -1,8 +1,6 @@
-import {Vector3D, AssetBase, AbstractMethodError, RequestAnimationFrame, getTimer} from "@awayjs/core";
+import {Vector3D, AssetBase, AbstractMethodError, RequestAnimationFrame, ProjectionBase, getTimer} from "@awayjs/core";
 
 import {IAnimationSet, IAnimator, AnimationNodeBase, ElementsBase, IEntity} from "@awayjs/graphics";
-
-import {Camera} from "@awayjs/scene";
 
 import {Stage} from "@awayjs/stage";
 
@@ -204,7 +202,7 @@ export class AnimatorBase extends AssetBase implements IAnimator
 		this._playbackSpeed = value;
 	}
 
-	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, camera:Camera):void
+	public setRenderState(shader:ShaderBase, renderable:GL_RenderableBase, stage:Stage, projection:ProjectionBase):void
 	{
 		throw new AbstractMethodError();
 	}
