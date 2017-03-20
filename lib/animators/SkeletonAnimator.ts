@@ -2,12 +2,9 @@ import {Quaternion, Vector3D, ProjectionBase} from "@awayjs/core";
 
 import {TriangleElements, ElementsEvent} from "@awayjs/graphics";
 
-import {Stage} from "@awayjs/stage";
+import {Stage, ShaderBase, GL_RenderableBase, GL_ShapeRenderable, AnimatorBase} from "@awayjs/stage";
 
 import {AnimationStateEvent} from "../events/AnimationStateEvent";
-import {ShaderBase} from "../shaders/ShaderBase";
-import {GL_RenderableBase} from "../renderables/GL_RenderableBase";
-import {GL_ShapeRenderable} from "../renderables/GL_ShapeRenderable";
 
 import {JointPose} from "./data/JointPose";
 import {Skeleton} from "./data/Skeleton";
@@ -16,7 +13,6 @@ import {SkeletonPose} from "./data/SkeletonPose";
 import {ISkeletonAnimationState} from "./states/ISkeletonAnimationState";
 import {IAnimationTransition} from "./transitions/IAnimationTransition";
 
-import {AnimatorBase} from "./AnimatorBase";
 import {SkeletonAnimationSet} from "./SkeletonAnimationSet";
 
 /**

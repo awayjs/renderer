@@ -1,9 +1,9 @@
 import {Vector3D} from "@awayjs/core";
 
+import {AnimatorBase} from "@awayjs/stage";
+
 import {SkeletonPose} from "../data/SkeletonPose";
 import {SkeletonClipState} from "../states/SkeletonClipState";
-
-import {AnimatorBase} from "../AnimatorBase";
 
 import {AnimationClipNodeBase} from "./AnimationClipNodeBase";
 

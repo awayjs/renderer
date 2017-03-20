@@ -2,9 +2,7 @@ import {Vector3D} from "@awayjs/core";
 
 import {AnimationNodeBase} from "@awayjs/graphics";
 
-import {AnimatorBase} from "../AnimatorBase";
-
-import {IAnimationState} from "./IAnimationState";
+import {AnimatorBase, IAnimationState} from "@awayjs/stage";
 
 /**
  *

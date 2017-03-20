@@ -1,16 +1,8 @@
 ﻿import {ProjectionBase} from "@awayjs/core";
 
+import {ShaderBase, ShaderRegisterCache, ShaderRegisterData, ShaderRegisterElement, GL_TextureBase, GL_MaterialPassBase, MaterialPool} from "@awayjs/stage";
+
 import {IMaterial} from "@awayjs/graphics";
-
-import {IElementsClassGL} from "../elements/IElementsClassGL";
-import {ShaderBase} from "../shaders/ShaderBase";
-import {ShaderRegisterCache} from "../shaders/ShaderRegisterCache";
-import {ShaderRegisterData} from "../shaders/ShaderRegisterData";
-import {ShaderRegisterElement} from "../shaders/ShaderRegisterElement";
-import {GL_TextureBase} from "../textures/GL_TextureBase";
-
-import {GL_MaterialPassBase} from "./GL_MaterialPassBase";
-import {MaterialPool} from "./MaterialPool";
 
 /**
  * DistanceRender is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
@@ -26,11 +18,11 @@ export class GL_DistanceMaterial extends GL_MaterialPassBase
 	 *
 	 * @param material The material to which this pass belongs.
 	 */
-	constructor(material:IMaterial, elementsClass:IElementsClassGL, renderPool:MaterialPool)
+	constructor(material:IMaterial, materialPool:MaterialPool)
 	{
-		super(material, elementsClass, renderPool);
+		super(material, materialPool);
 
-		this._shader = new ShaderBase(elementsClass, this, this._stage);
+		this._shader = new ShaderBase(materialPool.elementsClass, this, this._stage);
 
 		this._pAddPass(this);
 	}

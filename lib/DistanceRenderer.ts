@@ -1,4 +1,4 @@
-import {Stage} from "@awayjs/stage";
+import {Stage, MaterialGroupBase} from "@awayjs/stage";
 
 import {INode} from "@awayjs/graphics";
 
@@ -13,6 +13,8 @@ import {RendererBase} from "./RendererBase";
  */
 export class DistanceRenderer extends RendererBase
 {
+	public static _abstractionClassPool:Object = Object();
+
 	/**
 	 * Creates a new DistanceRenderer object.
 	 * @param renderBlended Indicates whether semi-transparent objects should be rendered.
@@ -20,7 +22,9 @@ export class DistanceRenderer extends RendererBase
 	 */
 	constructor(stage:Stage = null)
 	{
-		super(stage, GL_DistanceMaterial);
+		super(stage);
+
+		this._materialGroup = new MaterialGroupBase(this._pStage, DistanceRenderer._abstractionClassPool);
 
 		this._iBackgroundR = 1;
 		this._iBackgroundG = 1;

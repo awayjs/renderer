@@ -1,13 +1,7 @@
-import {Matrix3D} from "@awayjs/core";
+import {Matrix3D, ProjectionBase} from "@awayjs/core";
 
-import {ProjectionBase} from "@awayjs/core";
+import {Stage, GL_RenderableBase, ShaderBase, AnimationRegisterData} from "@awayjs/stage";
 
-import {Stage} from "@awayjs/stage";
-
-import {GL_RenderableBase} from "../../renderables/GL_RenderableBase";
-import {ShaderBase} from "../../shaders/ShaderBase";
-
-import {AnimationRegisterData} from "../data/AnimationRegisterData";
 import {AnimationElements} from "../data/AnimationElements";
 import {ParticleRotateToHeadingNode} from "../nodes/ParticleRotateToHeadingNode";
 

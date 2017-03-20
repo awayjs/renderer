@@ -1,12 +1,12 @@
 import {Graphics} from "@awayjs/graphics";
 
+import {AnimatorBase} from "@awayjs/stage";
+
 import {VertexAnimator} from "../VertexAnimator";
 import {VertexClipNode} from "../nodes/VertexClipNode";
 
 import {AnimationClipState} from "./AnimationClipState";
 import {IVertexAnimationState} from "./IVertexAnimationState";
-
-import {AnimatorBase} from "../AnimatorBase";
 
 /**
  *

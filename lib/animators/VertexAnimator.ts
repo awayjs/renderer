@@ -2,20 +2,15 @@ import {ProjectionBase} from "@awayjs/core";
 
 import {ElementsBase, TriangleElements, Shape, Graphics} from "@awayjs/graphics";
 
+import {Stage, GL_ShapeRenderable, ShaderBase, GL_ElementsBase, AnimationRegisterData, AnimatorBase} from "@awayjs/stage";
+
 import {Sprite} from "@awayjs/scene";
 
-import {Stage} from "@awayjs/stage";
 
-import {GL_ShapeRenderable} from "../renderables/GL_ShapeRenderable";
-import {ShaderBase} from "../shaders/ShaderBase";
-import {GL_ElementsBase} from "../elements/GL_ElementsBase";
-
-import {AnimationRegisterData} from "./data/AnimationRegisterData";
 import {VertexAnimationMode} from "./data/VertexAnimationMode";
 import {IVertexAnimationState} from "./states/IVertexAnimationState";
 import {IAnimationTransition} from "./transitions/IAnimationTransition";
 
-import {AnimatorBase} from "./AnimatorBase";
 import {VertexAnimationSet} from "./VertexAnimationSet";
 
 /**

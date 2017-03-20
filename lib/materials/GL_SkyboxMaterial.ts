@@ -2,19 +2,10 @@ import {AssetEvent, Matrix3D, ProjectionBase} from "@awayjs/core";
 
 import {BlendMode} from "@awayjs/graphics";
 
+import {ContextGLCompareMode, GL_RenderableBase, ShaderBase, ShaderRegisterCache, ShaderRegisterData, GL_TextureBase, GL_MaterialPassBase, MaterialPool} from "@awayjs/stage";
+
 import {Skybox} from "@awayjs/scene";
 
-import {ContextGLCompareMode} from "@awayjs/stage";
-
-import {IElementsClassGL} from "../elements/IElementsClassGL";
-import {GL_RenderableBase} from "../renderables/GL_RenderableBase";
-import {ShaderBase} from "../shaders/ShaderBase";
-import {ShaderRegisterCache} from "../shaders/ShaderRegisterCache";
-import {ShaderRegisterData} from "../shaders/ShaderRegisterData";
-import {GL_TextureBase} from "../textures/GL_TextureBase";
-
-import {GL_MaterialPassBase} from "./GL_MaterialPassBase";
-import {MaterialPool} from "./MaterialPool";
 
 /**
  * GL_SkyboxMaterial forms an abstract base class for the default shaded materials provided by Stage,
@@ -25,13 +16,13 @@ export class GL_SkyboxMaterial extends GL_MaterialPassBase
 	public _skybox:Skybox;
 	public _texture:GL_TextureBase;
 
-	constructor(skybox:Skybox, elementsClass:IElementsClassGL, renderPool:MaterialPool)
+	constructor(skybox:Skybox, materialPool:MaterialPool)
 	{
-		super(skybox, elementsClass, renderPool);
+		super(skybox, materialPool);
 
 		this._skybox = skybox;
 
-		this._shader = new ShaderBase(elementsClass, this, this._stage);
+		this._shader = new ShaderBase(materialPool.elementsClass, this, this._stage);
 
 		this._texture = <GL_TextureBase> this._shader.getAbstraction(this._skybox.texture);
 

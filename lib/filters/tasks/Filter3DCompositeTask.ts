@@ -2,9 +2,7 @@ import {Image2D} from "@awayjs/graphics";
 
 import {Camera} from "@awayjs/scene";
 
-import {ContextGLProgramType, IContextGL, Stage, GL_ImageBase} from "@awayjs/stage";
-
-import {ShaderRegisterElement} from "../../shaders/ShaderRegisterElement";
+import {ContextGLProgramType, IContextGL, Stage, ShaderRegisterElement, GL_ImageBase} from "@awayjs/stage";
 
 import {Filter3DTaskBase} from "./Filter3DTaskBase";
 

@@ -1,6 +1,6 @@
 import {Graphics} from "@awayjs/graphics";
 
-import {IAnimationState} from "./IAnimationState";
+import {IAnimationState} from "@awayjs/stage";
 
 /**
  * Provides an interface for animation node classes that hold animation data for use in the Vertex animator class.

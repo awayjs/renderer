@@ -1,5 +1,4 @@
 export {AnimationElements}				from "./lib/animators/data/AnimationElements";
-export {AnimationRegisterData}			from "./lib/animators/data/AnimationRegisterData";
 export {ColorSegmentPoint}				from "./lib/animators/data/ColorSegmentPoint";
 export {JointPose}						from "./lib/animators/data/JointPose";
 export {ParticleAnimationData}			from "./lib/animators/data/ParticleAnimationData";
@@ -37,7 +36,6 @@ export {SkeletonNaryLERPNode}			from "./lib/animators/nodes/SkeletonNaryLERPNode
 export {VertexClipNode}					from "./lib/animators/nodes/VertexClipNode";
 export {AnimationClipState}				from "./lib/animators/states/AnimationClipState";
 export {AnimationStateBase}				from "./lib/animators/states/AnimationStateBase";
-export {IAnimationState}					from "./lib/animators/states/IAnimationState";
 export {ISkeletonAnimationState}			from "./lib/animators/states/ISkeletonAnimationState";
 export {IVertexAnimationState}			from "./lib/animators/states/IVertexAnimationState";
 export {ParticleAccelerationState}		from "./lib/animators/states/ParticleAccelerationState";
@@ -69,8 +67,6 @@ export {CrossfadeTransition}				from "./lib/animators/transitions/CrossfadeTrans
 export {CrossfadeTransitionNode}			from "./lib/animators/transitions/CrossfadeTransitionNode";
 export {CrossfadeTransitionState}		from "./lib/animators/transitions/CrossfadeTransitionState";
 export {IAnimationTransition}			from "./lib/animators/transitions/IAnimationTransition";
-export {AnimationSetBase}				from "./lib/animators/AnimationSetBase";
-export {AnimatorBase}					from "./lib/animators/AnimatorBase";
 export {ParticleAnimationSet}			from "./lib/animators/ParticleAnimationSet";
 export {ParticleAnimator}				from "./lib/animators/ParticleAnimator";
 export {SkeletonAnimationSet}			from "./lib/animators/SkeletonAnimationSet";
@@ -84,17 +80,10 @@ export {DepthRenderer}				from "./lib/DepthRenderer";
 
 export {DistanceRenderer}				from "./lib/DistanceRenderer";
 
-export {GL_ElementsBase}					from "./lib/elements/GL_ElementsBase";
 export {GL_LineElements}					from "./lib/elements/GL_LineElements";
 export {GL_SkyboxElements}				from "./lib/elements/GL_SkyboxElements";
-export {GL_TriangleElements}				from "./lib/elements/GL_TriangleElements";
-export {IElementsClassGL}				from "./lib/elements/IElementsClassGL";
-
-export {AnimationSetError}				from "./lib/errors/AnimationSetError";
 
 export {AnimationStateEvent}				from "./lib/events/AnimationStateEvent";
-export {AnimatorEvent}					from "./lib/events/AnimatorEvent";
-export {PassEvent}						from "./lib/events/PassEvent";
 export {RendererEvent}					from "./lib/events/RendererEvent";
 export {RTTEvent}						from "./lib/events/RTTEvent";
 export {ShadingMethodEvent}				from "./lib/events/ShadingMethodEvent";
@@ -114,44 +103,23 @@ export {FXAAFilter3D}					from "./lib/filters/FXAAFilter3D";
 export {RTTBufferManager}				from "./lib/managers/RTTBufferManager";
 
 export {GL_BillboardRenderable}			from "./lib/renderables/GL_BillboardRenderable";
-export {GL_ShapeRenderable}			from "./lib/renderables/GL_ShapeRenderable";
 export {GL_LineSegmentRenderable}		from "./lib/renderables/GL_LineSegmentRenderable";
-export {GL_RenderableBase}				from "./lib/renderables/GL_RenderableBase";
 export {GL_SkyboxRenderable}				from "./lib/renderables/GL_SkyboxRenderable";
-export {IRenderableClassGL}					from "./lib/renderables/IRenderableClassGL";
-export {RenderablePool}						from "./lib/renderables/RenderablePool";
 
 export {RendererBase}					from "./lib/RendererBase";
 
-export {CompilerBase}					from "./lib/shaders/compilers/CompilerBase";
 export {LightingCompiler}				from "./lib/shaders/compilers/LightingCompiler";
 export {LightingShader}					from "./lib/shaders/LightingShader";
-export {RegisterPool}					from "./lib/shaders/RegisterPool";
-export {ShaderBase}						from "./lib/shaders/ShaderBase";
-export {ShaderRegisterCache}				from "./lib/shaders/ShaderRegisterCache";
-export {ShaderRegisterData}				from "./lib/shaders/ShaderRegisterData";
-export {ShaderRegisterElement}			from "./lib/shaders/ShaderRegisterElement";
 
 export {IEntitySorter}					from "./lib/sort/IEntitySorter";
 export {RenderableMergeSort}				from "./lib/sort/RenderableMergeSort";
 export {RenderableNullSort}				from "./lib/sort/RenderableNullSort";
 
-export {BasicMaterialPass}				from "./lib/materials/passes/BasicMaterialPass";
 export {ILightingPass}					from "./lib/materials/passes/ILightingPass";
-export {IPass}							from "./lib/materials/passes/IPass";
-export {PassBase}						from "./lib/materials/passes/PassBase";
-export {GL_BasicMaterial}			from "./lib/materials/GL_BasicMaterial";
+export {DefaultMaterialGroup}					from "./lib/materials/DefaultMaterialGroup";
 export {GL_DepthMaterial}					from "./lib/materials/GL_DepthMaterial";
 export {GL_DistanceMaterial}				from "./lib/materials/GL_DistanceMaterial";
 export {GL_SkyboxMaterial}				from "./lib/materials/GL_SkyboxMaterial";
-export {GL_MaterialBase}					from "./lib/materials/GL_MaterialBase";
-export {GL_MaterialPassBase}				from "./lib/materials/GL_MaterialPassBase";
-export {IMaterialClassGL}					from "./lib/materials/IMaterialClassGL";
-export {MaterialPool}						from "./lib/materials/MaterialPool";
-
-export {GL_Single2DTexture}				from "./lib/textures/GL_Single2DTexture";
-export {GL_SingleCubeTexture}			from "./lib/textures/GL_SingleCubeTexture";
-export {GL_TextureBase}					from "./lib/textures/GL_TextureBase";
 
 export {ParticleGraphicsHelper}			from "./lib/utils/ParticleGraphicsHelper";
 export {ParticleGraphicsTransform}		from "./lib/utils/ParticleGraphicsTransform";

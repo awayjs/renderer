@@ -1,19 +1,13 @@
 import {ElementsBase, IAnimationSet, ParticleData, AnimationNodeBase, Shape, Graphics} from "@awayjs/graphics";
 
-import {ShaderBase} from "../shaders/ShaderBase";
-import {ShaderRegisterElement} from "../shaders/ShaderRegisterElement";
-import {ShaderRegisterCache} from "../shaders/ShaderRegisterCache";
-import {ShaderRegisterData} from "../shaders/ShaderRegisterData";
+import {ShaderBase, ShaderRegisterElement, ShaderRegisterCache, ShaderRegisterData, AnimationRegisterData, AnimationSetBase} from "@awayjs/stage";
 
-import {AnimationRegisterData} from "./data/AnimationRegisterData";
 import {AnimationElements} from "./data/AnimationElements";
 import {ParticleAnimationData} from "./data/ParticleAnimationData";
 import {ParticleProperties} from "./data/ParticleProperties";
 import {ParticlePropertiesMode} from "./data/ParticlePropertiesMode";
 import {ParticleNodeBase} from "./nodes/ParticleNodeBase";
 import {ParticleTimeNode} from "./nodes/ParticleTimeNode";
-
-import {AnimationSetBase} from "./AnimationSetBase";
 
 /**
  * The animation data set used by particle-based animators, containing particle animation data.

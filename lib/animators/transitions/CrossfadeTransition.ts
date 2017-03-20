@@ -1,8 +1,8 @@
 import {AnimationNodeBase} from "@awayjs/graphics";
 
-import {CrossfadeTransitionNode} from "../transitions/CrossfadeTransitionNode";
+import {AnimatorBase} from "@awayjs/stage";
 
-import {AnimatorBase} from "../AnimatorBase";
+import {CrossfadeTransitionNode} from "../transitions/CrossfadeTransitionNode";
 
 import {IAnimationTransition} from "./IAnimationTransition";
 

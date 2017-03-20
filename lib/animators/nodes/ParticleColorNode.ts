@@ -1,15 +1,11 @@
 import {ColorTransform} from "@awayjs/core";
 
-import {ShaderBase} from "../../shaders/ShaderBase";
-import {ShaderRegisterCache} from "../../shaders/ShaderRegisterCache";
-import {ShaderRegisterElement} from "../../shaders/ShaderRegisterElement";
+import {ShaderBase, ShaderRegisterCache, ShaderRegisterElement, AnimationRegisterData, AnimatorBase} from "@awayjs/stage";
 
-import {AnimationRegisterData} from "../data/AnimationRegisterData";
 import {ParticleProperties} from "../data/ParticleProperties";
 import {ParticlePropertiesMode} from "../data/ParticlePropertiesMode";
 import {ParticleColorState} from "../states/ParticleColorState";
 
-import {AnimatorBase} from "../AnimatorBase";
 import {ParticleAnimationSet} from "../ParticleAnimationSet";
 
 import {ParticleNodeBase} from "./ParticleNodeBase";

@@ -2,12 +2,9 @@ import {AttributesBuffer, AssetEvent, Rectangle} from "@awayjs/core";
 
 import {IEntity, TriangleElements, TextureBase, DefaultMaterialManager} from "@awayjs/graphics";
 
-import {Billboard} from "@awayjs/scene";
+import {GL_ElementsBase, GL_MaterialBase, GL_RenderableBase, RenderablePool} from "@awayjs/stage";
 
-import {GL_ElementsBase} from "../elements/GL_ElementsBase";
-import {GL_MaterialBase} from "../materials/GL_MaterialBase";
-import {GL_RenderableBase} from "../renderables/GL_RenderableBase";
-import {RenderablePool} from "../renderables/RenderablePool";
+import {Billboard} from "@awayjs/scene";
 
 import {RendererBase} from "../RendererBase";
 
@@ -31,9 +28,9 @@ export class GL_BillboardRenderable extends GL_RenderableBase
 	 * @param pool
 	 * @param billboard
 	 */
-	constructor(billboard:Billboard, entity:IEntity, renderer:RendererBase, pool:RenderablePool)
+	constructor(billboard:Billboard, renderablePool:RenderablePool)
 	{
-		super(billboard, entity, renderer, pool);
+		super(billboard, renderablePool);
 
 		this._billboard = billboard;
 	}
@@ -85,7 +82,7 @@ export class GL_BillboardRenderable extends GL_RenderableBase
 
 	public _pGetMaterial():GL_MaterialBase
 	{
-		return this._renderer.getMaterialPool(this.elementsGL).getAbstraction(this._billboard.material || DefaultMaterialManager.getDefaultMaterial(this.renderable));
+		return this._materialGroup.getMaterialPool(this.elementsGL).getAbstraction(this._billboard.material || DefaultMaterialManager.getDefaultMaterial(this.renderable));
 	}
 
 }

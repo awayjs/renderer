@@ -2,19 +2,12 @@ import {Matrix3D, Plane3D, Point, Rectangle, Vector3D, IAbstractionPool, ByteArr
 
 import {ImageBase, BitmapImage2D, TraverserBase, IRenderable, INode, IEntity} from "@awayjs/graphics";
 
+import {ContextGLProfile, ContextMode, AGALMiniAssembler, ContextGLBlendFactor, ContextGLCompareMode, ContextGLStencilAction, ContextGLTriangleFace, IContextGL, Stage, StageEvent, StageManager, ProgramData, GL_ElementsBase, IMaterialClassGL, MaterialPool, IPass, GL_MaterialBase, GL_RenderableBase, RenderablePool, MaterialGroupBase} from "@awayjs/stage";
+
 import {IRenderer, IView} from "@awayjs/scene";
 
-import {ContextGLProfile, ContextMode, AGALMiniAssembler, ContextGLBlendFactor, ContextGLCompareMode, ContextGLStencilAction, ContextGLTriangleFace, IContextGL, Stage, StageEvent, StageManager, ProgramData} from "@awayjs/stage";
-
 import {RendererEvent} from "./events/RendererEvent";
-import {GL_ElementsBase} from "./elements/GL_ElementsBase";
 import {RTTBufferManager} from "./managers/RTTBufferManager";
-import {IMaterialClassGL} from "./materials/IMaterialClassGL";
-import {MaterialPool} from "./materials/MaterialPool";
-import {IPass} from "./materials/passes/IPass";
-import {GL_MaterialBase} from "./materials/GL_MaterialBase";
-import {GL_RenderableBase} from "./renderables/GL_RenderableBase";
-import {RenderablePool} from "./renderables/RenderablePool";
 import {IEntitySorter} from "./sort/IEntitySorter";
 import {RenderableMergeSort} from "./sort/RenderableMergeSort";
 
@@ -25,13 +18,9 @@ import {RenderableMergeSort} from "./sort/RenderableMergeSort";
  *
  * @class away.render.RendererBase
  */
-export class RendererBase extends TraverserBase implements IRenderer, IAbstractionPool
+export class RendererBase extends TraverserBase implements IRenderer
 {
 	public static _iCollectionMark = 0;
-	public static _abstractionClassPool:Object = new Object();
-
-	private _renderablePools:Object = new Object();
-	private _materialPools:Object = new Object();
 
 	private _maskConfig:number;
 	private _activeMasksDirty:boolean;
@@ -42,7 +31,6 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 
 	public _pContext:IContextGL;
 	public _pStage:Stage;
-	private _materialClassGL:IMaterialClassGL;
 
 	public _cameraTransform:Matrix3D;
 	private _cameraForward:Vector3D = new Vector3D();
@@ -90,6 +78,7 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 	private _customCullPlanes:Array<Plane3D>;
 	private _numCullPlanes:number = 0;
 	private _sourceEntity:IEntity;
+	protected _materialGroup:MaterialGroupBase;
 	private _renderablePool:RenderablePool;
 	private _zIndex:number;
 	private _renderSceneTransform:Matrix3D;
@@ -258,7 +247,7 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 	/**
 	 * Creates a new RendererBase object.
 	 */
-	constructor(stage:Stage = null, materialClassGL:IMaterialClassGL = null, forceSoftware:boolean = false, profile:ContextGLProfile = ContextGLProfile.BASELINE, mode:ContextMode = ContextMode.AUTO)
+	constructor(stage:Stage = null, forceSoftware:boolean = false, profile:ContextGLProfile = ContextGLProfile.BASELINE, mode:ContextMode = ContextMode.AUTO)
 	{
 		super();
 
@@ -274,8 +263,6 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 		this._pStage.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 		this._pStage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 		this._pStage.addEventListener(StageEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
-
-		this._materialClassGL = materialClassGL;
 		
 		/*
 		 if (_backgroundImageRenderer)
@@ -283,33 +270,6 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 		 */
 		if (this._pStage.context)
 			this._pContext = <IContextGL> this._pStage.context;
-	}
-
-
-	public getAbstraction(entity:IEntity):RenderablePool
-	{
-		return this._renderablePools[entity.id] || (this._renderablePools[entity.id] = new RenderablePool(entity, this));
-	}
-
-	/**
-	 *
-	 * @param elementsClass
-	 * @returns MaterialPool
-	 */
-	public clearAbstraction(entity:IEntity):void
-	{
-		this._renderablePools[entity.id] = null;
-	}
-	
-	/**
-	 * //TODO
-	 *
-	 * @param elementsClass
-	 * @returns MaterialPool
-	 */
-	public getMaterialPool(elements:GL_ElementsBase):MaterialPool
-	{
-		return this._materialPools[elements.elementsType] || (this._materialPools[elements.elementsType] = new MaterialPool(elements.elementsClass, this._pStage, this._materialClassGL));
 	}
 
 	public activatePass(pass:IPass, projection:ProjectionBase):void
@@ -849,7 +809,7 @@ export class RendererBase extends TraverserBase implements IRenderer, IAbstracti
 	public applyEntity(entity:IEntity):void
 	{
 		this._sourceEntity = entity;
-		this._renderablePool = this.getAbstraction(entity);
+		this._renderablePool = this._materialGroup.getRenderablePool(entity);
 
 		// project onto camera's z-axis
 		this._zIndex = entity.zOffset + this._cameraTransform.position.subtract(entity.scenePosition).dotProduct(this._cameraForward);

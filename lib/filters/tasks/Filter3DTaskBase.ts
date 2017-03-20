@@ -2,13 +2,11 @@ import {AbstractMethodError, ByteArray} from "@awayjs/core";
 
 import {Image2D} from "@awayjs/graphics";
 
+import {IProgram, AGALMiniAssembler, Stage, ContextGLProfile, ShaderRegisterCache, ShaderRegisterElement} from "@awayjs/stage";
+
 import {Camera} from "@awayjs/scene";
 
-import {IProgram, AGALMiniAssembler, Stage, ContextGLProfile} from "@awayjs/stage";
-
 import {RTTBufferManager} from "../../managers/RTTBufferManager";
-import {ShaderRegisterCache} from "../../shaders/ShaderRegisterCache";
-import {ShaderRegisterElement} from "../../shaders/ShaderRegisterElement";
 
 export class Filter3DTaskBase
 {

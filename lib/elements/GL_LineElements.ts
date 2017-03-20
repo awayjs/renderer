@@ -2,16 +2,7 @@ import {AssetEvent, Matrix3D, ProjectionBase} from "@awayjs/core";
 
 import {LineElements} from "@awayjs/graphics";
 
-import {ContextGLDrawMode, IContextGL, ContextGLProgramType, Stage} from "@awayjs/stage";
-
-import {GL_RenderableBase} from "../renderables/GL_RenderableBase";
-import {ShaderBase} from "../shaders/ShaderBase";
-import {ShaderRegisterCache} from "../shaders/ShaderRegisterCache";
-import {ShaderRegisterElement} from "../shaders/ShaderRegisterElement";
-import {ShaderRegisterData} from "../shaders/ShaderRegisterData";
-
-import {GL_ElementsBase} from "./GL_ElementsBase";
-import {IElementsClassGL} from "./IElementsClassGL";
+import {ContextGLDrawMode, IContextGL, ContextGLProgramType, Stage, GL_RenderableBase, ShaderBase, ShaderRegisterCache, ShaderRegisterElement, ShaderRegisterData, GL_ElementsBase, IElementsClassGL} from "@awayjs/stage";
 
 /**
  *

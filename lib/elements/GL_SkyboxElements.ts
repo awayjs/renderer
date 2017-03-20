@@ -1,15 +1,6 @@
 import {Matrix3D, Vector3D, ProjectionBase} from "@awayjs/core";
 
-import {ContextGLDrawMode, ContextGLProgramType, IContextGL} from "@awayjs/stage";
-
-import {GL_RenderableBase} from "../renderables/GL_RenderableBase";
-import {ShaderBase} from "../shaders/ShaderBase";
-import {ShaderRegisterCache} from "../shaders/ShaderRegisterCache";
-import {ShaderRegisterElement} from "../shaders/ShaderRegisterElement";
-import {ShaderRegisterData} from "../shaders/ShaderRegisterData";
-
-import {GL_TriangleElements} from "./GL_TriangleElements";
-import {IElementsClassGL} from "./IElementsClassGL";
+import {ContextGLDrawMode, ContextGLProgramType, IContextGL, GL_RenderableBase, ShaderBase, ShaderRegisterCache, ShaderRegisterElement, ShaderRegisterData, GL_TriangleElements, IElementsClassGL} from "@awayjs/stage";
 
 /**
  *

@@ -2,15 +2,11 @@ import {AssetEvent, Vector3D} from "@awayjs/core";
 
 import {IEntity, LineElements, DefaultMaterialManager} from "@awayjs/graphics";
 
+import {GL_ElementsBase, GL_MaterialBase, GL_RenderableBase, RenderablePool} from "@awayjs/stage";
+
 import {LineSegment} from "@awayjs/scene";
 
-import {GL_ElementsBase} from "../elements/GL_ElementsBase";
-import {GL_MaterialBase} from "../materials/GL_MaterialBase";
-import {GL_RenderableBase} from "../renderables/GL_RenderableBase";
-
 import {RendererBase} from "../RendererBase";
-
-import {RenderablePool} from "./RenderablePool";
 
 /**
  * @class away.pool.GL_LineSegmentRenderable
@@ -32,9 +28,9 @@ export class GL_LineSegmentRenderable extends GL_RenderableBase
 	 * @param level
 	 * @param dataOffset
 	 */
-	constructor(lineSegment:LineSegment, entity:IEntity, renderer:RendererBase, pool:RenderablePool)
+	constructor(lineSegment:LineSegment, renderablePool:RenderablePool)
 	{
-		super(lineSegment, entity, renderer, pool);
+		super(lineSegment, renderablePool);
 
 		this._lineSegment = lineSegment;
 	}
@@ -78,6 +74,6 @@ export class GL_LineSegmentRenderable extends GL_RenderableBase
 
 	public _pGetMaterial():GL_MaterialBase
 	{
-		return this._renderer.getMaterialPool(this.elementsGL).getAbstraction(this._lineSegment.material || DefaultMaterialManager.getDefaultMaterial(this.renderable));
+		return this._materialGroup.getMaterialPool(this.elementsGL).getAbstraction(this._lineSegment.material || DefaultMaterialManager.getDefaultMaterial(this.renderable));
 	}
 }

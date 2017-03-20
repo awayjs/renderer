@@ -1,6 +1,6 @@
 import {AnimationNodeBase} from "@awayjs/graphics";
 
-import {AnimatorBase} from "../AnimatorBase";
+import {AnimatorBase} from "@awayjs/stage";
 
 /**
  *

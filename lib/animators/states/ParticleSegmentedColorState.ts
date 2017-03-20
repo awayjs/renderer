@@ -1,13 +1,7 @@
-import {ColorTransform} from "@awayjs/core";
+import {ColorTransform, ProjectionBase} from "@awayjs/core";
 
-import {ProjectionBase} from "@awayjs/core";
+import {Stage, GL_RenderableBase, ShaderBase, AnimationRegisterData} from "@awayjs/stage";
 
-import {Stage} from "@awayjs/stage";
-
-import {GL_RenderableBase} from "../../renderables/GL_RenderableBase";
-import {ShaderBase} from "../../shaders/ShaderBase";
-
-import {AnimationRegisterData} from "../data/AnimationRegisterData";
 import {AnimationElements} from "../data/AnimationElements";
 import {ColorSegmentPoint} from "../data/ColorSegmentPoint";
 import {ParticleSegmentedColorNode} from "../nodes/ParticleSegmentedColorNode";

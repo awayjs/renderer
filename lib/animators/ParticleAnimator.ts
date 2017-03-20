@@ -2,21 +2,15 @@ import {ProjectionBase} from "@awayjs/core";
 
 import {ElementsBase, Graphics, Shape} from "@awayjs/graphics";
 
+import {Stage, ShaderBase, GL_RenderableBase, GL_ShapeRenderable, AnimationRegisterData, AnimatorBase} from "@awayjs/stage";
+
 import {Sprite} from "@awayjs/scene";
 
-import {Stage} from "@awayjs/stage";
-
-import {ShaderBase} from "../shaders/ShaderBase";
-import {GL_RenderableBase} from "../renderables/GL_RenderableBase";
-import {GL_ShapeRenderable} from "../renderables/GL_ShapeRenderable";
-
-import {AnimationRegisterData} from "./data/AnimationRegisterData";
 import {AnimationElements} from "./data/AnimationElements";
 import {ParticlePropertiesMode} from "./data/ParticlePropertiesMode";
 import {ParticleNodeBase} from "./nodes/ParticleNodeBase";
 import {ParticleStateBase} from "./states/ParticleStateBase";
 
-import {AnimatorBase} from "./AnimatorBase";
 import {ParticleAnimationSet} from "./ParticleAnimationSet";
 
 /**

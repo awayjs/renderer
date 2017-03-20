@@ -1,9 +1,9 @@
+import {AnimatorBase} from "@awayjs/stage";
+
 import {AnimationStateEvent} from "../../events/AnimationStateEvent";
 
 import {SkeletonBinaryLERPNode} from "../nodes/SkeletonBinaryLERPNode";
 import {SkeletonBinaryLERPState} from "../states/SkeletonBinaryLERPState";
-
-import {AnimatorBase} from "../AnimatorBase";
 
 import {CrossfadeTransitionNode} from "./CrossfadeTransitionNode";
 

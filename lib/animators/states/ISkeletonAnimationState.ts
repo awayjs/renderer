@@ -1,7 +1,7 @@
+import {IAnimationState} from "@awayjs/stage";
+
 import {Skeleton} from "../data/Skeleton";
 import {SkeletonPose} from "../data/SkeletonPose";
-
-import {IAnimationState} from "./IAnimationState";
 
 export interface ISkeletonAnimationState extends IAnimationState
 {

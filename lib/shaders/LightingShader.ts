@@ -2,16 +2,11 @@ import {Matrix3D, Vector3D, ProjectionBase}	 from "@awayjs/core";
 
 import {DirectionalLight, LightProbe, PointLight, LightSources} from "@awayjs/scene";
 
-import {ContextGLProfile, Stage, GL_ImageBase} from "@awayjs/stage";
+import {ContextGLProfile, Stage, GL_ImageBase, IElementsClassGL, GL_RenderableBase, CompilerBase, ShaderBase} from "@awayjs/stage";
 
 import {ILightingPass} from "../materials/passes/ILightingPass";
-import {IElementsClassGL} from "../elements/IElementsClassGL";
-import {GL_RenderableBase} from "../renderables/GL_RenderableBase";
 
-import {CompilerBase} from "./compilers/CompilerBase";
 import {LightingCompiler} from "./compilers/LightingCompiler";
-
-import {ShaderBase} from "./ShaderBase";
 
 
 /**

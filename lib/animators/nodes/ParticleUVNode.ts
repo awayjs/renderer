@@ -1,14 +1,10 @@
 import {Vector3D} from "@awayjs/core";
 
-import {ShaderBase} from "../../shaders/ShaderBase";
-import {ShaderRegisterCache} from "../../shaders/ShaderRegisterCache";
-import {ShaderRegisterElement} from "../../shaders/ShaderRegisterElement";
+import {ShaderBase, ShaderRegisterCache, ShaderRegisterElement, AnimationRegisterData, AnimatorBase} from "@awayjs/stage";
 
-import {AnimationRegisterData} from "../data/AnimationRegisterData";
 import {ParticlePropertiesMode} from "../data/ParticlePropertiesMode";
 import {ParticleUVState} from "../states/ParticleUVState";
 
-import {AnimatorBase} from "../AnimatorBase";
 import {ParticleAnimationSet} from "../ParticleAnimationSet";
 
 import {ParticleNodeBase} from "./ParticleNodeBase";

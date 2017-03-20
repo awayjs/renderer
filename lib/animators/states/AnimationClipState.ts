@@ -1,8 +1,8 @@
+import {AnimatorBase} from "@awayjs/stage";
+
 import {AnimationStateEvent} from "../../events/AnimationStateEvent";
 
 import {AnimationClipNodeBase} from "../nodes/AnimationClipNodeBase";
-
-import {AnimatorBase} from "../AnimatorBase";
 
 import {AnimationStateBase} from "./AnimationStateBase";
 

@@ -1,13 +1,9 @@
 import {Vector3D, MathConsts, ProjectionBase} from "@awayjs/core";
 
+import {Stage, ContextGLVertexBufferFormat, GL_RenderableBase, ShaderBase, AnimationRegisterData} from "@awayjs/stage";
+
 import {DisplayObject} from "@awayjs/scene";
 
-import {Stage, ContextGLVertexBufferFormat} from "@awayjs/stage";
-
-import {GL_RenderableBase} from "../../renderables/GL_RenderableBase";
-import {ShaderBase} from "../../shaders/ShaderBase";
-
-import {AnimationRegisterData} from "../data/AnimationRegisterData";
 import {ParticleAnimationData} from "../data/ParticleAnimationData";
 import {AnimationElements} from "../data/AnimationElements";
 import {ParticleFollowNode} from "../nodes/ParticleFollowNode";

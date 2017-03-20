@@ -2,16 +2,13 @@ import {AttributesBuffer} from "@awayjs/core";
 
 import {IEntity, TriangleElements} from "@awayjs/graphics";
 
+import {GL_MaterialBase, ShaderBase, GL_RenderableBase, RenderablePool} from "@awayjs/stage";
+
 import {Skybox} from "@awayjs/scene";
 
 import {GL_SkyboxElements} from "../elements/GL_SkyboxElements";
-import {GL_MaterialBase} from "../materials/GL_MaterialBase";
-import {ShaderBase} from "../shaders/ShaderBase";
 
 import {RendererBase} from "../RendererBase";
-
-import {GL_RenderableBase} from "./GL_RenderableBase";
-import {RenderablePool} from "./RenderablePool";
 
 /**
  * @class away.pool.GL_SkyboxRenderable
@@ -34,9 +31,9 @@ export class GL_SkyboxRenderable extends GL_RenderableBase
 	 * @param pool
 	 * @param skybox
 	 */
-	constructor(skybox:Skybox, entity:IEntity, renderer:RendererBase, pool:RenderablePool)
+	constructor(skybox:Skybox, renderablePool:RenderablePool)
 	{
-		super(skybox, entity, renderer, pool);
+		super(skybox, renderablePool);
 
 		this._skybox = skybox;
 	}
@@ -66,7 +63,7 @@ export class GL_SkyboxRenderable extends GL_RenderableBase
 
 	public _pGetMaterial():GL_MaterialBase
 	{
-		return this._renderer.getMaterialPool(this.elementsGL).getAbstraction(this._skybox);
+		return this._materialGroup.getMaterialPool(this.elementsGL).getAbstraction(this._skybox);
 	}
 
 	public static _iIncludeDependencies(shader:ShaderBase):void

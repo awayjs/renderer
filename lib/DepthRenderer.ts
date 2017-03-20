@@ -1,4 +1,4 @@
-import {Stage} from "@awayjs/stage";
+import {Stage, MaterialGroupBase} from "@awayjs/stage";
 
 import {INode} from "@awayjs/graphics";
 
@@ -13,6 +13,7 @@ import {RendererBase} from "./RendererBase";
  */
 export class DepthRenderer extends RendererBase
 {
+	public static _abstractionClassPool:Object = Object();
 	/**
 	 * Creates a new DepthRenderer object.
 	 * @param renderBlended Indicates whether semi-transparent objects should be rendered.
@@ -20,8 +21,9 @@ export class DepthRenderer extends RendererBase
 	 */
 	constructor(stage:Stage = null)
 	{
-		super(stage, GL_DepthMaterial);
+		super(stage);
 
+		this._materialGroup = new MaterialGroupBase(this._pStage, DepthRenderer._abstractionClassPool);
 		this._iBackgroundR = 1;
 		this._iBackgroundG = 1;
 		this._iBackgroundB = 1;

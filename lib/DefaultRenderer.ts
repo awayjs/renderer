@@ -8,6 +8,7 @@ import {ContextGLProfile, ContextMode, Stage, ContextGLClearMask, IContextGL} fr
 
 import {Filter3DBase} from "./filters/Filter3DBase";
 import {RTTBufferManager} from "./managers/RTTBufferManager";
+import {DefaultMaterialGroup} from "./materials/DefaultMaterialGroup";
 
 import {DepthRenderer} from "./DepthRenderer";
 import {DistanceRenderer} from "./DistanceRenderer";
@@ -116,11 +117,12 @@ export class DefaultRenderer extends RendererBase
 	 */
 	constructor(stage:Stage = null, forceSoftware:boolean = false, profile:ContextGLProfile = ContextGLProfile.BASELINE, mode:ContextMode = ContextMode.AUTO)
 	{
-		super(stage, null, forceSoftware, profile, mode);
+		super(stage, forceSoftware, profile, mode);
 
 		if (stage)
 			this.shareContext = true;
 
+		this._materialGroup = new DefaultMaterialGroup(this._pStage);
 		this._pRttBufferManager = RTTBufferManager.getInstance(this._pStage);
 
 		this._depthRenderer = new DepthRenderer(this._pStage);

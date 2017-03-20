@@ -1,10 +1,8 @@
+import {IElementsClassGL, ShaderRegisterElement, CompilerBase} from "@awayjs/stage";
+
 import {ILightingPass} from "../../materials/passes/ILightingPass";
-import {IElementsClassGL} from "../../elements/IElementsClassGL";
 
 import {LightingShader} from "../LightingShader";
-import {ShaderRegisterElement} from "../ShaderRegisterElement";
-
-import {CompilerBase} from "./CompilerBase";
 
 /**
  * CompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a

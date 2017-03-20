@@ -1,9 +1,7 @@
 import {AnimationNodeBase} from "@awayjs/graphics";
 
-import {ShaderBase} from "../../shaders/ShaderBase";
-import {ShaderRegisterCache} from "../../shaders/ShaderRegisterCache";
+import {ShaderBase, ShaderRegisterCache, AnimationRegisterData} from "@awayjs/stage";
 
-import {AnimationRegisterData} from "../data/AnimationRegisterData";
 import {ParticleProperties} from "../data/ParticleProperties";
 
 import {ParticleAnimationSet} from "../ParticleAnimationSet";
