@@ -48,7 +48,7 @@ export class GL_LineSegmentRenderable extends GL_RenderableBase
 	 * @returns {base.LineElements}
 	 * @protected
 	 */
-	public _pGetElements():GL_ElementsBase
+	protected _getElements():GL_ElementsBase
 	{
 		var elements:LineElements = GL_LineSegmentRenderable._lineGraphics[this._lineSegment.id] || (GL_LineSegmentRenderable._lineGraphics[this._lineSegment.id] = new LineElements());
 
@@ -72,7 +72,7 @@ export class GL_LineSegmentRenderable extends GL_RenderableBase
 		return <GL_ElementsBase> this._stage.getAbstraction(elements);
 	}
 
-	public _pGetMaterial():GL_MaterialBase
+	protected _getMaterial():GL_MaterialBase
 	{
 		return this._materialGroup.getMaterialPool(this.elementsGL).getAbstraction(this._lineSegment.material || DefaultMaterialManager.getDefaultMaterial(this.renderable));
 	}

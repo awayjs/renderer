@@ -121,7 +121,7 @@ export class GL_DistanceMaterial extends GL_MaterialPassBase
 		data[index + 3] = 16581375.0*f;
 
 		if (this._textureVO && this._shader.alphaThreshold > 0) {
-			this._textureVO.activate(this);
+			this._textureVO.activate();
 
 			data[index + 8] = this._shader.alphaThreshold;
 		}

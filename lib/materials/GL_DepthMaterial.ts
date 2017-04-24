@@ -115,7 +115,7 @@ export class GL_DepthMaterial extends GL_MaterialPassBase
 		super._iActivate(projection);
 
 		if (this._textureVO && this._shader.alphaThreshold > 0) {
-			this._textureVO.activate(this);
+			this._textureVO.activate();
 
 			this._shader.fragmentConstantData[this._fragmentConstantsIndex + 8] = this._shader.alphaThreshold;
 		}

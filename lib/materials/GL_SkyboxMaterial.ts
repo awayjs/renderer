@@ -82,6 +82,6 @@ export class GL_SkyboxMaterial extends GL_MaterialPassBase
 
 		this._stage.context.setDepthTest(false, ContextGLCompareMode.LESS);
 
-		this._texture.activate(this);
+		this._texture.activate();
 	}
 }

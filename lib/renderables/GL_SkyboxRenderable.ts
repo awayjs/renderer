@@ -44,7 +44,7 @@ export class GL_SkyboxRenderable extends GL_RenderableBase
 	 * @returns {away.base.TriangleElements}
 	 * @private
 	 */
-	public _pGetElements():GL_SkyboxElements
+	protected _getElements():GL_SkyboxElements
 	{
 		var elementsGL:GL_SkyboxElements = GL_SkyboxRenderable._elementsGL;
 
@@ -61,7 +61,7 @@ export class GL_SkyboxRenderable extends GL_RenderableBase
 		return elementsGL;
 	}
 
-	public _pGetMaterial():GL_MaterialBase
+	protected _getMaterial():GL_MaterialBase
 	{
 		return this._materialGroup.getMaterialPool(this.elementsGL).getAbstraction(this._skybox);
 	}

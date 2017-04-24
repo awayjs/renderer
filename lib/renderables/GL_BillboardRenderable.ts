@@ -47,7 +47,7 @@ export class GL_BillboardRenderable extends GL_RenderableBase
 	 *
 	 * @returns {away.base.TriangleElements}
 	 */
-	public _pGetElements():GL_ElementsBase
+	protected _getElements():GL_ElementsBase
 	{
 		var texture:TextureBase = this._billboard.material.getTextureAt(0);
 
@@ -80,7 +80,7 @@ export class GL_BillboardRenderable extends GL_RenderableBase
 		return <GL_ElementsBase> this._stage.getAbstraction(elements);
 	}
 
-	public _pGetMaterial():GL_MaterialBase
+	protected _getMaterial():GL_MaterialBase
 	{
 		return this._materialGroup.getMaterialPool(this.elementsGL).getAbstraction(this._billboard.material || DefaultMaterialManager.getDefaultMaterial(this.renderable));
 	}
