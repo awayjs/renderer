@@ -36,9 +36,9 @@ export class GL_DepthMaterial extends GL_MaterialPassBase
 		this._textureVO = this._material.getTextureAt(0)? <GL_TextureBase> this._shader.getAbstraction(this._material.getTextureAt(0)) : null;
 	}
 
-	public _iIncludeDependencies(shader:ShaderBase):void
+	public _includeDependencies(shader:ShaderBase):void
 	{
-		super._iIncludeDependencies(shader);
+		super._includeDependencies(shader);
 
 		shader.projectionDependencies++;
 
@@ -47,9 +47,9 @@ export class GL_DepthMaterial extends GL_MaterialPassBase
 	}
 
 
-	public _iInitConstantData(shader:ShaderBase):void
+	public _initConstantData(shader:ShaderBase):void
 	{
-		super._iInitConstantData(shader);
+		super._initConstantData(shader);
 
 		var index:number = this._fragmentConstantsIndex;
 		var data:Float32Array = shader.fragmentConstantData;
@@ -66,7 +66,7 @@ export class GL_DepthMaterial extends GL_MaterialPassBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iGetFragmentCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+	public _getFragmentCode(registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
 		var code:string = "";
 		var targetReg:ShaderRegisterElement = sharedRegisters.shadedTarget;
@@ -88,10 +88,10 @@ export class GL_DepthMaterial extends GL_MaterialPassBase
 		//codeF += "mov ft1.w, fc1.w	\n" +
 		//    "mov ft0.w, fc0.x	\n";
 
-		if (this._textureVO && shader.alphaThreshold > 0) {
+		if (this._textureVO && this._shader.alphaThreshold > 0) {
 
 			var albedo:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
-			code += this._textureVO._iGetFragmentCode(albedo, registerCache, sharedRegisters, sharedRegisters.uvVarying);
+			code += this._textureVO._getFragmentCode(albedo, registerCache, sharedRegisters, sharedRegisters.uvVarying);
 
 			var cutOffReg:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
 
@@ -110,9 +110,9 @@ export class GL_DepthMaterial extends GL_MaterialPassBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iActivate(projection:ProjectionBase):void
+	public _activate(projection:ProjectionBase):void
 	{
-		super._iActivate(projection);
+		super._activate(projection);
 
 		if (this._textureVO && this._shader.alphaThreshold > 0) {
 			this._textureVO.activate();

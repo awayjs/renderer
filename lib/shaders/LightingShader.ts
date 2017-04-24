@@ -96,7 +96,7 @@ export class LightingShader extends ShaderBase
 		this._lightingPass = lightingPass;
 	}
 
-	public _iIncludeDependencies():void
+	public _includeDependencies():void
 	{
 		this.numPointLights = this._lightingPass.numPointLights;
 		this.numDirectionalLights = this._lightingPass.numDirectionalLights;
@@ -120,7 +120,7 @@ export class LightingShader extends ShaderBase
 		this.usesShadows = this._lightingPass._iUsesShadows(this);
 
 		//IMPORTANT this must occur after shader lighting initialisation above
-		super._iIncludeDependencies();
+		super._includeDependencies();
 	}
 
 	/**

@@ -22,14 +22,14 @@ export class GL_SkyboxElements extends GL_TriangleElements
 		return GL_SkyboxElements;
 	}
 	
-	public static _iIncludeDependencies(shader:ShaderBase):void
+	public static _includeDependencies(shader:ShaderBase):void
 	{
 	}
 
 	/**
 	 * @inheritDoc
 	 */
-	public static _iGetVertexCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+	public static _getVertexCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
 		var code:string = "";
 
@@ -65,7 +65,7 @@ export class GL_SkyboxElements extends GL_TriangleElements
 		return code;
 	}
 
-	public static _iGetFragmentCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+	public static _getFragmentCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
 		return "";
 	}

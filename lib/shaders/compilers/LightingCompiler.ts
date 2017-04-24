@@ -13,7 +13,6 @@ import {LightingShader} from "../LightingShader";
 export class LightingCompiler extends CompilerBase
 {
 	private _shaderLightingObject:LightingShader;
-	private _lightingPass:ILightingPass;
 	public _pointLightFragmentConstants:Array<ShaderRegisterElement>;
 	public _pointLightVertexConstants:Array<ShaderRegisterElement>;
 	public _dirLightFragmentConstants:Array<ShaderRegisterElement>;
@@ -30,7 +29,6 @@ export class LightingCompiler extends CompilerBase
 		super(elementsClass, lightingPass, shaderLightingObject);
 
 		this._shaderLightingObject = shaderLightingObject;
-		this._lightingPass = lightingPass;
 	}
 
 	/**
@@ -39,6 +37,10 @@ export class LightingCompiler extends CompilerBase
 	public pCompileDependencies():void
 	{
 		super.pCompileDependencies();
+
+		//collect code from pass
+		this._vertexCode += (<ILightingPass> this._renderPass)._getPreLightingVertexCode(this._registerCache, this._sharedRegisters);
+		this._postAnimationFragmentCode += (<ILightingPass> this._renderPass)._getPreLightingFragmentCode(this._registerCache, this._sharedRegisters);
 
 		//compile the lighting code
 		if (this._shaderLightingObject.usesShadows)
@@ -51,9 +53,6 @@ export class LightingCompiler extends CompilerBase
 
 		if (this._shaderLightingObject.usesProbes)
 			this.compileLightProbeCode();
-
-		this._pVertexCode += this._lightingPass._iGetPostLightingVertexCode(this._shaderLightingObject, this._pRegisterCache, this._pSharedRegisters);
-		this._pFragmentCode += this._lightingPass._iGetPostLightingFragmentCode(this._shaderLightingObject, this._pRegisterCache, this._pSharedRegisters);
 	}
 
 	/**
@@ -62,10 +61,10 @@ export class LightingCompiler extends CompilerBase
 	public pCompileShadowCode():void
 	{
 		if (this._shaderLightingObject.normalDependencies > 0) {
-			this._pSharedRegisters.shadowTarget = this._pSharedRegisters.normalFragment;
+			this._sharedRegisters.shadowTarget = this._sharedRegisters.normalFragment;
 		} else {
-			this._pSharedRegisters.shadowTarget = this._pRegisterCache.getFreeFragmentVectorTemp();
-			this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.shadowTarget, 1);
+			this._sharedRegisters.shadowTarget = this._registerCache.getFreeFragmentVectorTemp();
+			this._registerCache.addFragmentTempUsages(this._sharedRegisters.shadowTarget, 1);
 		}
 	}
 
@@ -80,7 +79,7 @@ export class LightingCompiler extends CompilerBase
 		if (this._dirLightVertexConstants) {
 			len = this._dirLightVertexConstants.length;
 			for (i = 0; i < len; ++i) {
-				this._dirLightVertexConstants[i] = this._pRegisterCache.getFreeVertexConstant();
+				this._dirLightVertexConstants[i] = this._registerCache.getFreeVertexConstant();
 
 				if (this._shaderLightingObject.lightVertexConstantIndex == -1)
 					this._shaderLightingObject.lightVertexConstantIndex = this._dirLightVertexConstants[i].index*4;
@@ -90,7 +89,7 @@ export class LightingCompiler extends CompilerBase
 		if (this._pointLightVertexConstants) {
 			len = this._pointLightVertexConstants.length;
 			for (i = 0; i < len; ++i) {
-				this._pointLightVertexConstants[i] = this._pRegisterCache.getFreeVertexConstant();
+				this._pointLightVertexConstants[i] = this._registerCache.getFreeVertexConstant();
 
 				if (this._shaderLightingObject.lightVertexConstantIndex == -1)
 					this._shaderLightingObject.lightVertexConstantIndex = this._pointLightVertexConstants[i].index*4;
@@ -99,7 +98,7 @@ export class LightingCompiler extends CompilerBase
 
 		len = this._dirLightFragmentConstants.length;
 		for (i = 0; i < len; ++i) {
-			this._dirLightFragmentConstants[i] = this._pRegisterCache.getFreeFragmentConstant();
+			this._dirLightFragmentConstants[i] = this._registerCache.getFreeFragmentConstant();
 
 			if (this._shaderLightingObject.lightFragmentConstantIndex == -1)
 				this._shaderLightingObject.lightFragmentConstantIndex = this._dirLightFragmentConstants[i].index*4;
@@ -107,7 +106,7 @@ export class LightingCompiler extends CompilerBase
 
 		len = this._pointLightFragmentConstants.length;
 		for (i = 0; i < len; ++i) {
-			this._pointLightFragmentConstants[i] = this._pRegisterCache.getFreeFragmentConstant();
+			this._pointLightFragmentConstants[i] = this._registerCache.getFreeFragmentConstant();
 
 			if (this._shaderLightingObject.lightFragmentConstantIndex == -1)
 				this._shaderLightingObject.lightFragmentConstantIndex = this._pointLightFragmentConstants[i].index*4;
@@ -133,15 +132,15 @@ export class LightingCompiler extends CompilerBase
 			if (this._shaderLightingObject.usesTangentSpace) {
 				lightDirReg = this._dirLightVertexConstants[vertexRegIndex++];
 
-				var lightVarying:ShaderRegisterElement = this._pRegisterCache.getFreeVarying();
+				var lightVarying:ShaderRegisterElement = this._registerCache.getFreeVarying();
 
-				this._pVertexCode += "m33 " + lightVarying + ".xyz, " + lightDirReg + ", " + this._pSharedRegisters.animatedTangent + "\n" +
+				this._vertexCode += "m33 " + lightVarying + ".xyz, " + lightDirReg + ", " + this._sharedRegisters.animatedTangent + "\n" +
 					"mov " + lightVarying + ".w, " + lightDirReg + ".w\n";
 
-				lightDirReg = this._pRegisterCache.getFreeFragmentVectorTemp();
-				this._pRegisterCache.addVertexTempUsages(lightDirReg, 1);
+				lightDirReg = this._registerCache.getFreeFragmentVectorTemp();
+				this._registerCache.addVertexTempUsages(lightDirReg, 1);
 
-				this._pFragmentCode += "nrm " + lightDirReg + ".xyz, " + lightVarying + "\n" +
+				this._postAnimationFragmentCode += "nrm " + lightDirReg + ".xyz, " + lightVarying + "\n" +
 					"mov " + lightDirReg + ".w, " + lightVarying + ".w\n";
 
 			} else {
@@ -152,13 +151,13 @@ export class LightingCompiler extends CompilerBase
 			specularColorReg = this._dirLightFragmentConstants[fragmentRegIndex++];
 
 			if (addDiff)
-				this._pFragmentCode += this._lightingPass._iGetPerLightDiffuseFragmentCode(this._shaderLightingObject, lightDirReg, diffuseColorReg, this._pRegisterCache, this._pSharedRegisters);
+				this._postAnimationFragmentCode += (<ILightingPass> this._renderPass)._getPerLightDiffuseFragmentCode(lightDirReg, diffuseColorReg, this._registerCache, this._sharedRegisters);
 
 			if (addSpec)
-				this._pFragmentCode += this._lightingPass._iGetPerLightSpecularFragmentCode(this._shaderLightingObject, lightDirReg, specularColorReg, this._pRegisterCache, this._pSharedRegisters);
+				this._postAnimationFragmentCode += (<ILightingPass> this._renderPass)._getPerLightSpecularFragmentCode(lightDirReg, specularColorReg, this._registerCache, this._sharedRegisters);
 
 			if (this._shaderLightingObject.usesTangentSpace)
-				this._pRegisterCache.removeVertexTempUsage(lightDirReg);
+				this._registerCache.removeVertexTempUsage(lightDirReg);
 		}
 
 		vertexRegIndex = 0;
@@ -175,36 +174,36 @@ export class LightingCompiler extends CompilerBase
 			diffuseColorReg = this._pointLightFragmentConstants[fragmentRegIndex++];
 			specularColorReg = this._pointLightFragmentConstants[fragmentRegIndex++];
 
-			lightDirReg = this._pRegisterCache.getFreeFragmentVectorTemp();
-			this._pRegisterCache.addFragmentTempUsages(lightDirReg, 1);
+			lightDirReg = this._registerCache.getFreeFragmentVectorTemp();
+			this._registerCache.addFragmentTempUsages(lightDirReg, 1);
 
 			var lightVarying:ShaderRegisterElement;
 
 			if (this._shaderLightingObject.usesTangentSpace) {
-				lightVarying = this._pRegisterCache.getFreeVarying();
-				var temp:ShaderRegisterElement = this._pRegisterCache.getFreeVertexVectorTemp();
-				this._pVertexCode += "sub " + temp + ", " + lightPosReg + ", " + this._pSharedRegisters.animatedPosition + "\n" +
-					"m33 " + lightVarying + ".xyz, " + temp + ", " + this._pSharedRegisters.animatedTangent + "\n" +
-					"mov " + lightVarying + ".w, " + this._pSharedRegisters.animatedPosition + ".w\n";
+				lightVarying = this._registerCache.getFreeVarying();
+				var temp:ShaderRegisterElement = this._registerCache.getFreeVertexVectorTemp();
+				this._vertexCode += "sub " + temp + ", " + lightPosReg + ", " + this._sharedRegisters.animatedPosition + "\n" +
+					"m33 " + lightVarying + ".xyz, " + temp + ", " + this._sharedRegisters.animatedTangent + "\n" +
+					"mov " + lightVarying + ".w, " + this._sharedRegisters.animatedPosition + ".w\n";
 			} else if (!this._shaderLightingObject.usesGlobalPosFragment) {
-				lightVarying = this._pRegisterCache.getFreeVarying();
-				this._pVertexCode += "sub " + lightVarying + ", " + lightPosReg + ", " + this._pSharedRegisters.globalPositionVertex + "\n";
+				lightVarying = this._registerCache.getFreeVarying();
+				this._vertexCode += "sub " + lightVarying + ", " + lightPosReg + ", " + this._sharedRegisters.globalPositionVertex + "\n";
 			} else {
 				lightVarying = lightDirReg;
-				this._pFragmentCode += "sub " + lightDirReg + ", " + lightPosReg + ", " + this._pSharedRegisters.globalPositionVarying + "\n";
+				this._postAnimationFragmentCode += "sub " + lightDirReg + ", " + lightPosReg + ", " + this._sharedRegisters.globalPositionVarying + "\n";
 			}
 
 			if (this._shaderLightingObject.usesLightFallOff) {
 				// calculate attenuation
-				this._pFragmentCode += // attenuate
+				this._postAnimationFragmentCode += // attenuate
 					"dp3 " + lightDirReg + ".w, " + lightVarying + ", " + lightVarying + "\n" + // w = d - radius
 					"sub " + lightDirReg + ".w, " + lightDirReg + ".w, " + diffuseColorReg + ".w\n" + // w = (d - radius)/(max-min)
 					"mul " + lightDirReg + ".w, " + lightDirReg + ".w, " + specularColorReg + ".w\n" + // w = clamp(w, 0, 1)
 					"sat " + lightDirReg + ".w, " + lightDirReg + ".w\n" + // w = 1-w
-					"sub " + lightDirReg + ".w, " + this._pSharedRegisters.commons + ".w, " + lightDirReg + ".w\n" + // normalize
+					"sub " + lightDirReg + ".w, " + this._sharedRegisters.commons + ".w, " + lightDirReg + ".w\n" + // normalize
 					"nrm " + lightDirReg + ".xyz, " + lightVarying + "\n";
 			} else {
-				this._pFragmentCode += "nrm " + lightDirReg + ".xyz, " + lightVarying + "\n" +
+				this._postAnimationFragmentCode += "nrm " + lightDirReg + ".xyz, " + lightVarying + "\n" +
 					"mov " + lightDirReg + ".w, " + lightVarying + ".w\n";
 			}
 
@@ -212,12 +211,12 @@ export class LightingCompiler extends CompilerBase
 				this._shaderLightingObject.lightFragmentConstantIndex = lightPosReg.index*4;
 
 			if (addDiff)
-				this._pFragmentCode += this._lightingPass._iGetPerLightDiffuseFragmentCode(this._shaderLightingObject, lightDirReg, diffuseColorReg, this._pRegisterCache, this._pSharedRegisters);
+				this._postAnimationFragmentCode += (<ILightingPass> this._renderPass)._getPerLightDiffuseFragmentCode(lightDirReg, diffuseColorReg, this._registerCache, this._sharedRegisters);
 
 			if (addSpec)
-				this._pFragmentCode += this._lightingPass._iGetPerLightSpecularFragmentCode(this._shaderLightingObject, lightDirReg, specularColorReg, this._pRegisterCache, this._pSharedRegisters);
+				this._postAnimationFragmentCode += (<ILightingPass> this._renderPass)._getPerLightSpecularFragmentCode(lightDirReg, specularColorReg, this._registerCache, this._sharedRegisters);
 
-			this._pRegisterCache.removeFragmentTempUsage(lightDirReg);
+			this._registerCache.removeFragmentTempUsage(lightDirReg);
 		}
 	}
 
@@ -241,7 +240,7 @@ export class LightingCompiler extends CompilerBase
 			this._shaderLightingObject.lightProbeSpecularIndices = new Array<number>();
 
 		for (i = 0; i < this._pNumProbeRegisters; ++i) {
-			weightRegisters[i] = this._pRegisterCache.getFreeFragmentConstant();
+			weightRegisters[i] = this._registerCache.getFreeFragmentConstant();
 
 			if (i == 0)
 				this._shaderLightingObject.probeWeightsIndex = weightRegisters[i].index*4;
@@ -251,15 +250,15 @@ export class LightingCompiler extends CompilerBase
 			weightReg = weightRegisters[Math.floor(i/4)].toString() + weightComponents[i%4];
 
 			if (addDiff) {
-				texReg = this._pRegisterCache.getFreeTextureReg();
+				texReg = this._registerCache.getFreeTextureReg();
 				this._shaderLightingObject.lightProbeDiffuseIndices[i] = texReg.index;
-				this._pFragmentCode += this._lightingPass._iGetPerProbeDiffuseFragmentCode(this._shaderLightingObject, texReg, weightReg, this._pRegisterCache, this._pSharedRegisters);
+				this._postAnimationFragmentCode += (<ILightingPass> this._renderPass)._getPerProbeDiffuseFragmentCode(texReg, weightReg, this._registerCache, this._sharedRegisters);
 			}
 
 			if (addSpec) {
-				texReg = this._pRegisterCache.getFreeTextureReg();
+				texReg = this._registerCache.getFreeTextureReg();
 				this._shaderLightingObject.lightProbeSpecularIndices[i] = texReg.index;
-				this._pFragmentCode += this._lightingPass._iGetPerProbeSpecularFragmentCode(this._shaderLightingObject, texReg, weightReg, this._pRegisterCache, this._pSharedRegisters);
+				this._postAnimationFragmentCode += (<ILightingPass> this._renderPass)._getPerProbeSpecularFragmentCode(texReg, weightReg, this._registerCache, this._sharedRegisters);
 			}
 		}
 	}

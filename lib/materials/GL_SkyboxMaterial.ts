@@ -51,9 +51,9 @@ export class GL_SkyboxMaterial extends GL_MaterialPassBase
 		this.shader.setBlendMode((this._material.blendMode == BlendMode.NORMAL && this._pRequiresBlending)? BlendMode.LAYER : this._material.blendMode);
 	}
 
-	public _iIncludeDependencies(shader:ShaderBase):void
+	public _includeDependencies(shader:ShaderBase):void
 	{
-		super._iIncludeDependencies(shader);
+		super._includeDependencies(shader);
 
 		shader.usesPositionFragment = true;
 	}
@@ -61,9 +61,9 @@ export class GL_SkyboxMaterial extends GL_MaterialPassBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iGetFragmentCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+	public _getFragmentCode(registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
-		return this._texture._iGetFragmentCode(sharedRegisters.shadedTarget, registerCache, sharedRegisters, sharedRegisters.positionVarying);
+		return this._texture._getFragmentCode(sharedRegisters.shadedTarget, registerCache, sharedRegisters, sharedRegisters.positionVarying);
 	}
 
 
@@ -76,9 +76,9 @@ export class GL_SkyboxMaterial extends GL_MaterialPassBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iActivate(projection:ProjectionBase):void
+	public _activate(projection:ProjectionBase):void
 	{
-		super._iActivate(projection);
+		super._activate(projection);
 
 		this._stage.context.setDepthTest(false, ContextGLCompareMode.LESS);
 

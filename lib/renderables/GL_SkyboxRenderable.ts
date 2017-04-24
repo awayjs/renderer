@@ -66,7 +66,7 @@ export class GL_SkyboxRenderable extends GL_RenderableBase
 		return this._materialGroup.getMaterialPool(this.elementsGL).getAbstraction(this._skybox);
 	}
 
-	public static _iIncludeDependencies(shader:ShaderBase):void
+	public static _includeDependencies(shader:ShaderBase):void
 	{
 
 	}

@@ -37,9 +37,9 @@ export class GL_DistanceMaterial extends GL_MaterialPassBase
 	/**
 	 * Initializes the unchanging constant data for this material.
 	 */
-	public _iInitConstantData(shader:ShaderBase):void
+	public _initConstantData(shader:ShaderBase):void
 	{
-		super._iInitConstantData(shader);
+		super._initConstantData(shader);
 
 		var index:number = this._fragmentConstantsIndex;
 		var data:Float32Array = shader.fragmentConstantData;
@@ -49,9 +49,9 @@ export class GL_DistanceMaterial extends GL_MaterialPassBase
 		data[index + 7] = 0.0;
 	}
 
-	public _iIncludeDependencies(shader:ShaderBase):void
+	public _includeDependencies(shader:ShaderBase):void
 	{
-		super._iIncludeDependencies(shader);
+		super._includeDependencies(shader);
 
 		shader.projectionDependencies++;
 		shader.viewDirDependencies++;
@@ -66,7 +66,7 @@ export class GL_DistanceMaterial extends GL_MaterialPassBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iGetFragmentCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+	public _getFragmentCode(registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
 		var code:string;
 		var targetReg:ShaderRegisterElement = sharedRegisters.shadedTarget;
@@ -86,10 +86,10 @@ export class GL_DistanceMaterial extends GL_MaterialPassBase
 			"frc " + temp1 + ", " + temp1 + "\n" +
 			"mul " + temp2 + ", " + temp1 + ".yzww, " + dataReg2 + "\n";
 
-		if (this._textureVO && shader.alphaThreshold > 0) {
+		if (this._textureVO && this._shader.alphaThreshold > 0) {
 
 			var albedo:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
-			code += this._textureVO._iGetFragmentCode(albedo, registerCache, sharedRegisters, sharedRegisters.uvVarying);
+			code += this._textureVO._getFragmentCode(albedo, registerCache, sharedRegisters, sharedRegisters.uvVarying);
 
 			var cutOffReg:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
 
@@ -105,9 +105,9 @@ export class GL_DistanceMaterial extends GL_MaterialPassBase
 	/**
 	 * @inheritDoc
 	 */
-	public _iActivate(projection:ProjectionBase):void
+	public _activate(projection:ProjectionBase):void
 	{
-		super._iActivate(projection);
+		super._activate(projection);
 
 		var f:number = projection.far;
 

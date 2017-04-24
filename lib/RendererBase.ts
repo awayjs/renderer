@@ -297,13 +297,13 @@ export class RendererBase extends TraverserBase implements IRenderer
 		this._pContext.setProgram(programData.program);
 
 		//activate shader object through pass
-		pass._iActivate(projection);
+		pass._activate(projection);
 	}
 
 	public deactivatePass(pass:IPass):void
 	{
 		//deactivate shader object through pass
-		pass._iDeactivate();
+		pass._deactivate();
 
 		this._numUsedStreams = pass.shader.numUsedStreams;
 		this._numUsedTextures = pass.shader.numUsedTextures;

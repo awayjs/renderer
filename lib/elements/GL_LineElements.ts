@@ -22,12 +22,12 @@ export class GL_LineElements extends GL_ElementsBase
 		return GL_LineElements;
 	}
 	
-	public static _iIncludeDependencies(shader:ShaderBase):void
+	public static _includeDependencies(shader:ShaderBase):void
 	{
 		shader.colorDependencies++;
 	}
 
-	public static _iGetVertexCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+	public static _getVertexCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
 		//get the projection coordinates
 		var position0:ShaderRegisterElement = (shader.globalPosDependencies > 0)? sharedRegisters.globalPositionVertex : sharedRegisters.animatedPosition;
@@ -122,7 +122,7 @@ export class GL_LineElements extends GL_ElementsBase
 			"m44 op, " + q0 + ", " + viewMatrixReg + "			\n"  // transform Q0 to clip space
 	}
 
-	public static _iGetFragmentCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+	public static _getFragmentCode(shader:ShaderBase, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
 		return "";
 	}
