@@ -1,6 +1,6 @@
 {
   "name": "@awayjs/renderer",
-  "version": "0.8.63",
+  "version": "0.8.64",
   "description": "Renderer for AwayJS",
   "main": "bundle/awayjs-renderer.umd.js",
   "types": "dist/index.d.ts",
