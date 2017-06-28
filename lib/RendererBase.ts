@@ -36,8 +36,6 @@ export class RendererBase extends TraverserBase implements IRenderer
 	private _cameraForward:Vector3D = new Vector3D();
 
 	public _pRttBufferManager:RTTBufferManager;
-	private _viewPort:Rectangle = new Rectangle();
-	private _viewportDirty:boolean;
 	private _scissorDirty:boolean;
 
 	public _pBackBufferInvalid:boolean = true;
@@ -49,8 +47,8 @@ export class RendererBase extends TraverserBase implements IRenderer
 	private _backgroundAlpha:number = 1;
 
 	// only used by renderers that need to render geometry to textures
-	public _width:number;
-	public _height:number;
+	public _width:number = 0;
+	public _height:number = 0;
 
 	public textureRatioX:number = 1;
 	public textureRatioY:number = 1;
@@ -58,8 +56,8 @@ export class RendererBase extends TraverserBase implements IRenderer
 	private _snapshotBitmapImage2D:BitmapImage2D;
 	private _snapshotRequired:boolean;
 
-	private _localPos:Point = new Point();
-	private _globalPos:Point = new Point();
+	private _x:number = 0;
+	private _y:number = 0;
 	public _pScissorRect:Rectangle = new Rectangle();
 
 	private _scissorUpdated:RendererEvent;
@@ -145,7 +143,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 	 */
 	public get viewPort():Rectangle
 	{
-		return this._viewPort;
+		return this._pStage.viewPort;
 	}
 
 	/**
@@ -153,6 +151,18 @@ export class RendererBase extends TraverserBase implements IRenderer
 	 */
 	public get scissorRect():Rectangle
 	{
+		if (this._scissorDirty) {
+			this._scissorDirty = false;
+
+			if (this.shareContext) {
+				this._pScissorRect.x = this._x - this._pStage.viewPort.x;
+				this._pScissorRect.y = this._y - this._pStage.viewPort.y;
+			} else {
+				this._pScissorRect.x = 0;
+				this._pScissorRect.y = 0;
+			}
+		}
+
 		return this._pScissorRect;
 	}
 
@@ -161,18 +171,20 @@ export class RendererBase extends TraverserBase implements IRenderer
 	 */
 	public get x():number
 	{
-		return this._localPos.x;
+		return this._x;
 	}
 
 	public set x(value:number)
 	{
-		if (this.x == value)
+		if (this._x == value)
 			return;
 
-		this._pStage.x=value;
-		this._globalPos.x = this._localPos.x = value;
+		this._x = value;
 
-		this.updateGlobalPos();
+		if (!this.shareContext)
+			this._pStage.x = value;
+
+		this.notifyScissorUpdate();
 	}
 
 	/**
@@ -180,18 +192,20 @@ export class RendererBase extends TraverserBase implements IRenderer
 	 */
 	public get y():number
 	{
-		return this._localPos.y;
+		return this._y;
 	}
 
 	public set y(value:number)
 	{
-		if (this.y == value)
+		if (this._y == value)
 			return;
 
-		this._pStage.y=value;
-		this._globalPos.y = this._localPos.y = value;
+		this._y = value;
 
-		this.updateGlobalPos();
+		if (!this.shareContext)
+			this._pStage.y = value;
+
+		this.notifyScissorUpdate();
 	}
 
 	/**
@@ -208,13 +222,16 @@ export class RendererBase extends TraverserBase implements IRenderer
 			return;
 
 		this._width = value;
+
 		this._pScissorRect.width = value;
 
 		if (this._pRttBufferManager)
 			this._pRttBufferManager.viewWidth = value;
 
-		this._pBackBufferInvalid = true;
-		this._pDepthTextureInvalid = true;
+		if (!this.shareContext) {
+			this._pBackBufferInvalid = true;
+			this._pDepthTextureInvalid = true;
+		}
 
 		this.notifyScissorUpdate();
 	}
@@ -233,13 +250,16 @@ export class RendererBase extends TraverserBase implements IRenderer
 			return;
 
 		this._height = value;
+
 		this._pScissorRect.height = value;
 
 		if (this._pRttBufferManager)
 			this._pRttBufferManager.viewHeight = value;
 
-		this._pBackBufferInvalid = true;
-		this._pDepthTextureInvalid = true;
+		if (!this.shareContext) {
+			this._pBackBufferInvalid = true;
+			this._pDepthTextureInvalid = true;
+		}
 
 		this.notifyScissorUpdate();
 	}
@@ -404,8 +424,6 @@ export class RendererBase extends TraverserBase implements IRenderer
 
 	public render(view:IView):void
 	{
-		this._viewportDirty = false;
-		this._scissorDirty = false;
 	}
 
 	/**
@@ -746,11 +764,6 @@ export class RendererBase extends TraverserBase implements IRenderer
 	 */
 	private notifyViewportUpdate():void
 	{
-		if (this._viewportDirty)
-			return;
-
-		this._viewportDirty = true;
-
 		if (!this._viewPortUpdated)
 			this._viewPortUpdated = new RendererEvent(RendererEvent.VIEWPORT_UPDATED);
 
@@ -762,34 +775,10 @@ export class RendererBase extends TraverserBase implements IRenderer
 	 */
 	public onViewportUpdated(event:StageEvent):void
 	{
-		this._viewPort = this._pStage.viewPort;
-		//TODO stop firing viewport updated for every stagegl viewport change
-
-		if (this.shareContext) {
-			this._pScissorRect.x = this._globalPos.x - this._pStage.x;
-			this._pScissorRect.y = this._globalPos.y - this._pStage.y;
+		if (this.shareContext)
 			this.notifyScissorUpdate();
-		}
 
 		this.notifyViewportUpdate();
-	}
-
-	/**
-	 *
-	 */
-	public updateGlobalPos():void
-	{
-		if (this.shareContext) {
-			this._pScissorRect.x = this._globalPos.x - this._viewPort.x;
-			this._pScissorRect.y = this._globalPos.y - this._viewPort.y;
-		} else {
-			this._pScissorRect.x = 0;
-			this._pScissorRect.y = 0;
-			this._viewPort.x = this._globalPos.x;
-			this._viewPort.y = this._globalPos.y;
-		}
-
-		this.notifyScissorUpdate();
 	}
 
 	/**
