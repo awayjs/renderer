@@ -20,7 +20,7 @@ export class GL_BillboardRenderable extends GL_RenderableBase
 	 */
 	private _billboard:Billboard;
 
-	public _id:number;
+	public _id:string;
 
 	/**
 	 * //TODO
@@ -51,18 +51,16 @@ export class GL_BillboardRenderable extends GL_RenderableBase
 	{
 		var texture:TextureBase = this._billboard.material.getTextureAt(0);
 
-		var id:number = -1;
+		var width:number = this._billboard.billboardWidth;
+		var height:number = this._billboard.billboardHeight;
+		var billboardRect:Rectangle = this._billboard.billboardRect;
 
-		if (texture)
-			id = ((this.renderable.style? this.renderable.style.getSamplerAt(texture) || texture.getSamplerAt(0) : texture.getSamplerAt(0)) || DefaultMaterialManager.getDefaultSampler()).id;
+		var id:string = width.toString() + height.toString() + billboardRect.toString();
 
 		this._id = id;
 
 		var elements:TriangleElements = GL_BillboardRenderable._samplerElements[id];
 
-		var width:number = this._billboard.billboardWidth;
-		var height:number = this._billboard.billboardHeight;
-		var billboardRect:Rectangle = this._billboard.billboardRect;
 
 		if (!elements) {
 			elements = GL_BillboardRenderable._samplerElements[id] = new TriangleElements(new AttributesBuffer(11, 4));
