@@ -71,6 +71,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 	public _pOpaqueRenderableHead:GL_RenderableBase;
 	public _pBlendedRenderableHead:GL_RenderableBase;
 	public _disableColor:boolean = false;
+	public _disableClear:boolean = false;
 	public _renderBlended:boolean = true;
 	private _cullPlanes:Array<Plane3D>;
 	private _customCullPlanes:Array<Plane3D>;
@@ -122,6 +123,16 @@ export class RendererBase extends TraverserBase implements IRenderer
 	public set disableColor(value:boolean)
 	{
 		this._disableColor = value;
+	}
+
+	public get disableClear():boolean
+	{
+		return this._disableClear;
+	}
+
+	public set disableClear(value:boolean)
+	{
+		this._disableClear = value;
 	}
 
 	/**
@@ -463,9 +474,9 @@ export class RendererBase extends TraverserBase implements IRenderer
 
 		this.pExecuteRender(projection, view, target, scissorRect, surfaceSelector);
 
-		// invalidate target (if target exists) to regenerate mipmaps (if required)
+		// invalidate mipmaps (if target exists) to regenerate if required
 		if (target)
-			target.invalidate();
+			target.invalidateMipmaps();
 
 		// clear buffers
 		for (var i:number = 0; i < 8; ++i) {
@@ -510,7 +521,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 	{
 		this._pStage.setRenderTarget(target, true, surfaceSelector);
 
-		if ((target || !this.shareContext) && !this._depthPrepass)
+		if ((target || !this.shareContext) && !this._depthPrepass && !this._disableClear)
 			this._pContext.clear(this._backgroundR, this._backgroundG, this._backgroundB, this._backgroundAlpha, 1, 0);
 
 		this._pStage.scissorRect = scissorRect;
@@ -527,7 +538,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 		//line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
 		//this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //oopsie
 
-		if (!this.shareContext) {
+		if (target || !this.shareContext) {
 			if (this._snapshotRequired && this._snapshotBitmapImage2D) {
 				this._pContext.drawToBitmapImage2D(this._snapshotBitmapImage2D);
 				this._snapshotRequired = false;
