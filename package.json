@@ -1,6 +1,6 @@
 {
   "name": "@awayjs/renderer",
-  "version": "0.8.69",
+  "version": "0.9.0",
   "description": "Renderer for AwayJS",
   "main": "bundle/awayjs-renderer.umd.js",
   "types": "dist/index.d.ts",
@@ -36,10 +36,10 @@
   },
   "homepage": "https://github.com/awayjs/renderer#readme",
   "dependencies": {
-    "@awayjs/core": "^0.6.0",
-    "@awayjs/graphics": "^0.1.0",
-    "@awayjs/scene": "^0.8.0",
-    "@awayjs/stage": "^0.8.0",
+    "@awayjs/core": "^0.7.0",
+    "@awayjs/graphics": "^0.2.0",
+    "@awayjs/scene": "^0.9.0",
+    "@awayjs/stage": "^0.9.0",
     "tslib": "github:microsoft/tslib"
   },
   "devDependencies": {
