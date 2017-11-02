@@ -1,10 +1,8 @@
 import {Matrix3D, Plane3D, Point, Rectangle, Vector3D, IAbstractionPool, ByteArray, ProjectionBase} from "@awayjs/core";
 
-import {ImageBase, BitmapImage2D, TraverserBase, IRenderable, INode, IEntity} from "@awayjs/graphics";
+import {ImageBase, BitmapImage2D, TraverserBase, IRenderable, INode, IEntity, IRenderer, IView, MapperBase} from "@awayjs/graphics";
 
 import {ContextGLProfile, ContextMode, AGALMiniAssembler, ContextGLBlendFactor, ContextGLCompareMode, ContextGLStencilAction, ContextGLTriangleFace, IContextGL, Stage, StageEvent, StageManager, ProgramData, GL_ElementsBase, IMaterialClassGL, MaterialPool, IPass, GL_MaterialBase, GL_RenderableBase, RenderablePool, MaterialGroupBase} from "@awayjs/stage";
-
-import {IRenderer, IView} from "@awayjs/scene";
 
 import {RendererEvent} from "./events/RendererEvent";
 import {RTTBufferManager} from "./managers/RTTBufferManager";
@@ -433,7 +431,12 @@ export class RendererBase extends TraverserBase implements IRenderer
 		 */
 	}
 
-	public render(view:IView):void
+	public _getSubRenderer(mapper:MapperBase):IRenderer
+	{
+		return this;
+	}
+
+	public render(projection:ProjectionBase, view:IView):void
 	{
 	}
 

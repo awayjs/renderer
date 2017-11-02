@@ -1,6 +1,6 @@
 import {Matrix3D, Vector3D, ProjectionBase}	 from "@awayjs/core";
 
-import {DirectionalLight, LightProbe, PointLight, LightSources} from "@awayjs/scene";
+import {DirectionalLight, LightProbe, PointLight, LightSources} from "@awayjs/graphics";
 
 import {ContextGLProfile, Stage, GL_ImageBase, IElementsClassGL, GL_RenderableBase, CompilerBase, ShaderBase} from "@awayjs/stage";
 
@@ -200,9 +200,9 @@ export class LightingShader extends ShaderBase
 				dirLight = dirLights[offset + i];
 				dirPos = dirLight.sceneDirection;
 
-				this.ambientR += dirLight._iAmbientR;
-				this.ambientG += dirLight._iAmbientG;
-				this.ambientB += dirLight._iAmbientB;
+				this.ambientR += dirLight._ambientR;
+				this.ambientG += dirLight._ambientG;
+				this.ambientB += dirLight._ambientB;
 
 				if (this.usesTangentSpace) {
 					var x:number = -dirPos.x;
@@ -220,14 +220,14 @@ export class LightingShader extends ShaderBase
 					this.fragmentConstantData[k++] = 1;
 				}
 
-				this.fragmentConstantData[k++] = dirLight._iDiffuseR;
-				this.fragmentConstantData[k++] = dirLight._iDiffuseG;
-				this.fragmentConstantData[k++] = dirLight._iDiffuseB;
+				this.fragmentConstantData[k++] = dirLight._diffuseR;
+				this.fragmentConstantData[k++] = dirLight._diffuseG;
+				this.fragmentConstantData[k++] = dirLight._diffuseB;
 				this.fragmentConstantData[k++] = 1;
 
-				this.fragmentConstantData[k++] = dirLight._iSpecularR;
-				this.fragmentConstantData[k++] = dirLight._iSpecularG;
-				this.fragmentConstantData[k++] = dirLight._iSpecularB;
+				this.fragmentConstantData[k++] = dirLight._specularR;
+				this.fragmentConstantData[k++] = dirLight._specularG;
+				this.fragmentConstantData[k++] = dirLight._specularB;
 				this.fragmentConstantData[k++] = 1;
 
 				if (++total == this.numDirectionalLights) {
@@ -267,11 +267,11 @@ export class LightingShader extends ShaderBase
 
 			for (i = 0; i < len; ++i) {
 				pointLight = pointLights[offset + i];
-				dirPos = pointLight.scenePosition;
+				dirPos = pointLight.transform.concatenatedMatrix3D.position;
 
-				this.ambientR += pointLight._iAmbientR;
-				this.ambientG += pointLight._iAmbientG;
-				this.ambientB += pointLight._iAmbientB;
+				this.ambientR += pointLight._ambientR;
+				this.ambientG += pointLight._ambientG;
+				this.ambientB += pointLight._ambientB;
 
 				if (this.usesTangentSpace) {
 					x = dirPos.x;
@@ -294,17 +294,17 @@ export class LightingShader extends ShaderBase
 					this.fragmentConstantData[k++] = 1;
 				}
 
-				this.fragmentConstantData[k++] = pointLight._iDiffuseR;
-				this.fragmentConstantData[k++] = pointLight._iDiffuseG;
-				this.fragmentConstantData[k++] = pointLight._iDiffuseB;
+				this.fragmentConstantData[k++] = pointLight._diffuseR;
+				this.fragmentConstantData[k++] = pointLight._diffuseG;
+				this.fragmentConstantData[k++] = pointLight._diffuseB;
 
-				var radius:number = pointLight._pRadius;
+				var radius:number = pointLight.radius;
 				this.fragmentConstantData[k++] = radius*radius;
 
-				this.fragmentConstantData[k++] = pointLight._iSpecularR;
-				this.fragmentConstantData[k++] = pointLight._iSpecularG;
-				this.fragmentConstantData[k++] = pointLight._iSpecularB;
-				this.fragmentConstantData[k++] = pointLight._pFallOffFactor;
+				this.fragmentConstantData[k++] = pointLight._specularR;
+				this.fragmentConstantData[k++] = pointLight._specularG;
+				this.fragmentConstantData[k++] = pointLight._specularB;
+				this.fragmentConstantData[k++] = pointLight.fallOffFactor;
 
 				if (++total == this.numPointLights) {
 					// break loop

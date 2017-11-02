@@ -1,10 +1,8 @@
-import {AbstractMethodError, ByteArray} from "@awayjs/core";
+import {AbstractMethodError, ByteArray, ProjectionBase} from "@awayjs/core";
 
 import {Image2D} from "@awayjs/graphics";
 
 import {IProgram, AGALMiniAssembler, Stage, ContextGLProfile, ShaderRegisterCache, ShaderRegisterElement} from "@awayjs/stage";
-
-import {Camera} from "@awayjs/scene";
 
 import {RTTBufferManager} from "../../managers/RTTBufferManager";
 
@@ -190,7 +188,7 @@ export class Filter3DTaskBase
 		return this._program3D;
 	}
 
-	public activate(stage:Stage, camera:Camera, depthTexture:Image2D):void
+	public activate(stage:Stage, projection:ProjectionBase, depthTexture:Image2D):void
 	{
 	}
 

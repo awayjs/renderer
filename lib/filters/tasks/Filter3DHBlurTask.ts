@@ -1,6 +1,6 @@
-import {Image2D} from "@awayjs/graphics";
+import {ProjectionBase} from "@awayjs/core";
 
-import {Camera} from "@awayjs/scene";
+import {Image2D} from "@awayjs/graphics";
 
 import {ContextGLProgramType, Stage} from "@awayjs/stage";
 
@@ -84,7 +84,7 @@ export class Filter3DHBlurTask extends Filter3DTaskBase
 		return code;
 	}
 
-	public activate(stage:Stage, camera3D:Camera, depthTexture:Image2D):void
+	public activate(stage:Stage, projection:ProjectionBase, depthTexture:Image2D):void
 	{
 		stage.context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, this._data);
 	}

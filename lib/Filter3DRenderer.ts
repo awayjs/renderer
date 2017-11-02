@@ -1,8 +1,6 @@
-import {Rectangle} from "@awayjs/core";
+import {Rectangle, ProjectionBase} from "@awayjs/core";
 
 import {Image2D, Sampler2D} from "@awayjs/graphics";
-
-import {Camera} from "@awayjs/scene";
 
 import {GL_ImageBase, GL_Sampler2D, Stage, ContextGLDrawMode, ContextGLBlendFactor, ContextGLVertexBufferFormat, IContextGL, IIndexBuffer, IVertexBuffer} from "@awayjs/stage";
 
@@ -128,7 +126,7 @@ export class Filter3DRenderer
 
 	}
 
-	public render(stage:Stage, camera:Camera, depthTexture:Image2D):void
+	public render(stage:Stage, projection:ProjectionBase, depthTexture:Image2D):void
 	{
 		var len:number;
 		var i:number;
@@ -151,7 +149,7 @@ export class Filter3DRenderer
 		len = this._filters.length;
 
 		for (i = 0; i < len; ++i)
-			this._filters[i].update(stage, camera);
+			this._filters[i].update(stage, projection);
 
 		len = this._tasks.length;
 
@@ -181,7 +179,7 @@ export class Filter3DRenderer
 			}
 			context.clear(0.0, 0.0, 0.0, 0.0);
 
-			task.activate(stage, camera, depthTexture);
+			task.activate(stage, projection, depthTexture);
 
 			context.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
 			context.drawIndices(ContextGLDrawMode.TRIANGLES, indexBuffer, 0, 6);

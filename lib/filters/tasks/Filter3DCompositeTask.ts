@@ -1,6 +1,6 @@
-import {Image2D} from "@awayjs/graphics";
+import {ProjectionBase} from "@awayjs/core";
 
-import {Camera} from "@awayjs/scene";
+import {Image2D} from "@awayjs/graphics";
 
 import {ContextGLProgramType, IContextGL, Stage, ShaderRegisterElement, GL_ImageBase} from "@awayjs/stage";
 
@@ -108,7 +108,7 @@ export class Filter3DCompositeTask extends Filter3DTaskBase
 		return code;
 	}
 	
-	public activate(stage:Stage, camera3D:Camera, depthTexture:Image2D):void
+	public activate(stage:Stage, projection:ProjectionBase, depthTexture:Image2D):void
 	{
 		this._data[4] = -0.5*(this._textureWidth - this._overlayWidth)/this._overlayWidth;
 		this._data[5] = -0.5*(this._textureHeight - this._overlayHeight)/this._overlayHeight;

@@ -1,6 +1,6 @@
-import {Image2D} from "@awayjs/graphics";
+import {ProjectionBase} from "@awayjs/core";
 
-import {Camera} from "@awayjs/scene";
+import {Image2D} from "@awayjs/graphics";
 
 import {Stage} from "@awayjs/stage";
 
@@ -111,7 +111,7 @@ export class Filter3DBase
 			this._tasks[i].dispose();
 	}
 
-	public update(stage:Stage, camera:Camera):void
+	public update(stage:Stage, projection:ProjectionBase):void
 	{
 
 	}
