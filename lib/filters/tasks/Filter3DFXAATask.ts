@@ -1,8 +1,6 @@
 import {ProjectionBase} from "@awayjs/core";
 
-import {Image2D} from "@awayjs/graphics";
-
-import {ContextGLProgramType, Stage} from "@awayjs/stage";
+import {ContextGLProgramType, Stage, Image2D} from "@awayjs/stage";
 
 import {Filter3DTaskBase} from "./Filter3DTaskBase";
 

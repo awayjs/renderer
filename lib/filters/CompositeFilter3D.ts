@@ -1,4 +1,4 @@
-import {Image2D} from "@awayjs/graphics";
+import {Image2D} from "@awayjs/stage";
 
 import {Filter3DCompositeTask} from "./tasks/Filter3DCompositeTask";
 

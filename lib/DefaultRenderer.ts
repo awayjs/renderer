@@ -1,12 +1,17 @@
 import {Rectangle, ProjectionBase} from "@awayjs/core";
 
-import {ImageBase, BitmapImage2D, IEntity, INode, IView, IRenderer, MapperBase, DirectionalShadowMapper, CubeMapShadowMapper} from "@awayjs/graphics";
+import {ImageBase, BitmapImage2D, ContextGLProfile, ContextMode, Stage, ContextGLClearMask, IContextGL} from "@awayjs/stage";
 
-import {ContextGLProfile, ContextMode, Stage, ContextGLClearMask, IContextGL} from "@awayjs/stage";
+import {IEntity} from "./base/IEntity";
+import {INode} from "./base/INode";
+import {IView} from "./base/IView";
+import {IRenderer} from "./base/IRenderer";
+import {IMaterialClass} from "./base/IMaterialClass";
+import {IMaterialStateClass} from "./base/IMaterialStateClass";
 
 import {Filter3DBase} from "./filters/Filter3DBase";
 import {RTTBufferManager} from "./managers/RTTBufferManager";
-import {DefaultMaterialGroup} from "./materials/DefaultMaterialGroup";
+import {RenderGroup} from "./RenderGroup";
 
 import {DepthRenderer} from "./DepthRenderer";
 import {DistanceRenderer} from "./DistanceRenderer";
@@ -21,6 +26,8 @@ import {RendererBase} from "./RendererBase";
  */
 export class DefaultRenderer extends RendererBase
 {
+    public static _materialClassPool:Object = new Object();
+
 	public _pRequireDepthRender:boolean;
 
 	private _distanceRenderer:DistanceRenderer;
@@ -106,7 +113,7 @@ export class DefaultRenderer extends RendererBase
 		if (stage)
 			this.shareContext = true;
 
-		this._materialGroup = new DefaultMaterialGroup(this._pStage);
+		this._renderGroup = new RenderGroup(this._pStage, DefaultRenderer._materialClassPool, this);
 		this._pRttBufferManager = RTTBufferManager.getInstance(this._pStage);
 
 		this._depthRenderer = new DepthRenderer(this._pStage);
@@ -122,6 +129,26 @@ export class DefaultRenderer extends RendererBase
 		else
 			this._pRttBufferManager.viewHeight = this._height;
 	}
+
+	public getDepthRenderer():DepthRenderer
+	{
+		return this._depthRenderer;
+	}
+
+    public getDistanceRenderer():DistanceRenderer
+    {
+        return this._distanceRenderer;
+    }
+
+    /**
+     *
+     * @param imageObjectClass
+     */
+    public static registerMaterial(materialStateClass:IMaterialStateClass, materialClass:IMaterialClass):void
+    {
+        DefaultRenderer._materialClassPool[materialClass.assetType] = materialStateClass;
+    }
+
 
 	/**
 	 *
@@ -183,14 +210,6 @@ export class DefaultRenderer extends RendererBase
 		this._pStage.bufferClear = false;
 	}
 
-	public pExecuteRender(projection:ProjectionBase, view:IView, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0):void
-	{
-        //update stage mappers
-        this._pStage._updateMappers(projection, view, this);
-
-		super.pExecuteRender(projection, view, target, scissorRect, surfaceSelector);
-	}
-
 	public dispose():void
 	{
 		if (!this.shareContext)
@@ -208,17 +227,6 @@ export class DefaultRenderer extends RendererBase
 
 		super.dispose();
 	}
-
-    public _getSubRenderer(mapper:MapperBase):IRenderer
-    {
-        if (mapper instanceof DirectionalShadowMapper)
-        	return this._depthRenderer;
-
-        if (mapper instanceof CubeMapShadowMapper)
-            return this._distanceRenderer;
-
-        return this;
-    }
 
 	/**
 	 *

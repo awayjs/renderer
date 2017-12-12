@@ -1,8 +1,6 @@
 import {ProjectionBase} from "@awayjs/core";
 
-import {Image2D} from "@awayjs/graphics";
-
-import {ContextGLProgramType, IContextGL, Stage, ShaderRegisterElement, GL_ImageBase} from "@awayjs/stage";
+import {ContextGLProgramType, IContextGL, Stage, ShaderRegisterElement, Image2D, GL_ImageBase} from "@awayjs/stage";
 
 import {Filter3DTaskBase} from "./Filter3DTaskBase";
 
@@ -119,7 +117,7 @@ export class Filter3DCompositeTask extends Filter3DTaskBase
 		var context:IContextGL = stage.context;
 		context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, this._data);
 		
-		(<GL_ImageBase> stage.getAbstraction(this._overlayTexture)).activate(this._overlayTextureIndex, false);
+		(<GL_ImageBase> stage.getAbstraction(this._overlayTexture)).activate(this._overlayTextureIndex);
 	}
 	
 	public deactivate(stage:Stage):void

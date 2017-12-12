@@ -1,8 +1,6 @@
 import {Rectangle, ProjectionBase} from "@awayjs/core";
 
-import {Image2D, Sampler2D} from "@awayjs/graphics";
-
-import {GL_ImageBase, GL_Sampler2D, Stage, ContextGLDrawMode, ContextGLBlendFactor, ContextGLVertexBufferFormat, IContextGL, IIndexBuffer, IVertexBuffer} from "@awayjs/stage";
+import {Image2D, ImageSampler, GL_ImageBase, Stage, ContextGLDrawMode, ContextGLBlendFactor, ContextGLVertexBufferFormat, IContextGL, IIndexBuffer, IVertexBuffer} from "@awayjs/stage";
 
 import {RTTEvent} from "./events/RTTEvent";
 import {Filter3DBase} from "./filters/Filter3DBase";
@@ -25,7 +23,7 @@ export class Filter3DRenderer
 	private _onRTTResizeDelegate:(event:RTTEvent) => void;
 	private _renderToTextureRect:Rectangle;
 
-	private _sampler:Sampler2D;
+	private _sampler:ImageSampler;
 
 	constructor(stage:Stage)
 	{
@@ -35,7 +33,7 @@ export class Filter3DRenderer
 		this._rttManager = RTTBufferManager.getInstance(stage);
 		this._rttManager.addEventListener(RTTEvent.RESIZE, this._onRTTResizeDelegate);
 
-		this._sampler = new Sampler2D(false, false, false);
+		this._sampler = new ImageSampler(false, false, false);
 		this._renderToTextureRect = new Rectangle();
 	}
 
@@ -62,7 +60,7 @@ export class Filter3DRenderer
 		return this._filters;
 	}
 
-	public get sampler():Sampler2D
+	public get sampler():ImageSampler
 	{
 		return this._sampler;
 	}
@@ -166,8 +164,8 @@ export class Filter3DRenderer
 			stage.setRenderTarget(task.target);
 
 			context.setProgram(task.getProgram(stage));
-			(<GL_Sampler2D> stage.getAbstraction(this._sampler)).activate(task._inputTextureIndex);
-			(<GL_ImageBase> stage.getAbstraction(task.getMainInputTexture(stage))).activate(task._inputTextureIndex, this._sampler.mipmap);
+
+			(<GL_ImageBase> stage.getAbstraction(task.getMainInputTexture(stage))).activate(task._inputTextureIndex, this._sampler);
 
 			if (!task.target) {
 

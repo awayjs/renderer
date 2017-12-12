@@ -1,6 +1,6 @@
 import {ProjectionBase} from "@awayjs/core";
 
-import {Image2D} from "@awayjs/graphics";
+import {Image2D} from "@awayjs/stage";
 
 import {Stage} from "@awayjs/stage";
 

@@ -1,8 +1,6 @@
 import {AbstractMethodError, ByteArray, ProjectionBase} from "@awayjs/core";
 
-import {Image2D} from "@awayjs/graphics";
-
-import {IProgram, AGALMiniAssembler, Stage, ContextGLProfile, ShaderRegisterCache, ShaderRegisterElement} from "@awayjs/stage";
+import {IProgram, AGALMiniAssembler, Stage, ContextGLProfile, ShaderRegisterCache, ShaderRegisterElement, Image2D} from "@awayjs/stage";
 
 import {RTTBufferManager} from "../../managers/RTTBufferManager";
 

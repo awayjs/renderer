@@ -1,8 +1,11 @@
-import {Stage, MaterialGroupBase} from "@awayjs/stage";
+import {IAssetClass} from "@awayjs/core";
 
-import {INode} from "@awayjs/graphics";
+import {Stage} from "@awayjs/stage";
 
-import {GL_DistanceMaterial} from "./materials/GL_DistanceMaterial";
+import {INode} from "./base/INode";
+import {IMaterialStateClass} from "./base/IMaterialStateClass";
+
+import {RenderGroup} from "./RenderGroup";
 
 import {RendererBase} from "./RendererBase";
 
@@ -13,7 +16,7 @@ import {RendererBase} from "./RendererBase";
  */
 export class DistanceRenderer extends RendererBase
 {
-	public static _abstractionClassPool:Object = Object();
+	public static _materialClassPool:Object = Object();
 
 	/**
 	 * Creates a new DistanceRenderer object.
@@ -24,13 +27,22 @@ export class DistanceRenderer extends RendererBase
 	{
 		super(stage);
 
-		this._materialGroup = new MaterialGroupBase(this._pStage, DistanceRenderer._abstractionClassPool);
+		this._renderGroup = new RenderGroup(this._pStage, DistanceRenderer._materialClassPool, this);
 
 		this._iBackgroundR = 1;
 		this._iBackgroundG = 1;
 		this._iBackgroundB = 1;
 
 	}
+
+    /**
+     *
+     * @param imageObjectClass
+     */
+    public static registerMaterial(materialStateClass:IMaterialStateClass, materialClass:IAssetClass):void
+    {
+        DistanceRenderer._materialClassPool[materialClass.assetType] = materialStateClass;
+    }
 
 	/**
 	 *

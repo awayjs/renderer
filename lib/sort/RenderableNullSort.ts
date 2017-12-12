@@ -1,4 +1,4 @@
-import {GL_RenderableBase} from "@awayjs/stage";
+import {RenderStateBase} from "../base/RenderStateBase";
 
 import {IEntitySorter} from "./IEntitySorter";
 
@@ -7,12 +7,12 @@ import {IEntitySorter} from "./IEntitySorter";
  */
 export class RenderableNullSort implements IEntitySorter
 {
-	public sortBlendedRenderables(head:GL_RenderableBase):GL_RenderableBase
+	public sortBlendedRenderables(head:RenderStateBase):RenderStateBase
 	{
 		return head;
 	}
 
-	public sortOpaqueRenderables(head:GL_RenderableBase):GL_RenderableBase
+	public sortOpaqueRenderables(head:RenderStateBase):RenderStateBase
 	{
 		return head;
 	}

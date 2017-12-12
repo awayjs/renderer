@@ -1,6 +1,4 @@
-import {Image2D} from "@awayjs/graphics";
-
-import {Stage} from "@awayjs/stage";
+import {Stage, Image2D} from "@awayjs/stage";
 
 import {Filter3DHBlurTask} from "./tasks/Filter3DHBlurTask";
 import {Filter3DVBlurTask} from "./tasks/Filter3DVBlurTask";

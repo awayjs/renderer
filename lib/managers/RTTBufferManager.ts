@@ -1,8 +1,6 @@
 import {Rectangle, EventDispatcher} from "@awayjs/core";
 
-import {ImageUtils} from "@awayjs/graphics";
-
-import {Stage, IContextGL, IIndexBuffer, IVertexBuffer} from "@awayjs/stage";
+import {Stage, IContextGL, IIndexBuffer, IVertexBuffer, ImageUtils} from "@awayjs/stage";
 
 import {RTTEvent} from "../events/RTTEvent";
 

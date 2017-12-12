@@ -1,9 +1,22 @@
-import {Matrix3D, Plane3D, Point, Rectangle, Vector3D, IAbstractionPool, ByteArray, ProjectionBase} from "@awayjs/core";
+import {Matrix3D, Plane3D, Point, Rectangle, Vector3D, IAbstractionPool, ProjectionBase} from "@awayjs/core";
 
-import {ImageBase, BitmapImage2D, TraverserBase, IRenderable, INode, IEntity, IRenderer, IView, MapperBase} from "@awayjs/graphics";
+import {ImageBase, BitmapImage2D, ContextGLProfile, ContextMode, AGALMiniAssembler, ContextGLBlendFactor, ContextGLCompareMode, ContextGLStencilAction, ContextGLTriangleFace, IContextGL, Stage, StageEvent, StageManager, ProgramData} from "@awayjs/stage";
 
-import {ContextGLProfile, ContextMode, AGALMiniAssembler, ContextGLBlendFactor, ContextGLCompareMode, ContextGLStencilAction, ContextGLTriangleFace, IContextGL, Stage, StageEvent, StageManager, ProgramData, GL_ElementsBase, IMaterialClassGL, MaterialPool, IPass, GL_MaterialBase, GL_RenderableBase, RenderablePool, MaterialGroupBase} from "@awayjs/stage";
+import {IMaterialStateClass} from "./base/IMaterialStateClass";
+import {MaterialStatePool} from "./base/MaterialStatePool";
+import {MaterialStateBase} from "./base/MaterialStateBase";
+import {RenderStateBase} from "./base/RenderStateBase";
+import {RenderStatePool} from "./base/RenderStatePool";
+import {IMapper} from "./base/IMapper";
+import {RenderGroup} from "./RenderGroup";
 
+import {IEntity} from "./base/IEntity";
+import {INode} from "./base/INode";
+import {IPass} from "./base/IPass";
+import {IView} from "./base/IView";
+import {IRenderer} from "./base/IRenderer";
+import {TraverserBase} from "./base/TraverserBase"
+import {IRenderable} from "./base/IRenderable";
 import {RendererEvent} from "./events/RendererEvent";
 import {RTTBufferManager} from "./managers/RTTBufferManager";
 import {IEntitySorter} from "./sort/IEntitySorter";
@@ -20,10 +33,11 @@ export class RendererBase extends TraverserBase implements IRenderer
 {
 	public static _iCollectionMark = 0;
 
+    private _mappers:Array<IMapper> = new Array<IMapper>();
 	private _maskConfig:number;
 	private _activeMasksDirty:boolean;
 	private _activeMasksConfig:Array<Array<number>> = new Array<Array<number>>();
-	private _registeredMasks : Array<GL_RenderableBase> = new Array<GL_RenderableBase>();
+	private _registeredMasks : Array<RenderStateBase> = new Array<RenderStateBase>();
 	private _numUsedStreams:number = 0;
 	private _numUsedTextures:number = 0;
 
@@ -66,8 +80,8 @@ export class RendererBase extends TraverserBase implements IRenderer
 
 	public _pNumElements:number = 0;
 
-	public _pOpaqueRenderableHead:GL_RenderableBase;
-	public _pBlendedRenderableHead:GL_RenderableBase;
+	public _pOpaqueRenderableHead:RenderStateBase;
+	public _pBlendedRenderableHead:RenderStateBase;
 	public _disableColor:boolean = false;
 	public _disableClear:boolean = false;
 	public _renderBlended:boolean = true;
@@ -75,8 +89,8 @@ export class RendererBase extends TraverserBase implements IRenderer
 	private _customCullPlanes:Array<Plane3D>;
 	private _numCullPlanes:number = 0;
 	private _sourceEntity:IEntity;
-	protected _materialGroup:MaterialGroupBase;
-	private _renderablePool:RenderablePool;
+	protected _renderGroup:RenderGroup;
+	private _renderablePool:RenderStatePool;
 	private _zIndex:number;
 	private _renderSceneTransform:Matrix3D;
 	private _renderProjection:ProjectionBase;
@@ -305,25 +319,12 @@ export class RendererBase extends TraverserBase implements IRenderer
 	{
 		//clear unused vertex streams
 		var i:number
-		for (i = pass.shader.numUsedStreams; i < this._numUsedStreams; i++)
+		for (i = pass.numUsedStreams; i < this._numUsedStreams; i++)
 			this._pContext.setVertexBufferAt(i, null);
 
 		//clear unused texture streams
-		for (i = pass.shader.numUsedTextures; i < this._numUsedTextures; i++)
+		for (i = pass.numUsedTextures; i < this._numUsedTextures; i++)
 			this._pContext.setTextureAt(i, null);
-
-		//check program data is uploaded
-		var programData:ProgramData = pass.shader.programData;
-
-		if (!programData.program) {
-			programData.program = this._pContext.createProgram();
-			var vertexByteCode:ByteArray = (new AGALMiniAssembler().assemble("part vertex 1\n" + programData.vertexString + "endpart"))['vertex'].data;
-			var fragmentByteCode:ByteArray = (new AGALMiniAssembler().assemble("part fragment 1\n" + programData.fragmentString + "endpart"))['fragment'].data;
-			programData.program.upload(vertexByteCode, fragmentByteCode);
-		}
-
-		//set program data
-		this._pContext.setProgram(programData.program);
 
 		//activate shader object through pass
 		pass._activate(projection);
@@ -334,8 +335,8 @@ export class RendererBase extends TraverserBase implements IRenderer
 		//deactivate shader object through pass
 		pass._deactivate();
 
-		this._numUsedStreams = pass.shader.numUsedStreams;
-		this._numUsedTextures = pass.shader.numUsedTextures;
+		this._numUsedStreams = pass.numUsedStreams;
+		this._numUsedTextures = pass.numUsedTextures;
 	}
 
 	/**
@@ -431,14 +432,26 @@ export class RendererBase extends TraverserBase implements IRenderer
 		 */
 	}
 
-	public _getSubRenderer(mapper:MapperBase):IRenderer
-	{
-		return this;
-	}
-
 	public render(projection:ProjectionBase, view:IView):void
 	{
 	}
+
+
+    public _addMapper(mapper:IMapper)
+    {
+    	if (this._mappers.indexOf(mapper) != -1)
+    		return;
+
+        this._mappers.push(mapper)
+    }
+
+    public _removeMapper(mapper:IMapper)
+    {
+    	var index:number = this._mappers.indexOf(mapper);
+
+    	if (index != -1)
+        	this._mappers.splice(index, 1);
+    }
 
 	/**
 	 * Renders the potentially visible geometry to the back buffer or texture.
@@ -451,6 +464,11 @@ export class RendererBase extends TraverserBase implements IRenderer
 		//TODO refactor setTarget so that rendertextures are created before this check
 		if (!this._pStage || !this._pContext)
 			return;
+
+		//update mappers
+        var len:number = this._mappers.length;
+        for (var i:number = 0; i < len; i++)
+            this._mappers[i].update(projection, view, this);
 
 		//reset head values
 		this._pBlendedRenderableHead = null;
@@ -468,8 +486,8 @@ export class RendererBase extends TraverserBase implements IRenderer
 
 		//sort the resulting renderables
 		if (this.renderableSorter) {
-			this._pOpaqueRenderableHead = <GL_RenderableBase> this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
-			this._pBlendedRenderableHead = <GL_RenderableBase> this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
+			this._pOpaqueRenderableHead = <RenderStateBase> this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
+			this._pBlendedRenderableHead = <RenderStateBase> this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
 		}
 
 		// this._pRttViewProjectionMatrix.copyFrom(projection.viewMatrix3D);
@@ -496,7 +514,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 		this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
 		this._pContext.setDepthTest(true, ContextGLCompareMode.LESS);
 
-		var head:GL_RenderableBase = this._pOpaqueRenderableHead;
+		var head:RenderStateBase = this._pOpaqueRenderableHead;
 
 		var first:boolean = true;
 
@@ -579,10 +597,10 @@ export class RendererBase extends TraverserBase implements IRenderer
 			this._pContext.setColorMask(true, true, true, true);
 	}
 
-	//private drawCascadeRenderables(renderableGL:GL_RenderableBase, camera:Camera, cullPlanes:Array<Plane3D>)
+	//private drawCascadeRenderables(renderableGL:RenderStateBase, camera:Camera, cullPlanes:Array<Plane3D>)
 	//{
-	//	var renderableGL2:GL_RenderableBase;
-	//	var render:GL_MaterialBase;
+	//	var renderableGL2:RenderStateBase;
+	//	var render:MaterialStateBase;
 	//	var pass:IPass;
 	//
 	//	while (renderableGL) {
@@ -616,12 +634,12 @@ export class RendererBase extends TraverserBase implements IRenderer
 	 *
 	 * @param renderables The renderables to draw.
 	 */
-	public drawRenderables(projection:ProjectionBase, renderableGL:GL_RenderableBase):void
+	public drawRenderables(projection:ProjectionBase, renderableGL:RenderStateBase):void
 	{
 		var i:number;
 		var len:number;
-		var renderableGL2:GL_RenderableBase;
-		var materialGL:GL_MaterialBase;
+		var renderableGL2:RenderStateBase;
+		var materialGL:MaterialStateBase;
 		var passes:Array<IPass>;
 		var pass:IPass;
 
@@ -640,7 +658,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 			passes = materialGL.passes;
 
 			// otherwise this would result in depth rendered anyway because fragment shader kil is ignored
-			if (this._disableColor && materialGL._material.alphaThreshold != 0) {
+			if (this._disableColor && materialGL.material.alphaThreshold != 0) {
 				renderableGL2 = renderableGL;
 				// fast forward
 				do {
@@ -812,7 +830,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 	public applyEntity(entity:IEntity):void
 	{
 		this._sourceEntity = entity;
-		this._renderablePool = this._materialGroup.getRenderablePool(entity);
+		this._renderablePool = this._renderGroup.getRenderStatePool(entity);
 
 		// project onto camera's z-axis
 		this._zIndex = entity.zOffset + this._cameraTransform.position.subtract(entity.scenePosition).dotProduct(this._cameraForward);
@@ -826,7 +844,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 
 	public applyRenderable(renderable:IRenderable):void
 	{
-		var renderableGL:GL_RenderableBase = this._renderablePool.getAbstraction(renderable);
+		var renderableGL:RenderStateBase = this._renderablePool.getAbstraction(renderable);
 
 
 		//set local vars for faster referencing
@@ -836,7 +854,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 		renderableGL.maskId = this._sourceEntity._iAssignedMaskId();
 		renderableGL.masksConfig = this._sourceEntity._iMasksConfig();
 
-		var materialGL:GL_MaterialBase = renderableGL.materialGL;
+		var materialGL:MaterialStateBase = renderableGL.materialGL;
 		renderableGL.materialID = materialGL.materialID;
 		renderableGL.renderOrderId = materialGL.renderOrderId;
 
@@ -851,7 +869,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 			this._pOpaqueRenderableHead = renderableGL;
 		}
 
-		this._pNumElements += renderableGL.elementsGL.elements.numElements;
+		this._pNumElements += renderableGL.elementsGL.elements.numElements; //need to re-trigger elementsGL getter in case animator has changed
 	}
 
 	/**
@@ -881,7 +899,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 		//don't do anything here
 	}
 
-	private _registerMask(obj:GL_RenderableBase):void
+	private _registerMask(obj:RenderStateBase):void
 	{
 		//console.log("registerMask");
 		this._registeredMasks.push(obj);
@@ -909,7 +927,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 		this._pContext.setStencilReferenceValue(this._maskConfig);
 		var numLayers:number = masks.length;
 		var numRenderables:number = this._registeredMasks.length;
-		var renderableGL:GL_RenderableBase;
+		var renderableGL:RenderStateBase;
 		var children:Array<IEntity>;
 		var numChildren:number;
 		var mask:IEntity;
@@ -949,7 +967,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 		//this._stage.setRenderTarget(oldRenderTarget);
 	}
 
-	private _drawMask(projection:ProjectionBase, renderableGL:GL_RenderableBase):void
+	private _drawMask(projection:ProjectionBase, renderableGL:RenderStateBase):void
 	{
 		var materialGL = renderableGL.materialGL;
 		var passes = materialGL.passes;
