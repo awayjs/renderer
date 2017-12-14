@@ -19,8 +19,6 @@ export interface IMaterial extends IAsset
 
 	bothSides:boolean;
 
-	alphaThreshold:number;
-
 	curves:boolean;
 
 	imageRect:boolean;

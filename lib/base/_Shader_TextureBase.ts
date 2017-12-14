@@ -2,8 +2,7 @@ import {AbstractMethodError, AssetEvent, AbstractionBase} from "@awayjs/core";
 
 import {Stage, ContextGLTextureFormat, ShaderRegisterCache, ShaderRegisterData, ShaderRegisterElement, ImageBase} from "@awayjs/stage";
 
-import {RenderStateBase} from "./RenderStateBase";
-import {IRenderable} from "./IRenderable";
+import {_Render_RenderableBase} from "./_Render_RenderableBase";
 import {ShaderBase} from "./ShaderBase";
 
 import {ITexture} from "../base/ITexture";
@@ -11,9 +10,9 @@ import {ChunkVO} from "../base/ChunkVO";
 
 /**
  *
- * @class away.pool.TextureStateBaseBase
+ * @class away.pool._Shader_TextureBaseBase
  */
-export class TextureStateBase extends AbstractionBase
+export class _Shader_TextureBase extends AbstractionBase
 {
 	protected _texture:ITexture;
     protected _shader:ShaderBase;
@@ -70,7 +69,7 @@ export class TextureStateBase extends AbstractionBase
 		throw new AbstractMethodError();
 	}
 
-	public _setRenderState(renderState:RenderStateBase):void
+	public _setRenderState(renderState:_Render_RenderableBase):void
 	{
 		//overidden for state logic
 	}

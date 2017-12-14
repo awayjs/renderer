@@ -2,7 +2,7 @@ import {IAsset, ProjectionBase} from "@awayjs/core";
 
 import {Stage} from "@awayjs/stage";
 
-import {RenderStateBase} from "./RenderStateBase";
+import {_Render_RenderableBase} from "./_Render_RenderableBase";
 import {IEntity} from "./IEntity";
 import {ShaderBase} from "./ShaderBase";
 import {IAnimationSet} from "./IAnimationSet";
@@ -45,5 +45,5 @@ export interface IAnimator extends IAsset
 
     testGPUCompatibility(shader:ShaderBase):void;
 
-    setRenderState(shader:ShaderBase, renderState:RenderStateBase, stage:Stage, projection:ProjectionBase):void;
+    setRenderState(shader:ShaderBase, renderState:_Render_RenderableBase, stage:Stage, projection:ProjectionBase):void;
 }

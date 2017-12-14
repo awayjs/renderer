@@ -3,8 +3,8 @@ import {IAssetClass, IAbstractionPool, AbstractMethodError} from "@awayjs/core";
 import {Stage, ShaderRegisterCache, ShaderRegisterData} from "@awayjs/stage";
 
 import {IMaterial} from "./IMaterial";
-import {IMaterialStateClass} from "./IMaterialStateClass";
-import {MaterialStateBase} from "./MaterialStateBase";
+import {_IRender_MaterialClass} from "./_IRender_MaterialClass";
+import {_Render_MaterialBase} from "./_Render_MaterialBase";
 import {ShaderBase} from "./ShaderBase";
 
 import {RenderGroup} from "../RenderGroup";
@@ -12,11 +12,11 @@ import {RenderGroup} from "../RenderGroup";
 /**
  * @class away.pool.MaterialPoolBase
  */
-export class MaterialStatePool implements IAbstractionPool
+export class _Render_ElementsBase implements IAbstractionPool
 {
 	private _stage:Stage;
 	private _abstractionPool:Object = new Object();
-	private _abstractionClassPool:Object;
+	private _renderMaterialClassPool:Object;
     private _renderGroup:RenderGroup;
 
 	public get stage():Stage
@@ -38,10 +38,10 @@ export class MaterialStatePool implements IAbstractionPool
 	 *
 	 * @param materialClassGL
 	 */
-	constructor(stage:Stage, abstractionClassPool:Object, renderGroup:RenderGroup)
+	constructor(stage:Stage, renderMaterialClassPool:Object, renderGroup:RenderGroup)
 	{
 		this._stage = stage;
-		this._abstractionClassPool = abstractionClassPool;
+		this._renderMaterialClassPool = renderMaterialClassPool;
 		this._renderGroup = renderGroup;
 	}
 
@@ -51,9 +51,9 @@ export class MaterialStatePool implements IAbstractionPool
 	 * @param elementsOwner
 	 * @returns IElements
 	 */
-	public getAbstraction(material:IMaterial):MaterialStateBase
+	public getAbstraction(material:IMaterial):_Render_MaterialBase
 	{
-		return (this._abstractionPool[material.id] || (this._abstractionPool[material.id] = new (<IMaterialStateClass> this._abstractionClassPool[material.assetType])(material, this)));
+		return (this._abstractionPool[material.id] || (this._abstractionPool[material.id] = new (<_IRender_MaterialClass> this._renderMaterialClassPool[material.assetType])(material, this)));
 	}
 
 	/**

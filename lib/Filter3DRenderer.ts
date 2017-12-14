@@ -1,6 +1,6 @@
 import {Rectangle, ProjectionBase} from "@awayjs/core";
 
-import {Image2D, ImageSampler, GL_ImageBase, Stage, ContextGLDrawMode, ContextGLBlendFactor, ContextGLVertexBufferFormat, IContextGL, IIndexBuffer, IVertexBuffer} from "@awayjs/stage";
+import {Image2D, ImageSampler, _Stage_ImageBase, Stage, ContextGLDrawMode, ContextGLBlendFactor, ContextGLVertexBufferFormat, IContextGL, IIndexBuffer, IVertexBuffer} from "@awayjs/stage";
 
 import {RTTEvent} from "./events/RTTEvent";
 import {Filter3DBase} from "./filters/Filter3DBase";
@@ -165,7 +165,7 @@ export class Filter3DRenderer
 
 			context.setProgram(task.getProgram(stage));
 
-			(<GL_ImageBase> stage.getAbstraction(task.getMainInputTexture(stage))).activate(task._inputTextureIndex, this._sampler);
+			(<_Stage_ImageBase> stage.getAbstraction(task.getMainInputTexture(stage))).activate(task._inputTextureIndex, this._sampler);
 
 			if (!task.target) {
 

@@ -2,7 +2,7 @@ import {IEventDispatcher, ProjectionBase} from "@awayjs/core";
 
 import {ShaderRegisterCache, ShaderRegisterData, ShaderRegisterElement} from "@awayjs/stage";
 
-import {RenderStateBase} from "./RenderStateBase";
+import {_Render_RenderableBase} from "./_Render_RenderableBase";
 import {ShaderBase} from "./ShaderBase";
 
 /**
@@ -12,10 +12,6 @@ import {ShaderBase} from "./ShaderBase";
 export interface IPass extends IEventDispatcher
 {
 	shader:ShaderBase;
-
-    numUsedStreams:number;
-
-    numUsedTextures:number;
 
     _includeDependencies(shader:ShaderBase);
 
@@ -30,7 +26,7 @@ export interface IPass extends IEventDispatcher
 	 */
 	_activate(projection:ProjectionBase);
 
-	_setRenderState(renderState:RenderStateBase, projection:ProjectionBase)
+	_setRenderState(renderState:_Render_RenderableBase, projection:ProjectionBase)
 
 	/**
 	 * Clears the surface state for the pass. This needs to be called before activating another pass.

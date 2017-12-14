@@ -1,6 +1,6 @@
 import {AssetEvent, AbstractionBase} from "@awayjs/core";
 
-import {Stage, GL_ImageBase, ImageBase, ImageSampler, ImageUtils} from "@awayjs/stage";
+import {Stage, _Stage_ImageBase, ImageBase, ImageSampler, ImageUtils} from "@awayjs/stage";
 
 import {ITexture} from "../base/ITexture";
 import {PassEvent} from "../events/PassEvent";
@@ -13,7 +13,7 @@ import {IPass} from "./IPass";
 import {IMaterial} from "./IMaterial";
 import {IAnimator} from "./IAnimator";
 import {IAnimationSet} from "./IAnimationSet";
-import {MaterialStatePool} from "./MaterialStatePool";
+import {_Render_ElementsBase} from "./_Render_ElementsBase";
 import {ShaderBase} from "./ShaderBase";
 import {Style} from "./Style";
 
@@ -21,7 +21,7 @@ import {Style} from "./Style";
  *
  * @class away.pool.Passes
  */
-export class MaterialStateBase extends AbstractionBase
+export class _Render_MaterialBase extends AbstractionBase
 {
     private _onInvalidateAnimationDelegate:(event:MaterialEvent) => void;
     private _onInvalidatePassesDelegate:(event:MaterialEvent) => void;
@@ -32,7 +32,7 @@ export class MaterialStateBase extends AbstractionBase
     protected _renderOrderId:number;
     protected _passes:Array<IPass> = new Array<IPass>();
 	protected _material:IMaterial;
-    protected _materialStatePool:MaterialStatePool;
+    protected _renderElements:_Render_ElementsBase;
     protected _stage:Stage;
     protected _renderGroup:RenderGroup;
 
@@ -44,7 +44,7 @@ export class MaterialStateBase extends AbstractionBase
     private _numImages:number;
     private _usesAnimation:boolean = true;
 
-    public images:Array<GL_ImageBase> = new Array<GL_ImageBase>();
+    public images:Array<_Stage_ImageBase> = new Array<_Stage_ImageBase>();
 
     public samplers:Array<ImageSampler> = new Array<ImageSampler>();
 	
@@ -100,15 +100,20 @@ export class MaterialStateBase extends AbstractionBase
         return this._renderGroup;
     }
 
-	constructor(material:IMaterial, materialStatePool:MaterialStatePool)
+    public get renderElements():_Render_ElementsBase
+    {
+        return this._renderElements;
+    }
+
+	constructor(material:IMaterial, renderElements:_Render_ElementsBase)
 	{
-		super(material, materialStatePool);
+		super(material, renderElements);
 
 		this.materialID = material.id;
 		this._material = material;
-		this._materialStatePool = materialStatePool;
-		this._stage = materialStatePool.stage;
-		this._renderGroup = materialStatePool.renderGroup;
+		this._renderElements = renderElements;
+		this._stage = renderElements.stage;
+		this._renderGroup = renderElements.renderGroup;
 
         this._onInvalidateAnimationDelegate = (event:MaterialEvent) => this.onInvalidateAnimation(event);
         this._onInvalidatePassesDelegate = (event:MaterialEvent) => this.onInvalidatePasses(event);
@@ -118,15 +123,6 @@ export class MaterialStateBase extends AbstractionBase
 
         this._onPassInvalidateDelegate = (event:PassEvent) => this.onPassInvalidate(event);
 
-    }
-
-    public _includeDependencies(shader:ShaderBase):void
-    {
-        this._materialStatePool._includeDependencies(shader);
-
-        shader.alphaThreshold = this._material.alphaThreshold;
-        shader.useImageRect = this._material.imageRect;
-        shader.usesCurves = this._material.curves;
     }
 
     public getImageIndex(texture:ITexture, index:number = 0):number
@@ -156,7 +152,7 @@ export class MaterialStateBase extends AbstractionBase
         this._material.removeEventListener(MaterialEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
 
         this._material = null;
-        this._materialStatePool = null;
+        this._renderElements = null;
         this._stage = null;
     }
 
@@ -297,7 +293,7 @@ export class MaterialStateBase extends AbstractionBase
             numImages = texture.getNumImages();
             images = this._imageIndices[texture.id] = new Array<number>();
             for (var j:number = 0; j < numImages; j++) {
-                this.images[index] = <GL_ImageBase> this._stage.getAbstraction(texture.getImageAt(j) || (style? style.getImageAt(texture, j) : null) || ImageUtils.getDefaultImage2D());
+                this.images[index] = <_Stage_ImageBase> this._stage.getAbstraction(texture.getImageAt(j) || (style? style.getImageAt(texture, j) : null) || ImageUtils.getDefaultImage2D());
 
                 this.samplers[index] = texture.getSamplerAt(j) || (style? style.getSamplerAt(texture, j) : null) || ImageUtils.getDefaultSampler();
 

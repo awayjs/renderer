@@ -1,6 +1,6 @@
 import {IMaterial} from "./IMaterial";
-import {MaterialStateBase} from "./MaterialStateBase";
-import {MaterialStatePool} from "./MaterialStatePool";
+import {_Render_MaterialBase} from "./_Render_MaterialBase";
+import {_Render_ElementsBase} from "./_Render_ElementsBase";
 
 /**
  * IMaterialClassGL is an interface for the constructable class definition GL_MaterialBase that is used to
@@ -8,10 +8,10 @@ import {MaterialStatePool} from "./MaterialStatePool";
  *
  * @class away.render.GL_MaterialBase
  */
-export interface IMaterialStateClass
+export interface _IRender_MaterialClass
 {
 	/**
 	 *
 	 */
-	new(material:IMaterial, pool:MaterialStatePool):MaterialStateBase;
+	new(material:IMaterial, renderElements:_Render_ElementsBase):_Render_MaterialBase;
 }

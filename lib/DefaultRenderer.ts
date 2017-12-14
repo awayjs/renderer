@@ -7,7 +7,7 @@ import {INode} from "./base/INode";
 import {IView} from "./base/IView";
 import {IRenderer} from "./base/IRenderer";
 import {IMaterialClass} from "./base/IMaterialClass";
-import {IMaterialStateClass} from "./base/IMaterialStateClass";
+import {_IRender_MaterialClass} from "./base/_IRender_MaterialClass";
 
 import {Filter3DBase} from "./filters/Filter3DBase";
 import {RTTBufferManager} from "./managers/RTTBufferManager";
@@ -26,7 +26,7 @@ import {RendererBase} from "./RendererBase";
  */
 export class DefaultRenderer extends RendererBase
 {
-    public static _materialClassPool:Object = new Object();
+    public static _renderMaterialClassPool:Object = new Object();
 
 	public _pRequireDepthRender:boolean;
 
@@ -113,7 +113,7 @@ export class DefaultRenderer extends RendererBase
 		if (stage)
 			this.shareContext = true;
 
-		this._renderGroup = new RenderGroup(this._pStage, DefaultRenderer._materialClassPool, this);
+		this._renderGroup = new RenderGroup(this._pStage, DefaultRenderer._renderMaterialClassPool, this);
 		this._pRttBufferManager = RTTBufferManager.getInstance(this._pStage);
 
 		this._depthRenderer = new DepthRenderer(this._pStage);
@@ -144,9 +144,9 @@ export class DefaultRenderer extends RendererBase
      *
      * @param imageObjectClass
      */
-    public static registerMaterial(materialStateClass:IMaterialStateClass, materialClass:IMaterialClass):void
+    public static registerMaterial(renderMaterialClass:_IRender_MaterialClass, materialClass:IMaterialClass):void
     {
-        DefaultRenderer._materialClassPool[materialClass.assetType] = materialStateClass;
+        DefaultRenderer._renderMaterialClassPool[materialClass.assetType] = renderMaterialClass;
     }
 
 

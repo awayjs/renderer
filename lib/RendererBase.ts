@@ -2,11 +2,11 @@ import {Matrix3D, Plane3D, Point, Rectangle, Vector3D, IAbstractionPool, Project
 
 import {ImageBase, BitmapImage2D, ContextGLProfile, ContextMode, AGALMiniAssembler, ContextGLBlendFactor, ContextGLCompareMode, ContextGLStencilAction, ContextGLTriangleFace, IContextGL, Stage, StageEvent, StageManager, ProgramData} from "@awayjs/stage";
 
-import {IMaterialStateClass} from "./base/IMaterialStateClass";
-import {MaterialStatePool} from "./base/MaterialStatePool";
-import {MaterialStateBase} from "./base/MaterialStateBase";
-import {RenderStateBase} from "./base/RenderStateBase";
-import {RenderStatePool} from "./base/RenderStatePool";
+import {_IRender_MaterialClass} from "./base/_IRender_MaterialClass";
+import {_Render_ElementsBase} from "./base/_Render_ElementsBase";
+import {_Render_MaterialBase} from "./base/_Render_MaterialBase";
+import {_Render_RenderableBase} from "./base/_Render_RenderableBase";
+import {RenderEntity} from "./base/RenderEntity";
 import {IMapper} from "./base/IMapper";
 import {RenderGroup} from "./RenderGroup";
 
@@ -37,7 +37,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 	private _maskConfig:number;
 	private _activeMasksDirty:boolean;
 	private _activeMasksConfig:Array<Array<number>> = new Array<Array<number>>();
-	private _registeredMasks : Array<RenderStateBase> = new Array<RenderStateBase>();
+	private _registeredMasks : Array<_Render_RenderableBase> = new Array<_Render_RenderableBase>();
 	private _numUsedStreams:number = 0;
 	private _numUsedTextures:number = 0;
 
@@ -80,8 +80,8 @@ export class RendererBase extends TraverserBase implements IRenderer
 
 	public _pNumElements:number = 0;
 
-	public _pOpaqueRenderableHead:RenderStateBase;
-	public _pBlendedRenderableHead:RenderStateBase;
+	public _pOpaqueRenderableHead:_Render_RenderableBase;
+	public _pBlendedRenderableHead:_Render_RenderableBase;
 	public _disableColor:boolean = false;
 	public _disableClear:boolean = false;
 	public _renderBlended:boolean = true;
@@ -90,7 +90,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 	private _numCullPlanes:number = 0;
 	private _sourceEntity:IEntity;
 	protected _renderGroup:RenderGroup;
-	private _renderablePool:RenderStatePool;
+	private _renderablePool:RenderEntity;
 	private _zIndex:number;
 	private _renderSceneTransform:Matrix3D;
 	private _renderProjection:ProjectionBase;
@@ -319,11 +319,11 @@ export class RendererBase extends TraverserBase implements IRenderer
 	{
 		//clear unused vertex streams
 		var i:number
-		for (i = pass.numUsedStreams; i < this._numUsedStreams; i++)
+		for (i = pass.shader.numUsedStreams; i < this._numUsedStreams; i++)
 			this._pContext.setVertexBufferAt(i, null);
 
 		//clear unused texture streams
-		for (i = pass.numUsedTextures; i < this._numUsedTextures; i++)
+		for (i = pass.shader.numUsedTextures; i < this._numUsedTextures; i++)
 			this._pContext.setTextureAt(i, null);
 
 		//activate shader object through pass
@@ -335,8 +335,8 @@ export class RendererBase extends TraverserBase implements IRenderer
 		//deactivate shader object through pass
 		pass._deactivate();
 
-		this._numUsedStreams = pass.numUsedStreams;
-		this._numUsedTextures = pass.numUsedTextures;
+		this._numUsedStreams = pass.shader.numUsedStreams;
+		this._numUsedTextures = pass.shader.numUsedTextures;
 	}
 
 	/**
@@ -486,8 +486,8 @@ export class RendererBase extends TraverserBase implements IRenderer
 
 		//sort the resulting renderables
 		if (this.renderableSorter) {
-			this._pOpaqueRenderableHead = <RenderStateBase> this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
-			this._pBlendedRenderableHead = <RenderStateBase> this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
+			this._pOpaqueRenderableHead = <_Render_RenderableBase> this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
+			this._pBlendedRenderableHead = <_Render_RenderableBase> this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
 		}
 
 		// this._pRttViewProjectionMatrix.copyFrom(projection.viewMatrix3D);
@@ -514,7 +514,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 		this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
 		this._pContext.setDepthTest(true, ContextGLCompareMode.LESS);
 
-		var head:RenderStateBase = this._pOpaqueRenderableHead;
+		var head:_Render_RenderableBase = this._pOpaqueRenderableHead;
 
 		var first:boolean = true;
 
@@ -597,35 +597,35 @@ export class RendererBase extends TraverserBase implements IRenderer
 			this._pContext.setColorMask(true, true, true, true);
 	}
 
-	//private drawCascadeRenderables(renderableGL:RenderStateBase, camera:Camera, cullPlanes:Array<Plane3D>)
+	//private drawCascadeRenderables(renderRenderable:_Render_RenderableBase, camera:Camera, cullPlanes:Array<Plane3D>)
 	//{
-	//	var renderableGL2:RenderStateBase;
-	//	var render:MaterialStateBase;
+	//	var renderRenderable2:_Render_RenderableBase;
+	//	var render:_Render_MaterialBase;
 	//	var pass:IPass;
 	//
-	//	while (renderableGL) {
-	//		renderableGL2 = renderableGL;
-	//		render = renderableGL.render;
+	//	while (renderRenderable) {
+	//		renderRenderable2 = renderRenderable;
+	//		render = renderRenderable.render;
 	//		pass = render.passes[0] //assuming only one pass per material
 	//
-	//		this.activatePass(renderableGL, pass, camera);
+	//		this.activatePass(renderRenderable, pass, camera);
 	//
 	//		do {
 	//			// if completely in front, it will fall in a different cascade
 	//			// do not use near and far planes
-	//			if (!cullPlanes || renderableGL2.sourceEntity.worldBounds.isInFrustum(cullPlanes, 4)) {
-	//				renderableGL2._iRender(pass, camera, this._pRttViewProjectionMatrix);
+	//			if (!cullPlanes || renderRenderable2.sourceEntity.worldBounds.isInFrustum(cullPlanes, 4)) {
+	//				renderRenderable2._iRender(pass, camera, this._pRttViewProjectionMatrix);
 	//			} else {
-	//				renderableGL2.cascaded = true;
+	//				renderRenderable2.cascaded = true;
 	//			}
 	//
-	//			renderableGL2 = renderableGL2.next;
+	//			renderRenderable2 = renderRenderable2.next;
 	//
-	//		} while (renderableGL2 && renderableGL2.render == render && !renderableGL2.cascaded);
+	//		} while (renderRenderable2 && renderRenderable2.render == render && !renderRenderable2.cascaded);
 	//
-	//		this.deactivatePass(renderableGL, pass);
+	//		this.deactivatePass(renderRenderable, pass);
 	//
-	//		renderableGL = renderableGL2;
+	//		renderRenderable = renderRenderable2;
 	//	}
 	//}
 
@@ -634,12 +634,12 @@ export class RendererBase extends TraverserBase implements IRenderer
 	 *
 	 * @param renderables The renderables to draw.
 	 */
-	public drawRenderables(projection:ProjectionBase, renderableGL:RenderStateBase):void
+	public drawRenderables(projection:ProjectionBase, renderRenderable:_Render_RenderableBase):void
 	{
 		var i:number;
 		var len:number;
-		var renderableGL2:RenderStateBase;
-		var materialGL:MaterialStateBase;
+		var renderRenderable2:_Render_RenderableBase;
+		var renderMaterial:_Render_MaterialBase;
 		var passes:Array<IPass>;
 		var pass:IPass;
 
@@ -653,21 +653,21 @@ export class RendererBase extends TraverserBase implements IRenderer
 		this._pContext.disableStencil();
 		this._maskConfig = 0;
 
-		while (renderableGL) {
-			materialGL = renderableGL.materialGL;
-			passes = materialGL.passes;
+		while (renderRenderable) {
+			renderMaterial = renderRenderable.renderMaterial;
+			passes = renderMaterial.passes;
 
 			// otherwise this would result in depth rendered anyway because fragment shader kil is ignored
-			if (this._disableColor && materialGL.material.alphaThreshold != 0) {
-				renderableGL2 = renderableGL;
-				// fast forward
-				do {
-					renderableGL2 = renderableGL2.next;
-
-				} while (renderableGL2 && renderableGL2.materialGL == materialGL);
-			} else {
-				if (this._activeMasksDirty || this._checkMasksConfig(renderableGL.masksConfig)) {
-					this._activeMasksConfig = renderableGL.masksConfig;
+			// if (this._disableColor && renderMaterial.material.alphaThreshold != 0) {
+			// 	renderRenderable2 = renderRenderable;
+			// 	// fast forward
+			// 	do {
+			// 		renderRenderable2 = renderRenderable2.next;
+            //
+			// 	} while (renderRenderable2 && renderRenderable2.renderMaterial == renderMaterial);
+			// } else {
+				if (this._activeMasksDirty || this._checkMasksConfig(renderRenderable.masksConfig)) {
+					this._activeMasksConfig = renderRenderable.masksConfig;
 					if (!this._activeMasksConfig.length) {
 						// disable stencil
 						//if(gl) {
@@ -680,7 +680,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 
 						//}
 					} else {
-						this._renderMasks(projection, renderableGL.sourceEntity._iAssignedMasks());
+						this._renderMasks(projection, renderRenderable.sourceEntity._iAssignedMasks());
 					}
 					this._activeMasksDirty = false;
 				}
@@ -689,28 +689,28 @@ export class RendererBase extends TraverserBase implements IRenderer
 				//iterate through each shader object
 				len = passes.length;
 				for (i = 0; i < len; i++) {
-					renderableGL2 = renderableGL;
+					renderRenderable2 = renderRenderable;
 					pass = passes[i];
 
 					this.activatePass(pass, projection);
 
 					do {
-						if (renderableGL2.maskId !== -1) {
+						if (renderRenderable2.maskId !== -1) {
 							if (i == 0)
-								this._registerMask(renderableGL2);
+								this._registerMask(renderRenderable2);
 						} else {
-							renderableGL2._iRender(pass, projection);
+							renderRenderable2._iRender(pass, projection);
 						}
 
-						renderableGL2 = renderableGL2.next;
+						renderRenderable2 = renderRenderable2.next;
 
-					} while (renderableGL2 && renderableGL2.materialGL == materialGL && !(this._activeMasksDirty = this._checkMasksConfig(renderableGL2.masksConfig)));
+					} while (renderRenderable2 && renderRenderable2.renderMaterial == renderMaterial && !(this._activeMasksDirty = this._checkMasksConfig(renderRenderable2.masksConfig)));
 
 					this.deactivatePass(pass);
 				}
-			}
+			// }
 
-			renderableGL = renderableGL2;
+			renderRenderable = renderRenderable2;
 		}
 	}
 
@@ -830,7 +830,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 	public applyEntity(entity:IEntity):void
 	{
 		this._sourceEntity = entity;
-		this._renderablePool = this._renderGroup.getRenderStatePool(entity);
+		this._renderablePool = this._renderGroup.getRenderEntity(entity);
 
 		// project onto camera's z-axis
 		this._zIndex = entity.zOffset + this._cameraTransform.position.subtract(entity.scenePosition).dotProduct(this._cameraForward);
@@ -844,32 +844,32 @@ export class RendererBase extends TraverserBase implements IRenderer
 
 	public applyRenderable(renderable:IRenderable):void
 	{
-		var renderableGL:RenderStateBase = this._renderablePool.getAbstraction(renderable);
+		var renderRenderable:_Render_RenderableBase = this._renderablePool.getAbstraction(renderable);
 
 
 		//set local vars for faster referencing
-		renderableGL.cascaded = false;
+		renderRenderable.cascaded = false;
 		
-		renderableGL.zIndex = this._zIndex;
-		renderableGL.maskId = this._sourceEntity._iAssignedMaskId();
-		renderableGL.masksConfig = this._sourceEntity._iMasksConfig();
+		renderRenderable.zIndex = this._zIndex;
+		renderRenderable.maskId = this._sourceEntity._iAssignedMaskId();
+		renderRenderable.masksConfig = this._sourceEntity._iMasksConfig();
 
-		var materialGL:MaterialStateBase = renderableGL.materialGL;
-		renderableGL.materialID = materialGL.materialID;
-		renderableGL.renderOrderId = materialGL.renderOrderId;
+		var renderMaterial:_Render_MaterialBase = renderRenderable.renderMaterial;
+		renderRenderable.materialID = renderMaterial.materialID;
+		renderRenderable.renderOrderId = renderMaterial.renderOrderId;
 
 		//store reference to scene transform
-		renderableGL.renderSceneTransform = this._renderSceneTransform;
+		renderRenderable.renderSceneTransform = this._renderSceneTransform;
 
-		if (materialGL.requiresBlending) {
-			renderableGL.next = this._pBlendedRenderableHead;
-			this._pBlendedRenderableHead = renderableGL;
+		if (renderMaterial.requiresBlending) {
+			renderRenderable.next = this._pBlendedRenderableHead;
+			this._pBlendedRenderableHead = renderRenderable;
 		} else {
-			renderableGL.next = this._pOpaqueRenderableHead;
-			this._pOpaqueRenderableHead = renderableGL;
+			renderRenderable.next = this._pOpaqueRenderableHead;
+			this._pOpaqueRenderableHead = renderRenderable;
 		}
 
-		this._pNumElements += renderableGL.elementsGL.elements.numElements; //need to re-trigger elementsGL getter in case animator has changed
+		this._pNumElements += renderRenderable.stageElements.elements.numElements; //need to re-trigger stageElements getter in case animator has changed
 	}
 
 	/**
@@ -899,7 +899,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 		//don't do anything here
 	}
 
-	private _registerMask(obj:RenderStateBase):void
+	private _registerMask(obj:_Render_RenderableBase):void
 	{
 		//console.log("registerMask");
 		this._registeredMasks.push(obj);
@@ -927,7 +927,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 		this._pContext.setStencilReferenceValue(this._maskConfig);
 		var numLayers:number = masks.length;
 		var numRenderables:number = this._registeredMasks.length;
-		var renderableGL:RenderStateBase;
+		var renderRenderable:_Render_RenderableBase;
 		var children:Array<IEntity>;
 		var numChildren:number;
 		var mask:IEntity;
@@ -947,11 +947,11 @@ export class RendererBase extends TraverserBase implements IRenderer
 			for (var j:number = 0; j < numChildren; ++j) {
 				mask = children[j];
 				for (var k:number = 0; k < numRenderables; ++k) {
-					renderableGL = this._registeredMasks[k];
+					renderRenderable = this._registeredMasks[k];
 					//console.log("testing for " + mask["hierarchicalMaskID"] + ", " + mask.name);
-					if (renderableGL.maskId == mask.id) {
+					if (renderRenderable.maskId == mask.id) {
 						//console.log("Rendering hierarchicalMaskID " + mask["hierarchicalMaskID"]);
-						this._drawMask(projection, renderableGL);
+						this._drawMask(projection, renderRenderable);
 					}
 				}
 			}
@@ -967,17 +967,17 @@ export class RendererBase extends TraverserBase implements IRenderer
 		//this._stage.setRenderTarget(oldRenderTarget);
 	}
 
-	private _drawMask(projection:ProjectionBase, renderableGL:RenderStateBase):void
+	private _drawMask(projection:ProjectionBase, renderRenderable:_Render_RenderableBase):void
 	{
-		var materialGL = renderableGL.materialGL;
-		var passes = materialGL.passes;
+		var renderMaterial = renderRenderable.renderMaterial;
+		var passes = renderMaterial.passes;
 		var len = passes.length;
 		var pass = passes[len-1];
 
 		this.activatePass(pass, projection);
 		this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //TODO: setup so as not to override activate
 		// only render last pass for now
-		renderableGL._iRender(pass, projection);
+		renderRenderable._iRender(pass, projection);
 		this.deactivatePass(pass);
 	}
 

@@ -1,12 +1,10 @@
-import {IAssetClass} from "@awayjs/core";
-
 import {Stage} from "@awayjs/stage";
 
 import {INode} from "./base/INode";
-import {IMaterialStateClass} from "./base/IMaterialStateClass";
+import {IMaterialClass} from "./base/IMaterialClass";
+import {_IRender_MaterialClass} from "./base/_IRender_MaterialClass";
 
 import {RenderGroup} from "./RenderGroup";
-
 import {RendererBase} from "./RendererBase";
 
 /**
@@ -37,9 +35,9 @@ export class DepthRenderer extends RendererBase
      *
      * @param imageObjectClass
      */
-    public static registerMaterial(materialStateClass:IMaterialStateClass, materialClass:IAssetClass):void
+    public static registerMaterial(renderMaterialClass:_IRender_MaterialClass, materialClass:IMaterialClass):void
     {
-        DepthRenderer._materialClassPool[materialClass.assetType] = materialStateClass;
+        DepthRenderer._materialClassPool[materialClass.assetType] = renderMaterialClass;
     }
 
 	/**

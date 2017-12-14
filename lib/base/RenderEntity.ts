@@ -4,17 +4,17 @@ import {Stage} from "@awayjs/stage";
 
 import {IEntity} from "./IEntity";
 import {IRenderable} from "./IRenderable";
-import {IRenderStateClass} from "./IRenderStateClass";
-import {RenderStateBase} from "./RenderStateBase";
+import {_IRender_RenderableClass} from "./_IRender_RenderableClass";
+import {_Render_RenderableBase} from "./_Render_RenderableBase";
 
 import {RenderGroup} from "../RenderGroup";
 
 /**
- * @class away.pool.RenderStatePool
+ * @class away.pool.RenderEntity
  */
-export class RenderStatePool implements IAbstractionPool
+export class RenderEntity implements IAbstractionPool
 {
-	private static _abstractionClassPool:Object = new Object();
+	private static _renderRenderableClassPool:Object = new Object();
 
 	private _abstractionPool:Object = new Object();
     private _stage:Stage;
@@ -67,9 +67,9 @@ export class RenderStatePool implements IAbstractionPool
 	 * @param renderable
 	 * @returns IRenderState
 	 */
-	public getAbstraction(renderable:IRenderable):RenderStateBase
+	public getAbstraction(renderable:IRenderable):_Render_RenderableBase
 	{
-		return this._abstractionPool[renderable.id] || (this._abstractionPool[renderable.id] = new (<IRenderStateClass> RenderStatePool._abstractionClassPool[renderable.assetType])(renderable, this));
+		return this._abstractionPool[renderable.id] || (this._abstractionPool[renderable.id] = new (<_IRender_RenderableClass> RenderEntity._renderRenderableClassPool[renderable.assetType])(renderable, this));
 	}
 	
 	/**
@@ -85,8 +85,8 @@ export class RenderStatePool implements IAbstractionPool
 	 *
 	 * @param imageObjectClass
 	 */
-	public static registerAbstraction(renderStateClass:IRenderStateClass, assetClass:IAssetClass):void
+	public static registerRenderable(renderStateClass:_IRender_RenderableClass, assetClass:IAssetClass):void
 	{
-		RenderStatePool._abstractionClassPool[assetClass.assetType] = renderStateClass;
+		RenderEntity._renderRenderableClassPool[assetClass.assetType] = renderStateClass;
 	}
 }

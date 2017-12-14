@@ -12,8 +12,4 @@ import {Style} from "./Style";
 export interface IRenderable extends IAsset
 {
 	style:Style;
-
-	material:IMaterial;
-
-	invalidateMaterial();
 }

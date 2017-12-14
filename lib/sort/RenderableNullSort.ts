@@ -1,4 +1,4 @@
-import {RenderStateBase} from "../base/RenderStateBase";
+import {_Render_RenderableBase} from "../base/_Render_RenderableBase";
 
 import {IEntitySorter} from "./IEntitySorter";
 
@@ -7,12 +7,12 @@ import {IEntitySorter} from "./IEntitySorter";
  */
 export class RenderableNullSort implements IEntitySorter
 {
-	public sortBlendedRenderables(head:RenderStateBase):RenderStateBase
+	public sortBlendedRenderables(head:_Render_RenderableBase):_Render_RenderableBase
 	{
 		return head;
 	}
 
-	public sortOpaqueRenderables(head:RenderStateBase):RenderStateBase
+	public sortOpaqueRenderables(head:_Render_RenderableBase):_Render_RenderableBase
 	{
 		return head;
 	}

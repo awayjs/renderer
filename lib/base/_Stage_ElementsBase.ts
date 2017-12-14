@@ -1,19 +1,19 @@
 import {AbstractionBase, AbstractMethodError, AssetEvent, Matrix3D, ProjectionBase} from "@awayjs/core";
 
-import {Stage, Short3Attributes, AttributesView, GL_AttributesBuffer} from "@awayjs/stage";
+import {Stage, Short3Attributes, AttributesView, _Stage_AttributesBuffer} from "@awayjs/stage";
 
 import {ElementsEvent} from "../events/ElementsEvent";
 import {ElementsUtils} from "../utils/ElementsUtils";
 
-import {RenderStateBase} from "./RenderStateBase";
+import {_Render_RenderableBase} from "./_Render_RenderableBase";
 import {ShaderBase} from "./ShaderBase";
 import {IElements} from "./IElements";
 
 /**
  *
- * @class away.pool.ElementsStateBaseBase
+ * @class away.pool._Stage_ElementsBaseBase
  */
-export class ElementsStateBase extends AbstractionBase
+export class _Stage_ElementsBase extends AbstractionBase
 {
 	public usages:number = 0;
 	private _elements:IElements;
@@ -22,8 +22,8 @@ export class ElementsStateBase extends AbstractionBase
 	private _onClearIndicesDelegate:(event:ElementsEvent) => void;
 	private _onInvalidateVerticesDelegate:(event:ElementsEvent) => void;
 	private _onClearVerticesDelegate:(event:ElementsEvent) => void;
-	private _overflow:ElementsStateBase;
-	public _indices:GL_AttributesBuffer;
+	private _overflow:_Stage_ElementsBase;
+	public _indices:_Stage_AttributesBuffer;
 	private _indicesUpdated:boolean;
 	private _vertices:Object = new Object();
 	private _verticesUpdated:Object = new Object();
@@ -88,7 +88,7 @@ export class ElementsStateBase extends AbstractionBase
 	/**
 	 *
 	 */
-	public getIndexBufferGL():GL_AttributesBuffer
+	public getIndexBufferGL():_Stage_AttributesBuffer
 	{
 		if (!this._indicesUpdated)
 			this._updateIndices();
@@ -100,7 +100,7 @@ export class ElementsStateBase extends AbstractionBase
 	/**
 	 *
 	 */
-	public getVertexBufferGL(attributesView:AttributesView):GL_AttributesBuffer
+	public getVertexBufferGL(attributesView:AttributesView):_Stage_AttributesBuffer
 	{
 		//first check if indices need updating which may affect vertices
 		if (!this._indicesUpdated)
@@ -143,7 +143,7 @@ export class ElementsStateBase extends AbstractionBase
 		}
 	}
 
-	public _setRenderState(renderable:RenderStateBase, shader:ShaderBase, projection:ProjectionBase):void
+	public _setRenderState(renderable:_Render_RenderableBase, shader:ShaderBase, projection:ProjectionBase):void
 	{
 		if (!this._verticesUpdated)
 			this._updateIndices();
@@ -155,7 +155,7 @@ export class ElementsStateBase extends AbstractionBase
 		// 	this._overflow._iRender(renderable, camera, viewProjection);
 	}
 
-	public draw(renderable:RenderStateBase, shader:ShaderBase, projection:ProjectionBase, count:number, offset:number):void
+	public draw(renderable:_Render_RenderableBase, shader:ShaderBase, projection:ProjectionBase, count:number, offset:number):void
 	{
 		throw new AbstractMethodError();
 	}
@@ -169,7 +169,7 @@ export class ElementsStateBase extends AbstractionBase
 	{
 		var indices:Short3Attributes = this._elements.indices;
 		if (indices) {
-			this._indices = <GL_AttributesBuffer> this._stage.getAbstraction(ElementsUtils.getSubIndices(indices, this._elements.numVertices, this._indexMappings, indexOffset));
+			this._indices = <_Stage_AttributesBuffer> this._stage.getAbstraction(ElementsUtils.getSubIndices(indices, this._elements.numVertices, this._indexMappings, indexOffset));
 			this._numIndices = this._indices._attributesBuffer.count*indices.dimensions;
 		} else {
 			this._indices = null;
@@ -211,7 +211,7 @@ export class ElementsStateBase extends AbstractionBase
 
 		var bufferId:number = attributesView.attributesBuffer.id;
 
-		this._vertices[bufferId] = <GL_AttributesBuffer> this._stage.getAbstraction(ElementsUtils.getSubVertices(attributesView.attributesBuffer, this._indexMappings));
+		this._vertices[bufferId] = <_Stage_AttributesBuffer> this._stage.getAbstraction(ElementsUtils.getSubVertices(attributesView.attributesBuffer, this._indexMappings));
 
 		this._verticesUpdated[bufferId] = true;
 	}
@@ -291,7 +291,7 @@ export class ElementsStateBase extends AbstractionBase
 	 * @returns {away.pool.GL_ShapeRenderable}
 	 * @protected
 	 */
-	public _pGetOverflowElements():ElementsStateBase
+	public _pGetOverflowElements():_Stage_ElementsBase
 	{
 		throw new AbstractMethodError();
 	}

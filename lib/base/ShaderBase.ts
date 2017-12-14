@@ -2,15 +2,14 @@ import {AssetBase, AbstractionBase, Matrix, Matrix3D, Vector3D, ColorTransform, 
 
 import {AGALMiniAssembler, ContextGLProfile, ContextGLBlendFactor, ContextGLCompareMode, ContextGLTriangleFace, ProgramData, Stage, BlendMode, ShaderRegisterCache, ShaderRegisterData, ShaderRegisterElement} from "@awayjs/stage";
 
-import {RenderStateBase} from "./RenderStateBase";
-import {IRenderable} from "./IRenderable";
-import {MaterialStatePool} from "./MaterialStatePool";
+import {_Render_RenderableBase} from "./_Render_RenderableBase";
+import {_Render_ElementsBase} from "./_Render_ElementsBase";
 import {IAnimationSet} from "./IAnimationSet";
 import {IAnimator} from "./IAnimator";
 import {AnimationRegisterData} from "./AnimationRegisterData";
 import {IPass} from "./IPass";
-import {MaterialStateBase} from "./MaterialStateBase";
-import {ElementsStateBase} from "./ElementsStateBase";
+import {_Render_MaterialBase} from "./_Render_MaterialBase";
+import {_Stage_ElementsBase} from "./_Stage_ElementsBase";
 
 /**
  * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
@@ -26,8 +25,8 @@ export class ShaderBase implements IAbstractionPool
 
 	private _abstractionPool:Object = new Object();
 
-	private _materialStatePool:MaterialStatePool;
-    private _materialState:MaterialStateBase;
+	private _renderElements:_Render_ElementsBase;
+    private _renderMaterial:_Render_MaterialBase;
 	private _pass:IPass;
 	public _stage:Stage;
 	private _programData:ProgramData;
@@ -55,9 +54,9 @@ export class ShaderBase implements IAbstractionPool
 		return this._pass;
 	}
 
-	public get materialState():MaterialStateBase
+	public get renderMaterial():_Render_MaterialBase
 	{
-		return this._materialState;
+		return this._renderMaterial;
 	}
 
 	public get programData():ProgramData
@@ -77,7 +76,7 @@ export class ShaderBase implements IAbstractionPool
     /**
      *
      */
-    public activeElements:ElementsStateBase;
+    public activeElements:_Stage_ElementsBase;
 
 	/**
 	 * The depth compare mode used to render the renderables using this material.
@@ -350,10 +349,10 @@ export class ShaderBase implements IAbstractionPool
 	/**
 	 * Creates a new MethodCompilerVO object.
 	 */
-	constructor(materialStatePool:MaterialStatePool, materialState:MaterialStateBase, pass:IPass, stage:Stage)
+	constructor(renderElements:_Render_ElementsBase, renderMaterial:_Render_MaterialBase, pass:IPass, stage:Stage)
 	{
-		this._materialStatePool = materialStatePool;
-		this._materialState = materialState;
+		this._renderElements = renderElements;
+		this._renderMaterial = renderMaterial;
 		this._pass = pass;
 		this._stage = stage;
 
@@ -385,6 +384,8 @@ export class ShaderBase implements IAbstractionPool
 
 	public _includeDependencies():void
 	{
+		this._renderMaterial.renderElements._includeDependencies(this);
+
 		this._pass._includeDependencies(this);
 
 		//this.usesCommonData = this.usesCurves || this.usesCommonData;
@@ -512,7 +513,7 @@ export class ShaderBase implements IAbstractionPool
 	 * @param stage
 	 * @param camera
 	 */
-	public _setRenderState(renderState:RenderStateBase, projection:ProjectionBase):void
+	public _setRenderState(renderState:_Render_RenderableBase, projection:ProjectionBase):void
 	{
 		if (renderState.sourceEntity.animator)
 			(<IAnimator> renderState.sourceEntity.animator).setRenderState(this, renderState, this._stage, projection);
@@ -757,8 +758,8 @@ export class ShaderBase implements IAbstractionPool
             this._compileViewDirCode();
 
         //collect code from elements
-        this._vertexCode += this._materialStatePool._getVertexCode(this, this._registerCache, this._sharedRegisters);
-        this._fragmentCode += this._materialStatePool._getFragmentCode(this, this._registerCache, this._sharedRegisters);
+        this._vertexCode += this._renderElements._getVertexCode(this, this._registerCache, this._sharedRegisters);
+        this._fragmentCode += this._renderElements._getFragmentCode(this, this._registerCache, this._sharedRegisters);
     }
 
 
@@ -836,7 +837,7 @@ export class ShaderBase implements IAbstractionPool
 
         //init constant data in animation
         if (this.usesAnimation)
-            this._materialState.animationSet.doneAGALCode(this);
+            this._renderMaterial.animationSet.doneAGALCode(this);
     }
 
     private _compileColorCode():void
@@ -1100,7 +1101,7 @@ export class ShaderBase implements IAbstractionPool
         //check to see if GPU animation is used
         if (this.usesAnimation) {
 
-            var animationSet:IAnimationSet = <IAnimationSet> this._materialState.animationSet;
+            var animationSet:IAnimationSet = <IAnimationSet> this._renderMaterial.animationSet;
 
             this._animationVertexCode += animationSet.getAGALVertexCode(this, this._registerCache, this._sharedRegisters);
 
