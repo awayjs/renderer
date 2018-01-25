@@ -22,6 +22,8 @@ export interface IEntity extends IAsset
 
 	isEntity:boolean;
 
+	getMouseCursor():string;
+
 	isContainer:boolean;
 
 	isPartition:boolean;
