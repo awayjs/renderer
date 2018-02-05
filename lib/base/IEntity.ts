@@ -24,6 +24,12 @@ export interface IEntity extends IAsset
 
 	getMouseCursor():string;
 
+	isTabEnabled:boolean;
+
+	tabIndex:number;
+
+	isInFocus:boolean;
+
 	isContainer:boolean;
 
 	isPartition:boolean;
