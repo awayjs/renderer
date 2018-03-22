@@ -78,7 +78,7 @@ export class RenderEntity implements IAbstractionPool
 	 */
 	public clearAbstraction(renderable:IRenderable):void
 	{
-		this._abstractionPool[renderable.id] = null;
+		delete this._abstractionPool[renderable.id];
 	}
 
 	/**

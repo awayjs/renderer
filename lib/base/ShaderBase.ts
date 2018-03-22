@@ -370,7 +370,7 @@ export class ShaderBase implements IAbstractionPool
 	 */
 	public clearAbstraction(asset:AssetBase):void
 	{
-		this._abstractionPool[asset.id] = null;
+		delete this._abstractionPool[asset.id];
 	}
 
 	/**
