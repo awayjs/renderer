@@ -1,4 +1,4 @@
-console.log("AwayJS - Renderer - 0.9.11");
+console.log("AwayJS - Renderer - 0.9.12");
 export {IContainerNode} from "./lib/base/IContainerNode";
 export {IEntity} from "./lib/base/IEntity";
 export {IMaterial} from "./lib/base/IMaterial";
