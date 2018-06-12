@@ -21,9 +21,9 @@
     "watch": "npm run tsc -- --w",
     "prebuild": "npm run clean:dist",
     "build": "npm run tsc && npm run rollup && npm run uglifyjs",
-    "version": "npm run build",
-    "postversion": "npm run copyVersionToIndex && git push && git push --tags",
-    "copyVersionToIndex": "node ./copyVersionToIndex && git add . && git commit -m 'addVersionToIndex'"
+    "copyVersionToIndex": "node ./copyVersionToIndex && git add ./index.ts && git commit -m \"update version number in index.ts\"",
+    "version": "npm run copyVersionToIndex && npm run build",
+    "postversion": "git push && git push --tags && npm publish"
   },
   "keywords": [
     "AwayJS",
