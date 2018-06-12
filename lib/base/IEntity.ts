@@ -50,9 +50,9 @@ export interface IEntity extends IAsset
 
 	maskMode:boolean;
 
-	getBox():Box;
+	getBoxBounds():Box;
 
-	getSphere():Sphere;
+	getSphereBounds():Sphere;
 
 	transform:Transform;
 
@@ -62,11 +62,6 @@ export interface IEntity extends IAsset
 	 *
 	 */
 	debugVisible:boolean;
-
-	/**
-	 *
-	 */
-	boundsType:string;
 
 	/**
 	 *
