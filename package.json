@@ -1,6 +1,6 @@
 {
   "name": "@awayjs/renderer",
-  "version": "0.9.11",
+  "version": "0.9.12",
   "description": "Renderer for AwayJS",
   "main": "bundle/awayjs-renderer.umd.js",
   "module": "dist/index.js",
@@ -22,7 +22,8 @@
     "prebuild": "npm run clean:dist",
     "build": "npm run tsc && npm run rollup && npm run uglifyjs",
     "version": "npm run build",
-    "postversion": "git push && git push --tags && npm publish"
+    "postversion": "npm run copyVersionToIndex && git push && git push --tags",
+    "copyVersionToIndex": "node ./copyVersionToIndex && git add . && git commit -m 'addVersionToIndex'"
   },
   "keywords": [
     "AwayJS",
