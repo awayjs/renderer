@@ -1,4 +1,4 @@
-import {Transform, Box, ColorTransform, Sphere, Matrix3D, Vector3D, IAsset} from "@awayjs/core";
+import {Transform, Box, ColorTransform, Sphere, Matrix3D, Vector3D, IAsset, ProjectionBase} from "@awayjs/core";
 
 import {PickingCollision} from "../pick/PickingCollision";
 
@@ -36,7 +36,7 @@ export interface IEntity extends IAsset
 
 	traverseName:string;
 
-	_iInternalUpdate():void;
+	_iInternalUpdate(projection:ProjectionBase):void;
 	
 	_iMasksConfig():Array<Array<number>>;
 
