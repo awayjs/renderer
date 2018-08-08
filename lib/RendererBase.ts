@@ -946,12 +946,15 @@ export class RendererBase extends TraverserBase implements IRenderer
 
 			for (var j:number = 0; j < numChildren; ++j) {
 				mask = children[j];
-				for (var k:number = 0; k < numRenderables; ++k) {
-					renderRenderable = this._registeredMasks[k];
-					//console.log("testing for " + mask["hierarchicalMaskID"] + ", " + mask.name);
-					if (renderRenderable.maskId == mask.id) {
-						//console.log("Rendering hierarchicalMaskID " + mask["hierarchicalMaskID"]);
-						this._drawMask(projection, renderRenderable);
+				//todo: figure out why masks can be null here
+				if(mask){
+					for (var k:number = 0; k < numRenderables; ++k) {
+						renderRenderable = this._registeredMasks[k];
+						//console.log("testing for " + mask["hierarchicalMaskID"] + ", " + mask.name);
+						if (renderRenderable.maskId == mask.id) {
+							//console.log("Rendering hierarchicalMaskID " + mask["hierarchicalMaskID"]);
+							this._drawMask(projection, renderRenderable);
+						}
 					}
 				}
 			}
