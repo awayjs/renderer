@@ -1,6 +1,6 @@
 import {AbstractMethodError, AssetEvent, Matrix, Matrix3D, AbstractionBase, ProjectionBase} from "@awayjs/core";
 
-import {Stage, _Stage_ImageBase, ImageSampler, ImageBase} from "@awayjs/stage";
+import {Stage, _Stage_ImageBase, ImageSampler, ImageBase, Viewport} from "@awayjs/stage";
 
 import {RenderableEvent} from "../events/RenderableEvent";
 import {MaterialUtils} from "../utils/MaterialUtils";
@@ -162,17 +162,17 @@ export class _Render_RenderableBase extends AbstractionBase
      *
      * @private
      */
-    public _iRender(pass:IPass, projection:ProjectionBase):void
+    public _iRender(pass:IPass, viewport:Viewport):void
     {
-        pass._setRenderState(this, projection);
+        pass._setRenderState(this, viewport);
 
         var elements:_Stage_ElementsBase = this.stageElements;
         if (pass.shader.activeElements != elements) {
             pass.shader.activeElements = elements;
-            elements._setRenderState(this, pass.shader, projection);
+            elements._setRenderState(this, pass.shader, viewport);
         }
 
-        this._stageElements.draw(this, pass.shader, projection, this._count, this._offset)
+        this._stageElements.draw(this, pass.shader, viewport, this._count, this._offset)
     }
 
 

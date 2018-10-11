@@ -1,12 +1,17 @@
-import {Transform, Box, ColorTransform, Sphere, Matrix3D, Vector3D, IAsset, ProjectionBase} from "@awayjs/core";
+import {Transform, Box, ColorTransform, Sphere, Matrix3D, Vector3D, IAsset} from "@awayjs/core";
 
 import {PickingCollision} from "../pick/PickingCollision";
+import {TraverserBase} from "../partition/TraverserBase";
 
 import {IAnimator} from "./IAnimator";
 import {IMaterial} from "./IMaterial";
 import {IRenderable} from "./IRenderable";
-import {TraverserBase} from "./TraverserBase";
 import {Style} from "./Style";
+import { BoundingVolumeType } from '../bounds/BoundingVolumeType';
+import { BoundingVolumeBase } from '../bounds/BoundingVolumeBase';
+import { PartitionBase } from '../partition/PartitionBase';
+import { Viewport } from '@awayjs/stage';
+
 
 export interface IEntity extends IAsset
 {
@@ -32,11 +37,9 @@ export interface IEntity extends IAsset
 
 	isContainer:boolean;
 
-	isPartition:boolean;
+	partition:PartitionBase;
 
-	traverseName:string;
-
-	_iInternalUpdate(projection:ProjectionBase):void;
+	_iInternalUpdate(viewport:Viewport):void;
 	
 	_iMasksConfig():Array<Array<number>>;
 
@@ -56,12 +59,20 @@ export interface IEntity extends IAsset
 
 	transform:Transform;
 
-	partition:IEntity;
-
+	/**
+	 * 
+	 */
+	defaultBoundingVolume:BoundingVolumeType;
+	
 	/**
 	 *
 	 */
-	debugVisible:boolean;
+	boundsVisible:boolean;
+
+	/**
+	 * 
+	 */
+	boundsPrimitive:IEntity;
 
 	/**
 	 *
@@ -77,6 +88,8 @@ export interface IEntity extends IAsset
 	 *
 	 */
 	zOffset:number;
+
+	pickShape:boolean;
 
 	/**
 	 * @internal
@@ -96,6 +109,13 @@ export interface IEntity extends IAsset
 	getRenderSceneTransform(cameraTransform:Matrix3D):Matrix3D;
 
 	getRenderableIndex(renderable:IRenderable):number;
+
+	getBoundingVolume(targetCoordinateSpace?:IEntity, boundingVolumeType?:BoundingVolumeType):BoundingVolumeBase
+
+	_getSphereBoundsInternal(matrix3D:Matrix3D, strokeFlag:boolean, cache?:Sphere, target?:Sphere):Sphere
+
+	_getBoxBoundsInternal(matrix3D:Matrix3D, strokeFlag:boolean, fastFlag:boolean, cache?:Box, target?:Box ):Box
+
 	/**
 	 *
 	 * @param renderer

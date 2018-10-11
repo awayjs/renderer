@@ -1,11 +1,8 @@
-import {Rectangle, ProjectionBase} from "@awayjs/core";
+import {ProjectionBase} from "@awayjs/core";
 
-import {ImageBase, BitmapImage2D, ContextGLProfile, ContextMode, Stage, ContextGLClearMask, IContextGL} from "@awayjs/stage";
+import {BitmapImage2D, ContextGLProfile, ContextMode, Stage, ContextGLClearMask, IContextGL} from "@awayjs/stage";
 
-import {IEntity} from "./base/IEntity";
-import {INode} from "./base/INode";
-import {IView} from "./base/IView";
-import {IRenderer} from "./base/IRenderer";
+import {INode} from "./partition/INode";
 import {IMaterialClass} from "./base/IMaterialClass";
 import {_IRender_MaterialClass} from "./base/_IRender_MaterialClass";
 
@@ -17,6 +14,7 @@ import {DepthRenderer} from "./DepthRenderer";
 import {DistanceRenderer} from "./DistanceRenderer";
 import {Filter3DRenderer} from "./Filter3DRenderer";
 import {RendererBase} from "./RendererBase";
+import { PartitionBase } from './partition/PartitionBase';
 
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
@@ -28,29 +26,24 @@ export class DefaultRenderer extends RendererBase
 {
     public static _renderMaterialClassPool:Object = new Object();
 
-	public _pRequireDepthRender:boolean;
+	private _requireDepthRender:boolean;
 
 	private _distanceRenderer:DistanceRenderer;
 	private _depthRenderer:DepthRenderer;
-	public _pFilter3DRenderer:Filter3DRenderer;
+	private _filter3DRenderer:Filter3DRenderer;
 
-	public _pDepthRender:BitmapImage2D;
+	public _depthRender:BitmapImage2D;
 
 	private _antiAlias:number = 0;
 	
 	public get antiAlias():number
 	{
-		return this._antiAlias;
+		return this._stage.antiAlias;
 	}
 
 	public set antiAlias(value:number)
 	{
-		if (this._antiAlias == value)
-			return;
-
-		this._antiAlias = value;
-
-		this._pBackBufferInvalid = true;
+		this._stage.antiAlias = value;
 	}
 
 	/**
@@ -72,30 +65,30 @@ export class DefaultRenderer extends RendererBase
 	 */
 	public get filters3d():Array<Filter3DBase>
 	{
-		return this._pFilter3DRenderer? this._pFilter3DRenderer.filters : null;
+		return this._filter3DRenderer? this._filter3DRenderer.filters : null;
 	}
 	public set filters3d(value:Array<Filter3DBase>)
 	{
 		if (value && value.length == 0)
 			value = null;
 
-		if (this._pFilter3DRenderer && !value) {
-			this._pFilter3DRenderer.dispose();
-			this._pFilter3DRenderer = null;
-		} else if (!this._pFilter3DRenderer && value) {
-			this._pFilter3DRenderer = new Filter3DRenderer(this._pStage);
-			this._pFilter3DRenderer.filters = value;
+		if (this._filter3DRenderer && !value) {
+			this._filter3DRenderer.dispose();
+			this._filter3DRenderer = null;
+		} else if (!this._filter3DRenderer && value) {
+			this._filter3DRenderer = new Filter3DRenderer(this._stage);
+			this._filter3DRenderer.filters = value;
 		}
 
-		if (this._pFilter3DRenderer) {
-			this._pFilter3DRenderer.filters = value;
-			this._pRequireDepthRender = this._pFilter3DRenderer.requireDepthRender;
+		if (this._filter3DRenderer) {
+			this._filter3DRenderer.filters = value;
+			this._requireDepthRender = this._filter3DRenderer.requireDepthRender;
 		} else {
-			this._pRequireDepthRender = false;
+			this._requireDepthRender = false;
 
-			if (this._pDepthRender) {
-				this._pDepthRender.dispose();
-				this._pDepthRender = null;
+			if (this._depthRender) {
+				this._depthRender.dispose();
+				this._depthRender = null;
 			}
 		}
 	}
@@ -106,28 +99,15 @@ export class DefaultRenderer extends RendererBase
 	 * @param antiAlias The amount of anti-aliasing to use.
 	 * @param renderMode The render mode to use.
 	 */
-	constructor(stage:Stage = null, forceSoftware:boolean = false, profile:ContextGLProfile = ContextGLProfile.BASELINE, mode:ContextMode = ContextMode.AUTO)
+	constructor(partition:PartitionBase, projection:ProjectionBase = null, stage:Stage = null, forceSoftware:boolean = false, profile:ContextGLProfile = ContextGLProfile.BASELINE, mode:ContextMode = ContextMode.AUTO)
 	{
-		super(stage, forceSoftware, profile, mode);
+		super(partition, projection, stage, forceSoftware, profile, mode);
 
-		if (stage)
-			this.shareContext = true;
+		this._renderGroup = new RenderGroup(this._stage, DefaultRenderer._renderMaterialClassPool, this);
+		this._pRttBufferManager = RTTBufferManager.getInstance(this._stage);
 
-		this._renderGroup = new RenderGroup(this._pStage, DefaultRenderer._renderMaterialClassPool, this);
-		this._pRttBufferManager = RTTBufferManager.getInstance(this._pStage);
-
-		this._depthRenderer = new DepthRenderer(this._pStage);
-		this._distanceRenderer = new DistanceRenderer(this._pStage);
-
-		if (this._width == 0)
-			this.width = window.innerWidth;
-		else
-			this._pRttBufferManager.viewWidth = this._width;
-
-		if (this._height == 0)
-			this.height = window.innerHeight;
-		else
-			this._pRttBufferManager.viewHeight = this._height;
+		this._depthRenderer = new DepthRenderer(this._partition, this._viewport.projection, this._stage);
+		this._distanceRenderer = new DistanceRenderer(this._partition, this._viewport.projection, this._stage);
 	}
 
 	public getDepthRenderer():DepthRenderer
@@ -157,63 +137,39 @@ export class DefaultRenderer extends RendererBase
 	{
 		var enter:boolean = super.enterNode(node);
 
-		if (enter && node.debugVisible)
-			node.renderBounds(this);
+		if (enter && node.boundsVisible)
+			this.applyEntity(node.boundsPrimitive);
 
 		return enter;
 	}
 
-	public render(projection:ProjectionBase, view:IView):void
+	public render(enableDepthAndStencil:boolean = true, surfaceSelector:number = 0):void
 	{
-		super.render(projection, view);
-
-		if (!this._pStage.recoverFromDisposal()) {//if context has Disposed by the OS,don't render at this frame
-			this._pBackBufferInvalid = true;
+		if (!this._stage.recoverFromDisposal()) {//if context has Disposed by the OS,don't render at this frame
 			return;
 		}
 
-		if (this._pBackBufferInvalid)// reset or update render settings
-			this.pUpdateBackBuffer();
-
-		if (this.shareContext && this._pContext)
-			this._pContext.clear(0, 0, 0, 1, 1, 0, ContextGLClearMask.DEPTH);
-
-		if (this._pFilter3DRenderer) {
-			this.textureRatioX = this._pRttBufferManager.textureRatioX;
-			this.textureRatioY = this._pRttBufferManager.textureRatioY;
-		} else {
-			this.textureRatioX = 1;
-			this.textureRatioY = 1;
-		}
-
-		if (this._pRequireDepthRender)
-			this.pRenderSceneDepthToTexture(projection, view);
+		if (this._requireDepthRender)
+			this._renderSceneDepthToTexture();
 
 		if (this._depthPrepass)
-			this.pRenderDepthPrepass(projection, view);
+			this._renderDepthPrepass();
 
-		if (this._pFilter3DRenderer && this._pContext) { //TODO
-			this._iRender(projection, view, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pFilter3DRenderer.renderToTextureRect);
-			this._pFilter3DRenderer.render(this._pStage, projection, this._pDepthRender);
+		if (this._filter3DRenderer) { //TODO
+			this._viewport.target = this._filter3DRenderer.getMainInputTexture(this._stage);
+			super.render(enableDepthAndStencil, surfaceSelector);
+			this._filter3DRenderer.render(this._stage, this._viewport.projection, this._depthRender);
 		} else {
-
-			if (this.shareContext)
-				this._iRender(projection, view, null, this._pScissorRect);
-			else
-				this._iRender(projection, view);
+			this._viewport.target = null;
+			super.render(enableDepthAndStencil, surfaceSelector);
 		}
 
-		if (!this.shareContext && this._pContext)
-			this._pContext.present();
-
-		// register that a view has been rendered
-		this._pStage.bufferClear = false;
+		this._viewport.present();
 	}
 
 	public dispose():void
 	{
-		if (!this.shareContext)
-			this._pStage.dispose();
+		this._viewport.dispose();
 
 		this._pRttBufferManager.dispose();
 		this._pRttBufferManager = null;
@@ -223,7 +179,7 @@ export class DefaultRenderer extends RendererBase
 		this._depthRenderer = null;
 		this._distanceRenderer = null;
 
-		this._pDepthRender = null;
+		this._depthRender = null;
 
 		super.dispose();
 	}
@@ -231,18 +187,17 @@ export class DefaultRenderer extends RendererBase
 	/**
 	 *
 	 */
-	public pRenderDepthPrepass(projection:ProjectionBase, view:IView):void
+	private _renderDepthPrepass():void
 	{
 		this._depthRenderer.disableColor = true;
 
-		if (this._pFilter3DRenderer) {
-			this._depthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
-			this._depthRenderer.textureRatioY = this._pRttBufferManager.textureRatioY;
-			this._depthRenderer._iRender(projection, view, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
+		this._depthRenderer.viewport.projection = this._viewport.projection;
+		if (this._filter3DRenderer) {
+			this._depthRenderer.viewport.target = this._filter3DRenderer.getMainInputTexture(this._stage);
+			this._depthRenderer.render();
 		} else {
-			this._depthRenderer.textureRatioX = 1;
-			this._depthRenderer.textureRatioY = 1;
-			this._depthRenderer._iRender(projection, view);
+			this._depthRenderer.viewport.target = null;
+			this._depthRenderer.render();
 		}
 
 		this._depthRenderer.disableColor = false;
@@ -252,31 +207,12 @@ export class DefaultRenderer extends RendererBase
 	/**
 	 *
 	 */
-	public pRenderSceneDepthToTexture(projection:ProjectionBase, view:IView):void
+	private _renderSceneDepthToTexture():void
 	{
-		if (this._pDepthTextureInvalid || !this._pDepthRender)
-			this.initDepthTexture(<IContextGL> this._pStage.context);
+		if (this._depthTextureDirty || !this._depthRender)
+			this.initDepthTexture(<IContextGL> this._stage.context);
 
-		this._depthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
-		this._depthRenderer.textureRatioY = this._pRttBufferManager.textureRatioY;
-		this._depthRenderer._iRender(projection, view, this._pDepthRender);
-	}
-
-
-	/**
-	 * Updates the backbuffer dimensions.
-	 */
-	public pUpdateBackBuffer():void
-	{
-		// No reason trying to configure back buffer if there is no context available.
-		// Doing this anyway (and relying on _stage to cache width/height for
-		// context does get available) means usesSoftwareRendering won't be reliable.
-		if (this._pStage.context && !this.shareContext) {
-			if (this._width && this._height) {
-				this._pStage.configureBackBuffer(this._width, this._height, this._antiAlias, true);
-				this._pBackBufferInvalid = false;
-			}
-		}
+		this._depthRenderer.render();
 	}
 
 	/**
@@ -284,11 +220,12 @@ export class DefaultRenderer extends RendererBase
 	 */
 	private initDepthTexture(context:IContextGL):void
 	{
-		this._pDepthTextureInvalid = false;
+		this._depthTextureDirty = false;
 
-		if (this._pDepthRender)
-			this._pDepthRender.dispose();
+		if (this._depthRender)
+			this._depthRender.dispose();
 
-		this._pDepthRender = new BitmapImage2D(this._pRttBufferManager.textureWidth, this._pRttBufferManager.textureHeight);
+		this._depthRender = new BitmapImage2D(this._pRttBufferManager.textureWidth, this._pRttBufferManager.textureHeight);
+		this._depthRenderer.viewport.target = this._depthRender;
 	}
 }

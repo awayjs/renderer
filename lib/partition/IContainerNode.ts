@@ -1,4 +1,5 @@
 import {INode} from "./INode";
+import { TraverserBase } from './TraverserBase';
 
 /**
  * IDisplayObjectNode is an interface for the constructable class definition EntityNode that is used to

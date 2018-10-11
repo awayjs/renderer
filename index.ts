@@ -1,14 +1,11 @@
 console.log("AwayJS - Renderer - 0.9.15");
-export {IContainerNode} from "./lib/base/IContainerNode";
 export {IEntity} from "./lib/base/IEntity";
 export {IMaterial} from "./lib/base/IMaterial";
 export {IMaterialClass} from "./lib/base/IMaterialClass";
-export {INode} from "./lib/base/INode";
 export {_IRender_ElementsClass} from "./lib/base/_IRender_ElementsClass";
 export {_IRender_MaterialClass} from "./lib/base/_IRender_MaterialClass";
 export {IPass} from "./lib/base/IPass";
 export {IRenderable} from "./lib/base/IRenderable";
-export {TraverserBase} from "./lib/base/TraverserBase";
 export {TouchPoint} from "./lib/base/TouchPoint";
 export {IRenderer} from "./lib/base/IRenderer";
 export {ITexture} from "./lib/base/ITexture";
@@ -31,13 +28,32 @@ export {ChunkVO} from "./lib/base/ChunkVO";
 export {IMapper} from "./lib/base/IMapper";
 export {MappingMode} from "./lib/base/MappingMode";
 
+export {BoundingBox} from "./lib/bounds/BoundingBox";
+export {BoundingSphere} from "./lib/bounds/BoundingSphere";
+export {BoundingVolumeBase} from "./lib/bounds/BoundingVolumeBase";
+export {BoundingVolumePool} from "./lib/bounds/BoundingVolumePool";
+export {BoundingVolumeType} from "./lib/bounds/BoundingVolumeType";
+export {NullBounds} from "./lib/bounds/NullBounds";
+
+export {IContainerNode} from "./lib/partition/IContainerNode";
+export {INode} from "./lib/partition/INode";
+export {TraverserBase} from "./lib/partition/TraverserBase";
+export {BasicPartition} from "./lib/partition/BasicPartition";
+export {RenderableContainerNode} from "./lib/partition/RenderableContainerNode";
+export {EntityNode} from "./lib/partition/EntityNode";
+export {EntityContainerNode} from "./lib/partition/EntityContainerNode";
+export {IEntityNodeClass} from "./lib/partition/IEntityNodeClass";
+export {NodeBase} from "./lib/partition/NodeBase";
+export {PartitionBase} from "./lib/partition/PartitionBase";
+export {SceneGraphPartition} from "./lib/partition/SceneGraphPartition";
+
 export {DefaultRenderer}				from "./lib/DefaultRenderer";
 
 export {DepthRenderer}				from "./lib/DepthRenderer";
 
 export {DistanceRenderer}				from "./lib/DistanceRenderer";
 
-export {RendererEvent}					from "./lib/events/RendererEvent";
+export {EntityEvent}					from "./lib/events/EntityEvent";
 export {RTTEvent}						from "./lib/events/RTTEvent";
 export {RenderableEvent} from "./lib/events/RenderableEvent";
 export {PassEvent} from "./lib/events/PassEvent";
@@ -60,6 +76,8 @@ export {FXAAFilter3D}					from "./lib/filters/FXAAFilter3D";
 export {RTTBufferManager}				from "./lib/managers/RTTBufferManager";
 
 export {PickingCollision} from "./lib/pick/PickingCollision";
+export {IPicker} from "./lib/pick/IPicker";
+export {RaycastPicker} from "./lib/pick/RaycastPicker";
 
 export {ElementsUtils}					from "./lib/utils/ElementsUtils";
 export {MaterialUtils}					from "./lib/utils/MaterialUtils";

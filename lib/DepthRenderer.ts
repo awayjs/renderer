@@ -1,11 +1,13 @@
 import {Stage} from "@awayjs/stage";
 
-import {INode} from "./base/INode";
+import {INode} from "./partition/INode";
 import {IMaterialClass} from "./base/IMaterialClass";
 import {_IRender_MaterialClass} from "./base/_IRender_MaterialClass";
 
 import {RenderGroup} from "./RenderGroup";
 import {RendererBase} from "./RendererBase";
+import { PartitionBase } from './partition/PartitionBase';
+import { ProjectionBase } from '@awayjs/core';
 
 /**
  * The DepthRenderer class renders 32-bit depth information encoded as RGBA
@@ -20,14 +22,12 @@ export class DepthRenderer extends RendererBase
 	 * @param renderBlended Indicates whether semi-transparent objects should be rendered.
 	 * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
 	 */
-	constructor(stage:Stage = null)
+	constructor(partition:PartitionBase, projection:ProjectionBase = null, stage:Stage = null)
 	{
-		super(stage);
+		super(partition, projection, stage);
 
-		this._renderGroup = new RenderGroup(this._pStage, DepthRenderer._materialClassPool, this);
-		this._iBackgroundR = 1;
-		this._iBackgroundG = 1;
-		this._iBackgroundB = 1;
+		this._renderGroup = new RenderGroup(this._stage, DepthRenderer._materialClassPool, this);
+		this._viewport.backgroundColor = 0xFFFFFF;
 
 	}
 
@@ -45,10 +45,10 @@ export class DepthRenderer extends RendererBase
 	 */
 	public enterNode(node:INode):boolean
 	{
-		var enter:boolean = node._iCollectionMark != RendererBase._iCollectionMark && node.isCastingShadow();
+		var enter:boolean = node._collectionMark != RendererBase._collectionMark && node.isCastingShadow();
 
 		if (!enter) {
-			node._iCollectionMark = RendererBase._iCollectionMark;
+			node._collectionMark = RendererBase._collectionMark;
 
 			return false;
 		}

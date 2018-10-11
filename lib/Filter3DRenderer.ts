@@ -169,7 +169,6 @@ export class Filter3DRenderer
 
 			if (!task.target) {
 
-				stage.scissorRect = null;
 				vertexBuffer = this._rttManager.renderToScreenVertexBuffer;
 				context.setVertexBufferAt(task._positionIndex, vertexBuffer, 0, ContextGLVertexBufferFormat.FLOAT_2);
 				context.setVertexBufferAt(task._uvIndex, vertexBuffer, 8, ContextGLVertexBufferFormat.FLOAT_2);

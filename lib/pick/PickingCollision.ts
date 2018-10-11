@@ -7,7 +7,6 @@ import {IRenderable} from "../base/IRenderable";
  * Value object ___ for a picking collision returned by a picking collider. Created as unique objects on display objects
  *
  * @see away.base.DisplayObject#pickingCollision
- * @see away.core.pick.IPickingCollider
  *
  * @class away.pick.PickingCollision
  */

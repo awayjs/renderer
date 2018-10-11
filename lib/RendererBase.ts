@@ -1,9 +1,7 @@
-import {Matrix3D, Plane3D, Point, Rectangle, Vector3D, IAbstractionPool, ProjectionBase} from "@awayjs/core";
+import {Matrix3D, Plane3D, Rectangle, Vector3D, ProjectionBase} from "@awayjs/core";
 
-import {ImageBase, BitmapImage2D, ContextGLProfile, ContextMode, AGALMiniAssembler, ContextGLBlendFactor, ContextGLCompareMode, ContextGLStencilAction, ContextGLTriangleFace, IContextGL, Stage, StageEvent, StageManager, ProgramData} from "@awayjs/stage";
+import {ImageBase, BitmapImage2D, ContextGLProfile, ContextMode, ContextGLBlendFactor, ContextGLCompareMode, ContextGLStencilAction, ContextGLTriangleFace, IContextGL, Stage, StageEvent, StageManager, Viewport, ViewportEvent, ContextGLClearMask} from "@awayjs/stage";
 
-import {_IRender_MaterialClass} from "./base/_IRender_MaterialClass";
-import {_Render_ElementsBase} from "./base/_Render_ElementsBase";
 import {_Render_MaterialBase} from "./base/_Render_MaterialBase";
 import {_Render_RenderableBase} from "./base/_Render_RenderableBase";
 import {RenderEntity} from "./base/RenderEntity";
@@ -11,16 +9,15 @@ import {IMapper} from "./base/IMapper";
 import {RenderGroup} from "./RenderGroup";
 
 import {IEntity} from "./base/IEntity";
-import {INode} from "./base/INode";
 import {IPass} from "./base/IPass";
-import {IView} from "./base/IView";
 import {IRenderer} from "./base/IRenderer";
-import {TraverserBase} from "./base/TraverserBase"
 import {IRenderable} from "./base/IRenderable";
-import {RendererEvent} from "./events/RendererEvent";
+import {TraverserBase} from "./partition/TraverserBase";
+import {INode} from "./partition/INode";
 import {RTTBufferManager} from "./managers/RTTBufferManager";
 import {IEntitySorter} from "./sort/IEntitySorter";
 import {RenderableMergeSort} from "./sort/RenderableMergeSort";
+import { PartitionBase } from './partition/PartitionBase';
 
 
 /**
@@ -31,7 +28,7 @@ import {RenderableMergeSort} from "./sort/RenderableMergeSort";
  */
 export class RendererBase extends TraverserBase implements IRenderer
 {
-	public static _iCollectionMark = 0;
+	public static _collectionMark = 0;
 
     private _mappers:Array<IMapper> = new Array<IMapper>();
 	private _maskConfig:number;
@@ -41,42 +38,24 @@ export class RendererBase extends TraverserBase implements IRenderer
 	private _numUsedStreams:number = 0;
 	private _numUsedTextures:number = 0;
 
-	public _pContext:IContextGL;
-	public _pStage:Stage;
+	protected _context:IContextGL;
+	protected _partition:PartitionBase;
+	protected _stage:Stage;
+	protected _viewport:Viewport;
 
 	public _cameraTransform:Matrix3D;
 	private _cameraForward:Vector3D = new Vector3D();
 
 	public _pRttBufferManager:RTTBufferManager;
-	private _scissorDirty:boolean;
 
-	public _pBackBufferInvalid:boolean = true;
-	public _pDepthTextureInvalid:boolean = true;
-	public _depthPrepass:boolean = false;
-	private _backgroundR:number = 0;
-	private _backgroundG:number = 0;
-	private _backgroundB:number = 0;
-	private _backgroundAlpha:number = 1;
-
-	// only used by renderers that need to render geometry to textures
-	public _width:number = 0;
-	public _height:number = 0;
-
-	public textureRatioX:number = 1;
-	public textureRatioY:number = 1;
+	protected _depthTextureDirty:boolean = true;
+	protected _depthPrepass:boolean = false;
 
 	private _snapshotBitmapImage2D:BitmapImage2D;
 	private _snapshotRequired:boolean;
 
-	private _x:number = 0;
-	private _y:number = 0;
-	public _pScissorRect:Rectangle = new Rectangle();
-
-	private _scissorUpdated:RendererEvent;
-	private _viewPortUpdated:RendererEvent;
-
 	private _onContextUpdateDelegate:(event:StageEvent) => void;
-	private _onViewportUpdatedDelegate:(event:StageEvent) => void;
+	private _onSizeInvalidateDelegate:(event:ViewportEvent) => void;
 
 	public _pNumElements:number = 0;
 
@@ -93,14 +72,6 @@ export class RendererBase extends TraverserBase implements IRenderer
 	private _renderablePool:RenderEntity;
 	private _zIndex:number;
 	private _renderSceneTransform:Matrix3D;
-	private _renderProjection:ProjectionBase;
-
-	
-	/**
-	 * Defers control of ContextGL clear() and present() calls to Stage, enabling multiple Stage frameworks
-	 * to share the same ContextGL object.
-	 */
-	public shareContext:boolean;
 	
 	/**
 	 *
@@ -160,174 +131,52 @@ export class RendererBase extends TraverserBase implements IRenderer
 	 */
 	public renderableSorter:IEntitySorter;
 
-
-	/**
-	 * A viewPort rectangle equivalent of the Stage size and position.
-	 */
-	public get viewPort():Rectangle
-	{
-		return this._pStage.viewPort;
-	}
-
-	/**
-	 * A scissor rectangle equivalent of the view size and position.
-	 */
-	public get scissorRect():Rectangle
-	{
-		if (this._scissorDirty) {
-			this._scissorDirty = false;
-
-			if (this.shareContext) {
-				this._pScissorRect.x = this._x - this._pStage.viewPort.x;
-				this._pScissorRect.y = this._y - this._pStage.viewPort.y;
-			} else {
-				this._pScissorRect.x = 0;
-				this._pScissorRect.y = 0;
-			}
-		}
-
-		return this._pScissorRect;
-	}
-
-	/**
-	 *
-	 */
-	public get x():number
-	{
-		return this._x;
-	}
-
-	public set x(value:number)
-	{
-		if (this._x == value)
-			return;
-
-		this._x = value;
-
-		if (!this.shareContext)
-			this._pStage.x = value;
-
-		this.notifyScissorUpdate();
-	}
-
-	/**
-	 *
-	 */
-	public get y():number
-	{
-		return this._y;
-	}
-
-	public set y(value:number)
-	{
-		if (this._y == value)
-			return;
-
-		this._y = value;
-
-		if (!this.shareContext)
-			this._pStage.y = value;
-
-		this.notifyScissorUpdate();
-	}
-
-	/**
-	 *
-	 */
-	public get width():number
-	{
-		return this._width;
-	}
-
-	public set width(value:number)
-	{
-		if (this._width == value)
-			return;
-
-		this._width = value;
-
-		this._pScissorRect.width = value;
-
-		if (this._pRttBufferManager)
-			this._pRttBufferManager.viewWidth = value;
-
-		if (!this.shareContext) {
-			this._pBackBufferInvalid = true;
-			this._pDepthTextureInvalid = true;
-		}
-
-		this.notifyScissorUpdate();
-	}
-
-	/**
-	 *
-	 */
-	public get height():number
-	{
-		return this._height;
-	}
-
-	public set height(value:number)
-	{
-		if (this._height == value)
-			return;
-
-		this._height = value;
-
-		this._pScissorRect.height = value;
-
-		if (this._pRttBufferManager)
-			this._pRttBufferManager.viewHeight = value;
-
-		if (!this.shareContext) {
-			this._pBackBufferInvalid = true;
-			this._pDepthTextureInvalid = true;
-		}
-
-		this.notifyScissorUpdate();
-	}
-
 	/**
 	 * Creates a new RendererBase object.
 	 */
-	constructor(stage:Stage = null, forceSoftware:boolean = false, profile:ContextGLProfile = ContextGLProfile.BASELINE, mode:ContextMode = ContextMode.AUTO)
+	constructor(partition:PartitionBase, projection:ProjectionBase = null, stage:Stage = null, forceSoftware:boolean = false, profile:ContextGLProfile = ContextGLProfile.BASELINE, mode:ContextMode = ContextMode.AUTO)
 	{
 		super();
 
-		this._onViewportUpdatedDelegate = (event:StageEvent) => this.onViewportUpdated(event);
+		this._partition = partition;
+
+		//this._viewport = new Viewport(projection, stage, forceSoftware, profile, mode);
+		this._viewport = partition.viewport;
+
+		this._onSizeInvalidateDelegate = (event:ViewportEvent) => this.onSizeInvalidate(event);
 		this._onContextUpdateDelegate = (event:StageEvent) => this.onContextUpdate(event);
 
 		//default sorting algorithm
 		this.renderableSorter = new RenderableMergeSort();
 
 		//set stage
-		this._pStage = stage || StageManager.getInstance().getFreeStage(forceSoftware, profile, mode);
+		this._stage = this._viewport.stage;
 
-		this._pStage.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
-		this._pStage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
-		this._pStage.addEventListener(StageEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+		this._stage.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
+		this._stage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
+		this._viewport.addEventListener(ViewportEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 		
 		/*
 		 if (_backgroundImageRenderer)
 		 _backgroundImageRenderer.stage = value;
 		 */
-		if (this._pStage.context)
-			this._pContext = <IContextGL> this._pStage.context;
+		if (this._stage.context)
+			this._context = <IContextGL> this._stage.context;
 	}
 
-	public activatePass(pass:IPass, projection:ProjectionBase):void
+	public activatePass(pass:IPass):void
 	{
 		//clear unused vertex streams
 		var i:number
 		for (i = pass.shader.numUsedStreams; i < this._numUsedStreams; i++)
-			this._pContext.setVertexBufferAt(i, null);
+			this._context.setVertexBufferAt(i, null);
 
 		//clear unused texture streams
 		for (i = pass.shader.numUsedTextures; i < this._numUsedTextures; i++)
-			this._pContext.setTextureAt(i, null);
+			this._context.setTextureAt(i, null);
 
 		//activate shader object through pass
-		pass._activate(projection);
+		pass._activate(this._viewport);
 	}
 
 	public deactivatePass(pass:IPass):void
@@ -339,69 +188,9 @@ export class RendererBase extends TraverserBase implements IRenderer
 		this._numUsedTextures = pass.shader.numUsedTextures;
 	}
 
-	/**
-	 * The background color's red component, used when clearing.
-	 *
-	 * @private
-	 */
-	public get _iBackgroundR():number
-	{
-		return this._backgroundR;
-	}
-
-	public set _iBackgroundR(value:number)
-	{
-		if (this._backgroundR == value)
-			return;
-
-		this._backgroundR = value;
-
-		this._pBackBufferInvalid = true;
-	}
-
-	/**
-	 * The background color's green component, used when clearing.
-	 *
-	 * @private
-	 */
-	public get _iBackgroundG():number
-	{
-		return this._backgroundG;
-	}
-
-	public set _iBackgroundG(value:number)
-	{
-		if (this._backgroundG == value)
-			return;
-
-		this._backgroundG = value;
-
-		this._pBackBufferInvalid = true;
-	}
-
-	/**
-	 * The background color's blue component, used when clearing.
-	 *
-	 * @private
-	 */
-	public get _iBackgroundB():number
-	{
-		return this._backgroundB;
-	}
-
-	public set _iBackgroundB(value:number)
-	{
-		if (this._backgroundB == value)
-			return;
-
-		this._backgroundB = value;
-
-		this._pBackBufferInvalid = true;
-	}
-
 	public get context():IContextGL
 	{
-		return this._pContext;
+		return this._context;
 	}
 
 	/**
@@ -409,7 +198,17 @@ export class RendererBase extends TraverserBase implements IRenderer
 	 */
 	public get stage():Stage
 	{
-		return this._pStage;
+		return this._stage;
+	}
+
+	public get partition():PartitionBase
+	{
+		return this._partition;
+	}
+
+	public get viewport():Viewport
+	{
+		return this._viewport;
 	}
 
 	/**
@@ -418,22 +217,19 @@ export class RendererBase extends TraverserBase implements IRenderer
 	public dispose():void
 	{
 
-		this._pStage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
-		this._pStage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
-		this._pStage.removeEventListener(StageEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+		this._stage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
+		this._stage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
+		this._viewport.removeEventListener(ViewportEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 
-		this._pStage = null;
-		this._pContext = null;
+		this._viewport = null;
+		this._stage = null;
+		this._context = null;
 		/*
 		 if (_backgroundImageRenderer) {
 		 _backgroundImageRenderer.dispose();
 		 _backgroundImageRenderer = null;
 		 }
 		 */
-	}
-
-	public render(projection:ProjectionBase, view:IView):void
-	{
 	}
 
 
@@ -459,30 +255,30 @@ export class RendererBase extends TraverserBase implements IRenderer
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
-	public _iRender(projection:ProjectionBase, view:IView, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0):void
+	public render(enableDepthAndStencil:boolean = true, surfaceSelector:number = 0):void
 	{
 		//TODO refactor setTarget so that rendertextures are created before this check
-		if (!this._pStage || !this._pContext)
-			return;
+		// if (!this._stage || !this._context)
+		// 	return;
 
 		//update mappers
         var len:number = this._mappers.length;
         for (var i:number = 0; i < len; i++)
-            this._mappers[i].update(projection, view, this);
+            this._mappers[i].update(this._viewport.projection, this);
 
 		//reset head values
 		this._pBlendedRenderableHead = null;
 		this._pOpaqueRenderableHead = null;
 		this._pNumElements = 0;
 
-		this._cameraTransform = projection.transform.concatenatedMatrix3D;
-		this._cameraForward = projection.transform.forwardVector;
-		this._cullPlanes = this._customCullPlanes? this._customCullPlanes : projection.frustumPlanes;
+		this._cameraTransform = this._viewport.projection.transform.concatenatedMatrix3D;
+		this._cameraForward = this._viewport.projection.transform.forwardVector;
+		this._cullPlanes = this._customCullPlanes? this._customCullPlanes : this._viewport.projection.viewFrustumPlanes;
 		this._numCullPlanes = this._cullPlanes? this._cullPlanes.length : 0;
 
-		RendererBase._iCollectionMark++;
+		RendererBase._collectionMark++;
 
-		view.traversePartitions(this);
+		this._partition.traverse(this);
 
 		//sort the resulting renderables
 		if (this.renderableSorter) {
@@ -493,42 +289,40 @@ export class RendererBase extends TraverserBase implements IRenderer
 		// this._pRttViewProjectionMatrix.copyFrom(projection.viewMatrix3D);
 		// this._pRttViewProjectionMatrix.appendScale(this.textureRatioX, this.textureRatioY, 1);
 
-		this.pExecuteRender(projection, view, target, scissorRect, surfaceSelector);
+		this._executeRender(enableDepthAndStencil, surfaceSelector);
 
 		// invalidate mipmaps (if target exists) to regenerate if required
-		if (target)
-			target.invalidateMipmaps();
+		if (this._viewport.target)
+			this._viewport.target.invalidateMipmaps();
 
 		// clear buffers
 		for (var i:number = 0; i < 8; ++i) {
-			this._pContext.setVertexBufferAt(i, null);
-			this._pContext.setTextureAt(i, null);
+			this._context.setVertexBufferAt(i, null);
+			this._context.setTextureAt(i, null);
 		}
 	}
 
-	public _iRenderCascades(projection:ProjectionBase, view:IView, target:ImageBase, numCascades:number, scissorRects:Array<Rectangle>, projections:Array<ProjectionBase>):void
+	public _iRenderCascades(projection:ProjectionBase, node:INode, enableDepthAndStencil:boolean = true, surfaceSelector:number = 0):void
 	{
-		this._pStage.setRenderTarget(target, true, 0);
-		this._pContext.clear(1, 1, 1, 1, 1, 0);
+		// this._stage.setRenderTarget(target, true, 0);
+		// this._context.clear(1, 1, 1, 1, 1, 0);
 
-		this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
-		this._pContext.setDepthTest(true, ContextGLCompareMode.LESS);
+		// this._context.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
+		// this._context.setDepthTest(true, ContextGLCompareMode.LESS);
 
-		var head:_Render_RenderableBase = this._pOpaqueRenderableHead;
+		// var head:_Render_RenderableBase = this._pOpaqueRenderableHead;
 
-		var first:boolean = true;
+		// var first:boolean = true;
 
-		//TODO cascades must have separate collectors, rather than separate draw commands
-		for (var i:number = numCascades - 1; i >= 0; --i) {
-			this._pStage.scissorRect = scissorRects[i];
-			//this.drawCascadeRenderables(head, cameras[i], first? null : cameras[i].frustumPlanes);
-			first = false;
-		}
+		// //TODO cascades must have separate collectors, rather than separate draw commands
+		// for (var i:number = numCascades - 1; i >= 0; --i) {
+		// 	//this._stage.scissorRect = scissorRects[i];
+		// 	//this.drawCascadeRenderables(head, cameras[i], first? null : cameras[i].frustumPlanes);
+		// 	first = false;
+		// }
 
-		//line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
-		this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL);
-
-		this._pStage.scissorRect = null;
+		// //line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
+		// this._context.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL);
 	}
 
 	/**
@@ -538,35 +332,41 @@ export class RendererBase extends TraverserBase implements IRenderer
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
-	public pExecuteRender(projection:ProjectionBase, view:IView, target:ImageBase = null, scissorRect:Rectangle = null, surfaceSelector:number = 0):void
+	protected _executeRender(enableDepthAndStencil:boolean = true, surfaceSelector:number = 0):void
 	{
-		this._pStage.setRenderTarget(target, true, surfaceSelector);
-
-		if ((target || !this.shareContext) && !this._depthPrepass && !this._disableClear)
-			this._pContext.clear(this._backgroundR, this._backgroundG, this._backgroundB, this._backgroundAlpha, 1, 0);
-
-		this._pStage.scissorRect = scissorRect;
+		//TODO: allow sharedContexts for image targets
+		this._viewport.backgroundClearMask = (!this._viewport.shareContext || this._viewport.target)? ContextGLClearMask.ALL : ContextGLClearMask.DEPTH;
+		this._viewport.clear(!this._depthPrepass && !this._disableClear, enableDepthAndStencil, surfaceSelector);
 
 		/*
 		 if (_backgroundImageRenderer)
 		 _backgroundImageRenderer.render();
 		 */
 
-		this._pContext.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
+		this._context.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
 
-		this.pDraw(projection);
+		this._context.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
+
+		if (this._disableColor)
+			this._context.setColorMask(false, false, false, false);
+
+		this.drawRenderables(this._pOpaqueRenderableHead);
+
+		if (this._renderBlended)
+			this.drawRenderables(this._pBlendedRenderableHead);
+
+		if (this._disableColor)
+			this._context.setColorMask(true, true, true, true);
 
 		//line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
-		//this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //oopsie
+		//this._context.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //oopsie
 
-		if (target || !this.shareContext) {
+		if (!this._viewport.shareContext || this._viewport.target) {
 			if (this._snapshotRequired && this._snapshotBitmapImage2D) {
-				this._pContext.drawToBitmapImage2D(this._snapshotBitmapImage2D);
+				this._context.drawToBitmapImage2D(this._snapshotBitmapImage2D);
 				this._snapshotRequired = false;
 			}
 		}
-
-		this._pStage.scissorRect = null;
 	}
 
 	/*
@@ -576,25 +376,6 @@ export class RendererBase extends TraverserBase implements IRenderer
 	{
 		this._snapshotRequired = true;
 		this._snapshotBitmapImage2D = bmd;
-	}
-
-	/**
-	 * Performs the actual drawing of geometry to the target.
-	 */
-	public pDraw(projection:ProjectionBase):void
-	{
-		this._pContext.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
-
-		if (this._disableColor)
-			this._pContext.setColorMask(false, false, false, false);
-
-		this.drawRenderables(projection, this._pOpaqueRenderableHead);
-
-		if (this._renderBlended)
-			this.drawRenderables(projection, this._pBlendedRenderableHead);
-
-		if (this._disableColor)
-			this._pContext.setColorMask(true, true, true, true);
 	}
 
 	//private drawCascadeRenderables(renderRenderable:_Render_RenderableBase, camera:Camera, cullPlanes:Array<Plane3D>)
@@ -634,7 +415,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 	 *
 	 * @param renderables The renderables to draw.
 	 */
-	public drawRenderables(projection:ProjectionBase, renderRenderable:_Render_RenderableBase):void
+	public drawRenderables(renderRenderable:_Render_RenderableBase):void
 	{
 		var i:number;
 		var len:number;
@@ -643,14 +424,14 @@ export class RendererBase extends TraverserBase implements IRenderer
 		var passes:Array<IPass>;
 		var pass:IPass;
 
-		this._pContext.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.ALWAYS, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP);
+		this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.ALWAYS, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP);
 
 		this._registeredMasks.length = 0;
-		//var gl = this._pContext["_gl"];
+		//var gl = this._context["_gl"];
 		//if(gl) {
 			//gl.disable(gl.STENCIL_TEST);
 		//}
-		this._pContext.disableStencil();
+		this._context.disableStencil();
 		this._maskConfig = 0;
 
 		while (renderRenderable) {
@@ -672,15 +453,15 @@ export class RendererBase extends TraverserBase implements IRenderer
 						// disable stencil
 						//if(gl) {
 							//gl.disable(gl.STENCIL_TEST);
-							this._pContext.disableStencil();
+							this._context.disableStencil();
 							//gl.stencilFunc(gl.ALWAYS, 0, 0xff);
 							//gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
-							this._pContext.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.ALWAYS, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP);
-							this._pContext.setStencilReferenceValue(0);
+							this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.ALWAYS, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP);
+							this._context.setStencilReferenceValue(0);
 
 						//}
 					} else {
-						this._renderMasks(projection, renderRenderable.sourceEntity._iAssignedMasks());
+						this._renderMasks(renderRenderable.sourceEntity._iAssignedMasks());
 					}
 					this._activeMasksDirty = false;
 				}
@@ -692,14 +473,14 @@ export class RendererBase extends TraverserBase implements IRenderer
 					renderRenderable2 = renderRenderable;
 					pass = passes[i];
 
-					this.activatePass(pass, projection);
+					this.activatePass(pass);
 
 					do {
 						if (renderRenderable2.maskId !== -1) {
 							if (i == 0)
 								this._registerMask(renderRenderable2);
 						} else {
-							renderRenderable2._iRender(pass, projection);
+							renderRenderable2._iRender(pass, this._viewport);
 						}
 
 						renderRenderable2 = renderRenderable2.next;
@@ -719,22 +500,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 	 */
 	private onContextUpdate(event:StageEvent):void
 	{
-		this._pContext = <IContextGL> this._pStage.context;
-	}
-
-	public get _iBackgroundAlpha():number
-	{
-		return this._backgroundAlpha;
-	}
-
-	public set _iBackgroundAlpha(value:number)
-	{
-		if (this._backgroundAlpha == value)
-			return;
-
-		this._backgroundAlpha = value;
-
-		this._pBackBufferInvalid = true;
+		this._context = <IContextGL> this._stage.context;
 	}
 
 	/*
@@ -755,7 +521,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 	 if (!this._backgroundImageRenderer && value)
 	 {
 
-	 this._backgroundImageRenderer = new BackgroundImageRenderer(this._pStage);
+	 this._backgroundImageRenderer = new BackgroundImageRenderer(this._stage);
 
 	 }
 
@@ -775,42 +541,16 @@ export class RendererBase extends TraverserBase implements IRenderer
 
 
 	/**
-	 * @private
-	 */
-	private notifyScissorUpdate():void
-	{
-		if (this._scissorDirty)
-			return;
-
-		this._scissorDirty = true;
-
-		if (!this._scissorUpdated)
-			this._scissorUpdated = new RendererEvent(RendererEvent.SCISSOR_UPDATED);
-
-		this.dispatchEvent(this._scissorUpdated);
-	}
-
-
-	/**
-	 * @private
-	 */
-	private notifyViewportUpdate():void
-	{
-		if (!this._viewPortUpdated)
-			this._viewPortUpdated = new RendererEvent(RendererEvent.VIEWPORT_UPDATED);
-
-		this.dispatchEvent(this._viewPortUpdated);
-	}
-
-	/**
 	 *
 	 */
-	public onViewportUpdated(event:StageEvent):void
+	public onSizeInvalidate(event:ViewportEvent):void
 	{
-		if (this.shareContext)
-			this.notifyScissorUpdate();
+		if (this._pRttBufferManager) {
+			this._pRttBufferManager.viewWidth = this._viewport.width;
+			this._pRttBufferManager.viewHeight = this._viewport.height;
+		}
 
-		this.notifyViewportUpdate();
+		this._depthTextureDirty = true;
 	}
 
 	/**
@@ -820,9 +560,9 @@ export class RendererBase extends TraverserBase implements IRenderer
 	 */
 	public enterNode(node:INode):boolean
 	{
-		var enter:boolean = node._iCollectionMark != RendererBase._iCollectionMark && node.isRenderable() && node.isInFrustum(this._cullPlanes, this._numCullPlanes);
+		var enter:boolean = node._collectionMark != RendererBase._collectionMark && node.isRenderable() && node.isInFrustum(this._cullPlanes, this._numCullPlanes);
 
-		node._iCollectionMark = RendererBase._iCollectionMark;
+		node._collectionMark = RendererBase._collectionMark;
 
 		return enter;
 	}
@@ -872,42 +612,15 @@ export class RendererBase extends TraverserBase implements IRenderer
 		this._pNumElements += renderRenderable.stageElements.elements.numElements; //need to re-trigger stageElements getter in case animator has changed
 	}
 
-	/**
-	 *
-	 * @param entity
-	 */
-	public applyDirectionalLight(entity:IEntity):void
-	{
-		//don't do anything here
-	}
-
-	/**
-	 *
-	 * @param entity
-	 */
-	public applyLightProbe(entity:IEntity):void
-	{
-		//don't do anything here
-	}
-
-	/**
-	 *
-	 * @param entity
-	 */
-	public applyPointLight(entity:IEntity):void
-	{
-		//don't do anything here
-	}
-
 	private _registerMask(obj:_Render_RenderableBase):void
 	{
 		//console.log("registerMask");
 		this._registeredMasks.push(obj);
 	}
 
-	public _renderMasks(projection:ProjectionBase, masks:IEntity[][]):void
+	public _renderMasks(masks:IEntity[][]):void
 	{
-		//var gl = this._pContext["_gl"];
+		//var gl = this._context["_gl"];
 		//f (!gl)
 		//	return;
 
@@ -915,16 +628,16 @@ export class RendererBase extends TraverserBase implements IRenderer
 
 		//this._stage.setRenderTarget(this._image);
 		//this._stage.clear();
-		this._pContext.setColorMask(false, false, false, false);
+		this._context.setColorMask(false, false, false, false);
 		// TODO: Could we create masks within masks by providing a previous configID, and supply "clear/keep" on stencil fail
 		//context.setStencilActions("frontAndBack", "always", "set", "set", "set");
 		//gl.enable(gl.STENCIL_TEST);
-		this._pContext.enableStencil();
+		this._context.enableStencil();
 		this._maskConfig++;
 		//gl.stencilFunc(gl.ALWAYS, this._maskConfig, 0xff);
 		//gl.stencilOp(gl.REPLACE, gl.REPLACE, gl.REPLACE);
-		this._pContext.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.ALWAYS, ContextGLStencilAction.SET, ContextGLStencilAction.SET, ContextGLStencilAction.SET);
-		this._pContext.setStencilReferenceValue(this._maskConfig);
+		this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.ALWAYS, ContextGLStencilAction.SET, ContextGLStencilAction.SET, ContextGLStencilAction.SET);
+		this._context.setStencilReferenceValue(this._maskConfig);
 		var numLayers:number = masks.length;
 		var numRenderables:number = this._registeredMasks.length;
 		var renderRenderable:_Render_RenderableBase;
@@ -936,8 +649,8 @@ export class RendererBase extends TraverserBase implements IRenderer
 			if (i != 0) {
 				//gl.stencilFunc(gl.EQUAL, this._maskConfig, 0xff);
 				//gl.stencilOp(gl.KEEP, gl.INCR, gl.INCR);
-				this._pContext.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.EQUAL, ContextGLStencilAction.INCREMENT_SATURATE, ContextGLStencilAction.INCREMENT_SATURATE, ContextGLStencilAction.KEEP);
-				this._pContext.setStencilReferenceValue(this._maskConfig);
+				this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.EQUAL, ContextGLStencilAction.INCREMENT_SATURATE, ContextGLStencilAction.INCREMENT_SATURATE, ContextGLStencilAction.KEEP);
+				this._context.setStencilReferenceValue(this._maskConfig);
 				this._maskConfig++;
 			}
 
@@ -953,7 +666,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 						//console.log("testing for " + mask["hierarchicalMaskID"] + ", " + mask.name);
 						if (renderRenderable.maskId == mask.id) {
 							//console.log("Rendering hierarchicalMaskID " + mask["hierarchicalMaskID"]);
-							this._drawMask(projection, renderRenderable);
+							this._drawMask(renderRenderable);
 						}
 					}
 				}
@@ -962,25 +675,25 @@ export class RendererBase extends TraverserBase implements IRenderer
 
 		//gl.stencilFunc(gl.EQUAL, this._maskConfig, 0xff);
 		//gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
-		this._pContext.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.EQUAL, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP);
-		this._pContext.setStencilReferenceValue(this._maskConfig);
+		this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.EQUAL, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP);
+		this._context.setStencilReferenceValue(this._maskConfig);
 
-		this._pContext.setColorMask(true, true, true, true);
-		this._pContext.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
+		this._context.setColorMask(true, true, true, true);
+		this._context.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
 		//this._stage.setRenderTarget(oldRenderTarget);
 	}
 
-	private _drawMask(projection:ProjectionBase, renderRenderable:_Render_RenderableBase):void
+	private _drawMask(renderRenderable:_Render_RenderableBase):void
 	{
 		var renderMaterial = renderRenderable.renderMaterial;
 		var passes = renderMaterial.passes;
 		var len = passes.length;
 		var pass = passes[len-1];
 
-		this.activatePass(pass, projection);
-		this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //TODO: setup so as not to override activate
+		this.activatePass(pass);
+		this._context.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //TODO: setup so as not to override activate
 		// only render last pass for now
-		renderRenderable._iRender(pass, projection);
+		renderRenderable._iRender(pass, this._viewport);
 		this.deactivatePass(pass);
 	}
 

@@ -1,7 +1,7 @@
 import {EventDispatcher} from "@awayjs/core";
 
-import {IEntity} from "./IEntity";
-import {IRenderable} from "./IRenderable";
+import {IEntity} from "../base/IEntity";
+import {IRenderable} from "../base/IRenderable";
 import {INode} from "./INode";
 
 /**
@@ -13,42 +13,6 @@ import {INode} from "./INode";
  */
 export class TraverserBase extends EventDispatcher
 {
-	public static entityNames:Array<string> = new Array<string>();
-	public static renderableNames:Array<string> = new Array<string>();
-
-	public static addEntityName(name:string):string
-	{
-		TraverserBase.entityNames.push(name);
-		
-		return name;
-	}
-
-	public static addRenderableName(name:string):string
-	{
-		TraverserBase.renderableNames.push(name);
-
-		return name;
-	}
-	
-	/**
-	 * 
-	 */
-	constructor()
-	{
-		super();
-		
-		var i:number;
-		
-		//setup defaults for all entity functions
-		for (i = 0; i < TraverserBase.entityNames.length; i++)
-			if (!this[TraverserBase.entityNames[i]])
-				this[TraverserBase.entityNames[i]] = this.applyEntity;
-		
-		//setup defaults for all renderable functions
-		for (i = 0; i < TraverserBase.renderableNames.length; i++)
-			if (!this[TraverserBase.renderableNames[i]])
-				this[TraverserBase.renderableNames[i]] = this.applyRenderable;
-	}
 
 	/**
 	 * Returns true if the current node is at least partly in the frustum. If so, the partition node knows to pass on the traverser to its children.
