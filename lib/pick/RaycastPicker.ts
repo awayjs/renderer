@@ -1,13 +1,13 @@
-import {Vector3D} from "@awayjs/core";
+import {Vector3D, AbstractionBase, Plane3D} from "@awayjs/core";
 
 import {IEntity} from "../base/IEntity";
 import {PartitionBase} from "../partition/PartitionBase";
-import {TraverserBase} from "../partition/TraverserBase";
+import {ITraverser} from "../partition/ITraverser";
 import {INode} from "../partition/INode";
 
 import {PickingCollision} from "./PickingCollision";
-import {IPicker} from "./IPicker";
-import { IRenderable } from '../base/IRenderable';
+import { PickEntity } from '../base/PickEntity';
+import { PickGroup } from '../PickGroup';
 
 /**
  * Picks a 3d object from a view or scene by 3D raycast calculations.
@@ -16,23 +16,40 @@ import { IRenderable } from '../base/IRenderable';
  *
  * @class away.pick.RaycastPicker
  */
-export class RaycastPicker extends TraverserBase implements IPicker
+export class RaycastPicker extends AbstractionBase implements ITraverser
 {
-	private _partition:PartitionBase;
-	private _rayPosition:Vector3D;
-	private _rayDirection:Vector3D;
-	private _findClosestCollision:boolean;
-	private _bestCollision:PickingCollision;
-	private _testCollision:PickingCollision;
+	private _dragEntity:IEntity;
+	protected _partition:PartitionBase;
+	protected _entity:IEntity;
+
+	public get partition():PartitionBase
+	{
+		return this._partition;
+	}
+
+    /**
+     *
+     * @returns {IEntity}
+     */
+    public get entity():IEntity
+    {
+        return this._entity;
+	}
+
+	
+	private _pickGroup:PickGroup;
+
+	private _rootEntity:IEntity;
+	private _globalRayPosition:Vector3D;
+	private _globalRayDirection:Vector3D;
 	private _ignoredEntities:Array<IEntity>;
 
-	private _entity:IEntity;
-	private _entities:Array<IEntity> = new Array<IEntity>();
+	private _entities:PickEntity[] = [];
+	private _pickers:RaycastPicker[] = [];
+	private _collectedEntities:PickEntity[] = [];
 
-	/**
-	 * @inheritDoc
-	 */
-	public onlyMouseEnabled:boolean = true;
+	private _tabEntities:IEntity[] = [];
+	private _customTabEntities:IEntity[] = [];
 
 	/**
 	 * Creates a new <code>RaycastPicker</code> object.
@@ -40,21 +57,133 @@ export class RaycastPicker extends TraverserBase implements IPicker
 	 * @param findClosestCollision Determines whether the picker searches for the closest bounds collision along the ray,
 	 * or simply returns the first collision encountered. Defaults to false.
 	 */
-	constructor(partition:PartitionBase, findClosestCollision:boolean = false)
+	constructor(partition:PartitionBase, pickGroup:PickGroup)
 	{
-		super();
-
-		this._partition = partition;
+		super(partition, pickGroup);
 		
-		this._findClosestCollision = findClosestCollision;
+		this._partition = partition;
+		this._entity = partition.root;
+		this._pickGroup = pickGroup;
+	}
+
+	public traverse():void
+	{
+		this._entities.length = 0;
+		this._pickers.length = 0;
+		this._tabEntities.length = 0;
+		this._customTabEntities.length = 0;
+		this._partition.traverse(this);
+	}
+
+	public getTraverser(partition:PartitionBase):ITraverser
+	{
+		if (partition.root._iIsMouseEnabled()) {
+			var traverser:RaycastPicker = this._pickGroup.getRaycastPicker(partition);
+		 
+			if (traverser._isIntersectingRayInternal(this._rootEntity, this._globalRayPosition, this._globalRayDirection))
+				this._pickers.push(traverser);
+	
+			return traverser;
+		}
+		
+		return this;
 	}
 	
-	public getNextTabEntity(currentFocus:IEntity):IEntity{
-		return currentFocus;
+	
+	public getNextTabEntity(currentFocus:IEntity):IEntity
+	{
+		if(this._customTabEntities.length<=0 && this._tabEntities.length<=0)
+			return currentFocus;
+
+		if(this._customTabEntities.length>0){
+			var newTabIndex:number=-1;
+			if(currentFocus){
+				newTabIndex=currentFocus.tabIndex;
+			}
+			newTabIndex++;
+			var i:number=newTabIndex;
+			while(i<this._customTabEntities.length){
+				if(this._customTabEntities[i]){
+					return this._customTabEntities[i];
+				}
+				i++;
+			}
+			i=0;
+			while(i<this._customTabEntities.length){
+				if(this._customTabEntities[i]){
+					return this._customTabEntities[i];
+				}
+				i++;
+			}
+			return currentFocus;
+		}
+		if(currentFocus){
+			var len:number=this._tabEntities.length;
+			for(var i:number=0; i<len; i++){
+				if(this._tabEntities[i]==currentFocus){
+					if(i==0){
+						return this._tabEntities[len-1];
+					}
+					return this._tabEntities[i-1];						
+				}
+			}
+		}
+		// this point we would already have exit out if tabEntities.length was 0
+		return this._tabEntities[0];	
+
 	}
-	public getPrevTabEntity(currentFocus:IEntity):IEntity{
-		return currentFocus;
+	public getPrevTabEntity(currentFocus:IEntity):IEntity
+	{
+		if(this._customTabEntities.length<=0 && this._tabEntities.length<=0)
+			return currentFocus;
+
+		if(this._customTabEntities.length>0){
+			var newTabIndex:number=-1;
+			if(currentFocus){
+				newTabIndex=currentFocus.tabIndex;
+			}
+			newTabIndex--;
+			var i:number=newTabIndex;
+			while(i>=0){
+				if(this._customTabEntities[i]){
+					return this._customTabEntities[i];
+				}
+				i--;
+			}
+			i=newTabIndex;
+			while(i>=0){
+				if(this._customTabEntities[i]){
+					return this._customTabEntities[i];
+				}
+				i--;
+			}
+			return currentFocus;
+		}
+		if(currentFocus){
+			var len:number=this._tabEntities.length;
+			for(var i:number=0; i<len; i++){
+				if(this._tabEntities[i]==currentFocus){
+					if(i==len-1){
+						return this._tabEntities[0];
+					}
+					return this._tabEntities[i+1];						
+				}
+			}
+		}
+		// this point we would already have exit out if tabEntities.length was 0
+		return this._tabEntities[0];	
+
 	}
+
+	public get dragEntity():IEntity
+	{
+		return this._dragEntity;
+	}
+	public set dragEntity(entity:IEntity)
+	{
+		this._dragEntity = entity;
+	}
+
 	/**
 	 * Returns true if the current node is at least partly in the frustum. If so, the partition node knows to pass on the traverser to its children.
 	 *
@@ -62,33 +191,146 @@ export class RaycastPicker extends TraverserBase implements IPicker
 	 */
 	public enterNode(node:INode):boolean
 	{
-		return node.isIntersectingRay(this._rayPosition, this._rayDirection) && !node.isMask();
+		if (node.pickObject) {
+			node.pickObject.partition.traverse(this);
+			return false;
+		}
+
+		if (this._entity == this._dragEntity)
+			return false;
+
+		if((<any>node)._entity && (<any>node)._entity.isTabEnabled){
+			if((<any>node)._entity.assetType != "[asset TextField]" || (<any>node)._entity.type == "input"){
+				// add the entity to the correct tab list.
+				if((<any>node)._entity.tabIndex>=0){
+					if(this._customTabEntities.length<(<any>node)._entity.tabIndex){
+						this._customTabEntities.length=(<any>node)._entity.tabIndex;
+					}
+					this._customTabEntities[(<any>node)._entity.tabIndex]=(<any>node)._entity;
+				}
+				else{
+					this._tabEntities[this._tabEntities.length]=(<any>node)._entity;
+				}
+
+			}
+		}
+
+		return this._entity != this._dragEntity && node.isVisible() && !node.isMask() && node.isIntersectingRay(this._rootEntity, this._globalRayPosition, this._globalRayDirection, this._pickGroup)
 	}
+
+		/**
+	 *
+	 * @param planes
+	 * @param numPlanes
+	 * @returns {boolean}
+	 */
+	public isInFrustum(planes:Array<Plane3D>, numPlanes:number):boolean
+	{
+		if (!this._entity._iIsVisible())
+			return false;
+
+		return true; // todo: hack for 2d. attention. might break stuff in 3d.
+		//return this._bounds.isInFrustum(planes, numPlanes);
+	}
+
 
 	/**
 	 * @inheritDoc
 	 */
-	public getCollision(rayPosition:Vector3D, rayDirection:Vector3D, shapeFlag:boolean = false):PickingCollision
+	public isIntersectingRay(globalRayPosition:Vector3D, globalRayDirection:Vector3D):boolean
 	{
-		this._rayPosition = rayPosition;
-		this._rayDirection = rayDirection;
+		return this._isIntersectingRayInternal(this._entity, globalRayPosition, globalRayDirection)
+	}
+	/**
+	 * @inheritDoc
+	 */
+	public _isIntersectingRayInternal(rootEntity:IEntity, globalRayPosition:Vector3D, globalRayDirection:Vector3D):boolean
+	{
+		this._rootEntity = rootEntity;
+		this._globalRayPosition = globalRayPosition;
+		this._globalRayDirection = globalRayDirection;
 
-		// collect entities to test
-		this._partition.traverse(this);
+		this.traverse();
 
+		if (!this._entities.length && !this._pickers.length)
+			return false;
+		// this._pickingCollision.rayPosition = this._entity.transform.inverseConcatenatedMatrix3D.transformVector(globalRayPosition, this._pickingCollision.rayPosition);
+		// this._pickingCollision.rayDirection = this._entity.transform.inverseConcatenatedMatrix3D.deltaTransformVector(globalRayDirection, this._pickingCollision.rayDirection);
+		// this._pickingCollision.normal = this._pickingCollision.normal || new Vector3D();
+
+		// var rayEntryDistance:number = this._pickGroup.getBoundsPicker(this._partition).getBoundingVolume().rayIntersection(this._pickingCollision.rayPosition, this._pickingCollision.rayDirection, this._pickingCollision.normal);
+
+		// if (rayEntryDistance < 0)
+		// 	return false;
+
+		// this._pickingCollision.rayEntryDistance = rayEntryDistance;
+		// this._pickingCollision.rayOriginIsInsideBounds = rayEntryDistance == 0;
+
+		return true;
+	}
+
+	// public isIntersectingShape(findClosestCollision:boolean):boolean
+	// {
+	// 	//recalculates the rayEntryDistance and normal for shapes
+	// 	var rayEntryDistance:number = Number.MAX_VALUE;
+	// 	for (var i:number = 0; i < this._entities.length; ++i) {
+	// 		if (this._entities[i].isIntersectingShape(findClosestCollision) && rayEntryDistance > this._entities[i].pickingCollision.rayEntryDistance) {
+	// 			rayEntryDistance = this._entities[i].pickingCollision.rayEntryDistance;
+	// 			this._pickingCollision.normal = this._entities[i].pickingCollision.normal;
+	// 		}
+	// 	}
+
+	// 	if (rayEntryDistance == Number.MAX_VALUE) {
+	// 		this._pickingCollision.rayEntryDistance = -1;
+	// 		return false;
+	// 	}
+
+	// 	this._pickingCollision.rayEntryDistance = rayEntryDistance;
+
+	// 	return true;
+	// }
+
+	/**
+	 * @inheritDoc
+	 */
+	public getCollision(rayPosition:Vector3D, rayDirection:Vector3D, shapeFlag:boolean = false, findClosestCollision:boolean = false):PickingCollision
+	{
 		//early out if no collisions detected
-		if (!this._entities.length)
+		if (!this.isIntersectingRay(rayPosition, rayDirection))
 			return null;
 
+		//collect pickers
+		this._collectEntities(this._collectedEntities);
+
 		//console.log("entities: ", this._entities)
-		var collision:PickingCollision = this._getPickingCollision(shapeFlag);
+		var collision:PickingCollision = this._getPickingCollision(shapeFlag, findClosestCollision);
 
-
-
-		//discard entities
-		this._entities.length = 0;
+		//discard collected pickers
+		this._collectedEntities.length = 0;
 
 		return collision;
+	}
+
+	public _collectEntities(collectedEntities:PickEntity[] = null):void
+	{
+		var len:number = this._pickers.length;
+		for (var i:number = 0; i < len; i++)
+			this._pickers[i]._collectEntities(collectedEntities);
+
+		//ensures that raycastPicker entities are always added last, for correct 2D picking
+		for (var i:number = 0; i < this._entities.length; ++i)
+			collectedEntities.push(this._entities[i]);
+
+		// //need to re-calculate the rayEntryDistance for only those entities inside the picker
+		// this._pickingCollision.rayEntryDistance = Number.MAX_VALUE;
+		// for (var i:number = 0; i < this._entities.length; ++i) {
+		// 	if (this._pickingCollision.rayEntryDistance > this._entities[i].pickingCollision.rayEntryDistance) {
+		// 		this._pickingCollision.rayEntryDistance = this._entities[i].pickingCollision.rayEntryDistance;
+		// 		this._pickingCollision.normal = this._entities[i].pickingCollision.normal;
+		// 	}
+		// }
+
+		// this._pickingCollision.rayOriginIsInsideBounds = this._pickingCollision.rayEntryDistance == 0;
 	}
 
 //		public getEntityCollision(position:Vector3D, direction:Vector3D, entities:Array<IEntity>):PickingCollision
@@ -125,9 +367,6 @@ export class RaycastPicker extends TraverserBase implements IPicker
 
 	private isIgnored(entity:IEntity):boolean
 	{
-		if (this.onlyMouseEnabled && !entity._iIsMouseEnabled())
-			return true;
-
 		if (this._ignoredEntities) {
 			var len:number = this._ignoredEntities.length;
 			for (var i:number = 0; i < len; i++)
@@ -138,55 +377,62 @@ export class RaycastPicker extends TraverserBase implements IPicker
 		return false;
 	}
 
-	private sortOnNearT(entity1:IEntity, entity2:IEntity):number
+	private sortOnNearT(entity1:PickEntity, entity2:PickEntity):number
 	{
 		//return entity1._iPickingCollision.rayEntryDistance > entity2._iPickingCollision.rayEntryDistance? 1 : -1;// use this for Icycle;
-		return entity1._iPickingCollision.rayEntryDistance > entity2._iPickingCollision.rayEntryDistance? 1 : entity1._iPickingCollision.rayEntryDistance < entity2._iPickingCollision.rayEntryDistance?-1:0;
+		return entity1.pickingCollision.rayEntryDistance > entity2.pickingCollision.rayEntryDistance? 1 : entity1.pickingCollision.rayEntryDistance < entity2.pickingCollision.rayEntryDistance?-1 : 0;
 	}
 
-	private _getPickingCollision(shapeFlag:boolean):PickingCollision
+	private _getPickingCollision(shapeFlag:boolean, findClosestCollision:boolean):PickingCollision
 	{
-		// Sort entities from closest to furthest to reduce tests.
-		this._entities = this._entities.sort(this.sortOnNearT); // TODO - test sort filter in JS
+		// Sort pickers from closest to furthest to reduce tests.
+		this._collectedEntities = this._collectedEntities.sort(this.sortOnNearT); // TODO - test sort filter in JS
 
 		// ---------------------------------------------------------------------
 		// Evaluate triangle collisions when needed.
 		// Replaces collision data provided by bounds collider with more precise data.
 		// ---------------------------------------------------------------------
 
-		this._bestCollision = null;
-
-		var len:number = this._entities.length;
+		var entity:PickEntity;
+		var testCollision:PickingCollision;
+		var bestCollision:PickingCollision;
+		var len:number = this._collectedEntities.length;
 		for (var i:number = 0; i < len; i++) {
-			this._entity = this._entities[i];
-			this._testCollision = this._entity._iPickingCollision;
-			if (this._bestCollision == null || this._testCollision.rayEntryDistance < this._bestCollision.rayEntryDistance) {
+			entity = this._collectedEntities[i];
+			testCollision = entity.pickingCollision;
 
-				//var partition=view.getPartition(this._entity);
-				//var abstraction=partition.getAbstraction(this._entity);
-
-				if (shapeFlag || this._entity.pickShape) {
-					this._testCollision.rayEntryDistance = Number.MAX_VALUE;
-					this._entity._acceptTraverser(this);
+			if (bestCollision == null || testCollision.rayEntryDistance < bestCollision.rayEntryDistance) {
+				if ((shapeFlag || entity.shapeFlag)) {
+					testCollision.rayEntryDistance = Number.MAX_VALUE;
 					// If a collision exists, update the collision data and stop all checks.
-					if (this._bestCollision && !this._findClosestCollision)
-						break;
-				} else if (!this._testCollision.rayOriginIsInsideBounds) {
+					if (entity.isIntersectingShape(findClosestCollision))
+						bestCollision = testCollision;
+				} else if (!testCollision.rayOriginIsInsideBounds) {
 					// A bounds collision with no picking collider stops all checks.
 					// Note: a bounds collision with a ray origin inside its bounds is ONLY ever used
 					// to enable the detection of a corresponsding triangle collision.
 					// Therefore, bounds collisions with a ray origin inside its bounds can be ignored
 					// if it has been established that there is NO triangle collider to test
-					this._bestCollision = this._testCollision;
+					bestCollision = testCollision;
 					break;
 				}
+			} else {
+				//if the next rayEntryDistance of testCollision is greater than bestCollision,
+				//there won't be a better collision available
+				break;
 			}
 		}
 
-		if (this._bestCollision)
-			this.updatePosition(this._bestCollision);
+		if (bestCollision)
+			this.updatePosition(bestCollision);
 
-		return this._bestCollision;
+		if(this._dragEntity){
+			if(this._dragEntity.assetType != "[asset MovieClip]" && this._dragEntity.adapter){
+				(<any>this._dragEntity.adapter).setDropTarget(bestCollision?bestCollision.entity:null);
+			}
+		}
+
+		return bestCollision;
 	}
 
 	private updatePosition(pickingCollision:PickingCollision):void
@@ -212,13 +458,9 @@ export class RaycastPicker extends TraverserBase implements IPicker
 	 */
 	public applyEntity(entity:IEntity):void
 	{
-		if (!this.isIgnored(entity))
-			this._entities.push(entity);
-	}
-
-	public applyRenderable(renderable:IRenderable):void
-	{
-		if (renderable.testCollision(this._testCollision, this._findClosestCollision))
-			this._bestCollision = this._testCollision;
+		if (!this.isIgnored(entity)) {
+			var pickEntity:PickEntity = this._pickGroup.getAbstraction(entity);
+			this._entities.push(pickEntity);
+		}
 	}
 }
