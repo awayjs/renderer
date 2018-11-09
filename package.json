@@ -15,7 +15,7 @@
     "rimraf": "rimraf",
     "rollup": "rollup -c",
     "uglifyjs": "uglifyjs ./bundle/awayjs-renderer.umd.js -o ./bundle/awayjs-renderer.umd.min.js --in-source-map ./bundle/awayjs-renderer.umd.js.map --source-map --output ./bundle/awayjs-renderer.umd.min.js.map --mangle",
-    "tsc": "tsc --lib ES2015.Symbol,DOM,ScriptHost,ES5,ES2015.Iterable",
+    "tsc": "tsc --lib ES2015.Symbol,DOM,ScriptHost,ES5,ES2015,ES2015.Iterable",
     "clean": "npm cache clean && npm run rimraf -- node_modules dist bundle",
     "clean:dist": "npm run rimraf -- dist bundle",
     "watch": "npm run tsc -- --w",
