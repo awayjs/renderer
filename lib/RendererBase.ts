@@ -1,4 +1,4 @@
-import {Matrix3D, Plane3D, Rectangle, Vector3D, ProjectionBase} from "@awayjs/core";
+import {Matrix3D, Plane3D, Rectangle, Vector3D, ProjectionBase, AbstractionBase} from "@awayjs/core";
 
 import {ImageBase, BitmapImage2D, ContextGLProfile, ContextMode, ContextGLBlendFactor, ContextGLCompareMode, ContextGLStencilAction, ContextGLTriangleFace, IContextGL, Stage, StageEvent, StageManager, Viewport, ViewportEvent, ContextGLClearMask} from "@awayjs/stage";
 
@@ -12,12 +12,13 @@ import {IEntity} from "./base/IEntity";
 import {IPass} from "./base/IPass";
 import {IRenderer} from "./base/IRenderer";
 import {IRenderable} from "./base/IRenderable";
-import {TraverserBase} from "./partition/TraverserBase";
+import {ITraverser} from "./partition/ITraverser";
 import {INode} from "./partition/INode";
 import {RTTBufferManager} from "./managers/RTTBufferManager";
 import {IEntitySorter} from "./sort/IEntitySorter";
 import {RenderableMergeSort} from "./sort/RenderableMergeSort";
 import { PartitionBase } from './partition/PartitionBase';
+import { PickGroup } from './PickGroup';
 
 
 /**
@@ -26,20 +27,21 @@ import { PartitionBase } from './partition/PartitionBase';
  *
  * @class away.render.RendererBase
  */
-export class RendererBase extends TraverserBase implements IRenderer
+export class RendererBase implements ITraverser, IRenderer
 {
 	public static _collectionMark = 0;
 
+	public _pickGroup:PickGroup;
     private _mappers:Array<IMapper> = new Array<IMapper>();
 	private _maskConfig:number;
 	private _activeMasksDirty:boolean;
-	private _activeMasksConfig:Array<Array<number>> = new Array<Array<number>>();
+	private _activeMaskOwners:Array<IEntity> = new Array<IEntity>();
 	private _registeredMasks : Array<_Render_RenderableBase> = new Array<_Render_RenderableBase>();
 	private _numUsedStreams:number = 0;
 	private _numUsedTextures:number = 0;
 
-	protected _context:IContextGL;
 	protected _partition:PartitionBase;
+	protected _context:IContextGL;
 	protected _stage:Stage;
 	protected _viewport:Viewport;
 
@@ -73,6 +75,16 @@ export class RendererBase extends TraverserBase implements IRenderer
 	private _zIndex:number;
 	private _renderSceneTransform:Matrix3D;
 	
+	public get partition():PartitionBase
+	{
+		return this._partition;
+	}
+
+	public get pickGroup():PickGroup
+	{
+		return this._pickGroup;
+	}
+
 	/**
 	 *
 	 */
@@ -136,12 +148,9 @@ export class RendererBase extends TraverserBase implements IRenderer
 	 */
 	constructor(partition:PartitionBase, projection:ProjectionBase = null, stage:Stage = null, forceSoftware:boolean = false, profile:ContextGLProfile = ContextGLProfile.BASELINE, mode:ContextMode = ContextMode.AUTO)
 	{
-		super();
-
 		this._partition = partition;
-
-		//this._viewport = new Viewport(projection, stage, forceSoftware, profile, mode);
-		this._viewport = partition.viewport;
+		this._viewport = new Viewport(projection, stage, forceSoftware, profile, mode);
+		this._pickGroup = PickGroup.getInstance(this._viewport);
 
 		this._onSizeInvalidateDelegate = (event:ViewportEvent) => this.onSizeInvalidate(event);
 		this._onContextUpdateDelegate = (event:StageEvent) => this.onContextUpdate(event);
@@ -199,11 +208,6 @@ export class RendererBase extends TraverserBase implements IRenderer
 	public get stage():Stage
 	{
 		return this._stage;
-	}
-
-	public get partition():PartitionBase
-	{
-		return this._partition;
 	}
 
 	public get viewport():Viewport
@@ -447,9 +451,9 @@ export class RendererBase extends TraverserBase implements IRenderer
             //
 			// 	} while (renderRenderable2 && renderRenderable2.renderMaterial == renderMaterial);
 			// } else {
-				if (this._activeMasksDirty || this._checkMasksConfig(renderRenderable.masksConfig)) {
-					this._activeMasksConfig = renderRenderable.masksConfig;
-					if (!this._activeMasksConfig.length) {
+				if (this._activeMasksDirty || this._checkMaskOwners(renderRenderable.maskOwners)) {
+					this._activeMaskOwners = renderRenderable.maskOwners;
+					if (this._activeMaskOwners == null) {
 						// disable stencil
 						//if(gl) {
 							//gl.disable(gl.STENCIL_TEST);
@@ -461,7 +465,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 
 						//}
 					} else {
-						this._renderMasks(renderRenderable.sourceEntity._iAssignedMasks());
+						this._renderMasks(this._activeMaskOwners);
 					}
 					this._activeMasksDirty = false;
 				}
@@ -485,7 +489,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 
 						renderRenderable2 = renderRenderable2.next;
 
-					} while (renderRenderable2 && renderRenderable2.renderMaterial == renderMaterial && !(this._activeMasksDirty = this._checkMasksConfig(renderRenderable2.masksConfig)));
+					} while (renderRenderable2 && renderRenderable2.renderMaterial == renderMaterial && !(this._activeMasksDirty = this._checkMaskOwners(renderRenderable2.maskOwners)));
 
 					this.deactivatePass(pass);
 				}
@@ -567,6 +571,11 @@ export class RendererBase extends TraverserBase implements IRenderer
 		return enter;
 	}
 
+	public getTraverser(partition:PartitionBase):ITraverser
+	{
+		return this;
+	}
+
 	public applyEntity(entity:IEntity):void
 	{
 		this._sourceEntity = entity;
@@ -579,7 +588,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 		this._renderSceneTransform = entity.getRenderSceneTransform(this._cameraTransform);
 
 		//collect renderables
-		entity._acceptTraverser(this);
+		entity._applyRenderables(this);
 	}
 
 	public applyRenderable(renderable:IRenderable):void
@@ -591,8 +600,8 @@ export class RendererBase extends TraverserBase implements IRenderer
 		renderRenderable.cascaded = false;
 		
 		renderRenderable.zIndex = this._zIndex;
-		renderRenderable.maskId = this._sourceEntity._iAssignedMaskId();
-		renderRenderable.masksConfig = this._sourceEntity._iMasksConfig();
+		renderRenderable.maskId = this._sourceEntity.maskId;
+		renderRenderable.maskOwners = this._sourceEntity.maskOwners;
 
 		var renderMaterial:_Render_MaterialBase = renderRenderable.renderMaterial;
 		renderRenderable.materialID = renderMaterial.materialID;
@@ -618,7 +627,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 		this._registeredMasks.push(obj);
 	}
 
-	public _renderMasks(masks:IEntity[][]):void
+	public _renderMasks(maskOwners:IEntity[]):void
 	{
 		//var gl = this._context["_gl"];
 		//f (!gl)
@@ -638,7 +647,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 		//gl.stencilOp(gl.REPLACE, gl.REPLACE, gl.REPLACE);
 		this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.ALWAYS, ContextGLStencilAction.SET, ContextGLStencilAction.SET, ContextGLStencilAction.SET);
 		this._context.setStencilReferenceValue(this._maskConfig);
-		var numLayers:number = masks.length;
+		var numLayers:number = maskOwners.length;
 		var numRenderables:number = this._registeredMasks.length;
 		var renderRenderable:_Render_RenderableBase;
 		var children:Array<IEntity>;
@@ -654,7 +663,7 @@ export class RendererBase extends TraverserBase implements IRenderer
 				this._maskConfig++;
 			}
 
-			children = masks[i];
+			children = maskOwners[i].masks;
 			numChildren = children.length;
 
 			for (var j:number = 0; j < numChildren; ++j) {
@@ -697,29 +706,18 @@ export class RendererBase extends TraverserBase implements IRenderer
 		this.deactivatePass(pass);
 	}
 
-	private _checkMasksConfig(masksConfig:Array<Array<number>>):boolean
+	private _checkMaskOwners(maskOwners:Array<IEntity>):boolean
 	{
-		if (this._activeMasksConfig.length != masksConfig.length)
+		if (this._activeMaskOwners == null || maskOwners == null)
 			return true;
 
-		var numLayers:number = masksConfig.length;
-		var numChildren:number;
-		var childConfig:Array<number>;
-		var activeNumChildren:number;
-		var activeChildConfig:Array<number>;
-		for (var i:number = 0; i < numLayers; i++) {
-			childConfig = masksConfig[i];
-			numChildren = childConfig.length;
-			activeChildConfig = this._activeMasksConfig[i];
-			activeNumChildren = activeChildConfig.length;
-			if (activeNumChildren != numChildren)
-				return true;
+		if (this._activeMaskOwners.length != maskOwners.length)
+			return true;
 
-			for (var j:number = 0; j < numChildren; j++) {
-				if (activeChildConfig[j] != childConfig[j])
-					return true;
-			}
-		}
+		var numOwners:number = maskOwners.length;
+		for (var i:number = 0; i < numOwners; i++)
+			if (this._activeMaskOwners[i] != maskOwners[i])
+				return true;
 
 		return false;
 	}

@@ -6,6 +6,8 @@ import { BoundingVolumeType } from './BoundingVolumeType';
 import { BoundingBox } from './BoundingBox';
 import { BoundingSphere } from './BoundingSphere';
 import { NullBounds } from './NullBounds';
+import { BoundsPicker } from '../pick/BoundsPicker';
+import { IBoundsPicker } from '../pick/IBoundsPicker';
 
 export class BoundingVolumePool implements IAbstractionPool
 {
@@ -46,14 +48,14 @@ export class BoundingVolumePool implements IAbstractionPool
 	}
 
 	private _boundingVolumePool:Object = new Object();
-	private _boundingEntity:IEntity;
+	private _picker:IBoundsPicker;
 	private _strokeFlag:boolean;
 	private _fastFlag:boolean;
 	private _boundingVolumeClass:IAbstractionClass;
 
-	public get boundingEntity():IEntity
+	public get picker():IBoundsPicker
 	{
-		return this._boundingEntity;
+		return this._picker;
 	}
 
 	public get strokeFlag():boolean
@@ -66,23 +68,23 @@ export class BoundingVolumePool implements IAbstractionPool
 		return this._fastFlag;
 	}
 
-	constructor(boundingEntity:IEntity, boundingVolumeType:BoundingVolumeType)
+	constructor(picker:IBoundsPicker, boundingVolumeType:BoundingVolumeType)
 	{
-		this._boundingEntity = boundingEntity;
+		this._picker = picker;
 		this._strokeFlag = BoundingVolumePool._strokeDict[boundingVolumeType];
 		this._fastFlag = BoundingVolumePool._fastDict[boundingVolumeType];
 		this._boundingVolumeClass = BoundingVolumePool._boundsDict[boundingVolumeType];
 	}
 
-	public getAbstraction(displayObject:IEntity):BoundingVolumeBase
+	public getAbstraction(entity:IEntity):BoundingVolumeBase
 	{
-		var id:number = displayObject? displayObject.id : -1;
-		return (this._boundingVolumePool[id] || (this._boundingVolumePool[id] = new (<IAbstractionClass> this._boundingVolumeClass)(displayObject, this)));
+		var id:number = entity? entity.id : -1;
+		return (this._boundingVolumePool[id] || (this._boundingVolumePool[id] = new (<IAbstractionClass> this._boundingVolumeClass)(entity, this)));
 	}
 
-	public clearAbstraction(displayObject:IEntity):void
+	public clearAbstraction(entity:IEntity):void
 	{
-		delete this._boundingVolumePool[displayObject? displayObject.id : -1];
+		delete this._boundingVolumePool[entity? entity.id : -1];
 	}
 
 	public dispose():void

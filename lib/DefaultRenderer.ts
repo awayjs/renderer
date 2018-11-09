@@ -15,6 +15,7 @@ import {DistanceRenderer} from "./DistanceRenderer";
 import {Filter3DRenderer} from "./Filter3DRenderer";
 import {RendererBase} from "./RendererBase";
 import { PartitionBase } from './partition/PartitionBase';
+import { PickGroup } from './PickGroup';
 
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
@@ -138,7 +139,7 @@ export class DefaultRenderer extends RendererBase
 		var enter:boolean = super.enterNode(node);
 
 		if (enter && node.boundsVisible)
-			this.applyEntity(node.boundsPrimitive);
+			this.applyEntity(node.getBoundsPrimitive(this._pickGroup));
 
 		return enter;
 	}

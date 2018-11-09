@@ -1,16 +1,14 @@
-import {Transform, Box, ColorTransform, Sphere, Matrix3D, Vector3D, IAsset} from "@awayjs/core";
-
-import {PickingCollision} from "../pick/PickingCollision";
-import {TraverserBase} from "../partition/TraverserBase";
+import {Transform, ColorTransform, Matrix3D, Vector3D, IAsset, Point} from "@awayjs/core";
 
 import {IAnimator} from "./IAnimator";
 import {IMaterial} from "./IMaterial";
 import {IRenderable} from "./IRenderable";
 import {Style} from "./Style";
 import { BoundingVolumeType } from '../bounds/BoundingVolumeType';
-import { BoundingVolumeBase } from '../bounds/BoundingVolumeBase';
 import { PartitionBase } from '../partition/PartitionBase';
-import { Viewport } from '@awayjs/stage';
+import { IPicker } from '../pick/IPicker';
+import { IRenderer } from './IRenderer';
+import { PickGroup } from '../PickGroup';
 
 
 export interface IEntity extends IAsset
@@ -25,7 +23,7 @@ export interface IEntity extends IAsset
 
 	_depthID:number;
 
-	isEntity:boolean;
+	isEntity():boolean;
 
 	getMouseCursor():string;
 
@@ -35,35 +33,36 @@ export interface IEntity extends IAsset
 
 	isInFocus:boolean;
 
-	isContainer:boolean;
+	isAncestor(entity:IEntity):boolean;
 
-	partition:PartitionBase;
+	isDescendant(entity:IEntity):boolean;
 
-	_iInternalUpdate(viewport:Viewport):void;
+	_iInternalUpdate():void;
 	
-	_iMasksConfig():Array<Array<number>>;
-
-	_iAssignedMaskId():number;
+	maskId:number;
 
 	_iAssignedColorTransform():ColorTransform;
 
-	_iAssignedMasks():Array<Array<IEntity>>;
-
-	_iPickingCollision:PickingCollision;
+	maskOwners:Array<IEntity>;
 
 	maskMode:boolean;
 
-	getBoxBounds():Box;
-
-	getSphereBounds():Sphere;
+	_registrationMatrix3D:Matrix3D;
 
 	transform:Transform;
 
+	masks:Array<IEntity>;
+	
+	partition:PartitionBase;
+
+	globalToLocal(point:Point, target?:Point):Point
 	/**
 	 * 
 	 */
 	defaultBoundingVolume:BoundingVolumeType;
 	
+	pickObject:IEntity;
+
 	/**
 	 *
 	 */
@@ -72,7 +71,7 @@ export interface IEntity extends IAsset
 	/**
 	 * 
 	 */
-	boundsPrimitive:IEntity;
+	getBoundsPrimitive(pickGroup:PickGroup):IEntity;
 
 	/**
 	 *
@@ -88,8 +87,6 @@ export interface IEntity extends IAsset
 	 *
 	 */
 	zOffset:number;
-
-	pickShape:boolean;
 
 	/**
 	 * @internal
@@ -110,20 +107,14 @@ export interface IEntity extends IAsset
 
 	getRenderableIndex(renderable:IRenderable):number;
 
-	getBoundingVolume(targetCoordinateSpace?:IEntity, boundingVolumeType?:BoundingVolumeType):BoundingVolumeBase
-
-	_getSphereBoundsInternal(matrix3D:Matrix3D, strokeFlag:boolean, cache?:Sphere, target?:Sphere):Sphere
-
-	_getBoxBoundsInternal(matrix3D:Matrix3D, strokeFlag:boolean, fastFlag:boolean, cache?:Box, target?:Box ):Box
-
 	/**
 	 *
 	 * @param renderer
 	 * @private
 	 */
-	_acceptTraverser(traverser:TraverserBase);
+	_applyPickables(picker:IPicker);
 
-	hitTestPoint(x:number, y:number, shapeFlag?:boolean, masksFlag?:boolean):boolean;
+	_applyRenderables(renderer:IRenderer);
 
 	invalidateMaterial();
 

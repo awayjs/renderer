@@ -2,17 +2,18 @@ import {Plane3D, Vector3D, AbstractMethodError, AbstractionBase, AssetEvent, Tra
 
 import {IEntity} from "../base/IEntity";
 
-import { EntityEvent } from '../events/EntityEvent';
+import { BoundsPickerEvent } from '../events/BoundsPickerEvent';
 
 import { BoundingVolumePool } from './BoundingVolumePool';
+import { IBoundsPicker } from '../pick/IBoundsPicker';
 
 export class BoundingVolumeBase extends AbstractionBase
 {
-	private _onInvalidateBoundsDelegate:(event:EntityEvent) => void;
+	private _onInvalidateBoundsDelegate:(event:BoundsPickerEvent) => void;
 	private _onInvalidateMatrix3DDelegate:(event:TransformEvent) => void;
 
 	protected _targetCoordinateSpace:IEntity;
-	protected _boundingEntity:IEntity;
+	protected _picker:IBoundsPicker;
 	protected _strokeFlag:boolean;
 	protected _fastFlag:boolean;
 	//protected _boundsPrimitive:Sprite;
@@ -22,22 +23,28 @@ export class BoundingVolumeBase extends AbstractionBase
 		super(asset, pool);
 
 		this._targetCoordinateSpace = asset;
-		this._boundingEntity = pool.boundingEntity;
+		this._picker = pool.picker;
 		this._strokeFlag = pool.strokeFlag;
 		this._fastFlag = pool.fastFlag;
 
-		this._onInvalidateBoundsDelegate = (event:EntityEvent) => this._onInvalidateBounds(event);
+		this._onInvalidateBoundsDelegate = (event:BoundsPickerEvent) => this._onInvalidateBounds(event);
 		this._onInvalidateMatrix3DDelegate = (event:TransformEvent) => this._onInvalidateMatrix3D(event);
 
-		this._boundingEntity.addEventListener(EntityEvent.INVALIDATE_BOUNDS, this._onInvalidateBoundsDelegate);
+		this._picker.addEventListener(BoundsPickerEvent.INVALIDATE_BOUNDS, this._onInvalidateBoundsDelegate);
 
 		if (this._targetCoordinateSpace) {
-			this._targetCoordinateSpace.transform.addEventListener(TransformEvent.INVALIDATE_MATRIX3D, this._onInvalidateMatrix3DDelegate);
-			this._targetCoordinateSpace.addEventListener(EntityEvent.INVALIDATE_BOUNDS, this._onInvalidateBoundsDelegate);
+			var targetEntity:IEntity = this._picker.entity;
+			while (targetEntity && targetEntity != this._targetCoordinateSpace.parent) {
+				targetEntity.transform.addEventListener(TransformEvent.INVALIDATE_MATRIX3D, this._onInvalidateMatrix3DDelegate);
+				targetEntity = targetEntity.parent;
+			}
+
+			if (!targetEntity) //case when targetCoordinateSpace is not part of the same displaylist ancestry
+				this._targetCoordinateSpace.addEventListener(TransformEvent.INVALIDATE_CONCATENATED_MATRIX3D, this._onInvalidateMatrix3DDelegate);
 		}
 	}
 
-	public _onInvalidateBounds(event:EntityEvent):void
+	public _onInvalidateBounds(event:BoundsPickerEvent):void
 	{
 		this._invalid = true;
 	}
@@ -51,16 +58,21 @@ export class BoundingVolumeBase extends AbstractionBase
 	{
 		super.onClear(event);
 
-		this._boundingEntity.removeEventListener(EntityEvent.INVALIDATE_BOUNDS, this._onInvalidateBoundsDelegate);
+		this._picker.addEventListener(BoundsPickerEvent.INVALIDATE_BOUNDS, this._onInvalidateBoundsDelegate);
 		
 		if (this._targetCoordinateSpace) {
-			this._targetCoordinateSpace.transform.removeEventListener(TransformEvent.INVALIDATE_MATRIX3D, this._onInvalidateMatrix3DDelegate);
-			//TODO: some optimisation to be made by identifying whether bubbled Bounds invalidation comes from movement of the bounding object, or just its siblings
-			this._targetCoordinateSpace.removeEventListener(EntityEvent.INVALIDATE_BOUNDS, this._onInvalidateBoundsDelegate);
+			var targetEntity:IEntity = this._picker.entity;
+			while (targetEntity && targetEntity != this._targetCoordinateSpace.parent) {
+				targetEntity.transform.removeEventListener(TransformEvent.INVALIDATE_MATRIX3D, this._onInvalidateMatrix3DDelegate);
+				targetEntity = targetEntity.parent;
+			}
+
+			if (!targetEntity) //case when targetCoordinateSpace is not part of the same displaylist ancestry
+				this._targetCoordinateSpace.removeEventListener(TransformEvent.INVALIDATE_CONCATENATED_MATRIX3D, this._onInvalidateMatrix3DDelegate);
 		}
 		
 		this._targetCoordinateSpace = null;
-		this._boundingEntity = null;
+		this._picker = null;
 		//this._boundsPrimitive = null;
 	}
 

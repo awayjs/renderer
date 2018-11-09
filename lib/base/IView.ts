@@ -1,5 +1,3 @@
-import {TraverserBase} from "../partition/TraverserBase";
-
 import {IEntity} from "./IEntity";
 import {TouchPoint} from "./TouchPoint";
 

@@ -3,6 +3,7 @@ import {IEventDispatcher, Plane3D, Rectangle, ProjectionBase} from "@awayjs/core
 import {Viewport} from "@awayjs/stage";
 
 import {IMapper} from "./IMapper";
+import { IRenderable } from './IRenderable';
 
 /**
  * IRenderer is an interface for classes that are used in the rendering pipeline to render the
@@ -10,7 +11,7 @@ import {IMapper} from "./IMapper";
  *
  * @class away.render.IRenderer
  */
-export interface IRenderer extends IEventDispatcher
+export interface IRenderer
 {
 	cullPlanes:Array<Plane3D>
 
@@ -33,4 +34,6 @@ export interface IRenderer extends IEventDispatcher
 	_addMapper(mapper:IMapper):void;
 
 	_removeMapper(mapper:IMapper):void;
+
+	applyRenderable(renderable:IRenderable):void
 }

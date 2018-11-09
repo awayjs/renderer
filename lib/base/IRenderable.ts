@@ -13,6 +13,4 @@ import { PickingCollision } from '../pick/PickingCollision';
 export interface IRenderable extends IAsset
 {
 	style:Style;
-
-	testCollision(collision:PickingCollision, closestFlag:boolean):boolean;
 }

@@ -36,9 +36,9 @@ export class _Render_RenderableBase extends AbstractionBase
     public _offset:number = 0;
 
     protected _stage:Stage;
-    protected _renderGroup:RenderGroup;
     protected _renderMaterial:_Render_MaterialBase;
 
+    public renderGroup:RenderGroup;
 
     /**
      *
@@ -101,7 +101,7 @@ export class _Render_RenderableBase extends AbstractionBase
     /**
      *
      */
-    public masksConfig:Array<Array<number>>;
+    public maskOwners:Array<IEntity>;
 
     /**
      *
@@ -149,7 +149,7 @@ export class _Render_RenderableBase extends AbstractionBase
 		//store references
 		this.sourceEntity = renderEntity.entity;
         this._stage = renderEntity.stage;
-        this._renderGroup = renderEntity.renderGroup;
+        this.renderGroup = renderEntity.renderGroup;
 
 		this.renderable = renderable;
 
@@ -182,11 +182,11 @@ export class _Render_RenderableBase extends AbstractionBase
 
 		this.renderSceneTransform = null;
 
-		this.sourceEntity = null;
+		//this.sourceEntity = null;
 		this._stage = null;
 
         this.next = null;
-        this.masksConfig = null;
+        this.maskOwners = null;
 
         this.renderable.removeEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
         this.renderable.removeEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);

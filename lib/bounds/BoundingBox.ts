@@ -108,20 +108,7 @@ export class BoundingBox extends BoundingVolumeBase
 	{
 		super._update();
 
-		if (this._targetCoordinateSpace) {
-			if (this._matrix3D == null)
-				this._matrix3D = new Matrix3D();
-			else
-				this._matrix3D.identity();
-
-			if (this._targetCoordinateSpace.parent)
-				this._matrix3D.copyFrom(this._targetCoordinateSpace.parent.transform.inverseConcatenatedMatrix3D);
-				
-			this._matrix3D.prepend(this._boundingEntity.transform.concatenatedMatrix3D);
-			this._box = this._boundingEntity._getBoxBoundsInternal(this._matrix3D, this._strokeFlag, this._fastFlag, this._box);
-		} else {
-			this._box = this._boundingEntity._getBoxBoundsInternal(null, this._strokeFlag, this._fastFlag, this._box);
-		}
+		this._box = this._picker._getBoxBoundsInternal(this._targetCoordinateSpace? this._targetCoordinateSpace.parent : this._picker.entity, this._strokeFlag, this._fastFlag, this._box);
 
 		if (this._box == null)
 			return;

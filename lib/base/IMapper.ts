@@ -1,11 +1,10 @@
 import {IAsset, ProjectionBase} from "@awayjs/core";
 
-import { PartitionBase } from '../partition/PartitionBase';
-import { IRenderer } from './IRenderer';
+import { RendererBase } from '../RendererBase';
 
 export interface IMapper extends IAsset
 {
 	autoUpdate:boolean;
 
-	update(projection:ProjectionBase, rootRenderer:IRenderer):void;
+	update(projection:ProjectionBase, rootRenderer:RendererBase):void;
 }
