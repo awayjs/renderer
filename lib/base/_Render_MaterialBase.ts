@@ -42,7 +42,7 @@ export class _Render_MaterialBase extends AbstractionBase
 
     private _imageIndices:Object = new Object();
     private _numImages:number;
-    private _usesAnimation:boolean = true;
+    private _usesAnimation:boolean = false;
 
     public images:Array<_Stage_ImageBase> = new Array<_Stage_ImageBase>();
 
