@@ -1,8 +1,8 @@
-import {IAssetClass, IAbstractionPool, ProjectionEvent} from "@awayjs/core";
+import {IAssetClass, IAbstractionPool, ProjectionEvent, AssetBase, AssetEvent} from "@awayjs/core";
 
 import {IEntity} from "../base/IEntity";
 
-import {TraverserBase} from "./TraverserBase";
+import {ITraverser} from "./ITraverser";
 import {IContainerNode} from "./IContainerNode";
 import {IEntityNodeClass} from "./IEntityNodeClass";
 import {EntityNode} from "./EntityNode";
@@ -12,19 +12,17 @@ import { Viewport, ViewportEvent } from '@awayjs/stage';
 /**
  * @class away.partition.Partition
  */
-export class PartitionBase implements IAbstractionPool
+export class PartitionBase extends AssetBase implements IAbstractionPool
 {
-	private _onViewMatrix3DChangedDelegate:(event:ViewportEvent) => void;
-
 	private static _abstractionClassPool:Object = new Object();
 
+	private _invalid:boolean;
 	private _children:Array<PartitionBase> = new Array<PartitionBase>();
 	private _abstractionPool:Object = new Object();
 	private _updateQueue:Object = {};
 
 	private _scene:IEntity;
 	protected _root:IEntity;
-	protected _viewport:Viewport;
 	protected _rootNode:IContainerNode;
 	protected _parent:PartitionBase;
 
@@ -42,25 +40,16 @@ export class PartitionBase implements IAbstractionPool
 	{
 		return this._scene;
 	}
-
-	public get viewport():Viewport
-	{
-		return this._viewport;
-	}
 	
-	constructor(root:IEntity, viewport:Viewport = null, isScene:boolean = false)
+	constructor(root:IEntity, isScene:boolean = false)
 	{
+		super();
+
 		this._root = root;
-		this._viewport = viewport || new Viewport();
+		this._root.addEventListener(AssetEvent.CLEAR, (event:AssetEvent) => this._onRootClear(event))
 
 		if (isScene)
 			this._scene = root;
-
-		this._root.partition = this;
-
-		this._onViewMatrix3DChangedDelegate = (event:ViewportEvent) => this._onViewMatrix3DChanged(event);
-		this._viewport.projection.addEventListener(ViewportEvent.INVALIDATE_VIEW_MATRIX3D, this._onViewMatrix3DChangedDelegate);
-
 	}
 
 	public addChild(child:PartitionBase):PartitionBase
@@ -99,7 +88,7 @@ export class PartitionBase implements IAbstractionPool
 
 	public getPartition(entity:IEntity):PartitionBase
 	{
-		return this;
+		return null;
 	}
 
 	/**
@@ -111,14 +100,18 @@ export class PartitionBase implements IAbstractionPool
 		delete this._abstractionPool[entity.id];
 	}
 
-	public traverse(traverser:TraverserBase):void
+	public traverse(traverser:ITraverser):void
 	{
+		this._invalid = false;
+
 		this._rootNode.acceptTraverser(traverser);
 	}
 
 	public invalidateEntity(entity:IEntity):void
 	{
-		//use getPartition when sub-partitions are required
+		if (!this._invalid)
+			this.invalidate();
+
 		this._updateQueue[entity.id] = entity;
 	}
 
@@ -126,10 +119,9 @@ export class PartitionBase implements IAbstractionPool
 	{
 		//TODO: remove reliance on viewport
 		//required for controllers with autoUpdate set to true and queued events
-		entity._iInternalUpdate(this._viewport);
+		entity._iInternalUpdate();
 
-		if (entity.isEntity)
-			this.updateNode(this.getAbstraction(entity));
+		this.updateNode(this.getAbstraction(entity));
 	}
 
 	public updateNode(node:INode):void
@@ -145,10 +137,12 @@ export class PartitionBase implements IAbstractionPool
 
 	public clearEntity(entity:IEntity):void
 	{
+		if (!this._invalid)
+			this.invalidate();
+
 		delete this._updateQueue[entity.id];
 
-		if(entity.isEntity)
-			this.clearNode(this.getAbstraction(entity));
+		this.clearNode(this.getAbstraction(entity));
 	}
 
 	public clearNode(node:INode)
@@ -178,20 +172,35 @@ export class PartitionBase implements IAbstractionPool
 		this._updateQueue = {};
 	}
 
+	public invalidate():void
+	{
+		this._invalid = true;
+
+		super.invalidate();
+
+		if (this._parent)
+			this._parent.invalidate();
+	}
+
 	public dispose():void
 	{
-		//remove sub-partitions
+		for (var key in this._abstractionPool)
+			this._abstractionPool[key].onClear(null);
 	}
 
 	public _setParent(parent:PartitionBase):void
 	{
-		if (this._parent)
+		if (this._parent) {
 			this._parent.clearNode(this._rootNode);
+			this._parent.invalidate();
+		}
 		
 		this._parent = parent;
 
-		if (parent)
+		if (parent) {
 			parent.updateNode(this._rootNode);
+			parent.invalidate();
+		}
 
 		this._setScene(parent? parent.scene : null);
 	}
@@ -208,6 +217,13 @@ export class PartitionBase implements IAbstractionPool
 			this._children[i]._setScene(scene);
 	}
 
+	public _onRootClear(event:AssetEvent):void
+	{
+		this.clear();
+
+		this._abstractionPool
+	}
+
 	/**
 	 *
 	 * @param imageObjectClass
@@ -215,17 +231,5 @@ export class PartitionBase implements IAbstractionPool
 	public static registerAbstraction(entityNodeClass:IEntityNodeClass, assetClass:IAssetClass):void
 	{
 		PartitionBase._abstractionClassPool[assetClass.assetType] = entityNodeClass;
-	}
-	
-	//TODO: remove this
-	private _onViewMatrix3DChanged(event:ViewportEvent):void
-	{
-		var entity:IEntity;
-
-		//add all existing entities to the updateQueue
-		for (var key in this._abstractionPool) {
-			entity = this._abstractionPool[key]._entity;
-			this._updateQueue[entity.id] = entity;
-		}
 	}
 }

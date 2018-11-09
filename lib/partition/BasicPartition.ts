@@ -10,9 +10,9 @@ import { Viewport } from '@awayjs/stage';
  */
 export class BasicPartition extends PartitionBase
 {
-	constructor(root:IEntity, viewport:Viewport = null)
+	constructor(root:IEntity)
 	{
-		super(root, viewport);
+		super(root);
 
 		this._rootNode = new NodeBase(root, this);
 	}

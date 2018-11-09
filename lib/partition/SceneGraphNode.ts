@@ -1,43 +1,33 @@
-import {TraverserBase} from "./TraverserBase";
-import {IContainerNode} from "./IContainerNode";
+import {ITraverser} from "./ITraverser";
 
 import {EntityNode} from "./EntityNode";
 import { INode } from './INode';
-import { PartitionBase } from './PartitionBase';
-import { IEntity } from '../base/IEntity';
-import { EntityContainerNodePool, SceneGraphPartition } from './SceneGraphPartition';
+import { NodeBase } from './NodeBase';
 
 /**
  * Maintains scenegraph heirarchy when collecting nodes
  */
-export class EntityContainerNode extends EntityNode implements IContainerNode
+export class SceneGraphNode extends NodeBase
 {
-	public isEntityContainerNode:boolean = true;
-
 	private _numNodes:number = 0;
 	private _pChildNodes:Array<EntityNode> = new Array<EntityNode>();
 	private _childDepths:Array<number> = new Array<number>();
 	private _numMasks:number = 0;
 	private _childMasks:Array<EntityNode> = new Array<EntityNode>();
-	private _partition:SceneGraphPartition;
-
-	constructor(entity:IEntity, pool:EntityContainerNodePool)
-	{
-		super(entity, pool);
-
-		this._partition = pool.partition;
-	}
 	/**
 	 *
 	 * @param traverser
 	 */
-	public acceptTraverser(traverser:TraverserBase):void
+	public acceptTraverser(traverser:ITraverser):void
 	{
+		if (!traverser.enterNode(this))
+			return;
+
 		if (this._partition.root == this._entity)
 			this._partition.updateEntities();
-		
-		//containers nodes are for ordering only, no need to check enterNode or debugVisible
-		if (this.numEntities == 0)
+
+		//get the sub-traverser for the partition, if different, terminate this traversal
+		if (traverser.partition != this._partition && traverser != traverser.getTraverser(this._partition))
 			return;
 
 		var i:number;
@@ -80,8 +70,6 @@ export class EntityContainerNode extends EntityNode implements IContainerNode
 			}
 			this._numNodes++;
 		}
-
-		this._updateNumEntities(this, node.isEntityContainerNode? (<EntityContainerNode> node).numEntities : 1);
 	}
 
 	/**
@@ -101,15 +89,5 @@ export class EntityContainerNode extends EntityNode implements IContainerNode
 			this._childDepths.splice(index, 1);
 			this._numNodes--;
 		}
-
-		this._updateNumEntities(this, -node.numEntities)
-	}
-
-	private _updateNumEntities(node:INode, incr:number):void
-	{
-		do {
-			node.numEntities += incr;
-		} while ((node = node.parent) != null);
 	}
 }
-export default EntityContainerNode;

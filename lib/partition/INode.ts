@@ -2,8 +2,9 @@ import {Plane3D, Vector3D} from "@awayjs/core";
 
 import {IContainerNode} from "./IContainerNode";
 
-import {TraverserBase} from "./TraverserBase";
+import {ITraverser} from "./ITraverser";
 import { IEntity } from '../base/IEntity';
+import { PickGroup } from '../PickGroup';
 
 /**
  * IDisplayObjectNode is an interface for the constructable class definition EntityNode that is used to
@@ -15,11 +16,11 @@ export interface INode
 {
 	//bounds:BoundingVolumeBase;
 
+	pickObject:IEntity;
+
 	boundsVisible:boolean;
 
-	boundsPrimitive:IEntity;
-	
-	numEntities:number;
+	getBoundsPrimitive(pickGroup:PickGroup):IEntity;
 
 	parent:IContainerNode;
 
@@ -30,12 +31,12 @@ export interface INode
 	isInFrustum(planes:Array<Plane3D>, numPlanes:number):boolean;
 	
 	isRenderable():boolean;
-	
-	isIntersectingRay(rayPosition:Vector3D, rayDirection:Vector3D):boolean;
 
-	acceptTraverser(traverser:TraverserBase);
+	isVisible():boolean;
+	
+	isIntersectingRay(rootEntity:IEntity, rayPosition:Vector3D, rayDirection:Vector3D, pickGroup:PickGroup):boolean;
+
+	acceptTraverser(traverser:ITraverser);
 
 	isCastingShadow():boolean;
-	
-	renderBounds(traverser:TraverserBase);
 }

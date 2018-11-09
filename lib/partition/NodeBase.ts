@@ -2,18 +2,19 @@ import {Plane3D, Vector3D, AbstractMethodError} from "@awayjs/core";
 
 import {IEntity} from "../base/IEntity";
 
-import {TraverserBase} from "./TraverserBase";
+import {ITraverser} from "./ITraverser";
 import {INode} from "./INode";
 import {IContainerNode} from "./IContainerNode";
 import { PartitionBase } from './PartitionBase';
+import { PickGroup } from '../PickGroup';
 
 /**
  * @class away.partition.NodeBase
  */
 export class NodeBase implements IContainerNode
 {
-	private _entity:IEntity;
-	private _partition:PartitionBase;
+	protected _entity:IEntity;
+	protected _partition:PartitionBase;
 	protected _childNodes:Array<INode> = new Array<INode>();
 	protected _numChildNodes:number = 0;
 
@@ -21,16 +22,19 @@ export class NodeBase implements IContainerNode
 
 	public _collectionMark:number;// = 0;
 
-	public numEntities:number = 0;
-
 	public parent:IContainerNode;
+
+	public get pickObject():IEntity
+	{
+		return;
+	}
 
 	public get boundsVisible():boolean
 	{
 		return false;
 	}
 
-	public get boundsPrimitive():IEntity
+	public getBoundsPrimitive(pickGroup:PickGroup):IEntity
 	{
 		throw new AbstractMethodError();
 	}
@@ -52,13 +56,18 @@ export class NodeBase implements IContainerNode
 		return true;
 	}
 
+	public isVisible():boolean
+	{
+		return true;
+	}
+
 	/**
 	 *
 	 * @param rayPosition
 	 * @param rayDirection
 	 * @returns {boolean}
 	 */
-	public isIntersectingRay(rayPosition:Vector3D, rayDirection:Vector3D):boolean
+	public isIntersectingRay(rootEntity:IEntity, rayPosition:Vector3D, rayDirection:Vector3D, pickGroup:PickGroup):boolean
 	{
 		return true;
 	}
@@ -79,11 +88,6 @@ export class NodeBase implements IContainerNode
 	public isCastingShadow():boolean
 	{
 		return true;
-	}
-	
-	public renderBounds(traverser:TraverserBase):void
-	{
-		//nothing to do here
 	}
 
 
@@ -106,15 +110,13 @@ export class NodeBase implements IContainerNode
 	 *
 	 * @param traverser
 	 */
-	public acceptTraverser(traverser:TraverserBase):void
+	public acceptTraverser(traverser:ITraverser):void
 	{
 		// if (traverser.partition != this._partition)
 		// 	traverser = traverser.getTraverser()
 		if (this._partition.root == this._entity)
 			this._partition.updateEntities();
-		
-		if (this.numEntities == 0)
-			return;
+
 
 		if (traverser.enterNode(this)) {
 			for (var i:number = 0; i < this._numChildNodes; i++)
@@ -130,15 +132,8 @@ export class NodeBase implements IContainerNode
 	public iAddNode(node:INode):void
 	{
 		node.parent = this;
-		this.numEntities += node.numEntities;
+		
 		this._childNodes[ this._numChildNodes++ ] = node;
-
-		var numEntities:number = node.numEntities;
-		node = this;
-
-		do {
-			node.numEntities += numEntities;
-		} while ((node = node.parent) != null);
 	}
 
 	/**
@@ -151,12 +146,5 @@ export class NodeBase implements IContainerNode
 		var index:number = this._childNodes.indexOf(node);
 		this._childNodes[index] = this._childNodes[--this._numChildNodes];
 		this._childNodes.pop();
-
-		var numEntities:number = node.numEntities;
-		node = this;
-
-		do {
-			node.numEntities -= numEntities;
-		} while ((node = node.parent) != null);
 	}
 }

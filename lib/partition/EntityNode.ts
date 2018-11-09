@@ -1,25 +1,19 @@
 import {AbstractionBase, Plane3D, Vector3D, IAbstractionPool, AssetEvent} from "@awayjs/core";
 
 import {IEntity} from "../base/IEntity";
-import {EntityEvent} from "../events/EntityEvent";
 
-import {TraverserBase} from "./TraverserBase";
+import {ITraverser} from "./ITraverser";
 import {INode} from "./INode";
 import { IContainerNode } from './IContainerNode';
 import { PartitionBase } from './PartitionBase';
+import { PickGroup } from '../PickGroup';
 
 /**
  * @class away.partition.EntityNode
  */
 export class EntityNode extends AbstractionBase implements INode
 {
-	public numEntities:number = 0;
-
-	public isEntityContainerNode:boolean = false;
-
 	public _iUpdateQueueNext:EntityNode;
-
-	private _onInvalidateBoundsDelegate:(event:EntityEvent) => void;
 	
 	public _entity:IEntity;
 
@@ -27,24 +21,26 @@ export class EntityNode extends AbstractionBase implements INode
 
 	public parent:IContainerNode;
 
+	public get pickObject():IEntity
+	{
+		return this._entity.pickObject;
+	}
+
 	public get boundsVisible():boolean
 	{
 		return this._entity.boundsVisible;
 	}
 
-	public get boundsPrimitive():IEntity
+	public getBoundsPrimitive(pickGroup:PickGroup):IEntity
 	{
-		return this._entity.boundsPrimitive;
+		return this._entity.getBoundsPrimitive(pickGroup);
 	}
 
-	constructor(entity:IEntity, pool:IAbstractionPool)
+	constructor(entity:IEntity, partition:PartitionBase)
 	{
-		super(entity, pool);
-
-		this._onInvalidateBoundsDelegate = (event:EntityEvent) => this._onInvalidateBounds(event);
+		super(entity, partition);
 
 		this._entity = entity;
-		this._entity.addEventListener(EntityEvent.INVALIDATE_BOUNDS, this._onInvalidateBoundsDelegate);
 	}
 	
 	/**
@@ -69,7 +65,6 @@ export class EntityNode extends AbstractionBase implements INode
 	{
 		super.onClear(event);
 
-		this._entity.removeEventListener(EntityEvent.INVALIDATE_BOUNDS, this._onInvalidateBoundsDelegate);
 		this._entity = null;
 	}
 
@@ -79,45 +74,71 @@ export class EntityNode extends AbstractionBase implements INode
 	 * @param numPlanes
 	 * @returns {boolean}
 	 */
+
+	/**
+	 *
+	 * @param planes
+	 * @param numPlanes
+	 * @returns {boolean}
+	 */
 	public isInFrustum(planes:Array<Plane3D>, numPlanes:number):boolean
 	{
-		return true;
+		if (!this._entity._iIsVisible())
+			return false;
+
+		return true; // todo: hack for 2d. attention. might break stuff in 3d.
+		//return this._bounds.isInFrustum(planes, numPlanes);
 	}
 
+	public isVisible():boolean
+	{
+		return this._entity._iIsVisible();
+	}
 
 	/**
 	 * @inheritDoc
 	 */
-	public isIntersectingRay(rayPosition:Vector3D, rayDirection:Vector3D):boolean
+	public isIntersectingRay(rootEntity:IEntity, globalRayPosition:Vector3D, globalRayDirection:Vector3D, pickGroup:PickGroup):boolean
 	{
-		return true;
+		return pickGroup.getAbstraction(this._entity)._isIntersectingRayInternal(rootEntity, globalRayPosition, globalRayDirection);
+		// if (!this._entity._iIsVisible() || !this.isIntersectingMasks(globalRayPosition, globalRayDirection, this._entity._iAssignedMasks()))
+		// 	return false;
+
+		// var pickingCollision:PickingCollision = this._entity._iPickingCollision;
+		// pickingCollision.rayPosition = this._entity.transform.inverseConcatenatedMatrix3D.transformVector(globalRayPosition);
+		// pickingCollision.rayDirection = this._entity.transform.inverseConcatenatedMatrix3D.deltaTransformVector(globalRayDirection);
+
+		// if (!pickingCollision.normal)
+		// 	pickingCollision.normal = new Vector3D();
+
+		// var rayEntryDistance:number = pickGroup.getAbstraction(this._entity).getBoundingVolume(null, this._entity.defaultBoundingVolume).rayIntersection(pickingCollision.rayPosition, pickingCollision.rayDirection, pickingCollision.normal);
+
+		// if (rayEntryDistance < 0)
+		// 	return false;
+
+		// pickingCollision.rayEntryDistance = rayEntryDistance;
+		// pickingCollision.globalRayPosition = globalRayPosition;
+		// pickingCollision.globalRayDirection = globalRayDirection;
+		// pickingCollision.rayOriginIsInsideBounds = rayEntryDistance == 0;
+
+		// return true;
 	}
-	
+
 	/**
 	 *
 	 * @returns {boolean}
 	 */
 	public isRenderable():boolean
 	{
-		return true;
+		return this._entity._iAssignedColorTransform()._isRenderable();
 	}
 	
-	public renderBounds(traverser:TraverserBase):void
-	{
-		//traverser.applyEntity(this._entity.getBoundingVolume(null, BoundingVolumeType.BOX_BOUNDS_FAST).boundsPrimitive);
-	}
-	
-
 	/**
 	 * @inheritDoc
 	 */
-	public acceptTraverser(traverser:TraverserBase):void
+	public acceptTraverser(traverser:ITraverser):void
 	{
-		// do nothing here
-	}
-
-	public _onInvalidateBounds(event:EntityEvent):void
-	{
-		// do nothing here
+		if (traverser.enterNode(this))
+			traverser.applyEntity(this._entity);
 	}
 }
