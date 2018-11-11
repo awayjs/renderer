@@ -2,6 +2,7 @@ import {Point, Vector3D} from "@awayjs/core";
 
 import {IEntity} from "../base/IEntity";
 import {IRenderable} from "../base/IRenderable";
+import { RaycastPicker } from './RaycastPicker';
 
 /**
  * Value object ___ for a picking collision returned by a picking collider. Created as unique objects on display objects
@@ -12,6 +13,11 @@ import {IRenderable} from "../base/IRenderable";
  */
 export class PickingCollision
 {
+	/**
+	 * 
+	 */
+	public pickerEntity:IEntity;
+	
 	/**
 	 * The entity to which this collision object belongs.
 	 */

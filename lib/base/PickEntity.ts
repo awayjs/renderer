@@ -38,7 +38,6 @@ export class PickEntity extends AbstractionBase implements IAbstractionPool, IPi
 	private _entity:IEntity;
 	private _pickGroup:PickGroup;
 
-		
     public get pickingCollision():PickingCollision
     {
         return this._pickingCollision;

@@ -191,13 +191,13 @@ export class RaycastPicker extends AbstractionBase implements ITraverser
 	 */
 	public enterNode(node:INode):boolean
 	{
+		if (!node.isVisible() || node.isMask())
+			return false;
+
 		if (node.pickObject) {
 			node.pickObject.partition.traverse(this);
 			return false;
 		}
-
-		if (this._entity == this._dragEntity)
-			return false;
 
 		if((<any>node)._entity && (<any>node)._entity.isTabEnabled){
 			if((<any>node)._entity.assetType != "[asset TextField]" || (<any>node)._entity.type == "input"){
@@ -215,7 +215,7 @@ export class RaycastPicker extends AbstractionBase implements ITraverser
 			}
 		}
 
-		return this._entity != this._dragEntity && node.isVisible() && !node.isMask() && node.isIntersectingRay(this._rootEntity, this._globalRayPosition, this._globalRayDirection, this._pickGroup)
+		return  node.isIntersectingRay(this._rootEntity, this._globalRayPosition, this._globalRayDirection, this._pickGroup)
 	}
 
 		/**
@@ -300,7 +300,7 @@ export class RaycastPicker extends AbstractionBase implements ITraverser
 			return null;
 
 		//collect pickers
-		this._collectEntities(this._collectedEntities);
+		this._collectEntities(this._collectedEntities, this._dragEntity);
 
 		//console.log("entities: ", this._entities)
 		var collision:PickingCollision = this._getPickingCollision(shapeFlag, findClosestCollision);
@@ -311,16 +311,21 @@ export class RaycastPicker extends AbstractionBase implements ITraverser
 		return collision;
 	}
 
-	public _collectEntities(collectedEntities:PickEntity[] = null):void
+	public _collectEntities(collectedEntities:PickEntity[], dragEntity:IEntity):void
 	{
 		var len:number = this._pickers.length;
-		for (var i:number = 0; i < len; i++)
-			this._pickers[i]._collectEntities(collectedEntities);
+		for (var i:number = 0; i < len; i++) {
+			if (this._pickers[i].entity == dragEntity)
+				continue;
+
+			this._pickers[i]._collectEntities(collectedEntities, dragEntity);
+		}
 
 		//ensures that raycastPicker entities are always added last, for correct 2D picking
-		for (var i:number = 0; i < this._entities.length; ++i)
+		for (var i:number = 0; i < this._entities.length; ++i) {
+			this._entities[i].pickingCollision.pickerEntity = this._entity;
 			collectedEntities.push(this._entities[i]);
-
+		}
 		// //need to re-calculate the rayEntryDistance for only those entities inside the picker
 		// this._pickingCollision.rayEntryDistance = Number.MAX_VALUE;
 		// for (var i:number = 0; i < this._entities.length; ++i) {
@@ -427,8 +432,8 @@ export class RaycastPicker extends AbstractionBase implements ITraverser
 			this.updatePosition(bestCollision);
 
 		if(this._dragEntity){
-			if(this._dragEntity.assetType != "[asset MovieClip]" && this._dragEntity.adapter){
-				(<any>this._dragEntity.adapter).setDropTarget(bestCollision?bestCollision.entity:null);
+			if(this._dragEntity.assetType == "[asset MovieClip]" && this._dragEntity.adapter){
+				(<any>this._dragEntity.adapter).setDropTarget(bestCollision?bestCollision.pickerEntity:null);
 			}
 		}
 

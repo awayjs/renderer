@@ -20,14 +20,14 @@ export class SceneGraphNode extends NodeBase
 	 */
 	public acceptTraverser(traverser:ITraverser):void
 	{
-		if (!traverser.enterNode(this))
-			return;
-
 		if (this._partition.root == this._entity)
 			this._partition.updateEntities();
 
 		//get the sub-traverser for the partition, if different, terminate this traversal
 		if (traverser.partition != this._partition && traverser != traverser.getTraverser(this._partition))
+			return;
+
+		if (!traverser.enterNode(this))
 			return;
 
 		var i:number;

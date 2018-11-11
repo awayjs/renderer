@@ -26,7 +26,7 @@ export class NodeBase implements IContainerNode
 
 	public get pickObject():IEntity
 	{
-		return;
+		return this._entity.pickObject;
 	}
 
 	public get boundsVisible():boolean
