@@ -208,7 +208,7 @@ export class BoundsPicker extends AbstractionBase implements ITraverser, IBounds
 	 */
 	public enterNode(node:INode):boolean
 	{
-		return node.isVisible();
+		return true;
 	}
 
 	public getBoundingVolume(targetCoordinateSpace:IEntity = null, boundingVolumeType:BoundingVolumeType = null):BoundingVolumeBase
