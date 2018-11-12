@@ -27,7 +27,7 @@ export interface IEntity extends IAsset
 
 	getMouseCursor():string;
 
-	isTabEnabled:boolean;
+	tabEnabled:boolean;
 
 	tabIndex:number;
 

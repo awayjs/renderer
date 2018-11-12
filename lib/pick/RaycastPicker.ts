@@ -48,9 +48,6 @@ export class RaycastPicker extends AbstractionBase implements ITraverser
 	private _pickers:RaycastPicker[] = [];
 	private _collectedEntities:PickEntity[] = [];
 
-	private _tabEntities:IEntity[] = [];
-	private _customTabEntities:IEntity[] = [];
-
 	/**
 	 * Creates a new <code>RaycastPicker</code> object.
 	 *
@@ -70,8 +67,6 @@ export class RaycastPicker extends AbstractionBase implements ITraverser
 	{
 		this._entities.length = 0;
 		this._pickers.length = 0;
-		this._tabEntities.length = 0;
-		this._customTabEntities.length = 0;
 		this._partition.traverse(this);
 	}
 
@@ -87,92 +82,6 @@ export class RaycastPicker extends AbstractionBase implements ITraverser
 		}
 		
 		return this;
-	}
-	
-	
-	public getNextTabEntity(currentFocus:IEntity):IEntity
-	{
-		if(this._customTabEntities.length<=0 && this._tabEntities.length<=0)
-			return currentFocus;
-
-		if(this._customTabEntities.length>0){
-			var newTabIndex:number=-1;
-			if(currentFocus){
-				newTabIndex=currentFocus.tabIndex;
-			}
-			newTabIndex++;
-			var i:number=newTabIndex;
-			while(i<this._customTabEntities.length){
-				if(this._customTabEntities[i]){
-					return this._customTabEntities[i];
-				}
-				i++;
-			}
-			i=0;
-			while(i<this._customTabEntities.length){
-				if(this._customTabEntities[i]){
-					return this._customTabEntities[i];
-				}
-				i++;
-			}
-			return currentFocus;
-		}
-		if(currentFocus){
-			var len:number=this._tabEntities.length;
-			for(var i:number=0; i<len; i++){
-				if(this._tabEntities[i]==currentFocus){
-					if(i==0){
-						return this._tabEntities[len-1];
-					}
-					return this._tabEntities[i-1];						
-				}
-			}
-		}
-		// this point we would already have exit out if tabEntities.length was 0
-		return this._tabEntities[0];	
-
-	}
-	public getPrevTabEntity(currentFocus:IEntity):IEntity
-	{
-		if(this._customTabEntities.length<=0 && this._tabEntities.length<=0)
-			return currentFocus;
-
-		if(this._customTabEntities.length>0){
-			var newTabIndex:number=-1;
-			if(currentFocus){
-				newTabIndex=currentFocus.tabIndex;
-			}
-			newTabIndex--;
-			var i:number=newTabIndex;
-			while(i>=0){
-				if(this._customTabEntities[i]){
-					return this._customTabEntities[i];
-				}
-				i--;
-			}
-			i=newTabIndex;
-			while(i>=0){
-				if(this._customTabEntities[i]){
-					return this._customTabEntities[i];
-				}
-				i--;
-			}
-			return currentFocus;
-		}
-		if(currentFocus){
-			var len:number=this._tabEntities.length;
-			for(var i:number=0; i<len; i++){
-				if(this._tabEntities[i]==currentFocus){
-					if(i==len-1){
-						return this._tabEntities[0];
-					}
-					return this._tabEntities[i+1];						
-				}
-			}
-		}
-		// this point we would already have exit out if tabEntities.length was 0
-		return this._tabEntities[0];	
-
 	}
 
 	public get dragEntity():IEntity
@@ -197,22 +106,6 @@ export class RaycastPicker extends AbstractionBase implements ITraverser
 		if (node.pickObject) {
 			node.pickObject.partition.traverse(this);
 			return false;
-		}
-
-		if((<any>node)._entity && (<any>node)._entity.isTabEnabled){
-			if((<any>node)._entity.assetType != "[asset TextField]" || (<any>node)._entity.type == "input"){
-				// add the entity to the correct tab list.
-				if((<any>node)._entity.tabIndex>=0){
-					if(this._customTabEntities.length<(<any>node)._entity.tabIndex){
-						this._customTabEntities.length=(<any>node)._entity.tabIndex;
-					}
-					this._customTabEntities[(<any>node)._entity.tabIndex]=(<any>node)._entity;
-				}
-				else{
-					this._tabEntities[this._tabEntities.length]=(<any>node)._entity;
-				}
-
-			}
 		}
 
 		return  node.isIntersectingRay(this._rootEntity, this._globalRayPosition, this._globalRayDirection, this._pickGroup)
@@ -314,17 +207,16 @@ export class RaycastPicker extends AbstractionBase implements ITraverser
 	public _collectEntities(collectedEntities:PickEntity[], dragEntity:IEntity):void
 	{
 		var len:number = this._pickers.length;
-		for (var i:number = 0; i < len; i++) {
-			if (this._pickers[i].entity == dragEntity)
-				continue;
-
-			this._pickers[i]._collectEntities(collectedEntities, dragEntity);
-		}
+		var picker:RaycastPicker;
+		for (var i:number = 0; i < len; i++)
+			if ((picker = this._pickers[i]).entity != dragEntity)
+				picker._collectEntities(collectedEntities, dragEntity);
 
 		//ensures that raycastPicker entities are always added last, for correct 2D picking
+		var entity:PickEntity;
 		for (var i:number = 0; i < this._entities.length; ++i) {
-			this._entities[i].pickingCollision.pickerEntity = this._entity;
-			collectedEntities.push(this._entities[i]);
+			(entity = this._entities[i]).pickingCollision.pickerEntity = this._entity;
+			collectedEntities.push(entity);
 		}
 		// //need to re-calculate the rayEntryDistance for only those entities inside the picker
 		// this._pickingCollision.rayEntryDistance = Number.MAX_VALUE;

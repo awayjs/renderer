@@ -7,6 +7,7 @@ import { PickEntity } from './base/PickEntity';
 import { RaycastPicker } from './pick/RaycastPicker';
 import { PartitionBase } from './partition/PartitionBase';
 import { BoundsPicker } from './pick/BoundsPicker';
+import { TabPicker } from './pick/TabPicker';
 
 /**
  * @class away.pool.PickGroup
@@ -18,6 +19,7 @@ export class PickGroup implements IAbstractionPool
 	private _entityPool:Object = new Object();
 	private _raycastPickerPool:RaycastPickerPool;
 	private _boundsPickerPool:BoundsPickerPool;
+	private _tabPickerPool:TabPickerPool;
 
 	/**
 	 * //TODO
@@ -29,6 +31,7 @@ export class PickGroup implements IAbstractionPool
 		this._viewport = viewport;
 		this._raycastPickerPool = new RaycastPickerPool(this);
 		this._boundsPickerPool = new BoundsPickerPool(this);
+		this._tabPickerPool = new TabPickerPool(this);
 	}
 
 	public static getInstance(viewport:Viewport):PickGroup
@@ -59,6 +62,11 @@ export class PickGroup implements IAbstractionPool
 	public getBoundsPicker(partition:PartitionBase):BoundsPicker
 	{
 		return this._boundsPickerPool.getAbstraction(partition);
+	}
+	
+	public getTabPicker(partition:PartitionBase):TabPicker
+	{
+		return this._tabPickerPool.getAbstraction(partition);
 	}
 }
 
@@ -113,6 +121,38 @@ class BoundsPickerPool implements IAbstractionPool
 	public getAbstraction(partition:PartitionBase):BoundsPicker
 	{
 		return (this._abstractionPool[partition.id] || (this._abstractionPool[partition.id] = new BoundsPicker(partition, this._pickGroup)));
+	}
+
+	/**
+	 *
+	 * @param entity
+	 */
+	public clearAbstraction(partition:PartitionBase):void
+	{
+		delete this._abstractionPool[partition.id];
+	}
+}
+
+
+class TabPickerPool implements IAbstractionPool
+{
+	private _abstractionPool:Object = new Object();
+	private _pickGroup:PickGroup;
+
+	constructor(pickGroup:PickGroup)
+	{
+		this._pickGroup = pickGroup;
+	}
+
+	/**
+	 * //TODO
+	 *
+	 * @param entity
+	 * @returns EntityNode
+	 */
+	public getAbstraction(partition:PartitionBase):TabPicker
+	{
+		return (this._abstractionPool[partition.id] || (this._abstractionPool[partition.id] = new TabPicker(partition, this._pickGroup)));
 	}
 
 	/**

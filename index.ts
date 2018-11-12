@@ -80,6 +80,8 @@ export {RTTBufferManager}				from "./lib/managers/RTTBufferManager";
 export {PickingCollision} from "./lib/pick/PickingCollision";
 export {IPicker} from "./lib/pick/IPicker";
 export {RaycastPicker} from "./lib/pick/RaycastPicker";
+export {BoundsPicker} from "./lib/pick/BoundsPicker";
+export {TabPicker} from "./lib/pick/TabPicker";
 
 export {ElementsUtils}					from "./lib/utils/ElementsUtils";
 export {MaterialUtils}					from "./lib/utils/MaterialUtils";
