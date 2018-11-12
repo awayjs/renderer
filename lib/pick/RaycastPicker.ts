@@ -433,7 +433,7 @@ export class RaycastPicker extends AbstractionBase implements ITraverser
 
 		if(this._dragEntity){
 			if(this._dragEntity.assetType == "[asset MovieClip]" && this._dragEntity.adapter){
-				(<any>this._dragEntity.adapter).setDropTarget(bestCollision?bestCollision.pickerEntity:null);
+				(<any>this._dragEntity.adapter).setDropTarget(bestCollision?bestCollision.entity:null);
 			}
 		}
 
