@@ -72,6 +72,11 @@ export class SceneGraphNode extends NodeBase
 		}
 	}
 
+	public isVisible():boolean
+	{
+		return this._entity._iIsVisible();
+	}
+
 	/**
 	 *
 	 * @param node
