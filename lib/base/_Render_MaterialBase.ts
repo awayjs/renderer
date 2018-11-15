@@ -31,7 +31,8 @@ export class _Render_MaterialBase extends AbstractionBase
 
     protected _renderOrderId:number;
     protected _passes:Array<IPass> = new Array<IPass>();
-	protected _material:IMaterial;
+    protected _material:IMaterial;
+    protected _animationSet:IAnimationSet;
     protected _renderElements:_Render_ElementsBase;
     protected _stage:Stage;
     protected _renderGroup:RenderGroup;
@@ -264,8 +265,9 @@ export class _Render_MaterialBase extends AbstractionBase
             mult *= 1000;
         }
 
-        if (this._usesAnimation != usesAnimation) {
+        if (this._usesAnimation != usesAnimation || this._animationSet != this._material.animationSet) {
             this._usesAnimation = usesAnimation;
+            this._animationSet = this._material.animationSet
 
             var renderables:Array<IEntity> = this._material.iOwners;
             var numOwners:number = renderables.length;
