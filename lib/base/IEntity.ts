@@ -81,7 +81,12 @@ export interface IEntity extends IAsset
 	/**
 	 *
 	 */
-	scenePosition:Vector3D;
+    scenePosition:Vector3D;
+    
+	/**
+	 *
+	 */
+	setFocus(value:boolean, fromMouseDown?:boolean, sendSoftKeyEvent?:boolean);
 
 	/**
 	 *
