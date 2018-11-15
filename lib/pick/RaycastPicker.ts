@@ -36,6 +36,9 @@ export class RaycastPicker extends AbstractionBase implements ITraverser
         return this._entity;
 	}
 
+	public shapeFlag:boolean = false;
+
+	public findClosestCollision:boolean = false;
 	
 	private _pickGroup:PickGroup;
 
@@ -186,7 +189,7 @@ export class RaycastPicker extends AbstractionBase implements ITraverser
 	/**
 	 * @inheritDoc
 	 */
-	public getCollision(rayPosition:Vector3D, rayDirection:Vector3D, shapeFlag:boolean = false, findClosestCollision:boolean = false):PickingCollision
+	public getCollision(rayPosition:Vector3D, rayDirection:Vector3D):PickingCollision
 	{
 		//early out if no collisions detected
 		if (!this.isIntersectingRay(rayPosition, rayDirection))
@@ -196,7 +199,7 @@ export class RaycastPicker extends AbstractionBase implements ITraverser
 		this._collectEntities(this._collectedEntities, this._dragEntity);
 
 		//console.log("entities: ", this._entities)
-		var collision:PickingCollision = this._getPickingCollision(shapeFlag, findClosestCollision);
+		var collision:PickingCollision = this._getPickingCollision();
 
 		//discard collected pickers
 		this._collectedEntities.length = 0;
@@ -280,7 +283,7 @@ export class RaycastPicker extends AbstractionBase implements ITraverser
 		return entity1.pickingCollision.rayEntryDistance > entity2.pickingCollision.rayEntryDistance? 1 : entity1.pickingCollision.rayEntryDistance < entity2.pickingCollision.rayEntryDistance?-1 : 0;
 	}
 
-	private _getPickingCollision(shapeFlag:boolean, findClosestCollision:boolean):PickingCollision
+	private _getPickingCollision():PickingCollision
 	{
 		// Sort pickers from closest to furthest to reduce tests.
 		this._collectedEntities = this._collectedEntities.sort(this.sortOnNearT); // TODO - test sort filter in JS
@@ -299,10 +302,10 @@ export class RaycastPicker extends AbstractionBase implements ITraverser
 			testCollision = entity.pickingCollision;
 
 			if (bestCollision == null || testCollision.rayEntryDistance < bestCollision.rayEntryDistance) {
-				if ((shapeFlag || entity.shapeFlag)) {
+				if ((this.shapeFlag || entity.shapeFlag)) {
 					testCollision.rayEntryDistance = Number.MAX_VALUE;
 					// If a collision exists, update the collision data and stop all checks.
-					if (entity.isIntersectingShape(findClosestCollision))
+					if (entity.isIntersectingShape(this.findClosestCollision))
 						bestCollision = testCollision;
 				} else if (!testCollision.rayOriginIsInsideBounds) {
 					// A bounds collision with no picking collider stops all checks.
