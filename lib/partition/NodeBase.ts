@@ -112,11 +112,12 @@ export class NodeBase implements IContainerNode
 	 */
 	public acceptTraverser(traverser:ITraverser):void
 	{
-		// if (traverser.partition != this._partition)
-		// 	traverser = traverser.getTraverser()
 		if (this._partition.root == this._entity)
 			this._partition.updateEntities();
 
+		//get the sub-traverser for the partition, if different, terminate this traversal
+		if (traverser.partition != this._partition && traverser != traverser.getTraverser(this._partition))
+			return;
 
 		if (traverser.enterNode(this)) {
 			for (var i:number = 0; i < this._numChildNodes; i++)
