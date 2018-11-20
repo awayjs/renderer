@@ -59,71 +59,44 @@ export class TabPicker extends AbstractionBase implements ITraverser
 	{
 		if(this._customTabEntities.length<=0 && this._tabEntities.length<=0)
 			return;
+		if(this._customTabEntities.length>0){
+            // if we use custom tabs, we dont need to sort anything
+            return;
+        }
+        
         var snapGridY:number=50;
         var len:number=0;
         var len2:number=0;
         var orderedOnY:IEntity[][]=[];
         var i:number=0;
         var e:number=0;
-		if(this._customTabEntities.length>0){
-            //  first sort into rows based on global y-position, snapping y-positions to a grid 
-            //  than sort the rows by global x-position
-            len=this._customTabEntities.length;
-            for(i=0; i<len; i++){
-                var enabledEntitiy=this._customTabEntities[i];
-                var ySnappedToGrid=Math.round(enabledEntitiy.scenePosition.y/snapGridY);
-                if(orderedOnY.length<=ySnappedToGrid){
-                    orderedOnY.length=ySnappedToGrid+1;
-                }
-                if(!orderedOnY[ySnappedToGrid])
-                    orderedOnY[ySnappedToGrid]=[];
-                orderedOnY[ySnappedToGrid].push(enabledEntitiy);
+        //  first sort into rows based on global y-position, snapping y-positions to a grid 
+        //  than sort the rows by global x-position
+        len=this._tabEntities.length;
+        for(i=0; i<len; i++){
+            var enabledEntitiy=this._tabEntities[i];
+            var ySnappedToGrid=Math.round(enabledEntitiy.scenePosition.y/snapGridY);
+            if(orderedOnY.length<=ySnappedToGrid){
+                orderedOnY.length=ySnappedToGrid+1;
             }
-            len=orderedOnY.length;
-            this._customTabEntities.length=0;
-            for(i=0; i<len; i++){
-                var entityRow=orderedOnY[i];
-                if(entityRow){
-                    entityRow.sort(function(a, b){
-                        return a.scenePosition.x>b.scenePosition.x?1:0;
-                    })
-                    e=entityRow.length;
-                    while(e>0){
-                        e--;
-                        this._tabEntities[this._tabEntities.length]=entityRow[e];
-                    }
-                }
-            }
+            if(!orderedOnY[ySnappedToGrid])
+                orderedOnY[ySnappedToGrid]=[];
+            orderedOnY[ySnappedToGrid].push(enabledEntitiy);
         }
-        else{
-            //  first sort into rows based on global y-position, snapping y-positions to a grid 
-            //  than sort the rows by global x-position
-            len=this._tabEntities.length;
-            for(i=0; i<len; i++){
-                var enabledEntitiy=this._tabEntities[i];
-                var ySnappedToGrid=Math.round(enabledEntitiy.scenePosition.y/snapGridY);
-                if(orderedOnY.length<=ySnappedToGrid){
-                    orderedOnY.length=ySnappedToGrid+1;
-                }
-                if(!orderedOnY[ySnappedToGrid])
-                    orderedOnY[ySnappedToGrid]=[];
-                orderedOnY[ySnappedToGrid].push(enabledEntitiy);
-            }
-            
-            this._tabEntities.length=0;
-            i=orderedOnY.length;
-            while(i>0){
-                i--;
-                var entityRow=orderedOnY[i];
-                if(entityRow){
-                    entityRow.sort(function(a, b){
-                        return a.scenePosition.x>b.scenePosition.x?1:0;
-                    })
-                    e=entityRow.length;
-                    while(e>0){
-                        e--;
-                        this._tabEntities[this._tabEntities.length]=entityRow[e];
-                    }
+        
+        this._tabEntities.length=0;
+        i=orderedOnY.length;
+        while(i>0){
+            i--;
+            var entityRow=orderedOnY[i];
+            if(entityRow){
+                entityRow.sort(function(a, b){
+                    return a.scenePosition.x>b.scenePosition.x?1:0;
+                })
+                e=entityRow.length;
+                while(e>0){
+                    e--;
+                    this._tabEntities[this._tabEntities.length]=entityRow[e];
                 }
             }
         }
