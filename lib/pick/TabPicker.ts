@@ -218,6 +218,8 @@ export class TabPicker extends AbstractionBase implements ITraverser
 	 */
 	public enterNode(node:INode):boolean
 	{
+		if (!node.isVisible())
+			return false;
 		return true;
 	}
 
