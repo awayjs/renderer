@@ -219,8 +219,8 @@ export class RTTBufferManager extends EventDispatcher
 	private updateRTTBuffers():void
 	{
 		var context:IContextGL = this._stage.context;
-		var textureVerts:number[];
-		var screenVerts:number[];
+		var textureVerts:Float32Array;
+		var screenVerts:Float32Array;
 
 		var x:number;
 		var y:number;
@@ -234,7 +234,7 @@ export class RTTBufferManager extends EventDispatcher
 		if (!this._indexBuffer) {
 			this._indexBuffer = context.createIndexBuffer(6);
 
-			this._indexBuffer.uploadFromArray([2, 1, 0, 3, 2, 0], 0, 6);
+			this._indexBuffer.uploadFromArray(new Uint16Array([2, 1, 0, 3, 2, 0]), 0, 6);
 		}
 
 		this._textureRatioX = x = Math.min(this._viewWidth/this._textureWidth, 1);
@@ -246,9 +246,9 @@ export class RTTBufferManager extends EventDispatcher
 		var v2:number = (y + 1)*.5;
 
 		// last element contains indices for data per vertex that can be passed to the vertex shader if necessary (ie: frustum corners for deferred rendering)
-		textureVerts = [    -x, -y, u1, v1, 0, x, -y, u2, v1, 1, x, y, u2, v2, 2, -x, y, u1, v2, 3 ];
+		textureVerts = new Float32Array([    -x, -y, u1, v1, 0, x, -y, u2, v1, 1, x, y, u2, v2, 2, -x, y, u1, v2, 3 ]);
 
-		screenVerts = [     -1, -1, u1, v1, 0, 1, -1, u2, v1, 1, 1, 1, u2, v2, 2, -1, 1, u1, v2, 3 ];
+		screenVerts = new Float32Array([     -1, -1, u1, v1, 0, 1, -1, u2, v1, 1, 1, 1, u2, v2, 2, -1, 1, u1, v2, 3 ]);
 
 		this._renderToTextureVertexBuffer.uploadFromArray(textureVerts, 0, 4);
 		this._renderToScreenVertexBuffer.uploadFromArray(screenVerts, 0, 4);
