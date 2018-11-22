@@ -75,7 +75,7 @@ export class RaycastPicker extends AbstractionBase implements ITraverser
 
 	public getTraverser(partition:PartitionBase):ITraverser
 	{
-		if (partition.root._iIsMouseEnabled()) {
+		if (partition.root._iIsMouseEnabled() || partition.root.isDragEntity()) {
 			var traverser:RaycastPicker = this._pickGroup.getRaycastPicker(partition);
 		 
 			if (traverser._isIntersectingRayInternal(this._rootEntity, this._globalRayPosition, this._globalRayDirection))
@@ -91,9 +91,19 @@ export class RaycastPicker extends AbstractionBase implements ITraverser
 	{
 		return this._dragEntity;
 	}
+
 	public set dragEntity(entity:IEntity)
 	{
+		if (this._dragEntity == entity)
+			return;
+		
+		if (this._dragEntity)
+			this._dragEntity._stopDrag();
+		
 		this._dragEntity = entity;
+
+		if (this._dragEntity)
+			this._dragEntity._startDrag();
 	}
 
 	/**

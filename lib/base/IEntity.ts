@@ -23,6 +23,12 @@ export interface IEntity extends IAsset
 
 	_depthID:number;
 
+	_startDrag():void;
+
+	_stopDrag():void;
+
+	isDragEntity():boolean;
+
 	isEntity():boolean;
 
 	getMouseCursor():string;
