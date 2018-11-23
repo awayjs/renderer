@@ -228,7 +228,7 @@ export class PickEntity extends AbstractionBase implements IAbstractionPool, IPi
 		var shapeHit:boolean = false;
 		for (var i:number = 0; i < this._pickables.length; i++) {
 			if (this._pickables[i].testCollision(this._pickingCollision, findClosestCollision)) {
-				if (findClosestCollision)
+				if (!findClosestCollision)
 					return true;
 				else
 					shapeHit = true;
