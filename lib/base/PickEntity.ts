@@ -454,7 +454,7 @@ export class PickEntity extends AbstractionBase implements IAbstractionPool, IPi
 						continue;
 
 					// todo: figure out why a mask can be null here!
-					if (entity && this._pickGroup.getRaycastPicker(entity.partition)._isIntersectingRayInternal(rootEntity, globalRayPosition, globalRayDirection)) {
+					if (entity && this._pickGroup.getRaycastPicker(entity.partition)._getCollisionInternal(globalRayPosition, globalRayDirection, true, true)) {
 						maskHit = true;
 						break;
 					}

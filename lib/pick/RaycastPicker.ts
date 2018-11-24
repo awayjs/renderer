@@ -43,6 +43,8 @@ export class RaycastPicker extends AbstractionBase implements ITraverser
 	private _pickGroup:PickGroup;
 
 	private _rootEntity:IEntity;
+	private _maskFlag:boolean;
+	private _shapeFlag:boolean;
 	private _globalRayPosition:Vector3D;
 	private _globalRayDirection:Vector3D;
 	private _ignoredEntities:Array<IEntity>;
@@ -78,7 +80,7 @@ export class RaycastPicker extends AbstractionBase implements ITraverser
 		if (partition.root._iIsMouseEnabled() || partition.root.isDragEntity()) {
 			var traverser:RaycastPicker = this._pickGroup.getRaycastPicker(partition);
 		 
-			if (traverser._isIntersectingRayInternal(this._rootEntity, this._globalRayPosition, this._globalRayDirection))
+			if (traverser._isIntersectingRayInternal(this._rootEntity, this._globalRayPosition, this._globalRayDirection, this._shapeFlag, this._maskFlag))
 				this._pickers.push(traverser);
 	
 			return traverser;
@@ -113,7 +115,7 @@ export class RaycastPicker extends AbstractionBase implements ITraverser
 	 */
 	public enterNode(node:INode):boolean
 	{
-		if (!node.isVisible() || node.isMask())
+		if (!node.isVisible() || (node.isMask() && !this._maskFlag))
 			return false;
 
 		if (node.pickObject) {
@@ -143,18 +145,20 @@ export class RaycastPicker extends AbstractionBase implements ITraverser
 	/**
 	 * @inheritDoc
 	 */
-	public isIntersectingRay(globalRayPosition:Vector3D, globalRayDirection:Vector3D):boolean
+	public isIntersectingRay(globalRayPosition:Vector3D, globalRayDirection:Vector3D, shapeFlag:boolean = false):boolean
 	{
-		return this._isIntersectingRayInternal(this._entity, globalRayPosition, globalRayDirection)
+		return this._isIntersectingRayInternal(this._entity, globalRayPosition, globalRayDirection, shapeFlag, false)
 	}
 	/**
 	 * @inheritDoc
 	 */
-	public _isIntersectingRayInternal(rootEntity:IEntity, globalRayPosition:Vector3D, globalRayDirection:Vector3D):boolean
+	public _isIntersectingRayInternal(rootEntity:IEntity, globalRayPosition:Vector3D, globalRayDirection:Vector3D, shapeFlag:boolean, maskFlag:boolean):boolean
 	{
 		this._rootEntity = rootEntity;
 		this._globalRayPosition = globalRayPosition;
 		this._globalRayDirection = globalRayDirection;
+		this._maskFlag = maskFlag;
+		this._shapeFlag = this.shapeFlag || shapeFlag
 
 		this.traverse();
 
@@ -199,10 +203,15 @@ export class RaycastPicker extends AbstractionBase implements ITraverser
 	/**
 	 * @inheritDoc
 	 */
-	public getCollision(rayPosition:Vector3D, rayDirection:Vector3D):PickingCollision
+	public getCollision(rayPosition:Vector3D, rayDirection:Vector3D, shapeFlag:boolean = false):PickingCollision
+	{
+		return this._getCollisionInternal(rayPosition, rayDirection, shapeFlag, false)
+	}
+
+	public _getCollisionInternal(rayPosition:Vector3D, rayDirection:Vector3D, shapeFlag:boolean, maskFlag:boolean)
 	{
 		//early out if no collisions detected
-		if (!this.isIntersectingRay(rayPosition, rayDirection))
+		if (!this._isIntersectingRayInternal(this._entity, rayPosition, rayDirection, shapeFlag, maskFlag))
 			return null;
 
 		//collect pickers
@@ -312,7 +321,7 @@ export class RaycastPicker extends AbstractionBase implements ITraverser
 			testCollision = entity.pickingCollision;
 
 			if (bestCollision == null || testCollision.rayEntryDistance < bestCollision.rayEntryDistance) {
-				if ((this.shapeFlag || entity.shapeFlag)) {
+				if ((this._shapeFlag || entity.shapeFlag)) {
 					testCollision.rayEntryDistance = Number.MAX_VALUE;
 					// If a collision exists, update the collision data and stop all checks.
 					if (entity.isIntersectingShape(this.findClosestCollision))
