@@ -38,7 +38,8 @@ export class TabPicker extends AbstractionBase implements ITraverser
 	private _pickGroup:PickGroup;
 
 	private _tabEntities:IEntity[] = [];
-	private _customTabEntities:IEntity[] = [];
+	private _customTabEntities:IEntity[][] = [];
+	private _customTabEntitiesSorted:IEntity[] = [];
 
 	/**
 	 * Creates a new <code>RaycastPicker</code> object.
@@ -58,18 +59,52 @@ export class TabPicker extends AbstractionBase implements ITraverser
 	private sortTabEnabledEntities():void
 	{
 		if(this._customTabEntities.length<=0 && this._tabEntities.length<=0)
-			return;
-		if(this._customTabEntities.length>0){
-            // if we use custom tabs, we dont need to sort anything
             return;
-        }
         
-        var snapGridY:number=50;
+        var snapGridY:number=10;
         var len:number=0;
         var len2:number=0;
         var orderedOnY:IEntity[][]=[];
         var i:number=0;
         var e:number=0;
+		if(this._customTabEntities.length>0){
+            snapGridY=10;
+            // for custom tabs, we need to sort them in cases where multiple enities have the same tabIndex
+            var t:number=0;
+            var t_len=this._customTabEntities.length;
+            this._customTabEntitiesSorted=[];
+            for(t=0; t<t_len; t++){
+                if(this._customTabEntities[t] && this._customTabEntities[t].length==1 && this._customTabEntities[t][0]){
+                    this._customTabEntitiesSorted.push(this._customTabEntities[t][0]);
+                }
+                else if(this._customTabEntities[t] && this._customTabEntities[t].length>1){
+                    len=this._customTabEntities[t].length;
+                    for(i=0; i<len; i++){
+                        var enabledEntitiy=this._customTabEntities[t][i];
+                        var ySnappedToGrid=Math.round(enabledEntitiy.scenePosition.y/snapGridY);
+                        if(orderedOnY.length<=ySnappedToGrid){
+                            orderedOnY.length=ySnappedToGrid+1;
+                        }
+                        if(!orderedOnY[ySnappedToGrid])
+                            orderedOnY[ySnappedToGrid]=[];
+                        orderedOnY[ySnappedToGrid].push(enabledEntitiy);
+                    }
+                    for(i=0; i<orderedOnY.length; i++){
+                        var entityRow=orderedOnY[i];
+                        if(entityRow){
+                            entityRow.sort(function(a, b){
+                                return a.scenePosition.x>b.scenePosition.x?1:0;
+                            })
+                            for(e=0; e<entityRow.length; e++){
+                                this._customTabEntitiesSorted.push(entityRow[e]);
+                            }
+                        }
+                    }                    
+                }            
+            }
+            return;
+        }
+        
         //  first sort into rows based on global y-position, snapping y-positions to a grid 
         //  than sort the rows by global x-position
         len=this._tabEntities.length;
@@ -106,7 +141,8 @@ export class TabPicker extends AbstractionBase implements ITraverser
 	public traverse():void
 	{
 		this._tabEntities.length = 0;
-		this._customTabEntities.length = 0;
+        this._customTabEntities.length = 0;
+        this._customTabEntitiesSorted.length=0;
         this._partition.traverse(this);
 
         this.sortTabEnabledEntities();
@@ -124,29 +160,34 @@ export class TabPicker extends AbstractionBase implements ITraverser
 		if (this._invalid)
 			this.traverse();
 
-		if(this._customTabEntities.length<=0 && this._tabEntities.length<=0)
+		if(this._customTabEntitiesSorted.length<=0 && this._tabEntities.length<=0)
 			return currentFocus;
 
-		if(this._customTabEntities.length>0){
-			var newTabIndex:number=-1;
+		if(this._customTabEntitiesSorted.length>0){
+            var newTabIndex:number=-1;
+			var i:number=0;
 			if(currentFocus){
-				newTabIndex=currentFocus.tabIndex;
-			}
-			newTabIndex++;
-			var i:number=newTabIndex;
-			while(i<this._customTabEntities.length){
-				if(this._customTabEntities[i]){
-					return this._customTabEntities[i];
+                while(i<this._customTabEntitiesSorted.length){
+                    if(this._customTabEntitiesSorted[i]==currentFocus){                        
+                        newTabIndex=i;
+                        break;
+                    }
+                    i++;
+                }
+            }
+            newTabIndex++;
+			i=newTabIndex;
+			while(i<this._customTabEntitiesSorted.length){
+				if(this._customTabEntitiesSorted[i]){
+					return this._customTabEntitiesSorted[i];
 				}
 				i++;
-			}
-			i=0;
-			while(i<this._customTabEntities.length){
-				if(this._customTabEntities[i]){
-					return this._customTabEntities[i];
+            }
+            for(i=0; i<newTabIndex; i++){
+				if(this._customTabEntitiesSorted[i]){
+					return this._customTabEntitiesSorted[i];
 				}
-				i++;
-			}
+            }
 			return currentFocus;
 		}
 		if(currentFocus){
@@ -174,24 +215,24 @@ export class TabPicker extends AbstractionBase implements ITraverser
 			return currentFocus;
 
 		if(this._customTabEntities.length>0){
-			var newTabIndex:number=-1;
+            var newTabIndex:number=-1;
+			var i:number=0;
 			if(currentFocus){
-				newTabIndex=currentFocus.tabIndex;
-			}
-			newTabIndex--;
-			var i:number=newTabIndex;
-			while(i>=0){
-				if(this._customTabEntities[i]){
-					return this._customTabEntities[i];
-				}
-				i--;
-			}
+                while(i<this._customTabEntitiesSorted.length){
+                    if(this._customTabEntitiesSorted[i]==currentFocus){                        
+                        newTabIndex=i;
+                        break;
+                    }
+                    i++;
+                }
+            }
+            newTabIndex++;
 			i=newTabIndex;
-			while(i>=0){
-				if(this._customTabEntities[i]){
-					return this._customTabEntities[i];
+			while(i<this._customTabEntitiesSorted.length){
+				if(this._customTabEntitiesSorted[i]){
+					return this._customTabEntitiesSorted[i];
 				}
-				i--;
+				i++;
 			}
 			return currentFocus;
 		}
@@ -239,9 +280,11 @@ export class TabPicker extends AbstractionBase implements ITraverser
 				// add the entity to the correct tab list.
 				if(entity.tabIndex >= 0){
 					if(this._customTabEntities.length < entity.tabIndex)
-						this._customTabEntities.length = entity.tabIndex;
-	
-					this._customTabEntities[entity.tabIndex] = entity;
+                        this._customTabEntities.length = entity.tabIndex;
+                    if(!this._customTabEntities[entity.tabIndex]){
+                        this._customTabEntities[entity.tabIndex]=[];
+                    }
+					this._customTabEntities[entity.tabIndex].push(entity);
 				}
 				else{
 					this._tabEntities[this._tabEntities.length] = entity;
