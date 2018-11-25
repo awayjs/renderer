@@ -68,40 +68,14 @@ export class TabPicker extends AbstractionBase implements ITraverser
         var i:number=0;
         var e:number=0;
 		if(this._customTabEntities.length>0){
-            snapGridY=10;
-            // for custom tabs, we need to sort them in cases where multiple enities have the same tabIndex
-            var t:number=0;
-            var t_len=this._customTabEntities.length;
-            this._customTabEntitiesSorted=[];
-            for(t=0; t<t_len; t++){
-                if(this._customTabEntities[t] && this._customTabEntities[t].length==1 && this._customTabEntities[t][0]){
-                    this._customTabEntitiesSorted.push(this._customTabEntities[t][0]);
+
+            while(i<this._customTabEntities.length){
+                if(this._customTabEntities[i]){
+                    this._customTabEntities[i]=this._customTabEntities[i].reverse();
                 }
-                else if(this._customTabEntities[t] && this._customTabEntities[t].length>1){
-                    len=this._customTabEntities[t].length;
-                    for(i=0; i<len; i++){
-                        var enabledEntitiy=this._customTabEntities[t][i];
-                        var ySnappedToGrid=Math.round(enabledEntitiy.scenePosition.y/snapGridY);
-                        if(orderedOnY.length<=ySnappedToGrid){
-                            orderedOnY.length=ySnappedToGrid+1;
-                        }
-                        if(!orderedOnY[ySnappedToGrid])
-                            orderedOnY[ySnappedToGrid]=[];
-                        orderedOnY[ySnappedToGrid].push(enabledEntitiy);
-                    }
-                    for(i=0; i<orderedOnY.length; i++){
-                        var entityRow=orderedOnY[i];
-                        if(entityRow){
-                            entityRow.sort(function(a, b){
-                                return a.scenePosition.x>b.scenePosition.x?1:0;
-                            })
-                            for(e=0; e<entityRow.length; e++){
-                                this._customTabEntitiesSorted.push(entityRow[e]);
-                            }
-                        }
-                    }                    
-                }            
-            }
+            
+                i++;
+            }   
             return;
         }
         
@@ -120,17 +94,13 @@ export class TabPicker extends AbstractionBase implements ITraverser
         }
         
         this._tabEntities.length=0;
-        i=orderedOnY.length;
-        while(i>0){
-            i--;
+        for(i=0; i<orderedOnY.length; i++){
             var entityRow=orderedOnY[i];
             if(entityRow){
-                entityRow.sort(function(a, b){
-                    return a.scenePosition.x>b.scenePosition.x?1:0;
+                entityRow=entityRow.sort(function(a, b){
+                    return a.scenePosition.x>b.scenePosition.x?1:-1;
                 })
-                e=entityRow.length;
-                while(e>0){
-                    e--;
+                for(e=0; e<entityRow.length; e++){
                     this._tabEntities[this._tabEntities.length]=entityRow[e];
                 }
             }
@@ -160,47 +130,64 @@ export class TabPicker extends AbstractionBase implements ITraverser
 		if (this._invalid)
 			this.traverse();
 
-		if(this._customTabEntitiesSorted.length<=0 && this._tabEntities.length<=0)
+		if(this._customTabEntities.length<=0 && this._tabEntities.length<=0)
 			return currentFocus;
 
-		if(this._customTabEntitiesSorted.length>0){
-            var newTabIndex:number=-1;
+		if(this._customTabEntities.length>0){
 			var i:number=0;
+			var i2:number=0;
+			var t:number=0;
+			var t2:number=0;
 			if(currentFocus){
-                while(i<this._customTabEntitiesSorted.length){
-                    if(this._customTabEntitiesSorted[i]==currentFocus){                        
-                        newTabIndex=i;
-                        break;
+                while(i<this._customTabEntities.length){
+                    for(t=0; t<this._customTabEntities[i].length; t++){
+                        if(this._customTabEntities[i][t]==currentFocus){
+                            t2=t+1;
+                            while(t2<this._customTabEntities[i].length){
+                                if(this._customTabEntities[i][t2])
+                                    return this._customTabEntities[i][t2];
+                                t2++;
+                            }
+                            i2=i+1;
+                            while(i2<this._customTabEntities.length){
+                                for(t2=0; t2<this._customTabEntities[i2].length; t2++){
+                                    if(this._customTabEntities[i2][t2])
+                                        return this._customTabEntities[i2][t2];
+                                }
+                                i2++;
+                            }
+                            i2=0;
+                            while(i2<this._customTabEntities.length){
+                                for(t2=0; t2<this._customTabEntities[i2].length; t2++){
+                                    if(this._customTabEntities[i2][t2])
+                                        return this._customTabEntities[i2][t2];
+                                }
+                                i2++;
+                            }
+                        }
                     }
                     i++;
                 }
             }
-            newTabIndex++;
-			i=newTabIndex;
-			while(i<this._customTabEntitiesSorted.length){
-				if(this._customTabEntitiesSorted[i]){
-					return this._customTabEntitiesSorted[i];
-				}
-				i++;
-            }
-            for(i=0; i<newTabIndex; i++){
-				if(this._customTabEntitiesSorted[i]){
-					return this._customTabEntitiesSorted[i];
-				}
+            i2=0;
+            while(i2<this._customTabEntities.length){
+                for(t2=0; t2<this._customTabEntities[i2].length; t2++){
+                    if(this._customTabEntities[i2][t2])
+                        return this._customTabEntities[i2][t2];
+                }
+                i2++;
             }
 			return currentFocus;
 		}
-		if(currentFocus){
-			var len:number=this._tabEntities.length;
-			for(var i:number=0; i<len; i++){
-				if(this._tabEntities[i]==currentFocus){
-					if(i==0){
-						return this._tabEntities[len-1];
-					}
-					return this._tabEntities[i-1];						
-				}
-			}
-		}
+        var len:number=this._tabEntities.length;
+        for(var i:number=0; i<len; i++){
+            if(this._tabEntities[i]==currentFocus){
+                if(i==len-1){
+                    return this._tabEntities[0];
+                }
+                return this._tabEntities[i+1];
+            }
+        }
 		// this point we would already have exit out if tabEntities.length was 0
 		return this._tabEntities[0];	
 
@@ -215,35 +202,59 @@ export class TabPicker extends AbstractionBase implements ITraverser
 			return currentFocus;
 
 		if(this._customTabEntities.length>0){
-            var newTabIndex:number=-1;
-			var i:number=0;
+			var i:number=this._customTabEntities.length;
+			var i2:number=0;
+			var t:number=0;
+			var t2:number=0;
 			if(currentFocus){
-                while(i<this._customTabEntitiesSorted.length){
-                    if(this._customTabEntitiesSorted[i]==currentFocus){                        
-                        newTabIndex=i;
-                        break;
+                while(i>0){
+                    i--;
+                    for(t=this._customTabEntities[i].length-1; t>=0; t--){
+                        if(this._customTabEntities[i][t]==currentFocus){
+                            t2=t-1;
+                            while(t2>0){
+                                t2--;
+                                if(this._customTabEntities[i][t2])
+                                    return this._customTabEntities[i][t2];
+                            }
+                            i2=i-1;
+                            while(i2>0){
+                                i2--;
+                                for(t2=this._customTabEntities[i2].length-1;t2>=0; t2--){
+                                    if(this._customTabEntities[i2][t2])
+                                        return this._customTabEntities[i2][t2];
+                                }
+                            }
+                            i2=this._customTabEntities.length;
+                            while(i2>0){
+                                i2--;
+                                for(t2=this._customTabEntities[i2].length-1; t2>=0; t2--){
+                                    if(this._customTabEntities[i2][t2])
+                                        return this._customTabEntities[i2][t2];
+                                }
+                            }
+                        }
                     }
-                    i++;
                 }
             }
-            newTabIndex++;
-			i=newTabIndex;
-			while(i<this._customTabEntitiesSorted.length){
-				if(this._customTabEntitiesSorted[i]){
-					return this._customTabEntitiesSorted[i];
-				}
-				i++;
-			}
+            i2=this._customTabEntities.length-1;
+            while(i2>0){
+                i2--;
+                for(t2=this._customTabEntities[i2].length-1;t2>=0; t2--){
+                    if(this._customTabEntities[i2][t2])
+                        return this._customTabEntities[i2][t2];
+                }
+            }
 			return currentFocus;
 		}
 		if(currentFocus){
 			var len:number=this._tabEntities.length;
-			for(var i:number=0; i<len; i++){
+			for(var i:number=len-1; i>=0; i--){
 				if(this._tabEntities[i]==currentFocus){
-					if(i==len-1){
-						return this._tabEntities[0];
+					if(i==0){
+						return this._tabEntities[this._tabEntities.length-1];
 					}
-					return this._tabEntities[i+1];						
+					return this._tabEntities[i-1];
 				}
 			}
 		}
