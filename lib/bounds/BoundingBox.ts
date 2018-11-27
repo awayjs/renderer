@@ -108,7 +108,20 @@ export class BoundingBox extends BoundingVolumeBase
 	{
 		super._update();
 
-		this._box = this._picker._getBoxBoundsInternal(this._targetCoordinateSpace? this._targetCoordinateSpace.parent : this._picker.entity, this._strokeFlag, this._fastFlag, this._box);
+		
+		var matrix3D:Matrix3D;
+		if (this._targetCoordinateSpace) {
+			if (this._targetCoordinateSpace == this._picker.entity) {
+				matrix3D = this._picker.entity.transform.matrix3D;
+			} else {
+				matrix3D = this._picker.entity.transform.concatenatedMatrix3D.clone();
+
+				if (this._targetCoordinateSpace.parent)
+					matrix3D.append(this._targetCoordinateSpace.parent.transform.inverseConcatenatedMatrix3D);
+			}
+		}
+
+		this._box = this._picker._getBoxBoundsInternal(matrix3D, this._strokeFlag, this._fastFlag, this._box);
 
 		if (this._box == null)
 			return;

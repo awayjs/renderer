@@ -1,4 +1,4 @@
-import { Box, Vector3D, Sphere, IEventDispatcher } from '@awayjs/core';
+import { Box, Vector3D, Sphere, IEventDispatcher, Matrix3D } from '@awayjs/core';
 import { IEntity } from '../base/IEntity';
 
 /**
@@ -12,8 +12,8 @@ export interface IBoundsPicker extends IEventDispatcher
 
 	_hitTestPointInternal(rootEntity:IEntity, x:number, y:number, shapeFlag?:boolean, maskFlag?:boolean):boolean
 
-	_getBoxBoundsInternal(parentCoordinateSpace?:IEntity, strokeFlag?:boolean, fastFlag?:boolean, cache?:Box, target?:Box):Box
+	_getBoxBoundsInternal(matrix3D?:Matrix3D, strokeFlag?:boolean, fastFlag?:boolean, cache?:Box, target?:Box):Box
 
-	_getSphereBoundsInternal(center?:Vector3D, parentCoordinateSpace?:IEntity, strokeFlag?:boolean, fastFlag?:boolean, cache?:Sphere, target?:Sphere):Sphere
+	_getSphereBoundsInternal(center?:Vector3D, matrix3D?:Matrix3D, strokeFlag?:boolean, fastFlag?:boolean, cache?:Sphere, target?:Sphere):Sphere
 
 }

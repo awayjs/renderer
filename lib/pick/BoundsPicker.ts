@@ -293,86 +293,41 @@ export class BoundsPicker extends AbstractionBase implements ITraverser, IBounds
 		return false;
 	}
 
-	public _getBoxBoundsInternal(parentCoordinateSpace:IEntity = null, strokeFlag:boolean = true, fastFlag:boolean = true, cache:Box = null, target:Box = null):Box
+	public _getBoxBoundsInternal(matrix3D:Matrix3D = null, strokeFlag:boolean = true, fastFlag:boolean = true, cache:Box = null, target:Box = null):Box
 	{
 		if (this._invalid)
 			this.traverse();
-		
+
 		var numPickers:number = this._boundsPickers.length;
-		if (numPickers)
-			for (var i:number = 0; i < numPickers; ++i)
-				target = this._boundsPickers[i]._getBoxBoundsInternal(parentCoordinateSpace, strokeFlag, fastFlag, cache, target);
+		if (numPickers > 0) {
+			var m:Matrix3D = new Matrix3D();
+			for (var i:number = 0; i < numPickers; ++i) {
+				if (this._boundsPickers[i].entity != this._entity) {
+					if (matrix3D)
+						m.copyFrom(matrix3D);
+					else
+						m.identity();
+
+					m.prepend(this._boundsPickers[i].entity.transform.matrix3D);
+					if (this._boundsPickers[i].entity._registrationMatrix3D)
+						m.prepend(this._boundsPickers[i].entity._registrationMatrix3D);
+				} else {
+					m = matrix3D;
+				}
+
+				target = this._boundsPickers[i]._getBoxBoundsInternal(m, strokeFlag, fastFlag, cache, target);
+			}
+		}
 
 		return target;
 	}
 
-	// private _getBoxBoundsInternal(items:RaycastPicker[] | PickEntity[], targetCoordinateSpace:IEntity = null, strokeFlag:boolean = true, fastFlag:boolean = true, cache:Box = null, target:Box = null):Box
-	// {
-	// 	var numItems:number = items.length;
-	// 	if (fastFlag) {
-	// 		var box:Box;
-	// 		for (var i:number = 0; i < numItems; ++i) {
-
-	// 			// ignore bounds of childs that are masked
-	// 			// todo: this check is only needed for icycle, to get mouseclicks work correct in shop
-	// 			//if(this._children[i].masks==null){
-					
-	// 				box = items[i].getBoxBounds(targetCoordinateSpace || items[i].entity, strokeFlag, fastFlag, box);
-					
-	// 				if (box != null) {
-	// 					if (items[i].entity != this._entity) {
-	// 						if (matrix3D)
-	// 							m.copyFrom(matrix3D);
-	// 						else
-	// 							m.identity();
-
-	// 						m.prepend(items[i].entity.transform.matrix3D);
-						
-	// 						if (items[i].entity._registrationMatrix3D)
-	// 							m.prepend(items[i].entity._registrationMatrix3D);
-	// 					} else {
-	// 						m = matrix3D;
-	// 					}
-
-	// 					target = m.transformBox(box).union(target, target || cache);
-	// 				}
-	// 		//	}
-	// 		}
-	// 	} else {
-	// 		for (var i:number = 0; i < numItems; ++i) {
-
-	// 			// ignore bounds of childs that are masked
-	// 			// todo: this check is only needed for icycle, to get mouseclicks work correct in shop
-	// 			//if(this._children[i].masks==null){
-
-	// 				if (items[i].entity != this._entity) {
-	// 					if (matrix3D)
-	// 						m.copyFrom(matrix3D);
-	// 					else
-	// 						m.identity();
-
-	// 					m.prepend(items[i].entity.transform.matrix3D);
-
-	// 					if (items[i].entity._registrationMatrix3D)
-	// 						m.prepend(items[i].entity._registrationMatrix3D);
-	// 				} else {
-	// 					m = matrix3D;
-	// 				}
-
-	// 				target = items[i].getBoxBounds(m, strokeFlag, fastFlag, cache, target);
-	// 		//	}
-	// 		}
-	// 	}
-
-	// 	return target;
-	// }
-
-	public _getSphereBoundsInternal(center:Vector3D = null, parentCoordinateSpace:IEntity = null, strokeFlag:boolean = true, fastFlag:boolean = true, cache:Sphere = null, target:Sphere = null):Sphere
+	public _getSphereBoundsInternal(center:Vector3D = null, matrix3D:Matrix3D = null, strokeFlag:boolean = true, fastFlag:boolean = true, cache:Sphere = null, target:Sphere = null):Sphere
 	{
 		if (this._invalid)
 			this.traverse();
 
-		var box:Box = this._getBoxBoundsInternal(parentCoordinateSpace, strokeFlag, fastFlag);
+		var box:Box = this._getBoxBoundsInternal(matrix3D, strokeFlag, fastFlag);
 
 		if (box == null)
 			return;
@@ -385,64 +340,28 @@ export class BoundsPicker extends AbstractionBase implements ITraverser, IBounds
 		}
 		
 		var numPickers:number = this._boundsPickers.length;
-		if (numPickers)
-			for (var i:number = 0; i < numPickers; ++i)
-				target = this._boundsPickers[i]._getSphereBoundsInternal(center, parentCoordinateSpace, strokeFlag, fastFlag, target);
+		if (numPickers > 0) {
+			var m:Matrix3D = new Matrix3D();
+			for (var i:number = 0; i < numPickers; ++i) {
+				if (this._boundsPickers[i].entity != this._entity) {
+					if (matrix3D)
+						m.copyFrom(matrix3D);
+					else
+						m.identity();
+
+					m.prepend(this._boundsPickers[i].entity.transform.matrix3D);
+					if (this._boundsPickers[i].entity._registrationMatrix3D)
+						m.prepend(this._boundsPickers[i].entity._registrationMatrix3D);
+				} else {
+					m = matrix3D;
+				}
+
+				target = this._boundsPickers[i]._getSphereBoundsInternal(center, m, strokeFlag, fastFlag, cache, target);
+			}
+		}
 
 		return target;
 	}
-
-	// private _getSphereBoundsInternal(items:RaycastPicker[] | PickEntity[], center:Vector3D, matrix3D:Matrix3D, strokeFlag:boolean, fastFlag:boolean, cache:Sphere, target:Sphere = null):Sphere
-	// {
-	// 	var numItems:number = items.length;
-	// 	var m:Matrix3D = new Matrix3D();
-	// 	if (fastFlag) {
-	// 		var sphere:Sphere;
-	// 		for (var i:number = 0; i < numItems; ++i) {
-
-	// 			// ignore bounds of childs that are masked
-	// 			// todo: this check is only needed for icycle, to get mouseclicks work correct in shop
-	// 			//if(this._children[i].masks==null){
-	// 				if (matrix3D)
-	// 					m.copyFrom(matrix3D);
-	// 				else
-	// 					m.identity();
-
-	// 				sphere = items[i].getSphereBounds(center, null, strokeFlag, fastFlag, sphere);
-					
-	// 				if (sphere != null) {
-	// 					m.prepend(items[i].entity.transform.matrix3D);
-						
-	// 					if (items[i].entity._registrationMatrix3D)
-	// 						m.prepend(items[i].entity._registrationMatrix3D);
-
-	// 					target = m.transformSphere(sphere).union(target, target || cache);
-	// 				}
-	// 		//	}
-	// 		}
-	// 	} else {
-	// 		for (var i:number = 0; i < numItems; ++i) {
-
-	// 			// ignore bounds of childs that are masked
-	// 			// todo: this check is only needed for icycle, to get mouseclicks work correct in shop
-	// 			//if(this._children[i].masks==null){
-	// 				if (matrix3D)
-	// 					m.copyFrom(matrix3D);
-	// 				else
-	// 					m.identity();
-					
-	// 				m.prepend(items[i].entity.transform.matrix3D);
-
-	// 				if (items[i].entity._registrationMatrix3D)
-	// 					m.prepend(items[i].entity._registrationMatrix3D);
-
-	// 				target = items[i].getSphereBounds(center, m, strokeFlag, fastFlag, cache, target);
-	// 		//	}
-	// 		}
-	// 	}
-
-	// 	return target;
-	// }
 
 		/**
 	 *

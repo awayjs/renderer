@@ -134,7 +134,7 @@ export class PickEntity extends AbstractionBase implements IAbstractionPool, IPi
 		this._entity.globalToLocal(tempPoint, tempPoint);
 
 		//early out for box test
-		var box:Box = this._getBoxBoundsInternal(this._entity, false, true);
+		var box:Box = this._getBoxBoundsInternal(null, false, true);
 
 		if(box == null || !box.contains(tempPoint.x, tempPoint.y, 0))
 			return false;
@@ -240,49 +240,31 @@ export class PickEntity extends AbstractionBase implements IAbstractionPool, IPi
 
 	public getBoxBounds(targetCoordinateSpace:IEntity = null, strokeFlag:boolean = false, fastFlag:boolean = false):Box
 	{
-		return this._getBoxBoundsInternal(targetCoordinateSpace? targetCoordinateSpace.parent : this._entity, strokeFlag, fastFlag);
+		return this._getBoxBoundsInternal(targetCoordinateSpace? targetCoordinateSpace.transform.matrix3D : null, strokeFlag, fastFlag);
 	}
 
-	public _getBoxBoundsInternal(parentCoordinateSpace:IEntity, strokeFlag:boolean = true, fastFlag:boolean = true, cache:Box = null, target:Box = null):Box
+	public _getBoxBoundsInternal(matrix3D:Matrix3D = null, strokeFlag:boolean = true, fastFlag:boolean = true, cache:Box = null, target:Box = null):Box
 	{
 		if (this._invalid)
 			this._update();
-		
-		var matrix3D:Matrix3D;
-
-		if (parentCoordinateSpace == this._entity.parent) {
-			matrix3D = this._entity.transform.matrix3D;
-
-			//TODO: move _registrationMatrix3D to only affect collectables
-			if (this._entity._registrationMatrix3D)
-				matrix3D.prepend(this._entity._registrationMatrix3D);
-		} else if (parentCoordinateSpace != this._entity) {
-			if (parentCoordinateSpace) {
-				matrix3D = this._entity.transform.concatenatedMatrix3D.clone();
-				matrix3D.append(parentCoordinateSpace.transform.inverseConcatenatedMatrix3D);
-			} else {
-				matrix3D = this._entity.transform.concatenatedMatrix3D;
-			}
-		}
 
 		var numPickables:number = this._pickables.length;
-
 
 		if (numPickables) {
 			if (fastFlag) {
 				var obb:Box;
 				var strokeIndex:number = strokeFlag? 1 : 0;
 
-				//if (this._orientedBoxBoundsDirty[strokeIndex]) {
+				if (this._orientedBoxBoundsDirty[strokeIndex]) {
 					this._orientedBoxBoundsDirty[strokeIndex] = false;
 
 					for (var i:number = 0; i < numPickables; i++)
 						obb = this._pickables[i].getBoxBounds(null, strokeFlag, this._orientedBoxBounds[strokeIndex], obb);
 					
 					this._orientedBoxBounds[strokeIndex] = obb;
-				// } else {
-				// 	obb = this._orientedBoxBounds[strokeIndex];
-				// }
+				} else {
+				 	obb = this._orientedBoxBounds[strokeIndex];
+				}
 
 				if (obb != null)
 					target = (matrix3D)? matrix3D.transformBox(obb).union(target, target || cache) : obb.union(target, target || cache);
@@ -297,15 +279,15 @@ export class PickEntity extends AbstractionBase implements IAbstractionPool, IPi
 
 	public getSphereBounds(targetCoordinateSpace:IEntity = null, strokeFlag:boolean = false, fastFlag:boolean = false):Sphere
 	{
-		return this._getSphereBoundsInternal(null, targetCoordinateSpace? targetCoordinateSpace.parent : this._entity, strokeFlag, fastFlag);
+		return this._getSphereBoundsInternal(null, targetCoordinateSpace? targetCoordinateSpace.transform.matrix3D : null, strokeFlag, fastFlag);
 	}
 
-	public _getSphereBoundsInternal(center:Vector3D = null, parentCoordinateSpace:IEntity = null, strokeFlag:boolean = true, fastFlag:boolean = true, cache:Sphere = null, target:Sphere = null):Sphere
+	public _getSphereBoundsInternal(center:Vector3D = null, matrix3D:Matrix3D = null, strokeFlag:boolean = true, fastFlag:boolean = true, cache:Sphere = null, target:Sphere = null):Sphere
 	{
 		if (this._invalid)
 			this._update();
 	
-		var box:Box = this._getBoxBoundsInternal(parentCoordinateSpace, strokeFlag);
+		var box:Box = this._getBoxBoundsInternal(matrix3D, strokeFlag);
 
 		if (box == null)
 			return;
@@ -315,23 +297,6 @@ export class PickEntity extends AbstractionBase implements IAbstractionPool, IPi
 			center.x = box.x + box.width/2;
 			center.y = box.y + box.height/2;
 			center.z = box.z + box.depth/2;
-		}
-
-		var matrix3D:Matrix3D;
-
-		if (parentCoordinateSpace == this._entity.parent) {
-			matrix3D = this._entity.transform.matrix3D;
-
-			//TODO: move _registrationMatrix3D to only affect collectables
-			if (this._entity._registrationMatrix3D)
-				matrix3D.prepend(this._entity._registrationMatrix3D);
-		} else if (parentCoordinateSpace != this._entity) {
-			if (parentCoordinateSpace) {
-				matrix3D = this._entity.transform.concatenatedMatrix3D.clone();
-				matrix3D.append(parentCoordinateSpace.transform.inverseConcatenatedMatrix3D);
-			} else {
-				matrix3D = this._entity.transform.concatenatedMatrix3D;
-			}
 		}
 
 		var numPickables:number = this._pickables.length;
