@@ -84,7 +84,8 @@ export class TabPicker extends AbstractionBase implements ITraverser
         len=this._tabEntities.length;
         for(i=0; i<len; i++){
             var enabledEntitiy=this._tabEntities[i];
-            var ySnappedToGrid=Math.round(enabledEntitiy.scenePosition.y/snapGridY);
+            console.log("enabledEntitiy.scenePosition.y", enabledEntitiy.scenePosition.y);
+            var ySnappedToGrid=Math.floor(enabledEntitiy.scenePosition.y/snapGridY);
             if(orderedOnY.length<=ySnappedToGrid){
                 orderedOnY.length=ySnappedToGrid+1;
             }
@@ -97,10 +98,14 @@ export class TabPicker extends AbstractionBase implements ITraverser
         for(i=0; i<orderedOnY.length; i++){
             var entityRow=orderedOnY[i];
             if(entityRow){
+                console.log("entityRow", entityRow.length);
                 entityRow=entityRow.sort(function(a, b){
                     return a.scenePosition.x>b.scenePosition.x?1:-1;
                 })
                 for(e=0; e<entityRow.length; e++){
+                    
+                    console.log("2enabledEntitiy.scenePosition.y", entityRow[e].scenePosition.y);
+                    console.log("2enabledEntitiy.scenePosition.x", entityRow[e].scenePosition.x);
                     this._tabEntities[this._tabEntities.length]=entityRow[e];
                 }
             }
