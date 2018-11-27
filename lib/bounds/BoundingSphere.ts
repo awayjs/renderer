@@ -79,7 +79,19 @@ export class BoundingSphere extends BoundingVolumeBase
 	{
 		super._update();
 
-		this._sphere = this._picker._getSphereBoundsInternal(null, this._targetCoordinateSpace? this._targetCoordinateSpace.parent : this._picker.entity, this._strokeFlag, this._fastFlag, this._sphere);
+		var matrix3D:Matrix3D;
+		if (this._targetCoordinateSpace) {
+			if (this._targetCoordinateSpace == this._picker.entity) {
+				matrix3D = this._picker.entity.transform.matrix3D;
+			} else {
+				matrix3D = this._picker.entity.transform.concatenatedMatrix3D.clone();
+
+				if (this._targetCoordinateSpace.parent)
+					matrix3D.append(this._targetCoordinateSpace.parent.transform.inverseConcatenatedMatrix3D);
+			}
+		}
+
+		this._sphere = this._picker._getSphereBoundsInternal(null, matrix3D, this._strokeFlag, this._fastFlag, this._sphere);
 
 		var matrix:Matrix3D = this._picker.entity.transform.concatenatedMatrix3D;
 
