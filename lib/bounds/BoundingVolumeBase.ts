@@ -40,7 +40,7 @@ export class BoundingVolumeBase extends AbstractionBase
 			}
 
 			if (!targetEntity) //case when targetCoordinateSpace is not part of the same displaylist ancestry
-				this._targetCoordinateSpace.addEventListener(TransformEvent.INVALIDATE_CONCATENATED_MATRIX3D, this._onInvalidateMatrix3DDelegate);
+				this._targetCoordinateSpace.transform.addEventListener(TransformEvent.INVALIDATE_CONCATENATED_MATRIX3D, this._onInvalidateMatrix3DDelegate);
 		}
 	}
 
@@ -68,7 +68,7 @@ export class BoundingVolumeBase extends AbstractionBase
 			}
 
 			if (!targetEntity) //case when targetCoordinateSpace is not part of the same displaylist ancestry
-				this._targetCoordinateSpace.removeEventListener(TransformEvent.INVALIDATE_CONCATENATED_MATRIX3D, this._onInvalidateMatrix3DDelegate);
+				this._targetCoordinateSpace.transform.removeEventListener(TransformEvent.INVALIDATE_CONCATENATED_MATRIX3D, this._onInvalidateMatrix3DDelegate);
 		}
 		
 		this._targetCoordinateSpace = null;
