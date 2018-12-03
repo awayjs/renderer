@@ -454,6 +454,7 @@ export class RendererBase implements ITraverser, IRenderer
 				if (this._activeMasksDirty || this._checkMaskOwners(renderRenderable.maskOwners)) {
 					this._activeMaskOwners = renderRenderable.maskOwners;
 					if (this._activeMaskOwners == null) {
+						//console.log("disable mask");
 						// disable stencil
 						//if(gl) {
 							//gl.disable(gl.STENCIL_TEST);
@@ -484,6 +485,7 @@ export class RendererBase implements ITraverser, IRenderer
 							if (i == 0)
 								this._registerMask(renderRenderable2);
 						} else {
+							///console.log("maskOwners", renderRenderable2.maskOwners);
 							renderRenderable2._iRender(pass, this._viewport);
 						}
 
@@ -694,6 +696,7 @@ export class RendererBase implements ITraverser, IRenderer
 
 	private _drawMask(renderRenderable:_Render_RenderableBase):void
 	{
+		//console.log("drawMask ", renderRenderable.maskId);
 		var renderMaterial = renderRenderable.renderMaterial;
 		var passes = renderMaterial.passes;
 		var len = passes.length;
@@ -709,15 +712,29 @@ export class RendererBase implements ITraverser, IRenderer
 	private _checkMaskOwners(maskOwners:Array<IEntity>):boolean
 	{
 		if (this._activeMaskOwners == null || maskOwners == null)
-			return true;
+			return Boolean(this._activeMaskOwners != maskOwners);
 
 		if (this._activeMaskOwners.length != maskOwners.length)
 			return true;
 
-		var numOwners:number = maskOwners.length;
-		for (var i:number = 0; i < numOwners; i++)
-			if (this._activeMaskOwners[i] != maskOwners[i])
+		var numLayers:number = maskOwners.length;
+		var numMasks:number;
+		var masks:Array<IEntity>;
+		var activeNumMasks:number;
+		var activeMasks:Array<IEntity>;
+		for (var i:number = 0; i < numLayers; i++) {
+			masks = maskOwners[i].masks;
+			numMasks = masks.length;
+			activeMasks = this._activeMaskOwners[i].masks;
+			activeNumMasks = activeMasks.length;
+			if (activeNumMasks != numMasks)
 				return true;
+
+			for (var j:number = 0; j < numMasks; j++) {
+				if (activeMasks[j] != masks[j])
+					return true;
+			}
+		}
 
 		return false;
 	}
