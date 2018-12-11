@@ -145,29 +145,35 @@ export class TabPicker extends AbstractionBase implements ITraverser
 			var t2:number=0;
 			if(currentFocus){
                 while(i<this._customTabEntities.length){
-                    for(t=0; t<this._customTabEntities[i].length; t++){
-                        if(this._customTabEntities[i][t]==currentFocus){
-                            t2=t+1;
-                            while(t2<this._customTabEntities[i].length){
-                                if(this._customTabEntities[i][t2])
-                                    return this._customTabEntities[i][t2];
-                                t2++;
-                            }
-                            i2=i+1;
-                            while(i2<this._customTabEntities.length){
-                                for(t2=0; t2<this._customTabEntities[i2].length; t2++){
-                                    if(this._customTabEntities[i2][t2])
-                                        return this._customTabEntities[i2][t2];
+                    if (this._customTabEntities[i]) {
+                        for(t=0; t<this._customTabEntities[i].length; t++){
+                            if(this._customTabEntities[i][t]==currentFocus){
+                                t2=t+1;
+                                while(t2<this._customTabEntities[i].length){
+                                    if(this._customTabEntities[i][t2])
+                                        return this._customTabEntities[i][t2];
+                                    t2++;
                                 }
-                                i2++;
-                            }
-                            i2=0;
-                            while(i2<this._customTabEntities.length){
-                                for(t2=0; t2<this._customTabEntities[i2].length; t2++){
-                                    if(this._customTabEntities[i2][t2])
-                                        return this._customTabEntities[i2][t2];
+                                i2=i+1;
+                                while(i2<this._customTabEntities.length){
+                                    if (this._customTabEntities[i2]) {
+                                        for(t2=0; t2<this._customTabEntities[i2].length; t2++){
+                                            if(this._customTabEntities[i2][t2])
+                                                return this._customTabEntities[i2][t2];
+                                        }
+                                    }
+                                    i2++;
                                 }
-                                i2++;
+                                i2=0;
+                                while(i2<this._customTabEntities.length){
+                                    if (this._customTabEntities[i2]) {
+                                        for(t2=0; t2<this._customTabEntities[i2].length; t2++){
+                                            if(this._customTabEntities[i2][t2])
+                                                return this._customTabEntities[i2][t2];
+                                        }
+                                    }
+                                    i2++;
+                                }
                             }
                         }
                     }
@@ -176,9 +182,11 @@ export class TabPicker extends AbstractionBase implements ITraverser
             }
             i2=0;
             while(i2<this._customTabEntities.length){
-                for(t2=0; t2<this._customTabEntities[i2].length; t2++){
-                    if(this._customTabEntities[i2][t2])
-                        return this._customTabEntities[i2][t2];
+                if (this._customTabEntities[i2]) {
+                    for(t2=0; t2<this._customTabEntities[i2].length; t2++){
+                        if(this._customTabEntities[i2][t2])
+                            return this._customTabEntities[i2][t2];
+                    }
                 }
                 i2++;
             }
@@ -214,28 +222,34 @@ export class TabPicker extends AbstractionBase implements ITraverser
 			if(currentFocus){
                 while(i>0){
                     i--;
-                    for(t=this._customTabEntities[i].length-1; t>=0; t--){
-                        if(this._customTabEntities[i][t]==currentFocus){
-                            t2=t-1;
-                            while(t2>0){
-                                t2--;
-                                if(this._customTabEntities[i][t2])
-                                    return this._customTabEntities[i][t2];
-                            }
-                            i2=i-1;
-                            while(i2>0){
-                                i2--;
-                                for(t2=this._customTabEntities[i2].length-1;t2>=0; t2--){
-                                    if(this._customTabEntities[i2][t2])
-                                        return this._customTabEntities[i2][t2];
+                    if (this._customTabEntities[i]) {
+                        for(t=this._customTabEntities[i].length-1; t>=0; t--){
+                            if(this._customTabEntities[i][t]==currentFocus){
+                                t2=t-1;
+                                while(t2>0){
+                                    t2--;
+                                    if(this._customTabEntities[i][t2])
+                                        return this._customTabEntities[i][t2];
                                 }
-                            }
-                            i2=this._customTabEntities.length;
-                            while(i2>0){
-                                i2--;
-                                for(t2=this._customTabEntities[i2].length-1; t2>=0; t2--){
-                                    if(this._customTabEntities[i2][t2])
-                                        return this._customTabEntities[i2][t2];
+                                i2=i-1;
+                                while(i2>0){
+                                    i2--;
+                                    if (this._customTabEntities[i2]) {
+                                        for(t2=this._customTabEntities[i2].length-1;t2>=0; t2--){
+                                            if(this._customTabEntities[i2][t2])
+                                                return this._customTabEntities[i2][t2];
+                                        }
+                                    }
+                                }
+                                i2=this._customTabEntities.length;
+                                while(i2>0){
+                                    i2--;
+                                    if (this._customTabEntities[i2]) {
+                                        for(t2=this._customTabEntities[i2].length-1; t2>=0; t2--){
+                                            if(this._customTabEntities[i2][t2])
+                                                return this._customTabEntities[i2][t2];
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -245,9 +259,11 @@ export class TabPicker extends AbstractionBase implements ITraverser
             i2=this._customTabEntities.length-1;
             while(i2>0){
                 i2--;
-                for(t2=this._customTabEntities[i2].length-1;t2>=0; t2--){
-                    if(this._customTabEntities[i2][t2])
-                        return this._customTabEntities[i2][t2];
+                if (this._customTabEntities[i2]) {
+                    for(t2=this._customTabEntities[i2].length-1;t2>=0; t2--){
+                        if(this._customTabEntities[i2][t2])
+                            return this._customTabEntities[i2][t2];
+                    }
                 }
             }
 			return currentFocus;
