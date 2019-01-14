@@ -1,6 +1,8 @@
-import {AbstractionBase, AbstractMethodError, AssetEvent, Matrix3D, ProjectionBase} from "@awayjs/core";
+import {AbstractionBase, AbstractMethodError, AssetEvent} from "@awayjs/core";
 
-import {Stage, Short3Attributes, AttributesView, _Stage_AttributesBuffer, Viewport} from "@awayjs/stage";
+import {Stage, Short3Attributes, AttributesView, _Stage_AttributesBuffer} from "@awayjs/stage";
+
+import {View} from "@awayjs/view";
 
 import {ElementsEvent} from "../events/ElementsEvent";
 import {ElementsUtils} from "../utils/ElementsUtils";
@@ -143,7 +145,7 @@ export class _Stage_ElementsBase extends AbstractionBase
 		}
 	}
 
-	public _setRenderState(renderable:_Render_RenderableBase, shader:ShaderBase, viewport:Viewport):void
+	public _setRenderState(renderable:_Render_RenderableBase, shader:ShaderBase, view:View):void
 	{
 		if (!this._verticesUpdated)
 			this._updateIndices();
@@ -155,7 +157,7 @@ export class _Stage_ElementsBase extends AbstractionBase
 		// 	this._overflow._iRender(renderable, camera, viewProjection);
 	}
 
-	public draw(renderable:_Render_RenderableBase, shader:ShaderBase, viewport:Viewport, count:number, offset:number):void
+	public draw(renderable:_Render_RenderableBase, shader:ShaderBase, view:View, count:number, offset:number):void
 	{
 		throw new AbstractMethodError();
 	}

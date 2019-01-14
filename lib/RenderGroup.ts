@@ -2,12 +2,11 @@ import {IAssetClass, IAsset} from "@awayjs/core";
 
 import {Stage} from "@awayjs/stage";
 
-import {IMaterial} from "./base/IMaterial";
-import {IEntity} from "./base/IEntity";
-import {IRenderer} from "./base/IRenderer";
+import {IRenderEntity} from "./base/IRenderEntity";
 import {RenderEntity} from "./base/RenderEntity";
 import {_IRender_ElementsClass} from "./base/_IRender_ElementsClass";
 import {_Render_ElementsBase} from "./base/_Render_ElementsBase";
+import { RendererBase } from './RendererBase';
 
 /**
  * @class away.pool.RenderGroup
@@ -18,11 +17,16 @@ export class RenderGroup
 
 	private _stage:Stage;
 	private _renderMaterialClassPool:Object;
-    private _renderer:IRenderer;
+    private _renderer:RendererBase;
 	private _materialPools:Object = new Object();
 	private _entityGroups:Object = new Object();
 
-	public get renderer():IRenderer
+	public get stage():Stage
+	{
+		return this._stage;
+	}
+
+	public get renderer():RendererBase
 	{
 		return this._renderer;
 	}
@@ -32,7 +36,7 @@ export class RenderGroup
 	 *
 	 * @param materialClassGL
 	 */
-	constructor(stage:Stage, renderMaterialClassPool:Object, renderer:IRenderer)
+	constructor(stage:Stage, renderMaterialClassPool:Object, renderer:RendererBase)
 	{
 		this._stage = stage;
 		this._renderMaterialClassPool = renderMaterialClassPool;
@@ -44,7 +48,7 @@ export class RenderGroup
 		return this._materialPools[elements.assetType] || (this._materialPools[elements.assetType] = new (<_IRender_ElementsClass> RenderGroup._renderElementsClassPool[elements.assetType])(this._stage, this._renderMaterialClassPool, this));
 	}
 
-	public getRenderEntity(entity:IEntity):RenderEntity
+	public getRenderEntity(entity:IRenderEntity):RenderEntity
 	{
 		return this._entityGroups[entity.id] || (this._entityGroups[entity.id] = new RenderEntity(this._stage, entity, this));
 	}

@@ -1,14 +1,10 @@
-import {Stage} from "@awayjs/stage";
-
-import {INode} from "./partition/INode";
+import {INode, PartitionBase, View} from "@awayjs/view";
 import {IMaterialClass} from "./base/IMaterialClass";
 import {_IRender_MaterialClass} from "./base/_IRender_MaterialClass";
 
 import {RenderGroup} from "./RenderGroup";
 
 import {RendererBase} from "./RendererBase";
-import { PartitionBase } from './partition/PartitionBase';
-import { ProjectionBase } from '@awayjs/core';
 
 /**
  * The DistanceRenderer class renders 32-bit depth information encoded as RGBA
@@ -24,12 +20,9 @@ export class DistanceRenderer extends RendererBase
 	 * @param renderBlended Indicates whether semi-transparent objects should be rendered.
 	 * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
 	 */
-	constructor(partition:PartitionBase, projection:ProjectionBase = null, stage:Stage = null)
+	constructor(partition:PartitionBase, view:View = null)
 	{
-		super(partition, projection, stage);
-
-		this._renderGroup = new RenderGroup(this._stage, DistanceRenderer._materialClassPool, this);
-		this._viewport.backgroundColor = 0xFFFFFF;
+		super(partition, view);
 	}
 
     /**
@@ -55,5 +48,15 @@ export class DistanceRenderer extends RendererBase
 		}
 
 		return super.enterNode(node);
+	}
+
+	protected _setView(value:View):void
+	{
+		super._setView(value);
+
+		if (!this._renderGroup || this._renderGroup.stage != this._stage)
+			this._renderGroup = new RenderGroup(this._stage, DistanceRenderer._materialClassPool, this);
+
+		this._view.backgroundColor = 0xFFFFFF;
 	}
 }

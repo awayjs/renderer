@@ -3,7 +3,7 @@ import {IAsset} from "@awayjs/core";
 import {ITexture} from "../base/ITexture";
 
 import {IAnimationSet} from "./IAnimationSet";
-import {IEntity} from "./IEntity";
+import {IRenderEntity} from "./IRenderEntity";
 import {Style} from "./Style";
 
 /**
@@ -27,11 +27,11 @@ export interface IMaterial extends IAsset
 
 	blendMode:string;
 
-	iOwners:Array<IEntity>;
+	iOwners:Array<IRenderEntity>;
 
-	iAddOwner(owner:IEntity);
+	iAddOwner(owner:IRenderEntity);
 
-	iRemoveOwner(owner:IEntity);
+	iRemoveOwner(owner:IRenderEntity);
 
 	getNumTextures():number;
 

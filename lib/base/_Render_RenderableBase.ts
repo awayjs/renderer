@@ -1,6 +1,8 @@
-import {AbstractMethodError, AssetEvent, Matrix, Matrix3D, AbstractionBase, ProjectionBase} from "@awayjs/core";
+import {AbstractMethodError, AssetEvent, Matrix, Matrix3D, AbstractionBase} from "@awayjs/core";
 
-import {Stage, _Stage_ImageBase, ImageSampler, ImageBase, Viewport} from "@awayjs/stage";
+import {Stage, _Stage_ImageBase, ImageSampler, ImageBase} from "@awayjs/stage";
+
+import {View, IPartitionEntity} from "@awayjs/view";
 
 import {RenderableEvent} from "../events/RenderableEvent";
 import {MaterialUtils} from "../utils/MaterialUtils";
@@ -10,7 +12,7 @@ import {RenderGroup} from "../RenderGroup";
 import {_Render_MaterialBase} from "./_Render_MaterialBase";
 import {_Stage_ElementsBase} from "./_Stage_ElementsBase";
 import {IRenderable} from "./IRenderable";
-import {IEntity} from "./IEntity";
+import {IRenderEntity} from "./IRenderEntity";
 import {IPass} from "./IPass";
 import {IMaterial} from "./IMaterial";
 import {RenderEntity} from "./RenderEntity";
@@ -58,7 +60,7 @@ export class _Render_RenderableBase extends AbstractionBase
 	/**
 	 *
 	 */
-	public sourceEntity:IEntity;
+	public sourceEntity:IRenderEntity;
 
 	/**
 	 *
@@ -101,7 +103,7 @@ export class _Render_RenderableBase extends AbstractionBase
     /**
      *
      */
-    public maskOwners:Array<IEntity>;
+    public maskOwners:Array<IPartitionEntity>;
 
     /**
      *
@@ -162,17 +164,17 @@ export class _Render_RenderableBase extends AbstractionBase
      *
      * @private
      */
-    public _iRender(pass:IPass, viewport:Viewport):void
+    public _iRender(pass:IPass, view:View):void
     {
-        pass._setRenderState(this, viewport);
+        pass._setRenderState(this, view);
 
         var elements:_Stage_ElementsBase = this.stageElements;
         if (pass.shader.activeElements != elements) {
             pass.shader.activeElements = elements;
-            elements._setRenderState(this, pass.shader, viewport);
+            elements._setRenderState(this, pass.shader, view);
         }
 
-        this._stageElements.draw(this, pass.shader, viewport, this._count, this._offset)
+        this._stageElements.draw(this, pass.shader, view, this._count, this._offset)
     }
 
 

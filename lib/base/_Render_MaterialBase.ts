@@ -8,7 +8,7 @@ import {MaterialEvent} from "../events/MaterialEvent";
 
 import {RenderGroup} from "../RenderGroup";
 
-import {IEntity} from "./IEntity";
+import {IRenderEntity} from "./IRenderEntity";
 import {IPass} from "./IPass";
 import {IMaterial} from "./IMaterial";
 import {IAnimator} from "./IAnimator";
@@ -269,7 +269,7 @@ export class _Render_MaterialBase extends AbstractionBase
             this._usesAnimation = usesAnimation;
             this._animationSet = this._material.animationSet
 
-            var renderables:Array<IEntity> = this._material.iOwners;
+            var renderables:Array<IRenderEntity> = this._material.iOwners;
             var numOwners:number = renderables.length;
             for (var j:number = 0; j < numOwners; j++)
                 renderables[j].invalidateElements();
@@ -317,7 +317,7 @@ export class _Render_MaterialBase extends AbstractionBase
         if (this._material.animationSet) {
             this._material.animationSet.resetGPUCompatibility();
 
-            var entities:Array<IEntity> = this._material.iOwners;
+            var entities:Array<IRenderEntity> = this._material.iOwners;
             var numOwners:number = entities.length;
 
             var len:number = this._passes.length;
