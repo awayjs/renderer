@@ -40,6 +40,7 @@
   "dependencies": {
     "@awayjs/core": "^0.7.0",
     "@awayjs/stage": "^0.9.0",
+    "@awayjs/view": "^0.4.0",
     "tslib": "^1.9.0"
   },
   "devDependencies": {

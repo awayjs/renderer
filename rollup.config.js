@@ -9,13 +9,15 @@ module.exports = {
 		'@awayjs/core',
 		'@awayjs/graphics',
 		'@awayjs/scene',
-		'@awayjs/stage'
+		'@awayjs/stage',
+		'@awayjs/view'
 	],
 	globals: {
 		'@awayjs/core': 'AwayjsCore',
 		'@awayjs/graphics': 'AwayjsGraphics',
 		'@awayjs/scene': 'AwayjsScene',
-		'@awayjs/stage': 'AwayjsStage'
+		'@awayjs/stage': 'AwayjsStage',
+		'@awayjs/view': 'AwayjsView',
 	},
 	targets: [
 		{ dest: './bundle/awayjs-renderer.umd.js'}
