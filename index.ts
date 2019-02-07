@@ -5,7 +5,6 @@ export {IMaterialClass} from "./lib/base/IMaterialClass";
 export {_IRender_ElementsClass} from "./lib/base/_IRender_ElementsClass";
 export {_IRender_MaterialClass} from "./lib/base/_IRender_MaterialClass";
 export {IPass} from "./lib/base/IPass";
-export {IRenderable} from "./lib/base/IRenderable";
 export {ITexture} from "./lib/base/ITexture";
 export {IElements} from "./lib/base/IElements";
 export {ShaderBase} from "./lib/base/ShaderBase";

@@ -26,8 +26,6 @@ export interface IRenderEntity extends IPartitionEntity
 	invalidateElements():void;
 
 	invalidateMaterial():void;
-	
-	getRenderableIndex(renderable:ITraversable):number;
 
 	/**
 	 * The transformation matrix that transforms from model to world space, adapted with any special operations needed to render.
