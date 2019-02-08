@@ -153,7 +153,7 @@ export class DefaultRenderer extends RendererBase
 			super.render(enableDepthAndStencil, surfaceSelector);
 			this._filter3DRenderer.render(this._stage, this._view.projection, this._depthRender);
 		} else {
-			this._view.target = null;
+			//this._view.target = null;
 			super.render(enableDepthAndStencil, surfaceSelector);
 		}
 
