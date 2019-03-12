@@ -26,7 +26,7 @@ export class _Render_ElementsBase implements IAbstractionPool
 
     /**
      *
-     * @returns {IRenderEntity}
+     * @returns {IEntity}
      */
     public get renderGroup():RenderGroup
     {

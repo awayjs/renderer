@@ -2,12 +2,12 @@ import {IAssetClass, IAbstractionPool} from "@awayjs/core";
 
 import {Stage} from "@awayjs/stage";
 
-import {IRenderEntity} from "./IRenderEntity";
+import {IEntity} from "./IEntity";
+import {IRenderable} from "./IRenderable";
 import {_IRender_RenderableClass} from "./_IRender_RenderableClass";
 import {_Render_RenderableBase} from "./_Render_RenderableBase";
 
 import {RenderGroup} from "../RenderGroup";
-import { ITraversable } from '@awayjs/view';
 
 /**
  * @class away.pool.RenderEntity
@@ -18,7 +18,7 @@ export class RenderEntity implements IAbstractionPool
 
 	private _abstractionPool:Object = new Object();
     private _stage:Stage;
-	private _entity:IRenderEntity;
+	private _entity:IEntity;
 	private _renderGroup:RenderGroup;
 
 
@@ -33,16 +33,16 @@ export class RenderEntity implements IAbstractionPool
 
     /**
      *
-     * @returns {IRenderEntity}
+     * @returns {IEntity}
      */
-    public get entity():IRenderEntity
+    public get entity():IEntity
     {
         return this._entity;
     }
 
     /**
      *
-     * @returns {IRenderEntity}
+     * @returns {IEntity}
      */
     public get renderGroup():RenderGroup
     {
@@ -54,7 +54,7 @@ export class RenderEntity implements IAbstractionPool
 	 *
 	 * @param materialClassGL
 	 */
-	constructor(stage:Stage, entity:IRenderEntity, renderGroup:RenderGroup)
+	constructor(stage:Stage, entity:IEntity, renderGroup:RenderGroup)
 	{
         this._stage = stage;
 		this._entity = entity;
@@ -67,7 +67,7 @@ export class RenderEntity implements IAbstractionPool
 	 * @param renderable
 	 * @returns IRenderState
 	 */
-	public getAbstraction(renderable:ITraversable):_Render_RenderableBase
+	public getAbstraction(renderable:IRenderable):_Render_RenderableBase
 	{
 		return this._abstractionPool[renderable.id] || (this._abstractionPool[renderable.id] = new (<_IRender_RenderableClass> RenderEntity._renderRenderableClassPool[renderable.assetType])(renderable, this));
 	}
@@ -76,7 +76,7 @@ export class RenderEntity implements IAbstractionPool
 	 *
 	 * @param renderable
 	 */
-	public clearAbstraction(renderable:ITraversable):void
+	public clearAbstraction(renderable:IRenderable):void
 	{
 		delete this._abstractionPool[renderable.id];
 	}

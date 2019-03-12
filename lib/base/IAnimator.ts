@@ -3,7 +3,7 @@ import {IAsset, ProjectionBase} from "@awayjs/core";
 import {Stage} from "@awayjs/stage";
 
 import {_Render_RenderableBase} from "./_Render_RenderableBase";
-import {IRenderEntity} from "./IRenderEntity";
+import {IEntity} from "./IEntity";
 import {ShaderBase} from "./ShaderBase";
 import {IAnimationSet} from "./IAnimationSet";
 
@@ -34,14 +34,14 @@ export interface IAnimator extends IAsset
 	 *
 	 * @private
 	 */
-	addOwner(entity:IRenderEntity);
+	addOwner(entity:IEntity);
 
 	/**
 	 * Used by the graphics object from which the animator is removed, unregisters the owner for internal use.
 	 *
 	 * @private
 	 */
-	removeOwner(entity:IRenderEntity);
+	removeOwner(entity:IEntity);
 
     testGPUCompatibility(shader:ShaderBase):void;
 

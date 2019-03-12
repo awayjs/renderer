@@ -1,8 +1,6 @@
-import {IEventDispatcher} from "@awayjs/core";
+import {IEventDispatcher, ProjectionBase} from "@awayjs/core";
 
-import {ShaderRegisterCache, ShaderRegisterData} from "@awayjs/stage";
-
-import {View} from "@awayjs/view";
+import {ShaderRegisterCache, ShaderRegisterData, ShaderRegisterElement, Viewport} from "@awayjs/stage";
 
 import {_Render_RenderableBase} from "./_Render_RenderableBase";
 import {ShaderBase} from "./ShaderBase";
@@ -26,9 +24,9 @@ export interface IPass extends IEventDispatcher
 	 * @param camera The camera from which the scene is viewed.
 	 * @private
 	 */
-	_activate(view:View);
+	_activate(viewport:Viewport);
 
-	_setRenderState(renderState:_Render_RenderableBase, view:View)
+	_setRenderState(renderState:_Render_RenderableBase, viewport:Viewport)
 
 	/**
 	 * Clears the surface state for the pass. This needs to be called before activating another pass.

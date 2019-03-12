@@ -1,4 +1,6 @@
-import {EventBase, IAsset} from "@awayjs/core";
+import {EventBase} from "@awayjs/core";
+
+import {IRenderable} from "../base/IRenderable";
 
 /**
  * Dispatched to notify changes in a sub geometry object's state.
@@ -18,19 +20,14 @@ export class RenderableEvent extends EventBase
 	 */
 	public static INVALIDATE_ELEMENTS:string = "invalidateElements";
 
-	/**
-	 *
-	 */
-	public static INVALIDATE_STYLE:string = "invalidateStyle";
-
-	private _renderable:IAsset;
+	private _renderable:IRenderable;
 
 	/**
 	 * Create a new GraphicsEvent
 	 * @param type The event type.
 	 * @param dataType An optional data type of the vertex data being updated.
 	 */
-	constructor(type:string, renderable:IAsset)
+	constructor(type:string, renderable:IRenderable)
 	{
 		super(type);
 
@@ -40,7 +37,7 @@ export class RenderableEvent extends EventBase
 	/**
 	 * The renderobject owner of the renderable owner.
 	 */
-	public get renderable():IAsset
+	public get renderable():IRenderable
 	{
 		return this._renderable;
 	}

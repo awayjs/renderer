@@ -1,9 +1,8 @@
 import {ProjectionBase} from "@awayjs/core";
 
-import {BitmapImage2D, IContextGL} from "@awayjs/stage";
+import {BitmapImage2D, ContextGLProfile, ContextMode, Stage, ContextGLClearMask, IContextGL} from "@awayjs/stage";
 
-import {INode, PartitionBase, View} from "@awayjs/view";
-
+import {INode} from "./partition/INode";
 import {IMaterialClass} from "./base/IMaterialClass";
 import {_IRender_MaterialClass} from "./base/_IRender_MaterialClass";
 
@@ -15,7 +14,8 @@ import {DepthRenderer} from "./DepthRenderer";
 import {DistanceRenderer} from "./DistanceRenderer";
 import {Filter3DRenderer} from "./Filter3DRenderer";
 import {RendererBase} from "./RendererBase";
-import { IRenderEntity } from './base/IRenderEntity';
+import { PartitionBase } from './partition/PartitionBase';
+import { PickGroup } from './PickGroup';
 
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
@@ -34,6 +34,8 @@ export class DefaultRenderer extends RendererBase
 	private _filter3DRenderer:Filter3DRenderer;
 
 	public _depthRender:BitmapImage2D;
+
+	private _antiAlias:number = 0;
 	
 	public get antiAlias():number
 	{
@@ -98,9 +100,15 @@ export class DefaultRenderer extends RendererBase
 	 * @param antiAlias The amount of anti-aliasing to use.
 	 * @param renderMode The render mode to use.
 	 */
-	constructor(partition:PartitionBase, view:View = null)
+	constructor(partition:PartitionBase, projection:ProjectionBase = null, stage:Stage = null, forceSoftware:boolean = false, profile:ContextGLProfile = ContextGLProfile.BASELINE, mode:ContextMode = ContextMode.AUTO)
 	{
-		super(partition, view);
+		super(partition, projection, stage, forceSoftware, profile, mode);
+
+		this._renderGroup = new RenderGroup(this._stage, DefaultRenderer._renderMaterialClassPool, this);
+		this._pRttBufferManager = RTTBufferManager.getInstance(this._stage);
+
+		this._depthRenderer = new DepthRenderer(this._partition, this._viewport.projection, this._stage);
+		this._distanceRenderer = new DistanceRenderer(this._partition, this._viewport.projection, this._stage);
 	}
 
 	public getDepthRenderer():DepthRenderer
@@ -131,7 +139,7 @@ export class DefaultRenderer extends RendererBase
 		var enter:boolean = super.enterNode(node);
 
 		if (enter && node.boundsVisible)
-			this.applyEntity(<IRenderEntity> node.getBoundsPrimitive(this._pickGroup));
+			this.applyEntity(node.getBoundsPrimitive(this._pickGroup));
 
 		return enter;
 	}
@@ -149,20 +157,20 @@ export class DefaultRenderer extends RendererBase
 			this._renderDepthPrepass();
 
 		if (this._filter3DRenderer) { //TODO
-			this._view.target = this._filter3DRenderer.getMainInputTexture(this._stage);
+			this._viewport.target = this._filter3DRenderer.getMainInputTexture(this._stage);
 			super.render(enableDepthAndStencil, surfaceSelector);
-			this._filter3DRenderer.render(this._stage, this._view.projection, this._depthRender);
+			this._filter3DRenderer.render(this._stage, this._viewport.projection, this._depthRender);
 		} else {
-			//this._view.target = null;
+			this._viewport.target = null;
 			super.render(enableDepthAndStencil, surfaceSelector);
 		}
 
-		this._view.present();
+		this._viewport.present();
 	}
 
 	public dispose():void
 	{
-		this._view.dispose();
+		this._viewport.dispose();
 
 		this._pRttBufferManager.dispose();
 		this._pRttBufferManager = null;
@@ -184,12 +192,12 @@ export class DefaultRenderer extends RendererBase
 	{
 		this._depthRenderer.disableColor = true;
 
-		this._depthRenderer.view.projection = this._view.projection;
+		this._depthRenderer.viewport.projection = this._viewport.projection;
 		if (this._filter3DRenderer) {
-			this._depthRenderer.view.target = this._filter3DRenderer.getMainInputTexture(this._stage);
+			this._depthRenderer.viewport.target = this._filter3DRenderer.getMainInputTexture(this._stage);
 			this._depthRenderer.render();
 		} else {
-			this._depthRenderer.view.target = null;
+			this._depthRenderer.viewport.target = null;
 			this._depthRenderer.render();
 		}
 
@@ -219,37 +227,6 @@ export class DefaultRenderer extends RendererBase
 			this._depthRender.dispose();
 
 		this._depthRender = new BitmapImage2D(this._pRttBufferManager.textureWidth, this._pRttBufferManager.textureHeight);
-		this._depthRenderer.view.target = this._depthRender;
-		this._depthRenderer.view.projection = this._view.projection;
-	}
-
-	protected _setView(value:View):void
-	{
-		super._setView(value);
-
-		if (!this._renderGroup || this._renderGroup.stage != this._stage)
-			this._renderGroup = new RenderGroup(this._stage, DefaultRenderer._renderMaterialClassPool, this);
-
-		this._pRttBufferManager = RTTBufferManager.getInstance(this._stage);
-
-		if (!this._depthRenderer)
-			this._depthRenderer = new DepthRenderer(this._partition, new View(null, this._stage));
-		else if (this._depthRenderer.stage != this._stage)
-			this._depthRenderer.view = new View(null, this._stage);
-		
-		if (!this._distanceRenderer)
-			this._distanceRenderer = new DistanceRenderer(this._partition, new View(null, this._stage));
-		else if (this._distanceRenderer.stage != this._stage)
-			this._distanceRenderer.view = new View(null, this._stage);
-
-		this._depthTextureDirty = true;
-	}
-
-	protected _setPartition(value:PartitionBase):void
-	{
-		super._setPartition(value);
-		
-		this._depthRenderer.partition = value;
-		this._distanceRenderer.partition = value;
+		this._depthRenderer.viewport.target = this._depthRender;
 	}
 }

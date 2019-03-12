@@ -1,11 +1,11 @@
 import {_Render_RenderableBase} from "../base/_Render_RenderableBase";
 
-import {IRenderEntitySorter} from "./IRenderEntitySorter";
+import {IEntitySorter} from "./IEntitySorter";
 
 /**
  * @class away.sort.RenderableMergeSort
  */
-export class RenderableMergeSort implements IRenderEntitySorter
+export class RenderableMergeSort implements IEntitySorter
 {
 	public sortBlendedRenderables(head:_Render_RenderableBase):_Render_RenderableBase
 	{

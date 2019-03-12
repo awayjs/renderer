@@ -1,8 +1,6 @@
-import {Matrix3D, Plane3D, Vector3D, ProjectionBase} from "@awayjs/core";
+import {Matrix3D, Plane3D, Rectangle, Vector3D, ProjectionBase, AbstractionBase} from "@awayjs/core";
 
-import {BitmapImage2D, ContextGLProfile, ContextMode, ContextGLBlendFactor, ContextGLCompareMode, ContextGLStencilAction, ContextGLTriangleFace, IContextGL, Stage, StageEvent, ContextGLClearMask} from "@awayjs/stage";
-
-import {View, ViewEvent, IPartitionTraverser, IEntityTraverser, INode, PartitionBase, PickGroup, IPartitionEntity, ITraversable} from "@awayjs/view";
+import {ImageBase, BitmapImage2D, ContextGLProfile, ContextMode, ContextGLBlendFactor, ContextGLCompareMode, ContextGLStencilAction, ContextGLTriangleFace, IContextGL, Stage, StageEvent, StageManager, Viewport, ViewportEvent, ContextGLClearMask} from "@awayjs/stage";
 
 import {_Render_MaterialBase} from "./base/_Render_MaterialBase";
 import {_Render_RenderableBase} from "./base/_Render_RenderableBase";
@@ -10,11 +8,17 @@ import {RenderEntity} from "./base/RenderEntity";
 import {IMapper} from "./base/IMapper";
 import {RenderGroup} from "./RenderGroup";
 
-import {IRenderEntity} from "./base/IRenderEntity";
+import {IEntity} from "./base/IEntity";
 import {IPass} from "./base/IPass";
+import {IRenderer} from "./base/IRenderer";
+import {IRenderable} from "./base/IRenderable";
+import {ITraverser} from "./partition/ITraverser";
+import {INode} from "./partition/INode";
 import {RTTBufferManager} from "./managers/RTTBufferManager";
-import {IRenderEntitySorter} from "./sort/IRenderEntitySorter";
+import {IEntitySorter} from "./sort/IEntitySorter";
 import {RenderableMergeSort} from "./sort/RenderableMergeSort";
+import { PartitionBase } from './partition/PartitionBase';
+import { PickGroup } from './PickGroup';
 
 
 /**
@@ -23,7 +27,7 @@ import {RenderableMergeSort} from "./sort/RenderableMergeSort";
  *
  * @class away.render.RendererBase
  */
-export class RendererBase implements IPartitionTraverser, IEntityTraverser
+export class RendererBase implements ITraverser, IRenderer
 {
 	public static _collectionMark = 0;
 
@@ -31,7 +35,7 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
     private _mappers:Array<IMapper> = new Array<IMapper>();
 	private _maskConfig:number;
 	private _activeMasksDirty:boolean;
-	private _activeMaskOwners:Array<IPartitionEntity> = new Array<IPartitionEntity>();
+	private _activeMaskOwners:Array<IEntity> = new Array<IEntity>();
 	private _registeredMasks : Array<_Render_RenderableBase> = new Array<_Render_RenderableBase>();
 	private _numUsedStreams:number = 0;
 	private _numUsedTextures:number = 0;
@@ -39,7 +43,7 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 	protected _partition:PartitionBase;
 	protected _context:IContextGL;
 	protected _stage:Stage;
-	protected _view:View;
+	protected _viewport:Viewport;
 
 	public _cameraTransform:Matrix3D;
 	private _cameraForward:Vector3D = new Vector3D();
@@ -53,7 +57,7 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 	private _snapshotRequired:boolean;
 
 	private _onContextUpdateDelegate:(event:StageEvent) => void;
-	private _onSizeInvalidateDelegate:(event:ViewEvent) => void;
+	private _onSizeInvalidateDelegate:(event:ViewportEvent) => void;
 
 	public _pNumElements:number = 0;
 
@@ -65,7 +69,7 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 	private _cullPlanes:Array<Plane3D>;
 	private _customCullPlanes:Array<Plane3D>;
 	private _numCullPlanes:number = 0;
-	private _sourceEntity:IRenderEntity;
+	private _sourceEntity:IEntity;
 	protected _renderGroup:RenderGroup;
 	private _renderablePool:RenderEntity;
 	private _zIndex:number;
@@ -74,14 +78,6 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 	public get partition():PartitionBase
 	{
 		return this._partition;
-	}
-
-	public set partition(value:PartitionBase)
-	{
-		if (this._partition == value)
-			return;
-
-		this._setPartition(value);
 	}
 
 	public get pickGroup():PickGroup
@@ -145,22 +141,36 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 	/**
 	 *
 	 */
-	public renderableSorter:IRenderEntitySorter;
+	public renderableSorter:IEntitySorter;
 
 	/**
 	 * Creates a new RendererBase object.
 	 */
-	constructor(partition:PartitionBase, view:View = null)
+	constructor(partition:PartitionBase, projection:ProjectionBase = null, stage:Stage = null, forceSoftware:boolean = false, profile:ContextGLProfile = ContextGLProfile.BASELINE, mode:ContextMode = ContextMode.AUTO)
 	{
 		this._partition = partition;
+		this._viewport = new Viewport(projection, stage, forceSoftware, profile, mode);
+		this._pickGroup = PickGroup.getInstance(this._viewport);
 
-		this._onSizeInvalidateDelegate = (event:ViewEvent) => this.onSizeInvalidate(event);
+		this._onSizeInvalidateDelegate = (event:ViewportEvent) => this.onSizeInvalidate(event);
 		this._onContextUpdateDelegate = (event:StageEvent) => this.onContextUpdate(event);
 
 		//default sorting algorithm
 		this.renderableSorter = new RenderableMergeSort();
 
-		this._setView(view || new View())
+		//set stage
+		this._stage = this._viewport.stage;
+
+		this._stage.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
+		this._stage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
+		this._viewport.addEventListener(ViewportEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
+		
+		/*
+		 if (_backgroundImageRenderer)
+		 _backgroundImageRenderer.stage = value;
+		 */
+		if (this._stage.context)
+			this._context = <IContextGL> this._stage.context;
 	}
 
 	public activatePass(pass:IPass):void
@@ -175,7 +185,7 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 			this._context.setTextureAt(i, null);
 
 		//activate shader object through pass
-		pass._activate(this._view);
+		pass._activate(this._viewport);
 	}
 
 	public deactivatePass(pass:IPass):void
@@ -200,21 +210,9 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 		return this._stage;
 	}
 
-	public get view():View
+	public get viewport():Viewport
 	{
-		return this._view;
-	}
-
-	public set view(value:View)
-	{
-		if (this._view == value)
-			return;
-		
-		this._stage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
-		this._stage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
-		this._view.removeEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
-	
-		this._setView(value);
+		return this._viewport;
 	}
 
 	/**
@@ -225,9 +223,9 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 
 		this._stage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 		this._stage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
-		this._view.removeEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
+		this._viewport.removeEventListener(ViewportEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 
-		this._view = null;
+		this._viewport = null;
 		this._stage = null;
 		this._context = null;
 		/*
@@ -270,16 +268,16 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 		//update mappers
         var len:number = this._mappers.length;
         for (var i:number = 0; i < len; i++)
-            this._mappers[i].update(this._view.projection, this);
+            this._mappers[i].update(this._viewport.projection, this);
 
 		//reset head values
 		this._pBlendedRenderableHead = null;
 		this._pOpaqueRenderableHead = null;
 		this._pNumElements = 0;
 
-		this._cameraTransform = this._view.projection.transform.concatenatedMatrix3D;
-		this._cameraForward = this._view.projection.transform.forwardVector;
-		this._cullPlanes = this._customCullPlanes? this._customCullPlanes : this._view.projection.viewFrustumPlanes;
+		this._cameraTransform = this._viewport.projection.transform.concatenatedMatrix3D;
+		this._cameraForward = this._viewport.projection.transform.forwardVector;
+		this._cullPlanes = this._customCullPlanes? this._customCullPlanes : this._viewport.projection.viewFrustumPlanes;
 		this._numCullPlanes = this._cullPlanes? this._cullPlanes.length : 0;
 
 		RendererBase._collectionMark++;
@@ -298,8 +296,8 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 		this._executeRender(enableDepthAndStencil, surfaceSelector);
 
 		// invalidate mipmaps (if target exists) to regenerate if required
-		if (this._view.target)
-			this._view.target.invalidateMipmaps();
+		if (this._viewport.target)
+			this._viewport.target.invalidateMipmaps();
 
 		// clear buffers
 		for (var i:number = 0; i < 8; ++i) {
@@ -341,8 +339,8 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 	protected _executeRender(enableDepthAndStencil:boolean = true, surfaceSelector:number = 0):void
 	{
 		//TODO: allow sharedContexts for image targets
-		this._view.backgroundClearMask = (!this._view.shareContext || this._view.target)? ContextGLClearMask.ALL : ContextGLClearMask.DEPTH;
-		this._view.clear(!this._depthPrepass && !this._disableClear, enableDepthAndStencil, surfaceSelector);
+		this._viewport.backgroundClearMask = (!this._viewport.shareContext || this._viewport.target)? ContextGLClearMask.ALL : ContextGLClearMask.DEPTH;
+		this._viewport.clear(!this._depthPrepass && !this._disableClear, enableDepthAndStencil, surfaceSelector);
 
 		/*
 		 if (_backgroundImageRenderer)
@@ -367,7 +365,7 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 		//line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
 		//this._context.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //oopsie
 
-		if (!this._view.shareContext || this._view.target) {
+		if (!this._viewport.shareContext || this._viewport.target) {
 			if (this._snapshotRequired && this._snapshotBitmapImage2D) {
 				this._context.drawToBitmapImage2D(this._snapshotBitmapImage2D);
 				this._snapshotRequired = false;
@@ -488,7 +486,7 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 								this._registerMask(renderRenderable2);
 						} else {
 							///console.log("maskOwners", renderRenderable2.maskOwners);
-							renderRenderable2._iRender(pass, this._view);
+							renderRenderable2._iRender(pass, this._viewport);
 						}
 
 						renderRenderable2 = renderRenderable2.next;
@@ -551,11 +549,11 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 	/**
 	 *
 	 */
-	public onSizeInvalidate(event:ViewEvent):void
+	public onSizeInvalidate(event:ViewportEvent):void
 	{
 		if (this._pRttBufferManager) {
-			this._pRttBufferManager.viewWidth = this._view.width;
-			this._pRttBufferManager.viewHeight = this._view.height;
+			this._pRttBufferManager.viewWidth = this._viewport.width;
+			this._pRttBufferManager.viewHeight = this._viewport.height;
 		}
 
 		this._depthTextureDirty = true;
@@ -575,12 +573,12 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 		return enter;
 	}
 
-	public getTraverser(partition:PartitionBase):RendererBase
+	public getTraverser(partition:PartitionBase):ITraverser
 	{
 		return this;
 	}
 
-	public applyEntity(entity:IRenderEntity):void
+	public applyEntity(entity:IEntity):void
 	{
 		this._sourceEntity = entity;
 		this._renderablePool = this._renderGroup.getRenderEntity(entity);
@@ -592,10 +590,10 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 		this._renderSceneTransform = entity.getRenderSceneTransform(this._cameraTransform);
 
 		//collect renderables
-		entity._acceptTraverser(this);
+		entity._applyRenderables(this);
 	}
 
-	public applyTraversable(renderable:ITraversable):void
+	public applyRenderable(renderable:IRenderable):void
 	{
 		var renderRenderable:_Render_RenderableBase = this._renderablePool.getAbstraction(renderable);
 
@@ -631,7 +629,7 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 		this._registeredMasks.push(obj);
 	}
 
-	public _renderMasks(maskOwners:IPartitionEntity[]):void
+	public _renderMasks(maskOwners:IEntity[]):void
 	{
 		//var gl = this._context["_gl"];
 		//f (!gl)
@@ -654,9 +652,9 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 		var numLayers:number = maskOwners.length;
 		var numRenderables:number = this._registeredMasks.length;
 		var renderRenderable:_Render_RenderableBase;
-		var children:Array<IPartitionEntity>;
+		var children:Array<IEntity>;
 		var numChildren:number;
-		var mask:IPartitionEntity;
+		var mask:IEntity;
 
 		for (var i:number = 0; i < numLayers; ++i) {
 			if (i != 0) {
@@ -707,11 +705,11 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 		this.activatePass(pass);
 		this._context.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //TODO: setup so as not to override activate
 		// only render last pass for now
-		renderRenderable._iRender(pass, this._view);
+		renderRenderable._iRender(pass, this._viewport);
 		this.deactivatePass(pass);
 	}
 
-	private _checkMaskOwners(maskOwners:Array<IPartitionEntity>):boolean
+	private _checkMaskOwners(maskOwners:Array<IEntity>):boolean
 	{
 		if (this._activeMaskOwners == null || maskOwners == null)
 			return Boolean(this._activeMaskOwners != maskOwners);
@@ -721,9 +719,9 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 
 		var numLayers:number = maskOwners.length;
 		var numMasks:number;
-		var masks:Array<IPartitionEntity>;
+		var masks:Array<IEntity>;
 		var activeNumMasks:number;
-		var activeMasks:Array<IPartitionEntity>;
+		var activeMasks:Array<IEntity>;
 		for (var i:number = 0; i < numLayers; i++) {
 			masks = maskOwners[i].masks;
 			numMasks = masks.length;
@@ -739,25 +737,5 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 		}
 
 		return false;
-	}
-
-	protected _setView(value:View):void
-	{
-		this._view = value;
-		this._stage = value.stage;
-
-		this._stage.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
-		this._stage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
-		this._view.addEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
-
-		this._pickGroup = PickGroup.getInstance(value);
-
-		if (this._stage.context)
-			this._context = <IContextGL> this._stage.context;
-	}
-
-	protected _setPartition(value:PartitionBase):void
-	{
-		this._partition = value;
 	}
 }
