@@ -14,7 +14,7 @@ import { TabPicker } from './pick/TabPicker';
  */
 export class PickGroup implements IAbstractionPool
 {
-	private static _instancePool:Object = new Object();
+	public static _instancePool:Object = new Object();
 	private _viewport:Viewport;
 	private _entityPool:Object = new Object();
 	private _raycastPickerPool:RaycastPickerPool;
@@ -37,6 +37,22 @@ export class PickGroup implements IAbstractionPool
 	public static getInstance(viewport:Viewport):PickGroup
 	{
 		return this._instancePool[viewport.id] || (this._instancePool[viewport.id] = new PickGroup(viewport));
+
+	}
+	public static clearAllInstances()
+	{
+		for(var key in this._instancePool){
+			var inst=this._instancePool[key];
+			if(inst){
+				for(var key2 in inst._entityPool){
+					if(inst._entityPool[key2] && inst._entityPool[key2].entity){
+						inst._entityPool[key2].entity.dispose();
+					}
+				}
+
+			}
+			delete this._instancePool[key];
+		}
 
 	}
 
