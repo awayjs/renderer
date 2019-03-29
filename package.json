@@ -37,16 +37,20 @@
     "url": "https://github.com/awayjs/renderer/issues"
   },
   "homepage": "https://github.com/awayjs/renderer#readme",
-  "dependencies": {
+  "peerDependencies": {
     "@awayjs/core": "^0.7.0",
     "@awayjs/stage": "^0.9.0",
     "@awayjs/view": "^0.4.0",
     "tslib": "^1.9.0"
   },
   "devDependencies": {
+    "@awayjs/core": "^0.7.0",
+    "@awayjs/stage": "^0.9.0",
+    "@awayjs/view": "^0.4.0",
     "rimraf": "^2.5.2",
     "rollup": "^0.36.4",
     "rollup-plugin-includepaths": "^0.2.1",
+    "tslib": "^1.9.0",
     "typescript": "^2.6.1",
     "uglify-js": "^3.0.15"
   }
