@@ -221,9 +221,16 @@ export class RendererBase implements ITraverser, IRenderer
 	public dispose():void
 	{
 
+		/*for(var i:number=0; i<this._registeredMasks.length; i++){
+			this._registeredMasks[i].dispose();
+		}*/
+		this._registeredMasks.length=0;
 		this._stage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 		this._stage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 		this._viewport.removeEventListener(ViewportEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
+		this._onContextUpdateDelegate=null;
+		this._onSizeInvalidateDelegate=null;
+
 
 		this._viewport = null;
 		this._stage = null;
