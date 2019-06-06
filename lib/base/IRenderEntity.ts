@@ -25,8 +25,6 @@ export interface IRenderEntity extends IPartitionEntity
 
 	invalidateElements():void;
 
-	invalidateMaterial():void;
-
 	/**
 	 * The transformation matrix that transforms from model to world space, adapted with any special operations needed to render.
 	 * For example, assuring certain alignedness which is not inherent in the scene transform. By default, this would

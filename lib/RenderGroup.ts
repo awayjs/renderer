@@ -1,4 +1,4 @@
-import {IAssetClass, IAsset} from "@awayjs/core";
+import {IAssetClass, IAsset, IAbstractionPool} from "@awayjs/core";
 
 import {Stage} from "@awayjs/stage";
 
@@ -11,7 +11,7 @@ import { RendererBase } from './RendererBase';
 /**
  * @class away.pool.RenderGroup
  */
-export class RenderGroup
+export class RenderGroup implements IAbstractionPool
 {
 	private static _renderElementsClassPool:Object = new Object();
 
@@ -19,7 +19,7 @@ export class RenderGroup
 	private _renderMaterialClassPool:Object;
     private _renderer:RendererBase;
 	private _materialPools:Object = new Object();
-	private _entityGroups:Object = new Object();
+	private _entityPool:Object = new Object();
 
 	public get stage():Stage
 	{
@@ -48,9 +48,18 @@ export class RenderGroup
 		return this._materialPools[elements.assetType] || (this._materialPools[elements.assetType] = new (<_IRender_ElementsClass> RenderGroup._renderElementsClassPool[elements.assetType])(this._stage, this._renderMaterialClassPool, this));
 	}
 
-	public getRenderEntity(entity:IRenderEntity):RenderEntity
+	public getAbstraction(entity:IRenderEntity):RenderEntity
 	{
-		return this._entityGroups[entity.id] || (this._entityGroups[entity.id] = new RenderEntity(this._stage, entity, this));
+		return this._entityPool[entity.id] || (this._entityPool[entity.id] = new RenderEntity(this._stage, entity, this));
+	}
+
+	/**
+	 *
+	 * @param entity
+	 */
+	public clearAbstraction(entity:IRenderEntity):void
+	{
+		delete this._entityPool[entity.id];
 	}
 
     /**

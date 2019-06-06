@@ -4,9 +4,7 @@ import {IMaterial} from "../base/IMaterial";
 
 export class MaterialEvent extends EventBase
 {
-	public static INVALIDATE_TEXTURE:string = "invalidateTexture";
-
-	public static INVALIDATE_ANIMATION:string = "invalidateAnimation";
+	public static INVALIDATE_TEXTURES:string = "invalidateTextures";
 
 	public static INVALIDATE_PASSES:string = "invalidatePasses";
 

@@ -67,7 +67,7 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 	private _numCullPlanes:number = 0;
 	private _sourceEntity:IRenderEntity;
 	protected _renderGroup:RenderGroup;
-	private _renderablePool:RenderEntity;
+	private _renderEntity:RenderEntity;
 	private _zIndex:number;
 	private _renderSceneTransform:Matrix3D;
 	
@@ -583,7 +583,7 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 	public applyEntity(entity:IRenderEntity):void
 	{
 		this._sourceEntity = entity;
-		this._renderablePool = this._renderGroup.getRenderEntity(entity);
+		this._renderEntity = this._renderGroup.getAbstraction(entity);
 
 		// project onto camera's z-axis
 		this._zIndex = entity.zOffset + this._cameraTransform.position.subtract(entity.scenePosition).dotProduct(this._cameraForward);
@@ -597,7 +597,7 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 
 	public applyTraversable(renderable:ITraversable):void
 	{
-		var renderRenderable:_Render_RenderableBase = this._renderablePool.getAbstraction(renderable);
+		var renderRenderable:_Render_RenderableBase = this._renderEntity.getAbstraction(renderable);
 
 
 		//set local vars for faster referencing

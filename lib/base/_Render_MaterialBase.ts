@@ -16,6 +16,8 @@ import {IAnimationSet} from "./IAnimationSet";
 import {_Render_ElementsBase} from "./_Render_ElementsBase";
 import {ShaderBase} from "./ShaderBase";
 import {Style} from "./Style";
+import { RenderEntity } from './RenderEntity';
+import { _Render_RenderableBase } from './_Render_RenderableBase';
 
 /**
  *
@@ -23,16 +25,22 @@ import {Style} from "./Style";
  */
 export class _Render_MaterialBase extends AbstractionBase
 {
-    private _onInvalidateAnimationDelegate:(event:MaterialEvent) => void;
+    private _onInvalidateTexturesDelegate:(event:MaterialEvent) => void;
     private _onInvalidatePassesDelegate:(event:MaterialEvent) => void;
     private _onPassInvalidateDelegate:(event:PassEvent) => void;
+
+    
+	/**
+	 * A list of material owners, renderables or custom Entities.
+	 */
+	private _owners:Array<_Render_RenderableBase> = new Array<_Render_RenderableBase>();
 
 	public usages:number = 0;
 
     protected _renderOrderId:number;
     protected _passes:Array<IPass> = new Array<IPass>();
     protected _material:IMaterial;
-    protected _animationSet:IAnimationSet;
+    private _animationSet:IAnimationSet;
     protected _renderElements:_Render_ElementsBase;
     protected _stage:Stage;
     protected _renderGroup:RenderGroup;
@@ -58,7 +66,7 @@ export class _Render_MaterialBase extends AbstractionBase
 
 	public get animationSet():IAnimationSet
     {
-        return this._material.animationSet;
+        return this._animationSet;
     }
 
 	public get material():IMaterial
@@ -116,15 +124,69 @@ export class _Render_MaterialBase extends AbstractionBase
 		this._stage = renderElements.stage;
 		this._renderGroup = renderElements.renderGroup;
 
-        this._onInvalidateAnimationDelegate = (event:MaterialEvent) => this.onInvalidateAnimation(event);
+        this._onInvalidateTexturesDelegate = (event:MaterialEvent) => this.onInvalidateTextures(event);
         this._onInvalidatePassesDelegate = (event:MaterialEvent) => this.onInvalidatePasses(event);
 
-        this._material.addEventListener(MaterialEvent.INVALIDATE_ANIMATION, this._onInvalidateAnimationDelegate);
+        this._material.addEventListener(MaterialEvent.INVALIDATE_TEXTURES, this._onInvalidateTexturesDelegate);
         this._material.addEventListener(MaterialEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
 
         this._onPassInvalidateDelegate = (event:PassEvent) => this.onPassInvalidate(event);
 
     }
+
+    
+	//
+	// MATERIAL MANAGEMENT
+	//
+	/**
+	 * Mark an IEntity as owner of this material.
+	 * Assures we're not using the same material across renderables with different animations, since the
+	 * Programs depend on animation. This method needs to be called when a material is assigned.
+	 *
+	 * @param owner The IEntity that had this material assigned
+	 *
+	 * @internal
+	 */
+	public iAddOwner(owner:_Render_RenderableBase):void
+	{
+		this._owners.push(owner);
+
+		var animationSet:IAnimationSet;
+		var animator:IAnimator = <IAnimator> owner.sourceEntity.animator;
+
+		if (animator)
+			animationSet = <IAnimationSet> animator.animationSet;
+
+		if (owner.sourceEntity.animator) {
+			if (this._animationSet && animationSet != this._animationSet) {
+				throw new Error("A Material instance cannot be shared across material owners with different animation sets");
+			} else {
+				if (this._animationSet != animationSet) {
+
+					this._animationSet = animationSet;
+
+					this._invalidAnimation = true;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Removes an IEntity as owner.
+	 * @param owner
+	 *
+	 * @internal
+	 */
+	public iRemoveOwner(owner:_Render_RenderableBase):void
+	{
+		this._owners.splice(this._owners.indexOf(owner), 1);
+
+		if (this._owners.length == 0) {
+			this._animationSet = null;
+
+			this._invalidAnimation = true;
+		}
+	}
 
     public getImageIndex(texture:ITexture, index:number = 0):number
     {
@@ -149,7 +211,7 @@ export class _Render_MaterialBase extends AbstractionBase
 
         this._passes = null;
 
-        this._material.removeEventListener(MaterialEvent.INVALIDATE_ANIMATION, this._onInvalidateAnimationDelegate);
+        this._material.removeEventListener(MaterialEvent.INVALIDATE_TEXTURES, this._onInvalidateTexturesDelegate);
         this._material.removeEventListener(MaterialEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
 
         this._material = null;
@@ -181,9 +243,12 @@ export class _Render_MaterialBase extends AbstractionBase
     /**
      *
      */
-    public onInvalidateAnimation(event:MaterialEvent):void
+    public onInvalidateTextures(event:MaterialEvent):void
     {
-        this._invalidAnimation = true;
+        var renderables:Array<_Render_RenderableBase> = this._owners;
+        var numOwners:number = renderables.length;
+        for (var j:number = 0; j < numOwners; j++)
+            renderables[j]._onInvalidateStyle();
     }
 
 	/**
@@ -265,14 +330,13 @@ export class _Render_MaterialBase extends AbstractionBase
             mult *= 1000;
         }
 
-        if (this._usesAnimation != usesAnimation || this._animationSet != this._material.animationSet) {
+        if (this._usesAnimation != usesAnimation) {
             this._usesAnimation = usesAnimation;
-            this._animationSet = this._material.animationSet
 
-            var renderables:Array<IRenderEntity> = this._material.iOwners;
+            var renderables:Array<_Render_RenderableBase> = this._owners;
             var numOwners:number = renderables.length;
             for (var j:number = 0; j < numOwners; j++)
-                renderables[j].invalidateElements();
+                renderables[j]._onInvalidateElements();
         }
 
         this._renderOrderId = renderOrderId;
@@ -314,10 +378,10 @@ export class _Render_MaterialBase extends AbstractionBase
      */
     private _getEnabledGPUAnimation():boolean
     {
-        if (this._material.animationSet) {
-            this._material.animationSet.resetGPUCompatibility();
+        if (this._animationSet) {
+            this._animationSet.resetGPUCompatibility();
 
-            var entities:Array<IRenderEntity> = this._material.iOwners;
+            var entities:Array<_Render_RenderableBase> = this._owners;
             var numOwners:number = entities.length;
 
             var len:number = this._passes.length;
@@ -326,12 +390,12 @@ export class _Render_MaterialBase extends AbstractionBase
                 shader = this._passes[i].shader;
                 shader.usesAnimation = false;
                 for (var j:number = 0; j < numOwners; j++)
-                    if (entities[j].animator)
-                        (<IAnimator> entities[j].animator).testGPUCompatibility(shader);
+                    if (entities[j].sourceEntity.animator)
+                        entities[j].sourceEntity.animator.testGPUCompatibility(shader);
             }
 
 
-            return !this._material.animationSet.usesCPU;
+            return !this._animationSet.usesCPU;
         }
 
         return false;

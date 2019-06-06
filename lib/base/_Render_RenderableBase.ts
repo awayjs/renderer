@@ -163,7 +163,7 @@ export class _Render_RenderableBase extends AbstractionBase
 	{
 		super(renderable, renderEntity);
 
-        this._onInvalidateElementsDelegate = (event:RenderableEvent) => this.onInvalidateElements(event);
+        this._onInvalidateElementsDelegate = (event:RenderableEvent) => this._onInvalidateElements(event);
         this._onInvalidateMaterialDelegate = (event:RenderableEvent) => this._onInvalidateMaterial(event);
         this._onInvalidateStyleDelegate = (event:RenderableEvent) => this._onInvalidateStyle(event);
 
@@ -174,7 +174,7 @@ export class _Render_RenderableBase extends AbstractionBase
 
         this._asset.addEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
         this._asset.addEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
-        this._asset.addEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateStyleDelegate);
+        this._asset.addEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateStyleDelegate);
 	}
 
     /**
@@ -221,18 +221,18 @@ export class _Render_RenderableBase extends AbstractionBase
         this._stageElements = null;
 	}
 
-    public onInvalidateElements(event:RenderableEvent):void
+    public _onInvalidateElements(event:RenderableEvent = null):void
     {
         this._elementsDirty = true;
     }
 
-	private _onInvalidateMaterial(event:RenderableEvent):void
+	public _onInvalidateMaterial(event:RenderableEvent = null):void
 	{
         this._materialDirty = true;
         this._styleDirty = true;
     }
     
-    private _onInvalidateStyle(event:RenderableEvent):void
+    public _onInvalidateStyle(event:RenderableEvent = null):void
 	{
 		this._styleDirty = true;
 	}
@@ -271,6 +271,7 @@ export class _Render_RenderableBase extends AbstractionBase
 		if (this._renderMaterial != renderMaterial) {
 
 			if (this._renderMaterial) {
+                this._renderMaterial.iRemoveOwner(this);
 				this._renderMaterial.usages--;
 
 				//dispose current renderMaterial object
@@ -280,6 +281,7 @@ export class _Render_RenderableBase extends AbstractionBase
 
 			this._renderMaterial = renderMaterial;
 
+            this._renderMaterial.iAddOwner(this);
 			this._renderMaterial.usages++;
         }
         

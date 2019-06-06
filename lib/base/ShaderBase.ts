@@ -836,7 +836,7 @@ export class ShaderBase implements IAbstractionPool
         this._pass._initConstantData();
 
         //init constant data in animation
-        if (this.usesAnimation)
+        if (this._usesAnimation)
             this._renderMaterial.animationSet.doneAGALCode(this);
     }
 
@@ -1099,7 +1099,7 @@ export class ShaderBase implements IAbstractionPool
         this._animationFragmentCode = "";
 
         //check to see if GPU animation is used
-        if (this.usesAnimation) {
+        if (this._usesAnimation) {
 
             var animationSet:IAnimationSet = <IAnimationSet> this._renderMaterial.animationSet;
 

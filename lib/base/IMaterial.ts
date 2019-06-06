@@ -13,8 +13,6 @@ import {Style} from "./Style";
  */
 export interface IMaterial extends IAsset
 {
-	animationSet:IAnimationSet;
-
 	style:Style;
 
 	bothSides:boolean;
@@ -26,12 +24,6 @@ export interface IMaterial extends IAsset
 	animateUVs:boolean;
 
 	blendMode:string;
-
-	iOwners:Array<IRenderEntity>;
-
-	iAddOwner(owner:IRenderEntity);
-
-	iRemoveOwner(owner:IRenderEntity);
 
 	getNumTextures():number;
 

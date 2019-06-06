@@ -1,4 +1,4 @@
-import {IAssetClass, IAbstractionPool} from "@awayjs/core";
+import {IAssetClass, IAbstractionPool, AssetEvent, AbstractionBase} from "@awayjs/core";
 
 import {Stage} from "@awayjs/stage";
 
@@ -8,14 +8,19 @@ import {_Render_RenderableBase} from "./_Render_RenderableBase";
 
 import {RenderGroup} from "../RenderGroup";
 import { ITraversable } from '@awayjs/view';
+import { RenderableEvent } from '../events/RenderableEvent';
 
 /**
  * @class away.pool.RenderEntity
  */
-export class RenderEntity implements IAbstractionPool
+export class RenderEntity extends AbstractionBase implements IAbstractionPool
 {
 	private static _renderRenderableClassPool:Object = new Object();
 
+	private _onInvalidateElementsDelegate:(event:RenderableEvent) => void;
+    private _onInvalidateMaterialDelegate:(event:RenderableEvent) => void;
+	private _onInvalidateStyleDelegate:(event:RenderableEvent) => void;
+	
 	private _abstractionPool:Object = new Object();
     private _stage:Stage;
 	private _entity:IRenderEntity;
@@ -37,7 +42,7 @@ export class RenderEntity implements IAbstractionPool
      */
     public get entity():IRenderEntity
     {
-        return this._entity;
+        return this._asset as IRenderEntity;
     }
 
     /**
@@ -56,10 +61,46 @@ export class RenderEntity implements IAbstractionPool
 	 */
 	constructor(stage:Stage, entity:IRenderEntity, renderGroup:RenderGroup)
 	{
+		super(entity, renderGroup);
+
         this._stage = stage;
-		this._entity = entity;
-        this._renderGroup = renderGroup;
+		this._renderGroup = renderGroup;
+		
+		this._onInvalidateElementsDelegate = (event:RenderableEvent) => this._onInvalidateElements(event);
+        this._onInvalidateMaterialDelegate = (event:RenderableEvent) => this._onInvalidateMaterial(event);
+		this._onInvalidateStyleDelegate = (event:RenderableEvent) => this._onInvalidateStyle(event);
+		
+		this._asset.addEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
+        this._asset.addEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
+        this._asset.addEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateStyleDelegate);
 	}
+	
+	public onClear(event:AssetEvent):void
+	{
+        this._asset.removeEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
+        this._asset.removeEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
+        this._asset.removeEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateStyleDelegate);
+
+		super.onClear(event);
+	}
+
+	private _onInvalidateElements(event:RenderableEvent):void
+    {
+        for (var key in this._abstractionPool)
+			(this._abstractionPool[key] as _Render_RenderableBase)._onInvalidateElements();
+    }
+
+	private _onInvalidateMaterial(event:RenderableEvent):void
+	{
+        for (var key in this._abstractionPool)
+			(this._abstractionPool[key] as _Render_RenderableBase)._onInvalidateMaterial();
+	}
+	
+	private _onInvalidateStyle(event:RenderableEvent):void
+	{
+        for (var key in this._abstractionPool)
+			(this._abstractionPool[key] as _Render_RenderableBase)._onInvalidateStyle();
+    }
 
 	/**
 	 * //TODO
