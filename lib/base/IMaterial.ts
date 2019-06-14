@@ -28,4 +28,6 @@ export interface IMaterial extends IAsset
 	getNumTextures():number;
 
 	getTextureAt(i:number):ITexture;
+
+	dispose();
 }
