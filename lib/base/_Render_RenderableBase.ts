@@ -212,10 +212,7 @@ export class _Render_RenderableBase extends AbstractionBase
         this.next = null;
         this.maskOwners = null;
 
-		this._renderMaterial.usages--;
-
-		if (!this._renderMaterial.usages)
-			this._renderMaterial.onClear(new AssetEvent(AssetEvent.CLEAR, this._renderMaterial.material));
+        this._renderMaterial.removeOwner(this);
 
 		this._renderMaterial = null;
         this._stageElements = null;
@@ -270,19 +267,13 @@ export class _Render_RenderableBase extends AbstractionBase
 
 		if (this._renderMaterial != renderMaterial) {
 
-			if (this._renderMaterial) {
-                this._renderMaterial.iRemoveOwner(this);
-				this._renderMaterial.usages--;
+			if (this._renderMaterial)
+                this._renderMaterial.removeOwner(this);
 
-				//dispose current renderMaterial object
-				if (!this._renderMaterial.usages)
-					this._renderMaterial.onClear(new AssetEvent(AssetEvent.CLEAR, this._renderMaterial.material));
-			}
 
 			this._renderMaterial = renderMaterial;
 
-            this._renderMaterial.iAddOwner(this);
-			this._renderMaterial.usages++;
+            this._renderMaterial.addOwner(this);
         }
         
         this._materialDirty = false;

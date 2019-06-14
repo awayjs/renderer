@@ -35,8 +35,6 @@ export class _Render_MaterialBase extends AbstractionBase
 	 */
 	private _owners:Array<_Render_RenderableBase> = new Array<_Render_RenderableBase>();
 
-	public usages:number = 0;
-
     protected _renderOrderId:number;
     protected _passes:Array<IPass> = new Array<IPass>();
     protected _material:IMaterial;
@@ -147,7 +145,7 @@ export class _Render_MaterialBase extends AbstractionBase
 	 *
 	 * @internal
 	 */
-	public iAddOwner(owner:_Render_RenderableBase):void
+	public addOwner(owner:_Render_RenderableBase):void
 	{
 		this._owners.push(owner);
 
@@ -177,15 +175,12 @@ export class _Render_MaterialBase extends AbstractionBase
 	 *
 	 * @internal
 	 */
-	public iRemoveOwner(owner:_Render_RenderableBase):void
+	public removeOwner(owner:_Render_RenderableBase):void
 	{
 		this._owners.splice(this._owners.indexOf(owner), 1);
 
-		if (this._owners.length == 0) {
-			this._animationSet = null;
-
-			this._invalidAnimation = true;
-		}
+		if (!this._owners.length)
+			this.onClear(null);
 	}
 
     public getImageIndex(texture:ITexture, index:number = 0):number
@@ -214,9 +209,11 @@ export class _Render_MaterialBase extends AbstractionBase
         this._material.removeEventListener(MaterialEvent.INVALIDATE_TEXTURES, this._onInvalidateTexturesDelegate);
         this._material.removeEventListener(MaterialEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
 
+        this._animationSet = null;
         this._material = null;
         this._renderElements = null;
         this._stage = null;
+        this._owners = null;
     }
 
     /**
