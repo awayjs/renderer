@@ -223,10 +223,12 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 	public dispose():void
 	{
 
+		this._registeredMasks.length=0;
 		this._stage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 		this._stage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 		this._view.removeEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
-
+		this._onContextUpdateDelegate=null;
+		this._onSizeInvalidateDelegate=null;
 		this._view = null;
 		this._stage = null;
 		this._context = null;
