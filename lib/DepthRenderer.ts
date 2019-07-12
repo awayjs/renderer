@@ -1,10 +1,7 @@
-import {ProjectionBase} from '@awayjs/core';
+import {IAbstractionPool} from '@awayjs/core';
 
-import {Stage} from "@awayjs/stage";
+import {INode, PartitionBase} from "@awayjs/view";
 
-import {INode, PartitionBase, View} from "@awayjs/view";
-
-import {IMaterialClass} from "./base/IMaterialClass";
 import {_IRender_MaterialClass} from "./base/_IRender_MaterialClass";
 
 import {RenderGroup} from "./RenderGroup";
@@ -17,25 +14,15 @@ import {RendererBase} from "./RendererBase";
  */
 export class DepthRenderer extends RendererBase
 {
-	public static _materialClassPool:Object = Object();
 	/**
 	 * Creates a new DepthRenderer object.
 	 * @param renderBlended Indicates whether semi-transparent objects should be rendered.
 	 * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
 	 */
-	constructor(partition:PartitionBase, view:View = null)
+	constructor(renderGroup:RenderGroup, partition:PartitionBase, pool:IAbstractionPool)
 	{
-		super(partition, view);
+		super(renderGroup, partition, pool);
 	}
-
-    /**
-     *
-     * @param imageObjectClass
-     */
-    public static registerMaterial(renderMaterialClass:_IRender_MaterialClass, materialClass:IMaterialClass):void
-    {
-        DepthRenderer._materialClassPool[materialClass.assetType] = renderMaterialClass;
-    }
 
 	/**
 	 *
@@ -51,15 +38,5 @@ export class DepthRenderer extends RendererBase
 		}
 
 		return super.enterNode(node);
-	}
-
-	protected _setView(value:View):void
-	{
-		super._setView(value);
-
-		if (!this._renderGroup || this._renderGroup.stage != this._stage)
-			this._renderGroup = new RenderGroup(this._stage, DepthRenderer._materialClassPool, this);
-
-		this._view.backgroundColor = 0xFFFFFF;
 	}
 }

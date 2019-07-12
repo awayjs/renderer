@@ -1,13 +1,12 @@
-import {Matrix3D, Plane3D, Vector3D, ProjectionBase} from "@awayjs/core";
+import {Matrix3D, Plane3D, Vector3D, ProjectionBase, IAbstractionPool, AbstractionBase} from "@awayjs/core";
 
-import {BitmapImage2D, ContextGLProfile, ContextMode, ContextGLBlendFactor, ContextGLCompareMode, ContextGLStencilAction, ContextGLTriangleFace, IContextGL, Stage, StageEvent, ContextGLClearMask} from "@awayjs/stage";
+import {BitmapImage2D, ContextGLBlendFactor, ContextGLCompareMode, ContextGLStencilAction, ContextGLTriangleFace, IContextGL, Stage, StageEvent, ContextGLClearMask} from "@awayjs/stage";
 
-import {View, ViewEvent, IPartitionTraverser, IEntityTraverser, INode, PartitionBase, PickGroup, IPartitionEntity, ITraversable} from "@awayjs/view";
+import {View, ViewEvent, IPartitionTraverser, IEntityTraverser, INode, PartitionBase, IPartitionEntity, ITraversable} from "@awayjs/view";
 
 import {_Render_MaterialBase} from "./base/_Render_MaterialBase";
 import {_Render_RenderableBase} from "./base/_Render_RenderableBase";
 import {RenderEntity} from "./base/RenderEntity";
-import {IMapper} from "./base/IMapper";
 import {RenderGroup} from "./RenderGroup";
 
 import {IRenderEntity} from "./base/IRenderEntity";
@@ -23,12 +22,9 @@ import {RenderableMergeSort} from "./sort/RenderableMergeSort";
  *
  * @class away.render.RendererBase
  */
-export class RendererBase implements IPartitionTraverser, IEntityTraverser
+export class RendererBase extends AbstractionBase implements IPartitionTraverser, IEntityTraverser
 {
 	public static _collectionMark = 0;
-
-	public _pickGroup:PickGroup;
-    private _mappers:Array<IMapper> = new Array<IMapper>();
 	private _maskConfig:number;
 	private _activeMasksDirty:boolean;
 	private _activeMaskOwners:Array<IPartitionEntity> = new Array<IPartitionEntity>();
@@ -76,17 +72,9 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 		return this._partition;
 	}
 
-	public set partition(value:PartitionBase)
+	public get renderGroup():RenderGroup
 	{
-		if (this._partition == value)
-			return;
-
-		this._setPartition(value);
-	}
-
-	public get pickGroup():PickGroup
-	{
-		return this._pickGroup;
+		return this._renderGroup;
 	}
 
 	/**
@@ -150,8 +138,10 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 	/**
 	 * Creates a new RendererBase object.
 	 */
-	constructor(partition:PartitionBase, view:View = null)
+	constructor(renderGroup:RenderGroup, partition:PartitionBase, pool:IAbstractionPool)
 	{
+		super(partition, pool);
+
 		this._partition = partition;
 
 		this._onSizeInvalidateDelegate = (event:ViewEvent) => this.onSizeInvalidate(event);
@@ -160,7 +150,16 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 		//default sorting algorithm
 		this.renderableSorter = new RenderableMergeSort();
 
-		this._setView(view || new View())
+		this._renderGroup = renderGroup;
+		this._renderGroup.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
+		this._renderGroup.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
+		this._renderGroup.addEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
+
+		this._view = this._renderGroup.view;
+		this._stage = this._renderGroup.stage;
+
+		if (this._stage.context)
+			this._context = <IContextGL> this._stage.context;
 	}
 
 	public activatePass(pass:IPass):void
@@ -204,19 +203,7 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 	{
 		return this._view;
 	}
-
-	public set view(value:View)
-	{
-		if (this._view == value)
-			return;
-		
-		this._stage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
-		this._stage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
-		this._view.removeEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 	
-		this._setView(value);
-	}
-
 	/**
 	 * Disposes the resources used by the RendererBase.
 	 */
@@ -224,9 +211,9 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 	{
 
 		this._registeredMasks.length=0;
-		this._stage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
-		this._stage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
-		this._view.removeEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
+		this._renderGroup.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
+		this._renderGroup.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
+		this._renderGroup.removeEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 		this._onContextUpdateDelegate=null;
 		this._onSizeInvalidateDelegate=null;
 		this._view = null;
@@ -240,23 +227,6 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 		 */
 	}
 
-
-    public _addMapper(mapper:IMapper)
-    {
-    	if (this._mappers.indexOf(mapper) != -1)
-    		return;
-
-        this._mappers.push(mapper)
-    }
-
-    public _removeMapper(mapper:IMapper)
-    {
-    	var index:number = this._mappers.indexOf(mapper);
-
-    	if (index != -1)
-        	this._mappers.splice(index, 1);
-    }
-
 	/**
 	 * Renders the potentially visible geometry to the back buffer or texture.
 	 * @param target An option target texture to render to.
@@ -269,10 +239,7 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 		// if (!this._stage || !this._context)
 		// 	return;
 
-		//update mappers
-        var len:number = this._mappers.length;
-        for (var i:number = 0; i < len; i++)
-            this._mappers[i].update(this._view.projection, this);
+		this._renderGroup.update(this._partition);
 
 		//reset head values
 		this._pBlendedRenderableHead = null;
@@ -741,25 +708,5 @@ export class RendererBase implements IPartitionTraverser, IEntityTraverser
 		}
 
 		return false;
-	}
-
-	protected _setView(value:View):void
-	{
-		this._view = value;
-		this._stage = value.stage;
-
-		this._stage.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
-		this._stage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
-		this._view.addEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
-
-		this._pickGroup = PickGroup.getInstance(value);
-
-		if (this._stage.context)
-			this._context = <IContextGL> this._stage.context;
-	}
-
-	protected _setPartition(value:PartitionBase):void
-	{
-		this._partition = value;
 	}
 }

@@ -55,8 +55,8 @@ export {ElementsUtils}					from "./lib/utils/ElementsUtils";
 export {MaterialUtils}					from "./lib/utils/MaterialUtils";
 
 export {RendererBase}					from "./lib/RendererBase";
-export {RenderGroup}					from "./lib/RenderGroup";
+export {RenderGroup, RendererType} from "./lib/RenderGroup";
 
-export {IRenderEntitySorter}					from "./lib/sort/IRenderEntitySorter";
-export {RenderableMergeSort}				from "./lib/sort/RenderableMergeSort";
-export {RenderableNullSort}				from "./lib/sort/RenderableNullSort";
+export {IRenderEntitySorter} from "./lib/sort/IRenderEntitySorter";
+export {RenderableMergeSort} from "./lib/sort/RenderableMergeSort";
+export {RenderableNullSort} from "./lib/sort/RenderableNullSort";
