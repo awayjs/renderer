@@ -201,6 +201,7 @@ export class RenderGroup extends EventDispatcher implements IAbstractionPool
 	private _onContextUpdateDelegate:(event:StageEvent) => void;
 	private _onSizeInvalidateDelegate:(event:ViewEvent) => void;
 
+	private _invalid:boolean;
 	private _mappers:Array<IMapper> = new Array<IMapper>();
 	private _view:View;
 	private _depthRenderGroup:RenderGroup;
@@ -289,6 +290,11 @@ export class RenderGroup extends EventDispatcher implements IAbstractionPool
         var len:number = this._mappers.length;
         for (var i:number = 0; i < len; i++)
             this._mappers[i].update(partition, this);
+	}
+
+	public invalidate():void
+	{
+		this._invalid = true;
 	}
 
 	public _addMapper(mapper:IMapper)

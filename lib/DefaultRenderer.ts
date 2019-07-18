@@ -119,7 +119,7 @@ export class DefaultRenderer extends RendererBase
 		return enter;
 	}
 
-	public render(enableDepthAndStencil:boolean = true, surfaceSelector:number = 0):void
+	public render(enableDepthAndStencil:boolean = true, surfaceSelector:number = 0, maskConfig:number = 0):void
 	{
 		if (!this._stage.recoverFromDisposal()) {//if context has Disposed by the OS,don't render at this frame
 			return;
@@ -137,10 +137,11 @@ export class DefaultRenderer extends RendererBase
 			this._filter3DRenderer.render(this._stage, this._view.projection, this._depthRender);
 		} else {
 			//this._view.target = null;
-			super.render(enableDepthAndStencil, surfaceSelector);
+			super.render(enableDepthAndStencil, surfaceSelector, maskConfig);
 		}
 
-		this._view.present();
+		if (!maskConfig)
+			this._view.present();
 	}
 
 	public dispose():void

@@ -1,4 +1,4 @@
-import {Matrix3D, Plane3D, Vector3D, ProjectionBase, IAbstractionPool, AbstractionBase} from "@awayjs/core";
+import {Matrix3D, Plane3D, Vector3D, ProjectionBase, IAbstractionPool, AbstractionBase, AssetEvent} from "@awayjs/core";
 
 import {BitmapImage2D, ContextGLBlendFactor, ContextGLCompareMode, ContextGLStencilAction, ContextGLTriangleFace, IContextGL, Stage, StageEvent, ContextGLClearMask} from "@awayjs/stage";
 
@@ -26,9 +26,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 {
 	public static _collectionMark = 0;
 	private _maskConfig:number;
+	private _maskId:number;
 	private _activeMasksDirty:boolean;
-	private _activeMaskOwners:Array<IPartitionEntity> = new Array<IPartitionEntity>();
-	private _registeredMasks : Array<_Render_RenderableBase> = new Array<_Render_RenderableBase>();
+	private _activeMaskOwners:Array<IPartitionEntity>;
 	private _numUsedStreams:number = 0;
 	private _numUsedTextures:number = 0;
 
@@ -109,7 +109,12 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 	public set disableColor(value:boolean)
 	{
+		if (this._disableColor == value)
+			return;
+
 		this._disableColor = value;
+
+		this._invalid = true;
 	}
 
 	public get disableClear():boolean
@@ -119,7 +124,12 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 	public set disableClear(value:boolean)
 	{
+		if (this._disableClear == value)
+			return;
+
 		this._disableClear = value;
+		
+		this._invalid = true;
 	}
 
 	/**
@@ -143,6 +153,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		super(partition, pool);
 
 		this._partition = partition;
+		this._maskId = partition.root.maskId;
 
 		this._onSizeInvalidateDelegate = (event:ViewEvent) => this.onSizeInvalidate(event);
 		this._onContextUpdateDelegate = (event:StageEvent) => this.onContextUpdate(event);
@@ -209,8 +220,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 */
 	public dispose():void
 	{
-
-		this._registeredMasks.length=0;
 		this._renderGroup.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 		this._renderGroup.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 		this._renderGroup.removeEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
@@ -233,11 +242,20 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
-	public render(enableDepthAndStencil:boolean = true, surfaceSelector:number = 0):void
+	public render(enableDepthAndStencil:boolean = true, surfaceSelector:number = 0, maskConfig:number = 0):void
 	{
 		//TODO refactor setTarget so that rendertextures are created before this check
 		// if (!this._stage || !this._context)
 		// 	return;
+
+		this._maskConfig = maskConfig;
+
+		//check for mask rendering
+		if (this._maskConfig) {
+			this._disableClear = true;
+			this._disableColor = true;
+		}
+
 
 		this._renderGroup.update(this._partition);
 
@@ -245,6 +263,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._pBlendedRenderableHead = null;
 		this._pOpaqueRenderableHead = null;
 		this._pNumElements = 0;
+		this._activeMaskOwners = null;
 
 		this._cameraTransform = this._view.projection.transform.concatenatedMatrix3D;
 		this._cameraForward = this._view.projection.transform.forwardVector;
@@ -310,8 +329,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	protected _executeRender(enableDepthAndStencil:boolean = true, surfaceSelector:number = 0):void
 	{
 		//TODO: allow sharedContexts for image targets
-		this._view.backgroundClearMask = (!this._view.shareContext || this._view.target)? ContextGLClearMask.ALL : ContextGLClearMask.DEPTH;
-		this._view.clear(!this._depthPrepass && !this._disableClear, enableDepthAndStencil, surfaceSelector);
+		this._view.clear(!this._depthPrepass && !this._disableClear, enableDepthAndStencil, surfaceSelector, (!this._view.shareContext || this._view.target)? ContextGLClearMask.ALL : ContextGLClearMask.DEPTH);
 
 		/*
 		 if (_backgroundImageRenderer)
@@ -344,6 +362,14 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		}
 	}
 
+	
+	public onInvalidate(event:AssetEvent):void
+	{
+		super.onInvalidate(event);
+
+		this._renderGroup.invalidate();
+	}
+	
 	/*
 	 * Will draw the renderer's output on next render to the provided bitmap data.
 	 * */
@@ -399,15 +425,16 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		var passes:Array<IPass>;
 		var pass:IPass;
 
-		this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.ALWAYS, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP);
-
-		this._registeredMasks.length = 0;
+		if (!this._maskConfig)
+			this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.ALWAYS, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP);
 		//var gl = this._context["_gl"];
 		//if(gl) {
 			//gl.disable(gl.STENCIL_TEST);
 		//}
-		this._context.disableStencil();
-		this._maskConfig = 0;
+		if (this._maskConfig)
+			this._context.enableStencil();
+		else
+			this._context.disableStencil();
 
 		while (renderRenderable) {
 			renderMaterial = renderRenderable.renderMaterial;
@@ -429,11 +456,13 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 						// disable stencil
 						//if(gl) {
 							//gl.disable(gl.STENCIL_TEST);
-							this._context.disableStencil();
+							if (!this._maskConfig)
+								this._context.disableStencil();
+
 							//gl.stencilFunc(gl.ALWAYS, 0, 0xff);
 							//gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
-							this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.ALWAYS, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP);
-							this._context.setStencilReferenceValue(0);
+							// this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.ALWAYS, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP);
+							// this._context.setStencilReferenceValue(0);
 
 						//}
 					} else {
@@ -452,13 +481,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 					this.activatePass(pass);
 
 					do {
-						if (renderRenderable2.maskId !== -1) {
-							if (i == 0)
-								this._registerMask(renderRenderable2);
-						} else {
-							///console.log("maskOwners", renderRenderable2.maskOwners);
-							renderRenderable2._iRender(pass, this._view);
-						}
+						///console.log("maskOwners", renderRenderable2.maskOwners);
+						renderRenderable2._iRender(pass, this._view);
 
 						renderRenderable2 = renderRenderable2.next;
 
@@ -537,7 +561,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 */
 	public enterNode(node:INode):boolean
 	{
-		var enter:boolean = node._collectionMark != RendererBase._collectionMark && node.isRenderable() && node.isInFrustum(this._cullPlanes, this._numCullPlanes);
+		var enter:boolean = node._collectionMark != RendererBase._collectionMark && node.isRenderable() && node.isInFrustum(this._cullPlanes, this._numCullPlanes) && node.maskId == this._maskId;
 
 		node._collectionMark = RendererBase._collectionMark;
 
@@ -594,47 +618,28 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._pNumElements += renderRenderable.stageElements.elements.numElements; //need to re-trigger stageElements getter in case animator has changed
 	}
 
-	private _registerMask(obj:_Render_RenderableBase):void
-	{
-		//console.log("registerMask");
-		this._registeredMasks.push(obj);
-	}
-
 	public _renderMasks(maskOwners:IPartitionEntity[]):void
 	{
-		//var gl = this._context["_gl"];
-		//f (!gl)
-		//	return;
+		//calculate the bit index of maskConfig devided by two
+		var halfBitIndex:number = Math.log2(this._maskConfig) >> 1;
 
-		//var oldRenderTarget = this._stage.renderTarget;
+		//create a new base and config value for the mask to be rendered
+		var newMaskBase:number = this._maskConfig? Math.pow(2, (halfBitIndex + 1) << 1) : 1;//maskBase set to next odd significant bit
+		var newMaskConfig:number = newMaskBase;
 
-		//this._stage.setRenderTarget(this._image);
-		//this._stage.clear();
-		this._context.setColorMask(false, false, false, false);
-		// TODO: Could we create masks within masks by providing a previous configID, and supply "clear/keep" on stencil fail
-		//context.setStencilActions("frontAndBack", "always", "set", "set", "set");
-		//gl.enable(gl.STENCIL_TEST);
 		this._context.enableStencil();
-		this._maskConfig++;
-		//gl.stencilFunc(gl.ALWAYS, this._maskConfig, 0xff);
-		//gl.stencilOp(gl.REPLACE, gl.REPLACE, gl.REPLACE);
 		this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.ALWAYS, ContextGLStencilAction.SET, ContextGLStencilAction.SET, ContextGLStencilAction.SET);
-		this._context.setStencilReferenceValue(this._maskConfig);
 		var numLayers:number = maskOwners.length;
-		var numRenderables:number = this._registeredMasks.length;
-		var renderRenderable:_Render_RenderableBase;
 		var children:Array<IPartitionEntity>;
 		var numChildren:number;
 		var mask:IPartitionEntity;
 
 		for (var i:number = 0; i < numLayers; ++i) {
-			if (i != 0) {
-				//gl.stencilFunc(gl.EQUAL, this._maskConfig, 0xff);
-				//gl.stencilOp(gl.KEEP, gl.INCR, gl.INCR);
-				this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.EQUAL, ContextGLStencilAction.INCREMENT_SATURATE, ContextGLStencilAction.INCREMENT_SATURATE, ContextGLStencilAction.KEEP);
-				this._context.setStencilReferenceValue(this._maskConfig);
-				this._maskConfig++;
-			}
+			if (i != 0)
+				this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.EQUAL, ContextGLStencilAction.SET, ContextGLStencilAction.SET, ContextGLStencilAction.KEEP);
+
+			this._context.setStencilReferenceValue(0xFF, newMaskConfig, newMaskConfig = (newMaskConfig & newMaskBase) + newMaskBase); //flips between read odd write even to read even write odd
+			this._context.clear(0, 0, 0, 0, 0, 0, ContextGLClearMask.STENCIL);//clears write mask to zero
 
 			children = maskOwners[i].masks;
 			numChildren = children.length;
@@ -642,42 +647,15 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			for (var j:number = 0; j < numChildren; ++j) {
 				mask = children[j];
 				//todo: figure out why masks can be null here
-				if(mask){
-					for (var k:number = 0; k < numRenderables; ++k) {
-						renderRenderable = this._registeredMasks[k];
-						//console.log("testing for " + mask["hierarchicalMaskID"] + ", " + mask.name);
-						if (renderRenderable.maskId == mask.id) {
-							//console.log("Rendering hierarchicalMaskID " + mask["hierarchicalMaskID"]);
-							this._drawMask(renderRenderable);
-						}
-					}
-				}
+				if(mask)
+					this._renderGroup.getRenderer(mask.partition).render(true, 0, newMaskConfig)
 			}
 		}
+		this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.EQUAL, ContextGLStencilAction.SET, ContextGLStencilAction.SET, ContextGLStencilAction.KEEP);
+		this._context.setStencilReferenceValue(0xFF, newMaskConfig, this._maskConfig); //reads from mask output, writes to previous mask state
 
-		//gl.stencilFunc(gl.EQUAL, this._maskConfig, 0xff);
-		//gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
-		this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.EQUAL, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP);
-		this._context.setStencilReferenceValue(this._maskConfig);
-
-		this._context.setColorMask(true, true, true, true);
-		this._context.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
-		//this._stage.setRenderTarget(oldRenderTarget);
-	}
-
-	private _drawMask(renderRenderable:_Render_RenderableBase):void
-	{
-		//console.log("drawMask ", renderRenderable.maskId);
-		var renderMaterial = renderRenderable.renderMaterial;
-		var passes = renderMaterial.passes;
-		var len = passes.length;
-		var pass = passes[len-1];
-
-		this.activatePass(pass);
-		this._context.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //TODO: setup so as not to override activate
-		// only render last pass for now
-		renderRenderable._iRender(pass, this._view);
-		this.deactivatePass(pass);
+		if (this._disableColor) //already inside a mask
+			this._context.setColorMask(false, false, false, false);
 	}
 
 	private _checkMaskOwners(maskOwners:Array<IPartitionEntity>):boolean
