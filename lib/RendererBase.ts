@@ -336,20 +336,28 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		 _backgroundImageRenderer.render();
 		 */
 
+		 //initialise blend mode
 		this._context.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
 
+		//initialise depth test
 		this._context.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
 
+		//initialise color mask
 		if (this._disableColor)
 			this._context.setColorMask(false, false, false, false);
+		else
+			this._context.setColorMask(true, true, true, true);
+
+		//initialise stencil
+		if (this._maskConfig)
+			this._context.enableStencil();
+		else
+			this._context.disableStencil();
 
 		this.drawRenderables(this._pOpaqueRenderableHead);
 
 		if (this._renderBlended)
 			this.drawRenderables(this._pBlendedRenderableHead);
-
-		if (this._disableColor)
-			this._context.setColorMask(true, true, true, true);
 
 		//line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
 		//this._context.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //oopsie
@@ -425,17 +433,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		var passes:Array<IPass>;
 		var pass:IPass;
 
-		if (!this._maskConfig)
-			this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.ALWAYS, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP);
-		//var gl = this._context["_gl"];
-		//if(gl) {
-			//gl.disable(gl.STENCIL_TEST);
-		//}
-		if (this._maskConfig)
-			this._context.enableStencil();
-		else
-			this._context.disableStencil();
-
 		while (renderRenderable) {
 			renderMaterial = renderRenderable.renderMaterial;
 			passes = renderMaterial.passes;
@@ -450,21 +447,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			// 	} while (renderRenderable2 && renderRenderable2.renderMaterial == renderMaterial);
 			// } else {
 				if (this._activeMasksDirty || this._checkMaskOwners(renderRenderable.maskOwners)) {
-					this._activeMaskOwners = renderRenderable.maskOwners;
-					if (this._activeMaskOwners == null) {
-						//console.log("disable mask");
-						// disable stencil
-						//if(gl) {
-							//gl.disable(gl.STENCIL_TEST);
-							if (!this._maskConfig)
-								this._context.disableStencil();
-
-							//gl.stencilFunc(gl.ALWAYS, 0, 0xff);
-							//gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
-							// this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.ALWAYS, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP, ContextGLStencilAction.KEEP);
-							// this._context.setStencilReferenceValue(0);
-
-						//}
+					if (!(this._activeMaskOwners = renderRenderable.maskOwners)) {
+						//re-establish stencil settings (if not inside another mask)
+						if (!this._maskConfig)
+							this._context.disableStencil();
 					} else {
 						this._renderMasks(this._activeMaskOwners);
 					}
@@ -654,8 +640,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.EQUAL, ContextGLStencilAction.SET, ContextGLStencilAction.SET, ContextGLStencilAction.KEEP);
 		this._context.setStencilReferenceValue(0xFF, newMaskConfig, this._maskConfig); //reads from mask output, writes to previous mask state
 
-		if (this._disableColor) //already inside a mask
-			this._context.setColorMask(false, false, false, false);
+		if (!this._disableColor) //re-establish color mask settings (if not inside another mask)
+			this._context.setColorMask(true, true, true, true);
 	}
 
 	private _checkMaskOwners(maskOwners:Array<IPartitionEntity>):boolean
