@@ -242,7 +242,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
-	public render(enableDepthAndStencil:boolean = true, surfaceSelector:number = 0, maskConfig:number = 0):void
+	public render(enableDepthAndStencil:boolean = true, surfaceSelector:number = 0, mipmapSelector:number = 0, maskConfig:number = 0):void
 	{
 		//TODO refactor setTarget so that rendertextures are created before this check
 		// if (!this._stage || !this._context)
@@ -280,14 +280,14 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._pBlendedRenderableHead = <_Render_RenderableBase> this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
 		}
 
-		// this._pRttViewProjectionMatrix.copyFrom(projection.viewMatrix3D);
-		// this._pRttViewProjectionMatrix.appendScale(this.textureRatioX, this.textureRatioY, 1);
-
-		this._executeRender(enableDepthAndStencil, surfaceSelector);
-
 		// invalidate mipmaps (if target exists) to regenerate if required
 		if (this._view.target)
 			this._view.target.invalidateMipmaps();
+
+		// this._pRttViewProjectionMatrix.copyFrom(projection.viewMatrix3D);
+		// this._pRttViewProjectionMatrix.appendScale(this.textureRatioX, this.textureRatioY, 1);
+
+		this._executeRender(enableDepthAndStencil, surfaceSelector, mipmapSelector);
 
 		// clear buffers
 		for (var i:number = 0; i < 8; ++i) {
@@ -326,10 +326,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
-	protected _executeRender(enableDepthAndStencil:boolean = true, surfaceSelector:number = 0):void
+	protected _executeRender(enableDepthAndStencil:boolean = true, surfaceSelector:number = 0, mipmapSelector:number = 0):void
 	{
 		//TODO: allow sharedContexts for image targets
-		this._view.clear(!this._depthPrepass && !this._disableClear, enableDepthAndStencil, surfaceSelector, (!this._view.shareContext || this._view.target)? ContextGLClearMask.ALL : ContextGLClearMask.DEPTH);
+		this._view.clear(!this._depthPrepass && !this._disableClear, enableDepthAndStencil, surfaceSelector, mipmapSelector, (!this._view.shareContext || this._view.target)? ContextGLClearMask.ALL : ContextGLClearMask.DEPTH);
 
 		/*
 		 if (_backgroundImageRenderer)
@@ -634,7 +634,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				mask = children[j];
 				//todo: figure out why masks can be null here
 				if(mask)
-					this._renderGroup.getRenderer(mask.partition).render(true, 0, newMaskConfig)
+					this._renderGroup.getRenderer(mask.partition).render(true, 0, 0, newMaskConfig)
 			}
 		}
 		this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.EQUAL, ContextGLStencilAction.SET, ContextGLStencilAction.SET, ContextGLStencilAction.KEEP);

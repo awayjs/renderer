@@ -119,7 +119,7 @@ export class DefaultRenderer extends RendererBase
 		return enter;
 	}
 
-	public render(enableDepthAndStencil:boolean = true, surfaceSelector:number = 0, maskConfig:number = 0):void
+	public render(enableDepthAndStencil:boolean = true, surfaceSelector:number = 0, mipmapSelector:number = 0, maskConfig:number = 0):void
 	{
 		if (!this._stage.recoverFromDisposal()) {//if context has Disposed by the OS,don't render at this frame
 			return;
@@ -133,11 +133,11 @@ export class DefaultRenderer extends RendererBase
 
 		if (this._filter3DRenderer) { //TODO
 			this._view.target = this._filter3DRenderer.getMainInputTexture(this._stage);
-			super.render(enableDepthAndStencil, surfaceSelector);
+			super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector);
 			this._filter3DRenderer.render(this._stage, this._view.projection, this._depthRender);
 		} else {
 			//this._view.target = null;
-			super.render(enableDepthAndStencil, surfaceSelector, maskConfig);
+			super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
 		}
 
 		if (!maskConfig)
