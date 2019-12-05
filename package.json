@@ -47,11 +47,11 @@
     "@awayjs/core": "^0.8.0",
     "@awayjs/stage": "^0.10.0",
     "@awayjs/view": "^0.5.0",
-    "tslib": "^1.9.0",
     "rimraf": "^2.5.2",
     "rollup": "^0.36.4",
     "rollup-plugin-includepaths": "^0.2.1",
-    "typescript": "^2.6.1",
+    "tslib": "^1.9.0",
+    "typescript": "^3.7.3",
     "uglify-js": "^3.0.15"
   }
 }
