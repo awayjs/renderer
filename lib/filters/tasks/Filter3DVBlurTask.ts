@@ -1,6 +1,6 @@
 import {ProjectionBase} from "@awayjs/core";
 
-import {ContextGLProgramType, Stage, Image2D} from "@awayjs/stage";
+import {ContextGLProgramType, Stage, Image2D, ShaderRegisterElement} from "@awayjs/stage";
 
 import {Filter3DTaskBase} from "./Filter3DTaskBase";
 
@@ -11,7 +11,8 @@ export class Filter3DVBlurTask extends Filter3DTaskBase
 	private _data:Float32Array;
 	private _stepSize:number = 1;
 	private _realStepSize:number;
-	
+	private _blurIndex:number;
+
 	/**
 	 *
 	 * @param amount
@@ -58,22 +59,37 @@ export class Filter3DVBlurTask extends Filter3DTaskBase
 
 	public getFragmentCode():string
 	{
+		var temp1:ShaderRegisterElement = this._registerCache.getFreeFragmentVectorTemp();
+		this._registerCache.addFragmentTempUsages(temp1, 1);
+		var temp2:ShaderRegisterElement = this._registerCache.getFreeFragmentVectorTemp();
+		this._registerCache.addFragmentTempUsages(temp2, 1);
+		var temp3:ShaderRegisterElement = this._registerCache.getFreeFragmentVectorTemp();
+		this._registerCache.addFragmentTempUsages(temp3, 1);
+
+
+		var inputTexture:ShaderRegisterElement = this._registerCache.getFreeTextureReg();
+		this._inputTextureIndex = inputTexture.index;
+
+				
+		var blur:ShaderRegisterElement = this._registerCache.getFreeFragmentConstant();
+		this._blurIndex = blur.index*4;
+
 		var code:string;
 		var numSamples:number = 1;
 
-		code = "mov ft0, v0	\n" +
-			"sub ft0.y, v0.y, fc0.x\n";
+		code = "mov " + temp1 + ", " + this._uvVarying + "\n" +
+			"sub " + temp1 + ".y, " + this._uvVarying + ".y, " + blur + ".x\n";
 
-		code += "tex ft1, ft0, fs0 <2d,linear,clamp>\n";
+		code += "tex " + temp2 + ", " + temp1 + ", " + inputTexture + " <2d,linear,clamp>\n";
 
 		for (var x:number = this._realStepSize; x <= this._amount; x += this._realStepSize) {
-			code += "add ft0.y, ft0.y, fc0.y\n";
-			code += "tex ft2, ft0, fs0 <2d,linear,clamp>\n" +
-				"add ft1, ft1, ft2\n";
+			code += "add " + temp1 + ".y, " + temp1 + ".y, " + blur + ".y\n";
+			code += "tex " + temp3 + ", " + temp1 + ", " + inputTexture + " <2d,linear,clamp>\n" +
+				"add " + temp2 + ", " + temp2 + ", " + temp3 + "\n";
 			++numSamples;
 		}
 
-		code += "mul oc, ft1, fc0.z\n";
+		code += "mul oc, " + temp2 + ", " + blur + ".z\n";
 
 		this._data[2] = 1/numSamples;
 
