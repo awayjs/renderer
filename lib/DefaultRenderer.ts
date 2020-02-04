@@ -1,13 +1,11 @@
 import {IAbstractionPool} from "@awayjs/core";
 
-import {BitmapImage2D, IContextGL} from "@awayjs/stage";
+import {BitmapImage2D, IContextGL, RTTBufferManager, Filter3DBase} from "@awayjs/stage";
 
 import {INode, PartitionBase} from "@awayjs/view";
 
 import {_IRender_MaterialClass} from "./base/_IRender_MaterialClass";
 
-import {Filter3DBase} from "./filters/Filter3DBase";
-import {RTTBufferManager} from "./managers/RTTBufferManager";
 import {RenderGroup} from "./RenderGroup";
 
 import {DepthRenderer} from "./DepthRenderer";

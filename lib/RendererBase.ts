@@ -1,6 +1,6 @@
 import {Matrix3D, Plane3D, Vector3D, ProjectionBase, IAbstractionPool, AbstractionBase, AssetEvent} from "@awayjs/core";
 
-import {BitmapImage2D, ContextGLBlendFactor, ContextGLCompareMode, ContextGLStencilAction, ContextGLTriangleFace, IContextGL, Stage, StageEvent, ContextGLClearMask} from "@awayjs/stage";
+import {BitmapImage2D, ContextGLBlendFactor, ContextGLCompareMode, ContextGLStencilAction, ContextGLTriangleFace, IContextGL, Stage, StageEvent, ContextGLClearMask, RTTBufferManager} from "@awayjs/stage";
 
 import {View, ViewEvent, IPartitionTraverser, IEntityTraverser, INode, PartitionBase, IPartitionEntity, ITraversable} from "@awayjs/view";
 
@@ -11,7 +11,6 @@ import {RenderGroup} from "./RenderGroup";
 
 import {IRenderEntity} from "./base/IRenderEntity";
 import {IPass} from "./base/IPass";
-import {RTTBufferManager} from "./managers/RTTBufferManager";
 import {IRenderEntitySorter} from "./sort/IRenderEntitySorter";
 import {RenderableMergeSort} from "./sort/RenderableMergeSort";
 

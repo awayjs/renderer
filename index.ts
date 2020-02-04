@@ -30,7 +30,6 @@ export {DepthRenderer}				from "./lib/DepthRenderer";
 
 export {DistanceRenderer}				from "./lib/DistanceRenderer";
 
-export {RTTEvent}						from "./lib/events/RTTEvent";
 export {RenderableEvent} from "./lib/events/RenderableEvent";
 export {PassEvent} from "./lib/events/PassEvent";
 export {MaterialEvent} from "./lib/events/MaterialEvent";
@@ -38,18 +37,6 @@ export {StyleEvent} from "./lib/events/StyleEvent";
 export {ElementsEvent}					from "./lib/events/ElementsEvent";
 
 export {Filter3DRenderer}				from "./lib/Filter3DRenderer";
-
-export {Filter3DCompositeTask}			from "./lib/filters/tasks/Filter3DCompositeTask";
-export {Filter3DFXAATask}				from "./lib/filters/tasks/Filter3DFXAATask";
-export {Filter3DHBlurTask}				from "./lib/filters/tasks/Filter3DHBlurTask";
-export {Filter3DTaskBase}				from "./lib/filters/tasks/Filter3DTaskBase";
-export {Filter3DVBlurTask}				from "./lib/filters/tasks/Filter3DVBlurTask";
-export {BlurFilter3D}					from "./lib/filters/BlurFilter3D";
-export {CompositeFilter3D}				from "./lib/filters/CompositeFilter3D";
-export {Filter3DBase}					from "./lib/filters/Filter3DBase";
-export {FXAAFilter3D}					from "./lib/filters/FXAAFilter3D";
-
-export {RTTBufferManager}				from "./lib/managers/RTTBufferManager";
 
 export {ElementsUtils}					from "./lib/utils/ElementsUtils";
 export {MaterialUtils}					from "./lib/utils/MaterialUtils";

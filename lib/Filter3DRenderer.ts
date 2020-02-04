@@ -1,11 +1,6 @@
 import {Rectangle, ProjectionBase} from "@awayjs/core";
 
-import {Image2D, ImageSampler, _Stage_ImageBase, Stage, ContextGLDrawMode, ContextGLBlendFactor, ContextGLVertexBufferFormat, IContextGL, IIndexBuffer, IVertexBuffer} from "@awayjs/stage";
-
-import {RTTEvent} from "./events/RTTEvent";
-import {Filter3DBase} from "./filters/Filter3DBase";
-import {Filter3DTaskBase} from "./filters/tasks/Filter3DTaskBase";
-import {RTTBufferManager} from "./managers/RTTBufferManager";
+import {Image2D, ImageSampler, _Stage_ImageBase, Stage, ContextGLDrawMode, ContextGLBlendFactor, ContextGLVertexBufferFormat, IContextGL, IIndexBuffer, IVertexBuffer, RTTEvent, RTTBufferManager, Filter3DBase, Filter3DTaskBase} from "@awayjs/stage";
 
 /**
  * @class away.render.Filter3DRenderer
