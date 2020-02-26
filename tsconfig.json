@@ -8,6 +8,7 @@
     "noEmitHelpers": true,
     "importHelpers": true,
     "declaration": true,
+    "declarationMap": true,
     "outDir": "./dist"
   },
   "exclude": [
