@@ -546,7 +546,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 */
 	public enterNode(node:INode):boolean
 	{
-		var enter:boolean = node._collectionMark != RendererBase._collectionMark && node.isRenderable() && node.isInFrustum(this._cullPlanes, this._numCullPlanes) && node.maskId == this._maskId;
+		var enter:boolean = node._collectionMark != RendererBase._collectionMark && node.isRenderable() && node.isInFrustum(this._partition.root, this._cullPlanes, this._numCullPlanes, this._renderGroup.pickGroup) && node.maskId == this._maskId;
 
 		node._collectionMark = RendererBase._collectionMark;
 
