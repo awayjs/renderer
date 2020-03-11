@@ -45,5 +45,5 @@ export interface IAnimator extends IAsset
 
     testGPUCompatibility(shader:ShaderBase):void;
 
-    setRenderState(shader:ShaderBase, renderState:_Render_RenderableBase, stage:Stage, projection:ProjectionBase):void;
+    setRenderState(shader:ShaderBase, renderState:_Render_RenderableBase):void;
 }

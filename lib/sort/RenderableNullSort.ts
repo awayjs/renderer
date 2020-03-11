@@ -1,18 +1,17 @@
-import {_Render_RenderableBase} from "../base/_Render_RenderableBase";
-
 import {IRenderEntitySorter} from "./IRenderEntitySorter";
+import { IRenderable } from '../base/IRenderable';
 
 /**
  * @class away.sort.NullSort
  */
 export class RenderableNullSort implements IRenderEntitySorter
 {
-	public sortBlendedRenderables(head:_Render_RenderableBase):_Render_RenderableBase
+	public sortBlendedRenderables(head:IRenderable):IRenderable
 	{
 		return head;
 	}
 
-	public sortOpaqueRenderables(head:_Render_RenderableBase):_Render_RenderableBase
+	public sortOpaqueRenderables(head:IRenderable):IRenderable
 	{
 		return head;
 	}

@@ -17,12 +17,14 @@ import {IMaterial} from "./IMaterial";
 import {RenderEntity} from "./RenderEntity";
 import {ITexture} from "./ITexture";
 import {Style} from "./Style";
+import { IRenderable } from './IRenderable';
+import { ShaderBase } from './ShaderBase';
 
 
 /**
  * @class RenderableListItem
  */
-export class _Render_RenderableBase extends AbstractionBase
+export class _Render_RenderableBase extends AbstractionBase implements IRenderable
 {
     private _onInvalidateElementsDelegate:(event:RenderableEvent) => void;
     private _onInvalidateMaterialDelegate:(event:RenderableEvent) => void;
@@ -94,7 +96,7 @@ export class _Render_RenderableBase extends AbstractionBase
     /**
      *
      */
-    public next:_Render_RenderableBase;
+    public next:IRenderable;
 
     public id:number;
 
@@ -182,17 +184,19 @@ export class _Render_RenderableBase extends AbstractionBase
      *
      * @private
      */
-    public _iRender(pass:IPass, view:View):void
+    public render(enableDepthAndStencil:boolean = true, surfaceSelector:number = 0, mipmapSelector:number = 0, maskConfig:number = 0):void
     {
-        pass._setRenderState(this, view);
-
+        var pass:IPass = this._renderMaterial._activePass
+        pass._setRenderState(this);
+        
+        var shader:ShaderBase = pass.shader;
         var elements:_Stage_ElementsBase = this.stageElements;
-        if (pass.shader.activeElements != elements) {
-            pass.shader.activeElements = elements;
-            elements._setRenderState(this, pass.shader, view);
+        if (shader.activeElements != elements) {
+            shader.activeElements = elements;
+            elements._setRenderState(this, shader);
         }
 
-        this._stageElements.draw(this, pass.shader, view, this._count, this._offset)
+        this._stageElements.draw(this, shader, this._count, this._offset)
     }
 
 

@@ -1,17 +1,16 @@
-import {_Render_RenderableBase} from "../base/_Render_RenderableBase";
-
 import {IRenderEntitySorter} from "./IRenderEntitySorter";
+import { IRenderable } from '../base/IRenderable';
 
 /**
  * @class away.sort.RenderableMergeSort
  */
 export class RenderableMergeSort implements IRenderEntitySorter
 {
-	public sortBlendedRenderables(head:_Render_RenderableBase):_Render_RenderableBase
+	public sortBlendedRenderables(head:IRenderable):IRenderable
 	{
-		var headB:_Render_RenderableBase;
-		var fast:_Render_RenderableBase;
-		var slow:_Render_RenderableBase;
+		var headB:IRenderable;
+		var fast:IRenderable;
+		var slow:IRenderable;
 
 		if (!head || !head.next) {
 			return head;
@@ -37,9 +36,9 @@ export class RenderableMergeSort implements IRenderEntitySorter
 		headB = this.sortBlendedRenderables(headB);
 
 		// merge sublists while respecting order
-		var result:_Render_RenderableBase;
-		var curr:_Render_RenderableBase;
-		var l:_Render_RenderableBase;
+		var result:IRenderable;
+		var curr:IRenderable;
+		var l:IRenderable;
 
 		if (!head)
 			return headB;
@@ -69,10 +68,10 @@ export class RenderableMergeSort implements IRenderEntitySorter
 		return result;
 	}
 
-	public sortOpaqueRenderables(head:_Render_RenderableBase):_Render_RenderableBase
+	public sortOpaqueRenderables(head:IRenderable):IRenderable
 	{
-		var headB:_Render_RenderableBase;
-		var fast:_Render_RenderableBase, slow:_Render_RenderableBase;
+		var headB:IRenderable;
+		var fast:IRenderable, slow:IRenderable;
 
 		if (!head || !head.next) {
 			return head;
@@ -98,9 +97,9 @@ export class RenderableMergeSort implements IRenderEntitySorter
 		headB = this.sortOpaqueRenderables(headB);
 
 		// merge sublists while respecting order
-		var result:_Render_RenderableBase;
-		var curr:_Render_RenderableBase;
-		var l:_Render_RenderableBase;
+		var result:IRenderable;
+		var curr:IRenderable;
+		var l:IRenderable;
 		var cmp:number = 0;
 
 		if (!head)

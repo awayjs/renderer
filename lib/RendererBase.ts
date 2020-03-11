@@ -13,6 +13,8 @@ import {IRenderEntity} from "./base/IRenderEntity";
 import {IPass} from "./base/IPass";
 import {IRenderEntitySorter} from "./sort/IRenderEntitySorter";
 import {RenderableMergeSort} from "./sort/RenderableMergeSort";
+import { IRenderable } from './base/IRenderable';
+import { _Stage_ElementsBase } from './base/_Stage_ElementsBase';
 
 
 /**
@@ -21,15 +23,16 @@ import {RenderableMergeSort} from "./sort/RenderableMergeSort";
  *
  * @class away.render.RendererBase
  */
-export class RendererBase extends AbstractionBase implements IPartitionTraverser, IEntityTraverser
+export class RendererBase extends AbstractionBase implements IPartitionTraverser, IEntityTraverser, IRenderable
 {
 	public static _collectionMark = 0;
+	private _enableDepthAndStencil:boolean;
+	private _surfaceSelector:number;
+	private _mipmapSelector:number;
 	private _maskConfig:number;
 	private _maskId:number;
 	private _activeMasksDirty:boolean;
 	private _activeMaskOwners:Array<IPartitionEntity>;
-	private _numUsedStreams:number = 0;
-	private _numUsedTextures:number = 0;
 
 	protected _partition:PartitionBase;
 	protected _context:IContextGL;
@@ -52,8 +55,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 	public _pNumElements:number = 0;
 
-	public _pOpaqueRenderableHead:_Render_RenderableBase;
-	public _pBlendedRenderableHead:_Render_RenderableBase;
+	public _pOpaqueRenderableHead:IRenderable;
+	public _pBlendedRenderableHead:IRenderable;
 	public _disableColor:boolean = false;
 	public _disableClear:boolean = false;
 	public _renderBlended:boolean = true;
@@ -65,7 +68,32 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _renderEntity:RenderEntity;
 	private _zIndex:number;
 	private _renderSceneTransform:Matrix3D;
+
+    /**
+     *
+     */
+    public materialID:number;
+
+    /**
+     *
+     */
+    public renderOrderId:number;
+
+    /**
+     *
+     */
+    public zIndex:number;
+
+	public next:IRenderable;
+
+	public sourceEntity:IRenderEntity;
+
+	public renderMaterial:_Render_MaterialBase;
 	
+	public stageElements:_Stage_ElementsBase;
+
+	public maskOwners:Array<IPartitionEntity>;
+
 	public get partition():PartitionBase
 	{
 		return this._partition;
@@ -152,6 +180,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		super(partition, pool);
 
 		this._partition = partition;
+		this.sourceEntity = <IRenderEntity> partition.root;
 		this._maskId = partition.root.maskId;
 
 		this._onSizeInvalidateDelegate = (event:ViewEvent) => this.onSizeInvalidate(event);
@@ -170,30 +199,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		if (this._stage.context)
 			this._context = <IContextGL> this._stage.context;
-	}
-
-	public activatePass(pass:IPass):void
-	{
-		//clear unused vertex streams
-		var i:number
-		for (i = pass.shader.numUsedStreams; i < this._numUsedStreams; i++)
-			this._context.setVertexBufferAt(i, null);
-
-		//clear unused texture streams
-		for (i = pass.shader.numUsedTextures; i < this._numUsedTextures; i++)
-			this._context.setTextureAt(i, null);
-
-		//activate shader object through pass
-		pass._activate(this._view);
-	}
-
-	public deactivatePass(pass:IPass):void
-	{
-		//deactivate shader object through pass
-		pass._deactivate();
-
-		this._numUsedStreams = pass.shader.numUsedStreams;
-		this._numUsedTextures = pass.shader.numUsedTextures;
 	}
 
 	public get context():IContextGL
@@ -247,6 +252,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		// if (!this._stage || !this._context)
 		// 	return;
 
+		this._enableDepthAndStencil = enableDepthAndStencil;
+		this._surfaceSelector = surfaceSelector;
+		this._mipmapSelector = mipmapSelector;
 		this._maskConfig = maskConfig;
 
 		//check for mask rendering
@@ -275,8 +283,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		//sort the resulting renderables
 		if (this.renderableSorter) {
-			this._pOpaqueRenderableHead = <_Render_RenderableBase> this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
-			this._pBlendedRenderableHead = <_Render_RenderableBase> this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
+			this._pOpaqueRenderableHead = this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
+			this._pBlendedRenderableHead = this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
 		}
 
 		// invalidate mipmaps (if target exists) to regenerate if required
@@ -423,61 +431,43 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 *
 	 * @param renderables The renderables to draw.
 	 */
-	public drawRenderables(renderRenderable:_Render_RenderableBase):void
+	public drawRenderables(renderRenderable:IRenderable):void
 	{
 		var i:number;
 		var len:number;
-		var renderRenderable2:_Render_RenderableBase;
 		var renderMaterial:_Render_MaterialBase;
-		var passes:Array<IPass>;
-		var pass:IPass;
+		var numPasses:number;
 
 		while (renderRenderable) {
 			renderMaterial = renderRenderable.renderMaterial;
-			passes = renderMaterial.passes;
+			numPasses = renderMaterial.numPasses;
 
-			// otherwise this would result in depth rendered anyway because fragment shader kil is ignored
-			// if (this._disableColor && renderMaterial.material.alphaThreshold != 0) {
-			// 	renderRenderable2 = renderRenderable;
-			// 	// fast forward
-			// 	do {
-			// 		renderRenderable2 = renderRenderable2.next;
-            //
-			// 	} while (renderRenderable2 && renderRenderable2.renderMaterial == renderMaterial);
-			// } else {
-				if (this._activeMasksDirty || this._checkMaskOwners(renderRenderable.maskOwners)) {
-					if (!(this._activeMaskOwners = renderRenderable.maskOwners)) {
-						//re-establish stencil settings (if not inside another mask)
-						if (!this._maskConfig)
-							this._context.disableStencil();
-					} else {
-						this._renderMasks(this._activeMaskOwners);
-					}
-					this._activeMasksDirty = false;
+			if (this._activeMasksDirty || this._checkMaskOwners(renderRenderable.maskOwners)) {
+				if (!(this._activeMaskOwners = renderRenderable.maskOwners)) {
+					//re-establish stencil settings (if not inside another mask)
+					if (!this._maskConfig)
+						this._context.disableStencil();
+				} else {
+					this._renderMasks(this._activeMaskOwners);
 				}
+				this._activeMasksDirty = false;
+			}
 
 
-				//iterate through each shader object
-				len = passes.length;
-				for (i = 0; i < len; i++) {
-					renderRenderable2 = renderRenderable;
-					pass = passes[i];
+			//iterate through each shader object
+			for (i = 0; i < numPasses; i++) {
+				renderMaterial.activatePass(i);
 
-					this.activatePass(pass);
+				do {
+					///console.log("maskOwners", renderRenderable2.maskOwners);
+					renderRenderable.render(this._enableDepthAndStencil, this._surfaceSelector, this._mipmapSelector, this._maskConfig);
 
-					do {
-						///console.log("maskOwners", renderRenderable2.maskOwners);
-						renderRenderable2._iRender(pass, this._view);
+					renderRenderable = renderRenderable.next;
 
-						renderRenderable2 = renderRenderable2.next;
+				} while (renderRenderable && renderRenderable.renderMaterial == renderMaterial && !(this._activeMasksDirty = this._checkMaskOwners(renderRenderable.maskOwners)));
 
-					} while (renderRenderable2 && renderRenderable2.renderMaterial == renderMaterial && !(this._activeMasksDirty = this._checkMaskOwners(renderRenderable2.maskOwners)));
-
-					this.deactivatePass(pass);
-				}
-			// }
-
-			renderRenderable = renderRenderable2;
+				renderMaterial.deactivatePass();
+			}
 		}
 	}
 
@@ -546,15 +536,22 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 */
 	public enterNode(node:INode):boolean
 	{
-		var enter:boolean = node._collectionMark != RendererBase._collectionMark && node.isRenderable() && node.isInFrustum(this._partition.root, this._cullPlanes, this._numCullPlanes, this._renderGroup.pickGroup) && node.maskId == this._maskId;
+		var enter:boolean = node._collectionMark != RendererBase._collectionMark && node.isRenderable() && (this._maskConfig || node.isInFrustum(this._partition.root, this._cullPlanes, this._numCullPlanes, this._renderGroup.pickGroup)) && node.maskId == this._maskId;
 
 		node._collectionMark = RendererBase._collectionMark;
 
 		return enter;
 	}
 
-	public getTraverser(partition:PartitionBase):RendererBase
+	public getTraverser(partition:PartitionBase):IPartitionTraverser
 	{
+		// var traverser:RendererBase = this._renderGroup.getRenderer(partition);
+		 
+		// if (this._invalid) {
+		// 	traverser.next = this._pBlendedRenderableHead;
+		// 	this._pBlendedRenderableHead = traverser;
+		// }
+
 		return this;
 	}
 
@@ -573,9 +570,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		entity._acceptTraverser(this);
 	}
 
-	public applyTraversable(renderable:ITraversable):void
+	public applyTraversable(traversable:ITraversable):void
 	{
-		var renderRenderable:_Render_RenderableBase = this._renderEntity.getAbstraction(renderable);
+		var renderRenderable:_Render_RenderableBase = this._renderEntity.getAbstraction(traversable);
 
 
 		//set local vars for faster referencing

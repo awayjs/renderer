@@ -18,6 +18,8 @@ import {ShaderBase} from "./ShaderBase";
 import {Style} from "./Style";
 import { RenderEntity } from './RenderEntity';
 import { _Render_RenderableBase } from './_Render_RenderableBase';
+import { _Stage_ElementsBase } from './_Stage_ElementsBase';
+import { IRenderable } from './IRenderable';
 
 /**
  *
@@ -50,6 +52,8 @@ export class _Render_MaterialBase extends AbstractionBase
     private _imageIndices:Object = new Object();
     private _numImages:number;
     private _usesAnimation:boolean = false;
+
+    public _activePass:IPass;
 
     public images:Array<_Stage_ImageBase> = new Array<_Stage_ImageBase>();
 
@@ -89,12 +93,12 @@ export class _Render_MaterialBase extends AbstractionBase
     }
 
 
-    public get passes():Array<IPass>
+    public get numPasses():number
     {
         if (this._invalidAnimation)
             this._updateAnimation();
 
-        return this._passes;
+        return this._passes.length;
     }
 
     public get style():Style
@@ -133,6 +137,32 @@ export class _Render_MaterialBase extends AbstractionBase
     }
 
     
+    public activatePass(index:number):void
+	{
+        this._activePass = this._passes[index];
+
+		//clear unused vertex streams
+		var i:number
+		for (i =  this._activePass.shader.numUsedStreams; i < this._renderGroup.numUsedStreams; i++)
+			this._stage.context.setVertexBufferAt(i, null);
+
+		//clear unused texture streams
+		for (i =  this._activePass.shader.numUsedTextures; i < this._renderGroup.numUsedTextures; i++)
+			this._stage.context.setTextureAt(i, null);
+
+		//activate shader object through pass
+        this._activePass._activate(this._renderGroup.view);
+    }
+
+	public deactivatePass():void
+	{
+		//deactivate shader object through pass
+        this._activePass._deactivate();
+
+		this._renderGroup.numUsedStreams = this._activePass.shader.numUsedStreams;
+		this._renderGroup.numUsedTextures = this._activePass.shader.numUsedTextures;
+	}
+
 	//
 	// MATERIAL MANAGEMENT
 	//

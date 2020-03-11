@@ -10,6 +10,7 @@ import {ElementsUtils} from "../utils/ElementsUtils";
 import {_Render_RenderableBase} from "./_Render_RenderableBase";
 import {ShaderBase} from "./ShaderBase";
 import {IElements} from "./IElements";
+import { IRenderable } from './IRenderable';
 
 /**
  *
@@ -145,7 +146,7 @@ export class _Stage_ElementsBase extends AbstractionBase
 		}
 	}
 
-	public _setRenderState(renderable:_Render_RenderableBase, shader:ShaderBase, view:View):void
+	public _setRenderState(renderable:IRenderable, shader:ShaderBase):void
 	{
 		if (!this._verticesUpdated)
 			this._updateIndices();
@@ -157,7 +158,7 @@ export class _Stage_ElementsBase extends AbstractionBase
 		// 	this._overflow._iRender(renderable, camera, viewProjection);
 	}
 
-	public draw(renderable:_Render_RenderableBase, shader:ShaderBase, view:View, count:number, offset:number):void
+	public draw(renderable:IRenderable, shader:ShaderBase, count:number, offset:number):void
 	{
 		throw new AbstractMethodError();
 	}

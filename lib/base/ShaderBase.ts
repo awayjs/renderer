@@ -10,6 +10,7 @@ import {AnimationRegisterData} from "./AnimationRegisterData";
 import {IPass} from "./IPass";
 import {_Render_MaterialBase} from "./_Render_MaterialBase";
 import {_Stage_ElementsBase} from "./_Stage_ElementsBase";
+import { View } from '@awayjs/view';
 
 /**
  * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
@@ -26,7 +27,8 @@ export class ShaderBase implements IAbstractionPool
 	private _abstractionPool:Object = new Object();
 
 	private _renderElements:_Render_ElementsBase;
-    private _renderMaterial:_Render_MaterialBase;
+	private _renderMaterial:_Render_MaterialBase;
+	private _view:View;
 	private _pass:IPass;
 	public _stage:Stage;
 	private _programData:ProgramData;
@@ -49,6 +51,16 @@ export class ShaderBase implements IAbstractionPool
     protected _fragmentCode:string = "";
     protected _postAnimationFragmentCode:string = "";
 
+	public get view():View
+	{
+		return this._view;
+	}
+
+	public get stage():Stage
+	{
+		return this._stage;
+	}
+	
 	public get pass():IPass
 	{
 		return this._pass;
@@ -355,6 +367,7 @@ export class ShaderBase implements IAbstractionPool
 		this._renderMaterial = renderMaterial;
 		this._pass = pass;
 		this._stage = stage;
+		this._view = renderElements.renderGroup.view;
 
 		this.profile = this._stage.profile;
 	}
@@ -465,7 +478,7 @@ export class ShaderBase implements IAbstractionPool
 	/**
 	 * @inheritDoc
 	 */
-	public _activate(projection:ProjectionBase):void
+	public _activate():void
 	{
         if (!this.programData.program) {
             this.programData.program = this._stage.context.createProgram();
@@ -476,10 +489,10 @@ export class ShaderBase implements IAbstractionPool
 
         //set program data
         this._stage.context.setProgram(this.programData.program);
-		this._stage.context.setCulling(this.useBothSides? ContextGLTriangleFace.NONE : this._defaultCulling, projection.coordinateSystem);
+		this._stage.context.setCulling(this.useBothSides? ContextGLTriangleFace.NONE : this._defaultCulling, this._view.projection.coordinateSystem);
 
 		if (!this.usesTangentSpace && this.cameraPositionIndex >= 0) {
-			var pos:Vector3D = projection.transform.concatenatedMatrix3D.position;
+			var pos:Vector3D = this._view.projection.transform.concatenatedMatrix3D.position;
 
 			this.vertexConstantData[this.cameraPositionIndex] = pos.x;
 			this.vertexConstantData[this.cameraPositionIndex + 1] = pos.y;
@@ -513,10 +526,10 @@ export class ShaderBase implements IAbstractionPool
 	 * @param stage
 	 * @param camera
 	 */
-	public _setRenderState(renderState:_Render_RenderableBase, projection:ProjectionBase):void
+	public _setRenderState(renderState:_Render_RenderableBase):void
 	{
 		if (renderState.sourceEntity.animator)
-			(<IAnimator> renderState.sourceEntity.animator).setRenderState(this, renderState, this._stage, projection);
+			(<IAnimator> renderState.sourceEntity.animator).setRenderState(this, renderState);
 
 		var rawData:Float32Array;
 
@@ -574,7 +587,7 @@ export class ShaderBase implements IAbstractionPool
 		if (this.usesTangentSpace && this.cameraPositionIndex >= 0) {
 
             renderState.sourceEntity.transform.inverseConcatenatedMatrix3D.copyRawDataTo(this._pInverseSceneMatrix);
-			var pos:Vector3D = projection.transform.concatenatedMatrix3D.position;
+			var pos:Vector3D = this._view.projection.transform.concatenatedMatrix3D.position;
 			var x:number = pos.x;
 			var y:number = pos.y;
 			var z:number = pos.z;

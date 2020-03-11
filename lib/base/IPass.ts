@@ -6,6 +6,7 @@ import {View} from "@awayjs/view";
 
 import {_Render_RenderableBase} from "./_Render_RenderableBase";
 import {ShaderBase} from "./ShaderBase";
+import { IRenderable } from './IRenderable';
 
 /**
  *
@@ -28,7 +29,7 @@ export interface IPass extends IEventDispatcher
 	 */
 	_activate(view:View);
 
-	_setRenderState(renderState:_Render_RenderableBase, view:View)
+	_setRenderState(renderState:IRenderable)
 
 	/**
 	 * Clears the surface state for the pass. This needs to be called before activating another pass.
