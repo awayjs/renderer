@@ -1,4 +1,4 @@
-import {IAbstractionPool} from "@awayjs/core";
+import {IAbstractionPool, AssetEvent} from "@awayjs/core";
 
 import {BitmapImage2D, IContextGL, RTTBufferManager, Filter3DBase} from "@awayjs/stage";
 
@@ -142,21 +142,19 @@ export class DefaultRenderer extends RendererBase
 			this._view.present();
 	}
 
-	public dispose():void
+	public onClear(event:AssetEvent):void
 	{
-		this._view.dispose();
+		super.onClear(event);
 
 		this._pRttBufferManager.dispose();
 		this._pRttBufferManager = null;
 
-		this._depthRenderer.dispose();
-		this._distanceRenderer.dispose();
+		this._depthRenderer.onClear(event);
+		this._distanceRenderer.onClear(event);
 		this._depthRenderer = null;
 		this._distanceRenderer = null;
 
 		this._depthRender = null;
-
-		super.dispose();
 	}
 
 	/**

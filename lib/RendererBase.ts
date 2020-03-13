@@ -92,7 +92,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	
 	public stageElements:_Stage_ElementsBase;
 
-	public maskOwners:Array<IPartitionEntity>;
+	public get maskOwners():Array<IPartitionEntity>
+	{
+		return this.sourceEntity.maskOwners;
+	}
 
 	public get partition():PartitionBase
 	{
@@ -219,25 +222,21 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		return this._view;
 	}
 	
-	/**
-	 * Disposes the resources used by the RendererBase.
-	 */
-	public dispose():void
+	public onClear(event:AssetEvent):void
 	{
+		super.onClear(event);
+
 		this._renderGroup.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 		this._renderGroup.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 		this._renderGroup.removeEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
+
 		this._onContextUpdateDelegate=null;
 		this._onSizeInvalidateDelegate=null;
 		this._view = null;
 		this._stage = null;
 		this._context = null;
-		/*
-		 if (_backgroundImageRenderer) {
-		 _backgroundImageRenderer.dispose();
-		 _backgroundImageRenderer = null;
-		 }
-		 */
+
+		this.next = null;
 	}
 
 	/**
@@ -266,6 +265,48 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		this._renderGroup.update(this._partition);
 
+		// invalidate mipmaps (if target exists) to regenerate if required
+		if (this._view.target)
+			this._view.target.invalidateMipmaps();
+
+		// this._pRttViewProjectionMatrix.copyFrom(projection.viewMatrix3D);
+		// this._pRttViewProjectionMatrix.appendScale(this.textureRatioX, this.textureRatioY, 1);
+
+		//TODO: allow sharedContexts for image targets
+		this._view.clear(!this._depthPrepass && !this._disableClear, enableDepthAndStencil, surfaceSelector, mipmapSelector, (!this._view.shareContext || this._view.target)? ContextGLClearMask.ALL : ContextGLClearMask.DEPTH);
+
+		/*
+		 if (_backgroundImageRenderer)
+		 _backgroundImageRenderer.render();
+		 */
+
+		 //initialise blend mode
+		this._context.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
+
+		//initialise depth test
+		this._context.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
+
+		this.executeRender(enableDepthAndStencil, surfaceSelector, mipmapSelector);
+
+		//line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
+		//this._context.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //oopsie
+
+		if (!this._view.shareContext || this._view.target) {
+			if (this._snapshotRequired && this._snapshotBitmapImage2D) {
+				this._context.drawToBitmapImage2D(this._snapshotBitmapImage2D);
+				this._snapshotRequired = false;
+			}
+		}
+
+		// clear buffers
+		for (var i:number = 0; i < 8; ++i) {
+			this._context.setVertexBufferAt(i, null);
+			this._context.setTextureAt(i, null);
+		}
+	}
+
+	public traverse():void
+	{
 		//reset head values
 		this._pBlendedRenderableHead = null;
 		this._pOpaqueRenderableHead = null;
@@ -287,20 +328,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._pBlendedRenderableHead = this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
 		}
 
-		// invalidate mipmaps (if target exists) to regenerate if required
-		if (this._view.target)
-			this._view.target.invalidateMipmaps();
-
-		// this._pRttViewProjectionMatrix.copyFrom(projection.viewMatrix3D);
-		// this._pRttViewProjectionMatrix.appendScale(this.textureRatioX, this.textureRatioY, 1);
-
-		this._executeRender(enableDepthAndStencil, surfaceSelector, mipmapSelector);
-
-		// clear buffers
-		for (var i:number = 0; i < 8; ++i) {
-			this._context.setVertexBufferAt(i, null);
-			this._context.setTextureAt(i, null);
-		}
+		this._invalid = false;
 	}
 
 	public _iRenderCascades(projection:ProjectionBase, node:INode, enableDepthAndStencil:boolean = true, surfaceSelector:number = 0):void
@@ -333,21 +361,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
-	protected _executeRender(enableDepthAndStencil:boolean = true, surfaceSelector:number = 0, mipmapSelector:number = 0):void
+	public executeRender(enableDepthAndStencil:boolean = true, surfaceSelector:number = 0, mipmapSelector:number = 0):void
 	{
-		//TODO: allow sharedContexts for image targets
-		this._view.clear(!this._depthPrepass && !this._disableClear, enableDepthAndStencil, surfaceSelector, mipmapSelector, (!this._view.shareContext || this._view.target)? ContextGLClearMask.ALL : ContextGLClearMask.DEPTH);
-
-		/*
-		 if (_backgroundImageRenderer)
-		 _backgroundImageRenderer.render();
-		 */
-
-		 //initialise blend mode
-		this._context.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
-
-		//initialise depth test
-		this._context.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
+		//if (this._invalid) TODO: this is not triggering as often as it should
+			this.traverse();
 
 		//initialise color mask
 		if (this._disableColor)
@@ -365,16 +382,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		if (this._renderBlended)
 			this.drawRenderables(this._pBlendedRenderableHead);
-
-		//line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
-		//this._context.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //oopsie
-
-		if (!this._view.shareContext || this._view.target) {
-			if (this._snapshotRequired && this._snapshotBitmapImage2D) {
-				this._context.drawToBitmapImage2D(this._snapshotBitmapImage2D);
-				this._snapshotRequired = false;
-			}
-		}
 	}
 
 	
@@ -440,7 +447,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		while (renderRenderable) {
 			renderMaterial = renderRenderable.renderMaterial;
-			numPasses = renderMaterial.numPasses;
+			numPasses = renderMaterial? renderMaterial.numPasses : 1;
 
 			if (this._activeMasksDirty || this._checkMaskOwners(renderRenderable.maskOwners)) {
 				if (!(this._activeMaskOwners = renderRenderable.maskOwners)) {
@@ -456,17 +463,17 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 			//iterate through each shader object
 			for (i = 0; i < numPasses; i++) {
-				renderMaterial.activatePass(i);
+				renderMaterial && renderMaterial.activatePass(i);
 
 				do {
 					///console.log("maskOwners", renderRenderable2.maskOwners);
-					renderRenderable.render(this._enableDepthAndStencil, this._surfaceSelector, this._mipmapSelector, this._maskConfig);
+					renderRenderable.executeRender(this._enableDepthAndStencil, this._surfaceSelector, this._mipmapSelector, this._maskConfig);
 
 					renderRenderable = renderRenderable.next;
 
 				} while (renderRenderable && renderRenderable.renderMaterial == renderMaterial && !(this._activeMasksDirty = this._checkMaskOwners(renderRenderable.maskOwners)));
 
-				renderMaterial.deactivatePass();
+				renderMaterial && renderMaterial.deactivatePass();
 			}
 		}
 	}
@@ -546,7 +553,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	public getTraverser(partition:PartitionBase):IPartitionTraverser
 	{
 		// var traverser:RendererBase = this._renderGroup.getRenderer(partition);
-		 
+		// traverser.renderableSorter = null;
+		// traverser.disableClear = true;
+
 		// if (this._invalid) {
 		// 	traverser.next = this._pBlendedRenderableHead;
 		// 	this._pBlendedRenderableHead = traverser;
