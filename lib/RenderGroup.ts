@@ -18,6 +18,8 @@ import { IMapper } from './base/IMapper';
 interface IRendererPool extends IAbstractionPool
 {
 	materialClassPool:Object;
+
+	clearAll();
 }
 
 class DefaultRendererPool implements IRendererPool
@@ -56,6 +58,16 @@ class DefaultRendererPool implements IRendererPool
 	{
 		delete this._abstractionPool[partition.id];
 	}
+		
+	/**
+	 * Clears the resources used by the RendererPool.
+	 */
+	public clearAll():void
+	{
+		//clear all renderers associated with this render group
+		for (var key in this._abstractionPool)
+			(this._abstractionPool[key] as DefaultRenderer).onClear(null);
+	}
 	
 	/**
      *
@@ -67,7 +79,7 @@ class DefaultRendererPool implements IRendererPool
     }
 }
 
-class DepthRendererPool implements IAbstractionPool
+class DepthRendererPool implements IRendererPool
 {
 	public static _materialClassPool:Object = new Object();
 
@@ -90,7 +102,7 @@ class DepthRendererPool implements IAbstractionPool
 	 * @param entity
 	 * @returns EntityNode
 	 */
-	public getAbstraction(partition:PartitionBase):DefaultRenderer
+	public getAbstraction(partition:PartitionBase):DepthRenderer
 	{
 		return (this._abstractionPool[partition.id] || (this._abstractionPool[partition.id] = new DepthRenderer(this._renderGroup, partition, this)));
 	}
@@ -105,6 +117,16 @@ class DepthRendererPool implements IAbstractionPool
 	}
 	
 	/**
+	 * Clears the resources used by the RendererPool.
+	 */
+	public clearAll():void
+	{
+		//clear all renderers associated with this render group
+		for (var key in this._abstractionPool)
+			(this._abstractionPool[key] as DepthRenderer).onClear(null);
+	}
+
+	/**
      *
      * @param imageObjectClass
      */
@@ -114,7 +136,7 @@ class DepthRendererPool implements IAbstractionPool
     }
 }
 
-class DistanceRendererPool implements IAbstractionPool
+class DistanceRendererPool implements IRendererPool
 {
 	public static _materialClassPool:Object = new Object();
 
@@ -137,7 +159,7 @@ class DistanceRendererPool implements IAbstractionPool
 	 * @param entity
 	 * @returns EntityNode
 	 */
-	public getAbstraction(partition:PartitionBase):DefaultRenderer
+	public getAbstraction(partition:PartitionBase):DistanceRenderer
 	{
 		return (this._abstractionPool[partition.id] || (this._abstractionPool[partition.id] = new DistanceRenderer(this._renderGroup, partition, this)));
 	}
@@ -150,7 +172,17 @@ class DistanceRendererPool implements IAbstractionPool
 	{
 		delete this._abstractionPool[partition.id];
 	}
-	
+
+	/**
+	 * Clears the resources used by the RendererPool.
+	 */
+	public clearAll():void
+	{
+		//clear all renderers associated with this render group
+		for (var key in this._abstractionPool)
+			(this._abstractionPool[key] as DistanceRenderer).onClear(null);
+	}
+
 	/**
      *
      * @param imageObjectClass
@@ -192,10 +224,29 @@ export class RenderGroup extends EventDispatcher implements IAbstractionPool
 	}
 
 	private static _renderElementsClassPool:Object = new Object();
+	
+	public static clearAllInstances():void
+	{
+		for(var key in this._instancePool){
+			(this._instancePool[key] as RenderGroup).clearAll();
+			delete this._instancePool[key];
+		}
+	}
 
 	public static getInstance(view:View, rendererType:RendererType):RenderGroup
 	{
 		return this._instancePool[rendererType][view.id] || (this._instancePool[rendererType][view.id] = new RenderGroup(view, rendererType));
+	}
+
+	public static clearInstance(view:View, rendererType:RendererType):void
+	{
+		var renderGroup:RenderGroup = this._instancePool[rendererType][view.id];
+
+		if (renderGroup) {
+			renderGroup.clearAll();
+
+			delete this._instancePool[rendererType][view.id];
+		}
 	}
 
 	private _onContextUpdateDelegate:(event:StageEvent) => void;
@@ -275,16 +326,19 @@ export class RenderGroup extends EventDispatcher implements IAbstractionPool
 	}
 	
 	/**
-	 * Disposes the resources used by the RendererBase.
+	 * Clears the resources used by the RenderGroup.
 	 */
-	public dispose():void
+	public clearAll():void
 	{
 		this._stage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 		this._stage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 		this._view.removeEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 
-		this._view = null;
-		this._stage = null;
+		//clear all entities associated with this render group
+		for (var key in this._entityPool)
+			(this._entityPool[key] as RenderEntity).onClear(null);
+
+		this._rendererPool.clearAll();
 	}
 
 	public update(partition:PartitionBase):void
