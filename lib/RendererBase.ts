@@ -297,12 +297,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				this._snapshotRequired = false;
 			}
 		}
-
-		// clear buffers
-		for (var i:number = 0; i < 8; ++i) {
-			this._context.setVertexBufferAt(i, null);
-			this._context.setTextureAt(i, null);
-		}
 	}
 
 	public traverse():void

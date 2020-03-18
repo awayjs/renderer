@@ -265,9 +265,6 @@ export class RenderGroup extends EventDispatcher implements IAbstractionPool
 	private _entityPool:Object = new Object();
 	private _rendererPool:IRendererPool;
 
-	public numUsedStreams:number = 0;
-	public numUsedTextures:number = 0;
-
 	public get view():View
 	{
 		return this._view;

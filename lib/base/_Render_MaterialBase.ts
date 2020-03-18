@@ -143,11 +143,11 @@ export class _Render_MaterialBase extends AbstractionBase
 
 		//clear unused vertex streams
 		var i:number
-		for (i =  this._activePass.shader.numUsedStreams; i < this._renderGroup.numUsedStreams; i++)
+		for (i =  this._activePass.shader.numUsedStreams; i < this._stage.numUsedStreams; i++)
 			this._stage.context.setVertexBufferAt(i, null);
 
 		//clear unused texture streams
-		for (i =  this._activePass.shader.numUsedTextures; i < this._renderGroup.numUsedTextures; i++)
+		for (i =  this._activePass.shader.numUsedTextures; i < this._stage.numUsedTextures; i++)
 			this._stage.context.setTextureAt(i, null);
 
 		//activate shader object through pass
@@ -159,8 +159,8 @@ export class _Render_MaterialBase extends AbstractionBase
 		//deactivate shader object through pass
         this._activePass._deactivate();
 
-		this._renderGroup.numUsedStreams = this._activePass.shader.numUsedStreams;
-		this._renderGroup.numUsedTextures = this._activePass.shader.numUsedTextures;
+		this._stage.numUsedStreams = this._activePass.shader.numUsedStreams;
+		this._stage.numUsedTextures = this._activePass.shader.numUsedTextures;
 	}
 
 	//
