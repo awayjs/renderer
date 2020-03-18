@@ -435,7 +435,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	public drawRenderables(renderRenderable:IRenderable):void
 	{
 		var i:number;
-		var len:number;
+		var r:IRenderable;
 		var renderMaterial:_Render_MaterialBase;
 		var numPasses:number;
 
@@ -459,16 +459,19 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			for (i = 0; i < numPasses; i++) {
 				renderMaterial && renderMaterial.activatePass(i);
 
+				r = renderRenderable;
 				do {
 					///console.log("maskOwners", renderRenderable2.maskOwners);
-					renderRenderable.executeRender(this._enableDepthAndStencil, this._surfaceSelector, this._mipmapSelector, this._maskConfig);
+					r.executeRender(this._enableDepthAndStencil, this._surfaceSelector, this._mipmapSelector, this._maskConfig);
 
-					renderRenderable = renderRenderable.next;
+					r = r.next;
 
-				} while (renderRenderable && renderRenderable.renderMaterial == renderMaterial && !(this._activeMasksDirty = this._checkMaskOwners(renderRenderable.maskOwners)));
+				} while (r && r.renderMaterial == renderMaterial && !(this._activeMasksDirty = this._checkMaskOwners(r.maskOwners)));
 
 				renderMaterial && renderMaterial.deactivatePass();
 			}
+
+			renderRenderable = r;
 		}
 	}
 
