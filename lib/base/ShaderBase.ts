@@ -167,7 +167,7 @@ export class ShaderBase implements IAbstractionPool
 
 	public numLights:number;
 
-	public useAlphaPremultiplied:boolean;
+	public usesPremultipliedAlpha:boolean;
 	public useBothSides:boolean;
 	public usesUVTransform:boolean;
 	public usesColorTransform:boolean;
@@ -443,30 +443,35 @@ export class ShaderBase implements IAbstractionPool
 				this._blendFactorSource = ContextGLBlendFactor.ONE;
 				this._blendFactorDest = ContextGLBlendFactor.ZERO;
 				this.usesBlending = false;
+				this.usesPremultipliedAlpha = false;
 				break;
 
 			case BlendMode.LAYER:
-				this._blendFactorSource = ContextGLBlendFactor.SOURCE_ALPHA;
+				this._blendFactorSource = ContextGLBlendFactor.ONE;
 				this._blendFactorDest = ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA;
 				this.usesBlending = true;
+				this.usesPremultipliedAlpha = true;
 				break;
 
 			case BlendMode.MULTIPLY:
 				this._blendFactorSource = ContextGLBlendFactor.ZERO;
 				this._blendFactorDest = ContextGLBlendFactor.SOURCE_COLOR;
 				this.usesBlending = true;
+				this.usesPremultipliedAlpha = true;
 				break;
 
 			case BlendMode.ADD:
-				this._blendFactorSource = ContextGLBlendFactor.SOURCE_ALPHA;
+				this._blendFactorSource = ContextGLBlendFactor.ONE;
 				this._blendFactorDest = ContextGLBlendFactor.ONE;
 				this.usesBlending = true;
+				this.usesPremultipliedAlpha = true;
 				break;
 
 			case BlendMode.ALPHA:
 				this._blendFactorSource = ContextGLBlendFactor.ZERO;
 				this._blendFactorDest = ContextGLBlendFactor.SOURCE_ALPHA;
 				this.usesBlending = true;
+				this.usesPremultipliedAlpha = false;
 				break;
 
 			default:
@@ -501,8 +506,7 @@ export class ShaderBase implements IAbstractionPool
 
 		this._stage.context.setDepthTest(( this.writeDepth && !this.usesBlending ), this.depthCompareMode);
 
-		if (this.usesBlending)
-			this._stage.context.setBlendFactors(this._blendFactorSource, this._blendFactorDest);
+		this._stage.context.setBlendFactors(this._blendFactorSource, this._blendFactorDest);
 
         this.activeElements = null;
 	}
@@ -632,6 +636,10 @@ export class ShaderBase implements IAbstractionPool
         this._vertexCode += this._pass._getVertexCode(this._registerCache, this._sharedRegisters);
         this._fragmentCode += this._pass._getFragmentCode(this._registerCache, this._sharedRegisters);
         this._postAnimationFragmentCode += this._pass._getPostAnimationFragmentCode(this._registerCache, this._sharedRegisters);
+
+		//check if alpha needs to be pre-multipled
+		if (this.usesPremultipliedAlpha)
+			this._postAnimationFragmentCode += "mul " + this._sharedRegisters.shadedTarget + ".xyz, " + this._sharedRegisters.shadedTarget + ", " + this._sharedRegisters.shadedTarget + ".w\n";
 
         //assign the final output color to the output register
         this._postAnimationFragmentCode += "mov " + this._registerCache.fragmentOutputRegister + ", " + this._sharedRegisters.shadedTarget + "\n";

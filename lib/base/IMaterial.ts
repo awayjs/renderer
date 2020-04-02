@@ -3,7 +3,6 @@ import {IAsset} from "@awayjs/core";
 import {ITexture} from "../base/ITexture";
 
 import {Style} from "./Style";
-import { IRenderable } from './IRenderable';
 
 /**
  * ISurface provides an interface for objects that define the properties of a renderable's surface.
