@@ -1,4 +1,4 @@
-console.debug("AwayJS - Renderer - 0.11.1");
+console.debug("AwayJS - Renderer - 0.11.2");
 export {IRenderEntity} from "./lib/base/IRenderEntity";
 export {IMaterial} from "./lib/base/IMaterial";
 export {IMaterialClass} from "./lib/base/IMaterialClass";
