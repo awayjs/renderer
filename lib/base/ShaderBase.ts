@@ -1,6 +1,6 @@
 import {AssetBase, AbstractionBase, Matrix, Matrix3D, Vector3D, ColorTransform, ArgumentError, IAssetClass, IAbstractionPool, ProjectionBase, ByteArray, IAbstractionClass} from "@awayjs/core";
 
-import {AGALMiniAssembler, ContextGLProfile, ContextGLBlendFactor, ContextGLCompareMode, ContextGLTriangleFace, ProgramData, Stage, BlendMode, ShaderRegisterCache, ShaderRegisterData, ShaderRegisterElement} from "@awayjs/stage";
+import {AGALMiniAssembler, ContextGLProfile, ContextGLBlendFactor, ContextGLCompareMode, ContextGLTriangleFace, ProgramData, Stage, BlendMode, ShaderRegisterCache, ShaderRegisterData, ShaderRegisterElement, RegisterPool} from "@awayjs/stage";
 
 import {_Render_RenderableBase} from "./_Render_RenderableBase";
 import {_Render_ElementsBase} from "./_Render_ElementsBase";
@@ -789,25 +789,47 @@ export class ShaderBase implements IAbstractionPool
      */
     protected _initConstantData():void
     {
-        //Updates the amount of used register indices.
-        this._numUsedVertexConstants = this._registerCache.numUsedVertexConstants;
-        this._numUsedFragmentConstants = this._registerCache.numUsedFragmentConstants;
-        this._numUsedStreams = this._registerCache.numUsedStreams;
-        this._numUsedTextures = this._registerCache.numUsedTextures;
+		const rc = this._registerCache;
 
-        this.vertexConstantData = new Float32Array(this._registerCache.numUsedVertexConstants*4);
-        this.fragmentConstantData = new Float32Array(this._registerCache.numUsedFragmentConstants*4);
+        //Updates the amount of used register indices.
+        const usedVC = this._numUsedVertexConstants = rc.numUsedVertexConstants;
+        const usedFC = this._numUsedFragmentConstants = rc.numUsedFragmentConstants;
+        this._numUsedStreams = rc.numUsedStreams;
+        this._numUsedTextures = rc.numUsedTextures;
+
+		if(!this.vertexConstantData || this.vertexConstantData.length !== usedVC * 4)
+			this.vertexConstantData = new Float32Array(usedVC * 4);
+
+
+		if(!this.fragmentConstantData || this.fragmentConstantData.length !== usedFC * 4)
+        	this.fragmentConstantData = new Float32Array(this._registerCache.numUsedFragmentConstants*4);
 
         //Initialies viewMatrix
         if (this.viewMatrixIndex >= 0) {
-            this.viewMatrix = new Matrix3D(new Float32Array(this.vertexConstantData.buffer, this.viewMatrixIndex*4, 16));
+
+			const data = new Float32Array(this.vertexConstantData.buffer, this.viewMatrixIndex * 4, 16);
+
+			if(!this.viewMatrix) {
+				this.viewMatrix = new Matrix3D(data);
+			} else {
+				this.viewMatrix._rawData = data;
+			}
+
         } else if (this.viewMatrix) {
             this.viewMatrix = null;
         }
 
         //Initialies sceneMatrix
         if (this.sceneMatrixIndex >= 0) {
-            this.sceneMatrix = new Matrix3D(new Float32Array(this.vertexConstantData.buffer, this.sceneMatrixIndex*4, 16));
+
+			const data = new Float32Array(this.vertexConstantData.buffer, this.sceneMatrixIndex * 4, 16);
+
+			if(!this.sceneMatrix) {
+				this.sceneMatrix = new Matrix3D(data);
+			} else {
+				this.sceneMatrix._rawData = data;
+			}
+
         } else if (this.sceneMatrix) {
             this.sceneMatrix = null;
         }
@@ -845,7 +867,14 @@ export class ShaderBase implements IAbstractionPool
         }
 
         if (this.sceneNormalMatrixIndex >= 0) {
-            this.sceneNormalMatrix = new Matrix3D(new Float32Array(this.vertexConstantData.buffer, this.sceneNormalMatrixIndex*4, 16));
+			const data = new Float32Array(this.vertexConstantData.buffer, this.sceneNormalMatrixIndex * 4, 16);
+
+			if(!this.sceneNormalMatrix) {
+				this.sceneNormalMatrix = new Matrix3D(data);
+			} else {
+				this.sceneNormalMatrix._rawData = data;
+			}
+
         } else if (this.sceneNormalMatrix) {
             this.sceneNormalMatrix = null;
         }

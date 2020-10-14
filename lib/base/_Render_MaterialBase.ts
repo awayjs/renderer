@@ -353,7 +353,14 @@ export class _Render_MaterialBase extends AbstractionBase
             shader = this._passes[i].shader;
             shader.usesAnimation = usesAnimation;
 
-            renderOrderId += shader.programData.id*mult;
+            // this is getter, this enforce update programData
+            // renderOrderId += shader.programData.id * mult;
+            if((<any>shader)._programData) {
+                renderOrderId += (<any>shader)._programData.id * mult;
+            } else {
+                renderOrderId += shader.programData.id * mult;
+            }
+
             mult *= 1000;
         }
 
