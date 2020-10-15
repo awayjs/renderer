@@ -1,11 +1,11 @@
-import {IEventDispatcher} from "@awayjs/core";
+import { IEventDispatcher } from '@awayjs/core';
 
-import {ShaderRegisterCache, ShaderRegisterData} from "@awayjs/stage";
+import { ShaderRegisterCache, ShaderRegisterData } from '@awayjs/stage';
 
-import {View} from "@awayjs/view";
+import { View } from '@awayjs/view';
 
-import {_Render_RenderableBase} from "./_Render_RenderableBase";
-import {ShaderBase} from "./ShaderBase";
+import { _Render_RenderableBase } from './_Render_RenderableBase';
+import { ShaderBase } from './ShaderBase';
 import { IRenderable } from './IRenderable';
 
 /**
@@ -14,11 +14,11 @@ import { IRenderable } from './IRenderable';
  */
 export interface IPass extends IEventDispatcher
 {
-	shader:ShaderBase;
+	shader: ShaderBase;
 
-    _includeDependencies(shader:ShaderBase);
+	_includeDependencies(shader: ShaderBase);
 
-    _initConstantData();
+	_initConstantData();
 
 	/**
 	 * Sets the material state for the pass that is independent of the rendered object. This needs to be called before
@@ -27,9 +27,9 @@ export interface IPass extends IEventDispatcher
 	 * @param camera The camera from which the scene is viewed.
 	 * @private
 	 */
-	_activate(view:View);
+	_activate(view: View);
 
-	_setRenderState(renderState:IRenderable)
+	_setRenderState(renderState: IRenderable)
 
 	/**
 	 * Clears the surface state for the pass. This needs to be called before activating another pass.
@@ -43,13 +43,13 @@ export interface IPass extends IEventDispatcher
 
 	dispose();
 
-    _getVertexCode(registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string;
+	_getVertexCode(registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
 
-    _getFragmentCode(registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string;
+	_getFragmentCode(registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
 
-    _getPostAnimationFragmentCode(registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string;
+	_getPostAnimationFragmentCode(registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
 
-    _getNormalVertexCode(registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string;
+	_getNormalVertexCode(registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
 
-    _getNormalFragmentCode(registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string;
+	_getNormalFragmentCode(registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
 }

@@ -1,55 +1,52 @@
-import {ShaderRegisterCache, ShaderRegisterData, ShaderRegisterElement} from "@awayjs/stage";
+import { ShaderRegisterCache, ShaderRegisterData, ShaderRegisterElement } from '@awayjs/stage';
 
-import {AnimationNodeBase} from "./AnimationNodeBase";
+import { AnimationNodeBase } from './AnimationNodeBase';
 
 /**
  * ...
  */
-export class AnimationRegisterData
-{
+export class AnimationRegisterData {
 	//vertex animation data
-	public weightsIndex:number;
-	public poseIndices:Array<number>;
-	
+	public weightsIndex: number;
+	public poseIndices: Array<number>;
+
 	//vertex
-	public positionAttribute:ShaderRegisterElement;
-	public uvAttribute:ShaderRegisterElement;
-	public positionTarget:ShaderRegisterElement;
-	public scaleAndRotateTarget:ShaderRegisterElement;
-	public velocityTarget:ShaderRegisterElement;
-	public vertexTime:ShaderRegisterElement;
-	public vertexLife:ShaderRegisterElement;
-	public vertexZeroConst:ShaderRegisterElement;
-	public vertexOneConst:ShaderRegisterElement;
-	public vertexTwoConst:ShaderRegisterElement;
-	public uvTarget:ShaderRegisterElement;
-	public colorAddTarget:ShaderRegisterElement;
-	public colorMulTarget:ShaderRegisterElement;
+	public positionAttribute: ShaderRegisterElement;
+	public uvAttribute: ShaderRegisterElement;
+	public positionTarget: ShaderRegisterElement;
+	public scaleAndRotateTarget: ShaderRegisterElement;
+	public velocityTarget: ShaderRegisterElement;
+	public vertexTime: ShaderRegisterElement;
+	public vertexLife: ShaderRegisterElement;
+	public vertexZeroConst: ShaderRegisterElement;
+	public vertexOneConst: ShaderRegisterElement;
+	public vertexTwoConst: ShaderRegisterElement;
+	public uvTarget: ShaderRegisterElement;
+	public colorAddTarget: ShaderRegisterElement;
+	public colorMulTarget: ShaderRegisterElement;
 	//vary
-	public colorAddVary:ShaderRegisterElement;
-	public colorMulVary:ShaderRegisterElement;
+	public colorAddVary: ShaderRegisterElement;
+	public colorMulVary: ShaderRegisterElement;
 
 	//fragment
-	public uvVar:ShaderRegisterElement;
+	public uvVar: ShaderRegisterElement;
 
 	//these are targets only need to rotate ( normal and tangent )
-	public rotationRegisters:Array<ShaderRegisterElement>;
+	public rotationRegisters: Array<ShaderRegisterElement>;
 
-	private indexDictionary:Object = new Object();
+	private indexDictionary: Object = new Object();
 
-	constructor()
-	{
+	constructor() {
 	}
 
-	public reset(registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData, needVelocity:boolean):void
-	{
+	public reset(registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData, needVelocity: boolean): void {
 		this.rotationRegisters = new Array<ShaderRegisterElement>();
 		this.positionAttribute = sharedRegisters.animatableAttributes[0];
 		this.scaleAndRotateTarget = sharedRegisters.animationTargetRegisters[0];
 
-		for (var i:number = 1; i < sharedRegisters.animationTargetRegisters.length; i++)
+		for (let i: number = 1; i < sharedRegisters.animationTargetRegisters.length; i++)
 			this.rotationRegisters.push(sharedRegisters.animationTargetRegisters[i]);
-		
+
 		//allot const register
 		this.vertexZeroConst = registerCache.getFreeVertexConstant();
 		this.vertexZeroConst = new ShaderRegisterElement(this.vertexZeroConst.regName, this.vertexZeroConst.index, 0);
@@ -68,7 +65,7 @@ export class AnimationRegisterData
 			this.vertexTime = new ShaderRegisterElement(this.velocityTarget.regName, this.velocityTarget.index, 3);
 			this.vertexLife = new ShaderRegisterElement(this.positionTarget.regName, this.positionTarget.index, 3);
 		} else {
-			var tempTime:ShaderRegisterElement = registerCache.getFreeVertexVectorTemp();
+			const tempTime: ShaderRegisterElement = registerCache.getFreeVertexVectorTemp();
 			registerCache.addVertexTempUsages(tempTime, 1);
 			this.vertexTime = new ShaderRegisterElement(tempTime.regName, tempTime.index, 0);
 			this.vertexLife = new ShaderRegisterElement(tempTime.regName, tempTime.index, 1);
@@ -76,18 +73,16 @@ export class AnimationRegisterData
 
 	}
 
-	public setUVSourceAndTarget(sharedRegisters:ShaderRegisterData):void
-	{
+	public setUVSourceAndTarget(sharedRegisters: ShaderRegisterData): void {
 		this.uvVar = sharedRegisters.animatedUV;
 		this.uvAttribute = sharedRegisters.uvInput;
 		//uv action is processed after normal actions,so use offsetTarget as uvTarget
 		this.uvTarget = new ShaderRegisterElement(this.positionTarget.regName, this.positionTarget.index);
 	}
 
-	public setRegisterIndex(node:AnimationNodeBase, parameterIndex:number, registerIndex:number):void
-	{
+	public setRegisterIndex(node: AnimationNodeBase, parameterIndex: number, registerIndex: number): void {
 		//8 should be enough for any node.
-		var t:Array<number> = this.indexDictionary[node.id];
+		let t: Array<number> = this.indexDictionary[node.id];
 
 		if (t == null)
 			t = this.indexDictionary[node.id] = new Array<number>(8);
@@ -95,8 +90,7 @@ export class AnimationRegisterData
 		t[parameterIndex] = registerIndex;
 	}
 
-	public getRegisterIndex(node:AnimationNodeBase, parameterIndex:number):number
-	{
+	public getRegisterIndex(node: AnimationNodeBase, parameterIndex: number): number {
 		return (<Array<number>> this.indexDictionary[node.id])[parameterIndex];
 	}
 }

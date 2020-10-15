@@ -1,74 +1,69 @@
-import {AbstractionBase, AbstractMethodError, AssetEvent} from "@awayjs/core";
+import { AbstractionBase, AbstractMethodError, AssetEvent } from '@awayjs/core';
 
-import {Stage, Short3Attributes, AttributesView, _Stage_AttributesBuffer} from "@awayjs/stage";
+import { Stage, Short3Attributes, AttributesView, _Stage_AttributesBuffer } from '@awayjs/stage';
 
-import {View} from "@awayjs/view";
+import { View } from '@awayjs/view';
 
-import {ElementsEvent} from "../events/ElementsEvent";
-import {ElementsUtils} from "../utils/ElementsUtils";
+import { ElementsEvent } from '../events/ElementsEvent';
+import { ElementsUtils } from '../utils/ElementsUtils';
 
-import {_Render_RenderableBase} from "./_Render_RenderableBase";
-import {ShaderBase} from "./ShaderBase";
-import {IElements} from "./IElements";
+import { _Render_RenderableBase } from './_Render_RenderableBase';
+import { ShaderBase } from './ShaderBase';
+import { IElements } from './IElements';
 import { IRenderable } from './IRenderable';
 
 /**
  *
  * @class away.pool._Stage_ElementsBaseBase
  */
-export class _Stage_ElementsBase extends AbstractionBase
-{
-	public usages:number = 0;
-	private _elements:IElements;
-	public _stage:Stage;
-	private _onInvalidateIndicesDelegate:(event:ElementsEvent) => void;
-	private _onClearIndicesDelegate:(event:ElementsEvent) => void;
-	private _onInvalidateVerticesDelegate:(event:ElementsEvent) => void;
-	private _onClearVerticesDelegate:(event:ElementsEvent) => void;
-	private _overflow:_Stage_ElementsBase;
-	public _indices:_Stage_AttributesBuffer;
-	private _indicesUpdated:boolean;
-	private _vertices:Object = new Object();
-	private _verticesUpdated:Object = new Object();
+export class _Stage_ElementsBase extends AbstractionBase {
+	public usages: number = 0;
+	private _elements: IElements;
+	public _stage: Stage;
+	private _onInvalidateIndicesDelegate: (event: ElementsEvent) => void;
+	private _onClearIndicesDelegate: (event: ElementsEvent) => void;
+	private _onInvalidateVerticesDelegate: (event: ElementsEvent) => void;
+	private _onClearVerticesDelegate: (event: ElementsEvent) => void;
+	private _overflow: _Stage_ElementsBase;
+	public _indices: _Stage_AttributesBuffer;
+	private _indicesUpdated: boolean;
+	private _vertices: Object = new Object();
+	private _verticesUpdated: Object = new Object();
 
-	public _indexMappings:Array<number> = Array<number>();
-	
-	private _numIndices:number = 0;
+	public _indexMappings: Array<number> = Array<number>();
 
-	private _numVertices:number;
+	private _numIndices: number = 0;
 
-	public get elements():IElements
-	{
+	private _numVertices: number;
+
+	public get elements(): IElements {
 		return this._elements;
 	}
-	
+
 	/**
 	 *
 	 */
-	public get numIndices():number
-	{
+	public get numIndices(): number {
 		return this._numIndices;
 	}
-	
+
 	/**
 	 *
 	 */
-	public get numVertices():number
-	{
+	public get numVertices(): number {
 		return this._numVertices;
 	}
-	
-	constructor(elements:IElements, stage:Stage)
-	{
+
+	constructor(elements: IElements, stage: Stage) {
 		super(elements, stage);
-		
+
 		this._elements = elements;
 		this._stage = stage;
 
-		this._onInvalidateIndicesDelegate = (event:ElementsEvent) => this._onInvalidateIndices(event);
-		this._onClearIndicesDelegate = (event:ElementsEvent) => this._onClearIndices(event);
-		this._onInvalidateVerticesDelegate = (event:ElementsEvent) => this._onInvalidateVertices(event);
-		this._onClearVerticesDelegate = (event:ElementsEvent) => this._onClearVertices(event);
+		this._onInvalidateIndicesDelegate = (event: ElementsEvent) => this._onInvalidateIndices(event);
+		this._onClearIndicesDelegate = (event: ElementsEvent) => this._onClearIndices(event);
+		this._onInvalidateVerticesDelegate = (event: ElementsEvent) => this._onInvalidateVertices(event);
+		this._onClearVerticesDelegate = (event: ElementsEvent) => this._onClearVertices(event);
 
 		this._elements.addEventListener(ElementsEvent.CLEAR_INDICES, this._onClearIndicesDelegate);
 		this._elements.addEventListener(ElementsEvent.INVALIDATE_INDICES, this._onInvalidateIndicesDelegate);
@@ -80,8 +75,7 @@ export class _Stage_ElementsBase extends AbstractionBase
 	/**
 	 *
 	 */
-	public getIndexMappings():Array<number>
-	{
+	public getIndexMappings(): Array<number> {
 		if (!this._indicesUpdated)
 			this._updateIndices();
 
@@ -91,45 +85,40 @@ export class _Stage_ElementsBase extends AbstractionBase
 	/**
 	 *
 	 */
-	public getIndexBufferGL():_Stage_AttributesBuffer
-	{
+	public getIndexBufferGL(): _Stage_AttributesBuffer {
 		if (!this._indicesUpdated)
 			this._updateIndices();
 
 		return this._indices;
 	}
 
-
 	/**
 	 *
 	 */
-	public getVertexBufferGL(attributesView:AttributesView):_Stage_AttributesBuffer
-	{
+	public getVertexBufferGL(attributesView: AttributesView): _Stage_AttributesBuffer {
 		//first check if indices need updating which may affect vertices
 		if (!this._indicesUpdated)
 			this._updateIndices();
 
-		var bufferId:number = attributesView.attributesBuffer.id;
+		const bufferId: number = attributesView.attributesBuffer.id;
 
 		if (!this._verticesUpdated[bufferId])
 			this._updateVertices(attributesView);
 
 		return this._vertices[bufferId];
 	}
-	
+
 	/**
 	 *
 	 */
-	public activateVertexBufferVO(index:number, attributesView:AttributesView, dimensions:number = 0, offset:number = 0):void
-	{
+	public activateVertexBufferVO(index: number, attributesView: AttributesView, dimensions: number = 0, offset: number = 0): void {
 		this.getVertexBufferGL(attributesView).activate(index, attributesView.size, dimensions || attributesView.dimensions, attributesView.offset + offset, attributesView.unsigned);
 	}
 
 	/**
 	 *
 	 */
-	public onClear(event:AssetEvent):void
-	{
+	public onClear(event: AssetEvent): void {
 		super.onClear(event);
 
 		this._elements.removeEventListener(ElementsEvent.CLEAR_INDICES, this._onClearIndicesDelegate);
@@ -146,8 +135,7 @@ export class _Stage_ElementsBase extends AbstractionBase
 		}
 	}
 
-	public _setRenderState(renderable:IRenderable, shader:ShaderBase):void
-	{
+	public _setRenderState(renderable: IRenderable, shader: ShaderBase): void {
 		if (!this._verticesUpdated)
 			this._updateIndices();
 
@@ -158,8 +146,7 @@ export class _Stage_ElementsBase extends AbstractionBase
 		// 	this._overflow._iRender(renderable, camera, viewProjection);
 	}
 
-	public draw(renderable:IRenderable, shader:ShaderBase, count:number, offset:number):void
-	{
+	public draw(renderable: IRenderable, shader: ShaderBase, count: number, offset: number): void {
 		throw new AbstractMethodError();
 	}
 
@@ -168,12 +155,11 @@ export class _Stage_ElementsBase extends AbstractionBase
 	 *
 	 * @private
 	 */
-	public _updateIndices(indexOffset:number = 0):void
-	{
-		var indices:Short3Attributes = this._elements.indices;
+	public _updateIndices(indexOffset: number = 0): void {
+		const indices: Short3Attributes = this._elements.indices;
 		if (indices) {
 			this._indices = <_Stage_AttributesBuffer> this._stage.getAbstraction(ElementsUtils.getSubIndices(indices, this._elements.numVertices, this._indexMappings, indexOffset));
-			this._numIndices = this._indices._attributesBuffer.count*indices.dimensions;
+			this._numIndices = this._indices._attributesBuffer.count * indices.dimensions;
 		} else {
 			this._indices = null;
 			this._numIndices = 0;
@@ -183,7 +169,7 @@ export class _Stage_ElementsBase extends AbstractionBase
 		indexOffset += this._numIndices;
 
 		//check if there is more to split
-		if (indices && indexOffset < indices.count*this._elements.indices.dimensions) {
+		if (indices && indexOffset < indices.count * this._elements.indices.dimensions) {
 			if (!this._overflow)
 				this._overflow = this._pGetOverflowElements();
 
@@ -197,10 +183,9 @@ export class _Stage_ElementsBase extends AbstractionBase
 
 		//invalidate vertices if index mappings exist
 		if (this._indexMappings.length)
-			for (var key in this._verticesUpdated)
+			for (const key in this._verticesUpdated)
 				this._verticesUpdated[key] = false;
 	}
-
 
 	/**
 	 * //TODO
@@ -208,11 +193,10 @@ export class _Stage_ElementsBase extends AbstractionBase
 	 * @param attributesView
 	 * @private
 	 */
-	private _updateVertices(attributesView:AttributesView):void
-	{
+	private _updateVertices(attributesView: AttributesView): void {
 		this._numVertices = this._elements.numVertices;
 
-		var bufferId:number = attributesView.attributesBuffer.id;
+		const bufferId: number = attributesView.attributesBuffer.id;
 
 		this._vertices[bufferId] = <_Stage_AttributesBuffer> this._stage.getAbstraction(ElementsUtils.getSubVertices(attributesView.attributesBuffer, this._indexMappings));
 
@@ -225,8 +209,7 @@ export class _Stage_ElementsBase extends AbstractionBase
 	 * @param event
 	 * @private
 	 */
-	public _onInvalidateIndices(event:ElementsEvent):void
-	{
+	public _onInvalidateIndices(event: ElementsEvent): void {
 		if (!event.attributesView)
 			return;
 
@@ -239,8 +222,7 @@ export class _Stage_ElementsBase extends AbstractionBase
 	 * @param event
 	 * @private
 	 */
-	public _onClearIndices(event:ElementsEvent):void
-	{
+	public _onClearIndices(event: ElementsEvent): void {
 		if (!event.attributesView)
 			return;
 
@@ -254,28 +236,26 @@ export class _Stage_ElementsBase extends AbstractionBase
 	 * @param event
 	 * @private
 	 */
-	public _onInvalidateVertices(event:ElementsEvent):void
-	{
+	public _onInvalidateVertices(event: ElementsEvent): void {
 		if (!event.attributesView)
 			return;
 
-		var bufferId:number = event.attributesView.attributesBuffer.id;
+		const bufferId: number = event.attributesView.attributesBuffer.id;
 
 		this._verticesUpdated[bufferId] = false;
 	}
-	
+
 	/**
 	 * //TODO
 	 *
 	 * @param event
 	 * @private
 	 */
-	public _onClearVertices(event:ElementsEvent):void
-	{
+	public _onClearVertices(event: ElementsEvent): void {
 		if (!event.attributesView)
 			return;
 
-		var bufferId:number = event.attributesView.attributesBuffer.id;
+		const bufferId: number = event.attributesView.attributesBuffer.id;
 
 		if (this._vertices[bufferId]) {
 			this._vertices[bufferId].onClear(new AssetEvent(AssetEvent.CLEAR, event.attributesView));
@@ -294,8 +274,7 @@ export class _Stage_ElementsBase extends AbstractionBase
 	 * @returns {away.pool.GL_ShapeRenderable}
 	 * @protected
 	 */
-	public _pGetOverflowElements():_Stage_ElementsBase
-	{
+	public _pGetOverflowElements(): _Stage_ElementsBase {
 		throw new AbstractMethodError();
 	}
 }

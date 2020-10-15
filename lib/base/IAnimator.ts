@@ -1,11 +1,11 @@
-import {IAsset, ProjectionBase} from "@awayjs/core";
+import { IAsset, ProjectionBase } from '@awayjs/core';
 
-import {Stage} from "@awayjs/stage";
+import { Stage } from '@awayjs/stage';
 
-import {_Render_RenderableBase} from "./_Render_RenderableBase";
-import {IRenderEntity} from "./IRenderEntity";
-import {ShaderBase} from "./ShaderBase";
-import {IAnimationSet} from "./IAnimationSet";
+import { _Render_RenderableBase } from './_Render_RenderableBase';
+import { IRenderEntity } from './IRenderEntity';
+import { ShaderBase } from './ShaderBase';
+import { IAnimationSet } from './IAnimationSet';
 
 /**
  * Provides an interface for animator classes that control animation output from a data set subtype of <code>AnimationSetBase</code>.
@@ -17,12 +17,12 @@ export interface IAnimator extends IAsset
 	/**
 	 *
 	 */
-	animationSet:IAnimationSet;
+	animationSet: IAnimationSet;
 
 	/**
 	 *
 	 */
-	clone():IAnimator;
+	clone(): IAnimator;
 
 	/**
 	 *
@@ -34,16 +34,16 @@ export interface IAnimator extends IAsset
 	 *
 	 * @private
 	 */
-	addOwner(entity:IRenderEntity);
+	addOwner(entity: IRenderEntity);
 
 	/**
 	 * Used by the graphics object from which the animator is removed, unregisters the owner for internal use.
 	 *
 	 * @private
 	 */
-	removeOwner(entity:IRenderEntity);
+	removeOwner(entity: IRenderEntity);
 
-    testGPUCompatibility(shader:ShaderBase):void;
+	testGPUCompatibility(shader: ShaderBase): void;
 
-    setRenderState(shader:ShaderBase, renderState:_Render_RenderableBase):void;
+	setRenderState(shader: ShaderBase, renderState: _Render_RenderableBase): void;
 }

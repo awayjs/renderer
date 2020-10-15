@@ -1,26 +1,26 @@
-import {IAsset} from "@awayjs/core";
+import { IAsset } from '@awayjs/core';
 
-import {AttributesView, Short3Attributes, Float3Attributes, Float2Attributes} from "@awayjs/stage";
+import { AttributesView, Short3Attributes, Float3Attributes, Float2Attributes } from '@awayjs/stage';
 
 /**
  * @class away.base.TriangleElements
  */
 export interface IElements extends IAsset
 {
-    autoDeriveNormals:boolean;
+	autoDeriveNormals: boolean;
 
-    autoDeriveTangents:boolean;
+	autoDeriveTangents: boolean;
 
-    useCondensedIndices:boolean;
+	useCondensedIndices: boolean;
 
-    condensedIndexLookUp:Array<number>;
+	condensedIndexLookUp: Array<number>;
 
-    /**
+	/**
      * The raw index data that define the faces.
      */
-    indices:Short3Attributes;
+	indices: Short3Attributes;
 
-    numElements:number;
+	numElements: number;
 
-    numVertices:number;
+	numVertices: number;
 }

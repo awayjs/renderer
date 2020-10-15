@@ -1,8 +1,8 @@
-import {IAsset} from "@awayjs/core";
+import { IAsset } from '@awayjs/core';
 
-import {ITexture} from "../base/ITexture";
+import { ITexture } from '../base/ITexture';
 
-import {Style} from "./Style";
+import { Style } from './Style';
 
 /**
  * ISurface provides an interface for objects that define the properties of a renderable's surface.
@@ -11,21 +11,21 @@ import {Style} from "./Style";
  */
 export interface IMaterial extends IAsset
 {
-	style:Style;
+	style: Style;
 
-	bothSides:boolean;
+	bothSides: boolean;
 
-	curves:boolean;
+	curves: boolean;
 
-	imageRect:boolean;
+	imageRect: boolean;
 
-	animateUVs:boolean;
+	animateUVs: boolean;
 
-	blendMode:string;
+	blendMode: string;
 
-	getNumTextures():number;
+	getNumTextures(): number;
 
-	getTextureAt(i:number):ITexture;
+	getTextureAt(i: number): ITexture;
 
 	dispose();
 }

@@ -1,11 +1,11 @@
-import {IAssetClass, IAsset, IAbstractionPool, EventDispatcher} from "@awayjs/core";
+import { IAssetClass, IAsset, IAbstractionPool, EventDispatcher } from '@awayjs/core';
 
-import {Stage, StageEvent} from "@awayjs/stage";
+import { Stage, StageEvent } from '@awayjs/stage';
 
-import {IRenderEntity} from "./base/IRenderEntity";
-import {RenderEntity} from "./base/RenderEntity";
-import {_IRender_ElementsClass} from "./base/_IRender_ElementsClass";
-import {_Render_ElementsBase} from "./base/_Render_ElementsBase";
+import { IRenderEntity } from './base/IRenderEntity';
+import { RenderEntity } from './base/RenderEntity';
+import { _IRender_ElementsClass } from './base/_IRender_ElementsClass';
+import { _Render_ElementsBase } from './base/_Render_ElementsBase';
 import { RendererBase } from './RendererBase';
 import { PartitionBase, View, ViewEvent, PickGroup } from '@awayjs/view';
 import { DefaultRenderer } from './DefaultRenderer';
@@ -17,25 +17,22 @@ import { IMapper } from './base/IMapper';
 
 interface IRendererPool extends IAbstractionPool
 {
-	materialClassPool:Object;
+	materialClassPool: Object;
 
 	clearAll();
 }
 
-class DefaultRendererPool implements IRendererPool
-{
-	public static _materialClassPool:Object = new Object();
+class DefaultRendererPool implements IRendererPool {
+	public static _materialClassPool: Object = new Object();
 
-	private _abstractionPool:Object = new Object();
-	private _renderGroup:RenderGroup;
+	private _abstractionPool: Object = new Object();
+	private _renderGroup: RenderGroup;
 
-	public get materialClassPool():Object
-	{
+	public get materialClassPool(): Object {
 		return DefaultRendererPool._materialClassPool;
 	}
 
-	constructor(renderGroup:RenderGroup)
-	{
+	constructor(renderGroup: RenderGroup) {
 		this._renderGroup = renderGroup;
 	}
 
@@ -45,8 +42,7 @@ class DefaultRendererPool implements IRendererPool
 	 * @param entity
 	 * @returns EntityNode
 	 */
-	public getAbstraction(partition:PartitionBase):DefaultRenderer
-	{
+	public getAbstraction(partition: PartitionBase): DefaultRenderer {
 		return (this._abstractionPool[partition.id] || (this._abstractionPool[partition.id] = new DefaultRenderer(this._renderGroup, partition, this)));
 	}
 
@@ -54,45 +50,39 @@ class DefaultRendererPool implements IRendererPool
 	 *
 	 * @param entity
 	 */
-	public clearAbstraction(partition:PartitionBase):void
-	{
+	public clearAbstraction(partition: PartitionBase): void {
 		delete this._abstractionPool[partition.id];
 	}
-		
+
 	/**
 	 * Clears the resources used by the RendererPool.
 	 */
-	public clearAll():void
-	{
+	public clearAll(): void {
 		//clear all renderers associated with this render group
-		for (var key in this._abstractionPool)
+		for (const key in this._abstractionPool)
 			(this._abstractionPool[key] as DefaultRenderer).onClear(null);
 	}
-	
+
 	/**
      *
      * @param imageObjectClass
      */
-    public static registerMaterial(renderMaterialClass:_IRender_MaterialClass, materialClass:IMaterialClass):void
-    {
-        DefaultRendererPool._materialClassPool[materialClass.assetType] = renderMaterialClass;
-    }
+	public static registerMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IMaterialClass): void {
+		DefaultRendererPool._materialClassPool[materialClass.assetType] = renderMaterialClass;
+	}
 }
 
-class DepthRendererPool implements IRendererPool
-{
-	public static _materialClassPool:Object = new Object();
+class DepthRendererPool implements IRendererPool {
+	public static _materialClassPool: Object = new Object();
 
-	private _abstractionPool:Object = new Object();
-	private _renderGroup:RenderGroup;
+	private _abstractionPool: Object = new Object();
+	private _renderGroup: RenderGroup;
 
-	public get materialClassPool():Object
-	{
+	public get materialClassPool(): Object {
 		return DepthRendererPool._materialClassPool;
 	}
 
-	constructor(renderGroup:RenderGroup)
-	{
+	constructor(renderGroup: RenderGroup) {
 		this._renderGroup = renderGroup;
 	}
 
@@ -102,8 +92,7 @@ class DepthRendererPool implements IRendererPool
 	 * @param entity
 	 * @returns EntityNode
 	 */
-	public getAbstraction(partition:PartitionBase):DepthRenderer
-	{
+	public getAbstraction(partition: PartitionBase): DepthRenderer {
 		return (this._abstractionPool[partition.id] || (this._abstractionPool[partition.id] = new DepthRenderer(this._renderGroup, partition, this)));
 	}
 
@@ -111,18 +100,16 @@ class DepthRendererPool implements IRendererPool
 	 *
 	 * @param entity
 	 */
-	public clearAbstraction(partition:PartitionBase):void
-	{
+	public clearAbstraction(partition: PartitionBase): void {
 		delete this._abstractionPool[partition.id];
 	}
-	
+
 	/**
 	 * Clears the resources used by the RendererPool.
 	 */
-	public clearAll():void
-	{
+	public clearAll(): void {
 		//clear all renderers associated with this render group
-		for (var key in this._abstractionPool)
+		for (const key in this._abstractionPool)
 			(this._abstractionPool[key] as DepthRenderer).onClear(null);
 	}
 
@@ -130,26 +117,22 @@ class DepthRendererPool implements IRendererPool
      *
      * @param imageObjectClass
      */
-    public static registerMaterial(renderMaterialClass:_IRender_MaterialClass, materialClass:IMaterialClass):void
-    {
-        DepthRendererPool._materialClassPool[materialClass.assetType] = renderMaterialClass;
-    }
+	public static registerMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IMaterialClass): void {
+		DepthRendererPool._materialClassPool[materialClass.assetType] = renderMaterialClass;
+	}
 }
 
-class DistanceRendererPool implements IRendererPool
-{
-	public static _materialClassPool:Object = new Object();
+class DistanceRendererPool implements IRendererPool {
+	public static _materialClassPool: Object = new Object();
 
-	private _abstractionPool:Object = new Object();
-	private _renderGroup:RenderGroup;
+	private _abstractionPool: Object = new Object();
+	private _renderGroup: RenderGroup;
 
-	public get materialClassPool():Object
-	{
+	public get materialClassPool(): Object {
 		return DistanceRendererPool._materialClassPool;
 	}
 
-	constructor(renderGroup:RenderGroup)
-	{
+	constructor(renderGroup: RenderGroup) {
 		this._renderGroup = renderGroup;
 	}
 
@@ -159,8 +142,7 @@ class DistanceRendererPool implements IRendererPool
 	 * @param entity
 	 * @returns EntityNode
 	 */
-	public getAbstraction(partition:PartitionBase):DistanceRenderer
-	{
+	public getAbstraction(partition: PartitionBase): DistanceRenderer {
 		return (this._abstractionPool[partition.id] || (this._abstractionPool[partition.id] = new DistanceRenderer(this._renderGroup, partition, this)));
 	}
 
@@ -168,18 +150,16 @@ class DistanceRendererPool implements IRendererPool
 	 *
 	 * @param entity
 	 */
-	public clearAbstraction(partition:PartitionBase):void
-	{
+	public clearAbstraction(partition: PartitionBase): void {
 		delete this._abstractionPool[partition.id];
 	}
 
 	/**
 	 * Clears the resources used by the RendererPool.
 	 */
-	public clearAll():void
-	{
+	public clearAll(): void {
 		//clear all renderers associated with this render group
-		for (var key in this._abstractionPool)
+		for (const key in this._abstractionPool)
 			(this._abstractionPool[key] as DistanceRenderer).onClear(null);
 	}
 
@@ -187,14 +167,13 @@ class DistanceRendererPool implements IRendererPool
      *
      * @param imageObjectClass
      */
-    public static registerMaterial(renderMaterialClass:_IRender_MaterialClass, materialClass:IMaterialClass):void
-    {
-        DistanceRendererPool._materialClassPool[materialClass.assetType] = renderMaterialClass;
-    }
+	public static registerMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IMaterialClass): void {
+		DistanceRendererPool._materialClassPool[materialClass.assetType] = renderMaterialClass;
+	}
 }
 
 export enum RendererType
-{
+	{
 	DEFAULT,
 
 	DEPTH,
@@ -205,42 +184,38 @@ export enum RendererType
 /**
  * @class away.pool.RenderGroup
  */
-export class RenderGroup extends EventDispatcher implements IAbstractionPool
-{
-	private static _rendererClass:Object = {
+export class RenderGroup extends EventDispatcher implements IAbstractionPool {
+	private static _rendererClass: Object = {
 		[RendererType.DEFAULT]:DefaultRendererPool,
 		[RendererType.DEPTH]:DepthRendererPool,
 		[RendererType.DISTANCE]:DistanceRendererPool,
 	}
 
-	private static _defaultInstancePool:Object = new Object();
-	private static _depthInstancePool:Object = new Object();
-	private static _distanceInstancePool:Object = new Object();
+	private static _defaultInstancePool: Object = new Object();
+	private static _depthInstancePool: Object = new Object();
+	private static _distanceInstancePool: Object = new Object();
 
-	private static _instancePool:Object = {
+	private static _instancePool: Object = {
 		[RendererType.DEFAULT]:RenderGroup._defaultInstancePool,
 		[RendererType.DEPTH]:RenderGroup._depthInstancePool,
 		[RendererType.DISTANCE]:RenderGroup._distanceInstancePool,
 	}
 
-	private static _renderElementsClassPool:Object = new Object();
-	
-	public static clearAllInstances():void
-	{
-		for(var key in this._instancePool){
+	private static _renderElementsClassPool: Object = new Object();
+
+	public static clearAllInstances(): void {
+		for (const key in this._instancePool) {
 			(this._instancePool[key] as RenderGroup).clearAll();
 			delete this._instancePool[key];
 		}
 	}
 
-	public static getInstance(view:View, rendererType:RendererType):RenderGroup
-	{
+	public static getInstance(view: View, rendererType: RendererType): RenderGroup {
 		return this._instancePool[rendererType][view.id] || (this._instancePool[rendererType][view.id] = new RenderGroup(view, rendererType));
 	}
 
-	public static clearInstance(view:View, rendererType:RendererType):void
-	{
-		var renderGroup:RenderGroup = this._instancePool[rendererType][view.id];
+	public static clearInstance(view: View, rendererType: RendererType): void {
+		const renderGroup: RenderGroup = this._instancePool[rendererType][view.id];
 
 		if (renderGroup) {
 			renderGroup.clearAll();
@@ -249,50 +224,45 @@ export class RenderGroup extends EventDispatcher implements IAbstractionPool
 		}
 	}
 
-	private _onContextUpdateDelegate:(event:StageEvent) => void;
-	private _onSizeInvalidateDelegate:(event:ViewEvent) => void;
+	private _onContextUpdateDelegate: (event: StageEvent) => void;
+	private _onSizeInvalidateDelegate: (event: ViewEvent) => void;
 
-	private _invalid:boolean;
-	private _mappers:Array<IMapper> = new Array<IMapper>();
-	private _view:View;
-	private _depthRenderGroup:RenderGroup;
-	private _distanceRenderGroup:RenderGroup;
+	private _invalid: boolean;
+	private _mappers: Array<IMapper> = new Array<IMapper>();
+	private _view: View;
+	private _depthRenderGroup: RenderGroup;
+	private _distanceRenderGroup: RenderGroup;
 
-	private _stage:Stage;
-	private _pickGroup:PickGroup;
-	private _materialClassPool:Object;
-	private _materialPools:Object = new Object();
-	private _entityPool:Object = new Object();
-	private _rendererPool:IRendererPool;
+	private _stage: Stage;
+	private _pickGroup: PickGroup;
+	private _materialClassPool: Object;
+	private _materialPools: Object = new Object();
+	private _entityPool: Object = new Object();
+	private _rendererPool: IRendererPool;
 
-	public get view():View
-	{
+	public get view(): View {
 		return this._view;
 	}
 
-	public get depthRenderGroup():RenderGroup
-	{
+	public get depthRenderGroup(): RenderGroup {
 		if (this._depthRenderGroup == null)
 			this._depthRenderGroup = RenderGroup.getInstance(new View(null, this._stage), RendererType.DEPTH);
 
 		return this._depthRenderGroup;
 	}
 
-	public get distanceRenderGroup():RenderGroup
-	{
+	public get distanceRenderGroup(): RenderGroup {
 		if (this._distanceRenderGroup == null)
 			this._distanceRenderGroup = RenderGroup.getInstance(new View(null, this._stage), RendererType.DISTANCE);
 
 		return this._distanceRenderGroup;
 	}
 
-	public get stage():Stage
-	{
+	public get stage(): Stage {
 		return this._stage;
 	}
 
-	public get pickGroup():PickGroup
-	{
+	public get pickGroup(): PickGroup {
 		return this._pickGroup;
 	}
 
@@ -301,8 +271,7 @@ export class RenderGroup extends EventDispatcher implements IAbstractionPool
 	 *
 	 * @param materialClassGL
 	 */
-	constructor(view:View, rendererType:RendererType)
-	{
+	constructor(view: View, rendererType: RendererType) {
 		super();
 
 		this._view = view;
@@ -314,88 +283,77 @@ export class RenderGroup extends EventDispatcher implements IAbstractionPool
 		if (rendererType != RendererType.DEFAULT) //set shadow renderer backgrounds to white
 			this._view.backgroundColor = 0xFFFFFF;
 
-		this._onSizeInvalidateDelegate = (event:ViewEvent) => this.onSizeInvalidate(event);
-		this._onContextUpdateDelegate = (event:StageEvent) => this.onContextUpdate(event);
+		this._onSizeInvalidateDelegate = (event: ViewEvent) => this.onSizeInvalidate(event);
+		this._onContextUpdateDelegate = (event: StageEvent) => this.onContextUpdate(event);
 
 		this._stage.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 		this._stage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 		this._view.addEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 	}
-	
+
 	/**
 	 * Clears the resources used by the RenderGroup.
 	 */
-	public clearAll():void
-	{
+	public clearAll(): void {
 		this._stage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 		this._stage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 		this._view.removeEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 
 		//clear all entities associated with this render group
-		for (var key in this._entityPool)
+		for (const key in this._entityPool)
 			(this._entityPool[key] as RenderEntity).onClear(null);
 
 		this._rendererPool.clearAll();
 	}
 
-	public update(partition:PartitionBase):void
-	{
+	public update(partition: PartitionBase): void {
 		//update mappers
-        var len:number = this._mappers.length;
-        for (var i:number = 0; i < len; i++)
-            this._mappers[i].update(partition, this);
+		const len: number = this._mappers.length;
+		for (let i: number = 0; i < len; i++)
+			this._mappers[i].update(partition, this);
 	}
 
-	public invalidate():void
-	{
+	public invalidate(): void {
 		this._invalid = true;
 	}
 
-	public _addMapper(mapper:IMapper)
-    {
+	public _addMapper(mapper: IMapper) {
     	if (this._mappers.indexOf(mapper) != -1)
     		return;
 
-        this._mappers.push(mapper)
-    }
+		this._mappers.push(mapper);
+	}
 
-    public _removeMapper(mapper:IMapper)
-    {
-    	var index:number = this._mappers.indexOf(mapper);
+	public _removeMapper(mapper: IMapper) {
+    	const index: number = this._mappers.indexOf(mapper);
 
     	if (index != -1)
         	this._mappers.splice(index, 1);
 	}
-	
+
 	/**
 	 *
 	 */
-	public onSizeInvalidate(event:ViewEvent):void
-	{
+	public onSizeInvalidate(event: ViewEvent): void {
 		this.dispatchEvent(event);
 	}
-	
+
 	/**
 	 * Assign the context once retrieved
 	 */
-	private onContextUpdate(event:StageEvent):void
-	{
+	private onContextUpdate(event: StageEvent): void {
 		this.dispatchEvent(event);
 	}
 
-
-	public getRenderElements(elements:IAsset):_Render_ElementsBase
-	{
+	public getRenderElements(elements: IAsset): _Render_ElementsBase {
 		return this._materialPools[elements.assetType] || (this._materialPools[elements.assetType] = new (<_IRender_ElementsClass> RenderGroup._renderElementsClassPool[elements.assetType])(this._stage, this._materialClassPool, this));
 	}
 
-	public getAbstraction(entity:IRenderEntity):RenderEntity
-	{
+	public getAbstraction(entity: IRenderEntity): RenderEntity {
 		return this._entityPool[entity.id] || (this._entityPool[entity.id] = new RenderEntity(this._stage, entity, this));
 	}
 
-	public getRenderer(partition:PartitionBase):RendererBase
-	{
+	public getRenderer(partition: PartitionBase): RendererBase {
 		return <RendererBase> this._rendererPool.getAbstraction(partition);
 	}
 
@@ -403,32 +361,27 @@ export class RenderGroup extends EventDispatcher implements IAbstractionPool
 	 *
 	 * @param entity
 	 */
-	public clearAbstraction(entity:IRenderEntity):void
-	{
+	public clearAbstraction(entity: IRenderEntity): void {
 		delete this._entityPool[entity.id];
 	}
 
-    /**
+	/**
      *
      * @param imageObjectClass
      */
-    public static registerElements(renderElementsClass:_IRender_ElementsClass, elementsClass:IAssetClass):void
-    {
-        RenderGroup._renderElementsClassPool[elementsClass.assetType] = renderElementsClass;
+	public static registerElements(renderElementsClass: _IRender_ElementsClass, elementsClass: IAssetClass): void {
+		RenderGroup._renderElementsClassPool[elementsClass.assetType] = renderElementsClass;
 	}
-	
-	public static registerDefaultMaterial(renderMaterialClass:_IRender_MaterialClass, materialClass:IMaterialClass):void
-	{
+
+	public static registerDefaultMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IMaterialClass): void {
 		DefaultRendererPool.registerMaterial(renderMaterialClass, materialClass);
 	}
 
-	public static registerDepthMaterial(renderMaterialClass:_IRender_MaterialClass, materialClass:IMaterialClass):void
-	{
+	public static registerDepthMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IMaterialClass): void {
 		DepthRendererPool.registerMaterial(renderMaterialClass, materialClass);
 	}
 
-	public static registerDistanceMaterial(renderMaterialClass:_IRender_MaterialClass, materialClass:IMaterialClass):void
-	{
+	public static registerDistanceMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IMaterialClass): void {
 		DistanceRendererPool.registerMaterial(renderMaterialClass, materialClass);
 	}
 }

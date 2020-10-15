@@ -1,17 +1,17 @@
-import {IAbstractionPool, AssetEvent} from "@awayjs/core";
+import { IAbstractionPool, AssetEvent } from '@awayjs/core';
 
-import {BitmapImage2D, IContextGL, RTTBufferManager, Filter3DBase} from "@awayjs/stage";
+import { BitmapImage2D, IContextGL, RTTBufferManager, Filter3DBase } from '@awayjs/stage';
 
-import {INode, PartitionBase} from "@awayjs/view";
+import { INode, PartitionBase } from '@awayjs/view';
 
-import {_IRender_MaterialClass} from "./base/_IRender_MaterialClass";
+import { _IRender_MaterialClass } from './base/_IRender_MaterialClass';
 
-import {RenderGroup} from "./RenderGroup";
+import { RenderGroup } from './RenderGroup';
 
-import {DepthRenderer} from "./DepthRenderer";
-import {DistanceRenderer} from "./DistanceRenderer";
-import {Filter3DRenderer} from "./Filter3DRenderer";
-import {RendererBase} from "./RendererBase";
+import { DepthRenderer } from './DepthRenderer';
+import { DistanceRenderer } from './DistanceRenderer';
+import { Filter3DRenderer } from './Filter3DRenderer';
+import { RendererBase } from './RendererBase';
 import { IRenderEntity } from './base/IRenderEntity';
 
 /**
@@ -20,36 +20,31 @@ import { IRenderEntity } from './base/IRenderEntity';
  *
  * @class away.render.DefaultRenderer
  */
-export class DefaultRenderer extends RendererBase
-{
-	private _requireDepthRender:boolean;
+export class DefaultRenderer extends RendererBase {
+	private _requireDepthRender: boolean;
 
-	private _distanceRenderer:DistanceRenderer;
-	private _depthRenderer:DepthRenderer;
-	private _filter3DRenderer:Filter3DRenderer;
+	private _distanceRenderer: DistanceRenderer;
+	private _depthRenderer: DepthRenderer;
+	private _filter3DRenderer: Filter3DRenderer;
 
-	public _depthRender:BitmapImage2D;
-	
-	public get antiAlias():number
-	{
+	public _depthRender: BitmapImage2D;
+
+	public get antiAlias(): number {
 		return this._stage.antiAlias;
 	}
 
-	public set antiAlias(value:number)
-	{
+	public set antiAlias(value: number) {
 		this._stage.antiAlias = value;
 	}
 
 	/**
 	 *
 	 */
-	public get depthPrepass():boolean
-	{
+	public get depthPrepass(): boolean {
 		return this._depthPrepass;
 	}
 
-	public set depthPrepass(value:boolean)
-	{
+	public set depthPrepass(value: boolean) {
 		this._depthPrepass = value;
 	}
 
@@ -57,12 +52,11 @@ export class DefaultRenderer extends RendererBase
 	 *
 	 * @returns {*}
 	 */
-	public get filters3d():Array<Filter3DBase>
-	{
-		return this._filter3DRenderer? this._filter3DRenderer.filters : null;
+	public get filters3d(): Array<Filter3DBase> {
+		return this._filter3DRenderer ? this._filter3DRenderer.filters : null;
 	}
-	public set filters3d(value:Array<Filter3DBase>)
-	{
+
+	public set filters3d(value: Array<Filter3DBase>) {
 		if (value && value.length == 0)
 			value = null;
 
@@ -93,23 +87,21 @@ export class DefaultRenderer extends RendererBase
 	 * @param antiAlias The amount of anti-aliasing to use.
 	 * @param renderMode The render mode to use.
 	 */
-	constructor(renderGroup:RenderGroup, partition:PartitionBase, pool:IAbstractionPool)
-	{
+	constructor(renderGroup: RenderGroup, partition: PartitionBase, pool: IAbstractionPool) {
 		super(renderGroup, partition, pool);
 
 		this._pRttBufferManager = RTTBufferManager.getInstance(this._stage);
 
 		this._depthRenderer = renderGroup.depthRenderGroup.getRenderer(partition);
-		
+
 		this._distanceRenderer = renderGroup.distanceRenderGroup.getRenderer(partition);
 	}
 
 	/**
 	 *
 	 */
-	public enterNode(node:INode):boolean
-	{
-		var enter:boolean = super.enterNode(node);
+	public enterNode(node: INode): boolean {
+		const enter: boolean = super.enterNode(node);
 
 		if (enter && node.boundsVisible)
 			this.applyEntity(<IRenderEntity> node.getBoundsPrimitive(this._renderGroup.pickGroup));
@@ -117,8 +109,7 @@ export class DefaultRenderer extends RendererBase
 		return enter;
 	}
 
-	public render(enableDepthAndStencil:boolean = true, surfaceSelector:number = 0, mipmapSelector:number = 0, maskConfig:number = 0):void
-	{
+	public render(enableDepthAndStencil: boolean = true, surfaceSelector: number = 0, mipmapSelector: number = 0, maskConfig: number = 0): void {
 		if (!this._stage.recoverFromDisposal()) {//if context has Disposed by the OS,don't render at this frame
 			return;
 		}
@@ -142,8 +133,7 @@ export class DefaultRenderer extends RendererBase
 			this._view.present();
 	}
 
-	public onClear(event:AssetEvent):void
-	{
+	public onClear(event: AssetEvent): void {
 		super.onClear(event);
 
 		this._pRttBufferManager.dispose();
@@ -160,8 +150,7 @@ export class DefaultRenderer extends RendererBase
 	/**
 	 *
 	 */
-	private _renderDepthPrepass():void
-	{
+	private _renderDepthPrepass(): void {
 		this._depthRenderer.disableColor = true;
 
 		this._depthRenderer.view.projection = this._view.projection;
@@ -176,12 +165,10 @@ export class DefaultRenderer extends RendererBase
 		this._depthRenderer.disableColor = false;
 	}
 
-
 	/**
 	 *
 	 */
-	private _renderSceneDepthToTexture():void
-	{
+	private _renderSceneDepthToTexture(): void {
 		if (this._depthTextureDirty || !this._depthRender)
 			this.initDepthTexture(<IContextGL> this._stage.context);
 
@@ -191,8 +178,7 @@ export class DefaultRenderer extends RendererBase
 	/**
 	 *
 	 */
-	private initDepthTexture(context:IContextGL):void
-	{
+	private initDepthTexture(context: IContextGL): void {
 		this._depthTextureDirty = false;
 
 		if (this._depthRender)

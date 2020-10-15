@@ -1,5 +1,5 @@
-import {_Render_RenderableBase} from "./_Render_RenderableBase";
-import {RenderEntity} from "./RenderEntity";
+import { _Render_RenderableBase } from './_Render_RenderableBase';
+import { RenderEntity } from './RenderEntity';
 import { ITraversable } from '@awayjs/view';
 
 /**
@@ -13,5 +13,5 @@ export interface _IRender_RenderableClass
 	/**
 	 *
 	 */
-	new(renderable:ITraversable, renderEntity:RenderEntity):_Render_RenderableBase;
+	new(renderable: ITraversable, renderEntity: RenderEntity): _Render_RenderableBase;
 }

@@ -1,26 +1,23 @@
-import {EventBase} from "@awayjs/core";
+import { EventBase } from '@awayjs/core';
 
-import {IPass} from "../base/IPass";
+import { IPass } from '../base/IPass';
 
-export class PassEvent extends EventBase
-{
+export class PassEvent extends EventBase {
 	/**
 	 *
 	 */
-	public static INVALIDATE:string = "invalidatePass";
+	public static INVALIDATE: string = 'invalidatePass';
 
-	private _pass:IPass;
+	private _pass: IPass;
 
 	/**
 	 *
 	 */
-	public get pass():IPass
-	{
+	public get pass(): IPass {
 		return this._pass;
 	}
 
-	constructor(type:string, pass:IPass)
-	{
+	constructor(type: string, pass: IPass) {
 		super(type);
 
 		this._pass = pass;
@@ -29,8 +26,7 @@ export class PassEvent extends EventBase
 	/**
 	 *
 	 */
-	public clone():PassEvent
-	{
+	public clone(): PassEvent {
 		return new PassEvent(this.type, this._pass);
 	}
 }

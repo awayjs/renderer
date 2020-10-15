@@ -1,28 +1,26 @@
-import {Rectangle, ProjectionBase} from "@awayjs/core";
+import { Rectangle, ProjectionBase } from '@awayjs/core';
 
-import {Image2D, ImageSampler, _Stage_ImageBase, Stage, ContextGLDrawMode, ContextGLBlendFactor, ContextGLVertexBufferFormat, IContextGL, IIndexBuffer, IVertexBuffer, RTTEvent, RTTBufferManager, Filter3DBase, Filter3DTaskBase} from "@awayjs/stage";
+import { Image2D, ImageSampler, _Stage_ImageBase, Stage, ContextGLDrawMode, ContextGLBlendFactor, ContextGLVertexBufferFormat, IContextGL, IIndexBuffer, IVertexBuffer, RTTEvent, RTTBufferManager, Filter3DBase, Filter3DTaskBase } from '@awayjs/stage';
 
 /**
  * @class away.render.Filter3DRenderer
  */
-export class Filter3DRenderer
-{
-	private _filters:Array<Filter3DBase>;
-	private _tasks:Array<Filter3DTaskBase>;
-	private _filterTasksInvalid:boolean;
-	private _mainInputTexture:Image2D;
-	private _requireDepthRender:boolean;
-	private _rttManager:RTTBufferManager;
-	private _stage:Stage;
-	private _filterSizesInvalid:boolean = true;
-	private _onRTTResizeDelegate:(event:RTTEvent) => void;
-	private _renderToTextureRect:Rectangle;
+export class Filter3DRenderer {
+	private _filters: Array<Filter3DBase>;
+	private _tasks: Array<Filter3DTaskBase>;
+	private _filterTasksInvalid: boolean;
+	private _mainInputTexture: Image2D;
+	private _requireDepthRender: boolean;
+	private _rttManager: RTTBufferManager;
+	private _stage: Stage;
+	private _filterSizesInvalid: boolean = true;
+	private _onRTTResizeDelegate: (event: RTTEvent) => void;
+	private _renderToTextureRect: Rectangle;
 
-	private _sampler:ImageSampler;
+	private _sampler: ImageSampler;
 
-	constructor(stage:Stage)
-	{
-		this._onRTTResizeDelegate = (event:RTTEvent) => this.onRTTResize(event);
+	constructor(stage: Stage) {
+		this._onRTTResizeDelegate = (event: RTTEvent) => this.onRTTResize(event);
 
 		this._stage = stage;
 		this._rttManager = RTTBufferManager.getInstance(stage);
@@ -32,36 +30,30 @@ export class Filter3DRenderer
 		this._renderToTextureRect = new Rectangle();
 	}
 
-	private onRTTResize(event:RTTEvent):void
-	{
+	private onRTTResize(event: RTTEvent): void {
 		this._filterSizesInvalid = true;
 	}
 
-	public get requireDepthRender():boolean
-	{
+	public get requireDepthRender(): boolean {
 		return this._requireDepthRender;
 	}
 
-	public getMainInputTexture(stage:Stage):Image2D
-	{
+	public getMainInputTexture(stage: Stage): Image2D {
 		if (this._filterTasksInvalid)
 			this.updateFilterTasks(stage);
 
 		return this._mainInputTexture;
 	}
 
-	public get filters():Filter3DBase[]
-	{
+	public get filters(): Filter3DBase[] {
 		return this._filters;
 	}
 
-	public get sampler():ImageSampler
-	{
+	public get sampler(): ImageSampler {
 		return this._sampler;
 	}
 
-	public set filters(value:Filter3DBase[])
-	{
+	public set filters(value: Filter3DBase[]) {
 		this._filters = value;
 
 		this._filterTasksInvalid = true;
@@ -71,24 +63,22 @@ export class Filter3DRenderer
 		if (!this._filters)
 			return;
 
-		for (var i:number = 0; i < this._filters.length; ++i)
+		for (let i: number = 0; i < this._filters.length; ++i)
 			if (this._filters[i].requireDepthRender)
 				this._requireDepthRender = true;
 
 		this._filterSizesInvalid = true;
 	}
 
-	public get renderToTextureRect():Rectangle
-	{
+	public get renderToTextureRect(): Rectangle {
 		if (this._filterSizesInvalid)
 			this.updateFilterSizes();
 
 		return this._renderToTextureRect;
 	}
 
-	private updateFilterTasks(stage:Stage):void
-	{
-		var len:number;
+	private updateFilterTasks(stage: Stage): void {
+		let len: number;
 
 		if (this._filterSizesInvalid)
 			this.updateFilterSizes();
@@ -102,14 +92,14 @@ export class Filter3DRenderer
 
 		len = this._filters.length - 1;
 
-		var filter:Filter3DBase;
+		let filter: Filter3DBase;
 
-		for (var i:number = 0; i <= len; ++i) {
+		for (let i: number = 0; i <= len; ++i) {
 
 			// make sure all internal tasks are linked together
 			filter = this._filters[i];
 
-			filter.setRenderTargets(i == len? null : this._filters[i + 1].getMainInputTexture(stage), stage);
+			filter.setRenderTargets(i == len ? null : this._filters[i + 1].getMainInputTexture(stage), stage);
 
 			this._tasks = this._tasks.concat(filter.tasks);
 
@@ -119,16 +109,15 @@ export class Filter3DRenderer
 
 	}
 
-	public render(stage:Stage, projection:ProjectionBase, depthTexture:Image2D):void
-	{
-		var len:number;
-		var i:number;
-		var task:Filter3DTaskBase;
-		var context:IContextGL = <IContextGL> stage.context;
+	public render(stage: Stage, projection: ProjectionBase, depthTexture: Image2D): void {
+		let len: number;
+		let i: number;
+		let task: Filter3DTaskBase;
+		const context: IContextGL = <IContextGL> stage.context;
 
-		var indexBuffer:IIndexBuffer = this._rttManager.indexBuffer;
+		const indexBuffer: IIndexBuffer = this._rttManager.indexBuffer;
 
-		var vertexBuffer:IVertexBuffer = this._rttManager.renderToTextureVertexBuffer;
+		let vertexBuffer: IVertexBuffer = this._rttManager.renderToTextureVertexBuffer;
 
 		if (!this._filters)
 			return;
@@ -184,27 +173,24 @@ export class Filter3DRenderer
 		context.setVertexBufferAt(1, null);
 	}
 
-	private updateFilterSizes():void
-	{
-		for (var i:number = 0; i < this._filters.length; ++i) {
+	private updateFilterSizes(): void {
+		for (let i: number = 0; i < this._filters.length; ++i) {
 			this._filters[i].textureWidth = this._rttManager.textureWidth;
 			this._filters[i].textureHeight = this._rttManager.textureHeight;
 			this._filters[i].rttManager = this._rttManager;
 		}
 
-		var scale:number = this._filters[0].textureScale;
+		const scale: number = this._filters[0].textureScale;
 
-		this._renderToTextureRect.x = this._rttManager.renderToTextureRect.x/scale;
-		this._renderToTextureRect.y = this._rttManager.renderToTextureRect.y/scale;
-		this._renderToTextureRect.width = this._rttManager.renderToTextureRect.width/scale;
-		this._renderToTextureRect.height = this._rttManager.renderToTextureRect.height/scale;
-
+		this._renderToTextureRect.x = this._rttManager.renderToTextureRect.x / scale;
+		this._renderToTextureRect.y = this._rttManager.renderToTextureRect.y / scale;
+		this._renderToTextureRect.width = this._rttManager.renderToTextureRect.width / scale;
+		this._renderToTextureRect.height = this._rttManager.renderToTextureRect.height / scale;
 
 		this._filterSizesInvalid = false;
 	}
 
-	public dispose():void
-	{
+	public dispose(): void {
 		this._rttManager.removeEventListener(RTTEvent.RESIZE, this._onRTTResizeDelegate);
 		this._rttManager = null;
 		this._stage = null;

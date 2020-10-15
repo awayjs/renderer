@@ -1,16 +1,14 @@
-import {IRenderEntitySorter} from "./IRenderEntitySorter";
+import { IRenderEntitySorter } from './IRenderEntitySorter';
 import { IRenderable } from '../base/IRenderable';
 
 /**
  * @class away.sort.RenderableMergeSort
  */
-export class RenderableMergeSort implements IRenderEntitySorter
-{
-	public sortBlendedRenderables(head:IRenderable):IRenderable
-	{
-		var headB:IRenderable;
-		var fast:IRenderable;
-		var slow:IRenderable;
+export class RenderableMergeSort implements IRenderEntitySorter {
+	public sortBlendedRenderables(head: IRenderable): IRenderable {
+		let headB: IRenderable;
+		let fast: IRenderable;
+		let slow: IRenderable;
 
 		if (!head || !head.next) {
 			return head;
@@ -36,9 +34,9 @@ export class RenderableMergeSort implements IRenderEntitySorter
 		headB = this.sortBlendedRenderables(headB);
 
 		// merge sublists while respecting order
-		var result:IRenderable;
-		var curr:IRenderable;
-		var l:IRenderable;
+		let result: IRenderable;
+		let curr: IRenderable;
+		let l: IRenderable;
 
 		if (!head)
 			return headB;
@@ -68,10 +66,9 @@ export class RenderableMergeSort implements IRenderEntitySorter
 		return result;
 	}
 
-	public sortOpaqueRenderables(head:IRenderable):IRenderable
-	{
-		var headB:IRenderable;
-		var fast:IRenderable, slow:IRenderable;
+	public sortOpaqueRenderables(head: IRenderable): IRenderable {
+		let headB: IRenderable;
+		let fast: IRenderable, slow: IRenderable;
 
 		if (!head || !head.next) {
 			return head;
@@ -97,10 +94,10 @@ export class RenderableMergeSort implements IRenderEntitySorter
 		headB = this.sortOpaqueRenderables(headB);
 
 		// merge sublists while respecting order
-		var result:IRenderable;
-		var curr:IRenderable;
-		var l:IRenderable;
-		var cmp:number = 0;
+		let result: IRenderable;
+		let curr: IRenderable;
+		let l: IRenderable;
+		let cmp: number = 0;
 
 		if (!head)
 			return headB;
@@ -112,12 +109,12 @@ export class RenderableMergeSort implements IRenderEntitySorter
 			// first sort per render order id (reduces program3D switches),
 			// then on render object id (reduces setting props),
 			// then on zIndex (reduces overdraw)
-			var aid:number = head.renderOrderId;
-			var bid:number = headB.renderOrderId;
+			const aid: number = head.renderOrderId;
+			const bid: number = headB.renderOrderId;
 
 			if (aid == bid) {
-				var ma:number = head.materialID;
-				var mb:number = headB.materialID;
+				const ma: number = head.materialID;
+				const mb: number = headB.materialID;
 
 				if (ma == mb) {
 					if (head.zIndex < headB.zIndex)

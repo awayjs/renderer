@@ -1,18 +1,18 @@
-import {IAsset} from "@awayjs/core";
+import { IAsset } from '@awayjs/core';
 
-import {ImageBase, ImageSampler} from "@awayjs/stage";
+import { ImageBase, ImageSampler } from '@awayjs/stage';
 
-import {MappingMode} from "./MappingMode";
+import { MappingMode } from './MappingMode';
 /**
  *
  */
 export interface ITexture extends IAsset
 {
-	mappingMode:MappingMode;
+	mappingMode: MappingMode;
 
-	getNumImages():number;
+	getNumImages(): number;
 
-	getImageAt(index:number):ImageBase;
+	getImageAt(index: number): ImageBase;
 
-	getSamplerAt(index:number):ImageSampler;
+	getSamplerAt(index: number): ImageSampler;
 }

@@ -1,21 +1,20 @@
-import {Matrix3D, Plane3D, Vector3D, ProjectionBase, IAbstractionPool, AbstractionBase, AssetEvent} from "@awayjs/core";
+import { Matrix3D, Plane3D, Vector3D, ProjectionBase, IAbstractionPool, AbstractionBase, AssetEvent } from '@awayjs/core';
 
-import {BitmapImage2D, ContextGLBlendFactor, ContextGLCompareMode, ContextGLStencilAction, ContextGLTriangleFace, IContextGL, Stage, StageEvent, ContextGLClearMask, RTTBufferManager} from "@awayjs/stage";
+import { BitmapImage2D, ContextGLBlendFactor, ContextGLCompareMode, ContextGLStencilAction, ContextGLTriangleFace, IContextGL, Stage, StageEvent, ContextGLClearMask, RTTBufferManager } from '@awayjs/stage';
 
-import {View, ViewEvent, IPartitionTraverser, IEntityTraverser, INode, PartitionBase, IPartitionEntity, ITraversable} from "@awayjs/view";
+import { View, ViewEvent, IPartitionTraverser, IEntityTraverser, INode, PartitionBase, IPartitionEntity, ITraversable } from '@awayjs/view';
 
-import {_Render_MaterialBase} from "./base/_Render_MaterialBase";
-import {_Render_RenderableBase} from "./base/_Render_RenderableBase";
-import {RenderEntity} from "./base/RenderEntity";
-import {RenderGroup} from "./RenderGroup";
+import { _Render_MaterialBase } from './base/_Render_MaterialBase';
+import { _Render_RenderableBase } from './base/_Render_RenderableBase';
+import { RenderEntity } from './base/RenderEntity';
+import { RenderGroup } from './RenderGroup';
 
-import {IRenderEntity} from "./base/IRenderEntity";
-import {IPass} from "./base/IPass";
-import {IRenderEntitySorter} from "./sort/IRenderEntitySorter";
-import {RenderableMergeSort} from "./sort/RenderableMergeSort";
+import { IRenderEntity } from './base/IRenderEntity';
+import { IPass } from './base/IPass';
+import { IRenderEntitySorter } from './sort/IRenderEntitySorter';
+import { RenderableMergeSort } from './sort/RenderableMergeSort';
 import { IRenderable } from './base/IRenderable';
 import { _Stage_ElementsBase } from './base/_Stage_ElementsBase';
-
 
 /**
  * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
@@ -23,122 +22,110 @@ import { _Stage_ElementsBase } from './base/_Stage_ElementsBase';
  *
  * @class away.render.RendererBase
  */
-export class RendererBase extends AbstractionBase implements IPartitionTraverser, IEntityTraverser, IRenderable
-{
+export class RendererBase extends AbstractionBase implements IPartitionTraverser, IEntityTraverser, IRenderable {
 	public static _collectionMark = 0;
-	private _enableDepthAndStencil:boolean;
-	private _surfaceSelector:number;
-	private _mipmapSelector:number;
-	private _maskConfig:number;
-	private _maskId:number;
-	private _activeMasksDirty:boolean;
-	private _activeMaskOwners:Array<IPartitionEntity>;
+	private _enableDepthAndStencil: boolean;
+	private _surfaceSelector: number;
+	private _mipmapSelector: number;
+	private _maskConfig: number;
+	private _maskId: number;
+	private _activeMasksDirty: boolean;
+	private _activeMaskOwners: Array<IPartitionEntity>;
 
-	protected _partition:PartitionBase;
-	protected _context:IContextGL;
-	protected _stage:Stage;
-	protected _view:View;
+	protected _partition: PartitionBase;
+	protected _context: IContextGL;
+	protected _stage: Stage;
+	protected _view: View;
 
-	public _cameraTransform:Matrix3D;
-	private _cameraForward:Vector3D = new Vector3D();
+	public _cameraTransform: Matrix3D;
+	private _cameraForward: Vector3D = new Vector3D();
 
-	public _pRttBufferManager:RTTBufferManager;
+	public _pRttBufferManager: RTTBufferManager;
 
-	protected _depthTextureDirty:boolean = true;
-	protected _depthPrepass:boolean = false;
+	protected _depthTextureDirty: boolean = true;
+	protected _depthPrepass: boolean = false;
 
-	private _snapshotBitmapImage2D:BitmapImage2D;
-	private _snapshotRequired:boolean;
+	private _snapshotBitmapImage2D: BitmapImage2D;
+	private _snapshotRequired: boolean;
 
-	private _onContextUpdateDelegate:(event:StageEvent) => void;
-	private _onSizeInvalidateDelegate:(event:ViewEvent) => void;
+	private _onContextUpdateDelegate: (event: StageEvent) => void;
+	private _onSizeInvalidateDelegate: (event: ViewEvent) => void;
 
-	public _pNumElements:number = 0;
+	public _pNumElements: number = 0;
 
-	public _pOpaqueRenderableHead:IRenderable;
-	public _pBlendedRenderableHead:IRenderable;
-	public _disableColor:boolean = false;
-	public _disableClear:boolean = false;
-	public _renderBlended:boolean = true;
-	private _cullPlanes:Array<Plane3D>;
-	private _customCullPlanes:Array<Plane3D>;
-	private _numCullPlanes:number = 0;
-	private _sourceEntity:IRenderEntity;
-	protected _renderGroup:RenderGroup;
-	private _renderEntity:RenderEntity;
-	private _zIndex:number;
-	private _renderSceneTransform:Matrix3D;
+	public _pOpaqueRenderableHead: IRenderable;
+	public _pBlendedRenderableHead: IRenderable;
+	public _disableColor: boolean = false;
+	public _disableClear: boolean = false;
+	public _renderBlended: boolean = true;
+	private _cullPlanes: Array<Plane3D>;
+	private _customCullPlanes: Array<Plane3D>;
+	private _numCullPlanes: number = 0;
+	private _sourceEntity: IRenderEntity;
+	protected _renderGroup: RenderGroup;
+	private _renderEntity: RenderEntity;
+	private _zIndex: number;
+	private _renderSceneTransform: Matrix3D;
 
-    /**
+	/**
      *
      */
-    public materialID:number;
+	public materialID: number;
 
-    /**
+	/**
      *
      */
-    public renderOrderId:number;
+	public renderOrderId: number;
 
-    /**
+	/**
      *
      */
-    public zIndex:number;
+	public zIndex: number;
 
-	public next:IRenderable;
+	public next: IRenderable;
 
-	public sourceEntity:IRenderEntity;
+	public sourceEntity: IRenderEntity;
 
-	public renderMaterial:_Render_MaterialBase;
-	
-	public stageElements:_Stage_ElementsBase;
+	public renderMaterial: _Render_MaterialBase;
 
-	public get maskOwners():Array<IPartitionEntity>
-	{
+	public stageElements: _Stage_ElementsBase;
+
+	public get maskOwners(): Array<IPartitionEntity> {
 		return this.sourceEntity.maskOwners;
 	}
 
-	public get partition():PartitionBase
-	{
+	public get partition(): PartitionBase {
 		return this._partition;
 	}
 
-	public get renderGroup():RenderGroup
-	{
+	public get renderGroup(): RenderGroup {
 		return this._renderGroup;
 	}
 
 	/**
 	 *
 	 */
-	public get cullPlanes():Array<Plane3D>
-	{
+	public get cullPlanes(): Array<Plane3D> {
 		return this._customCullPlanes;
 	}
 
-	public set cullPlanes(value:Array<Plane3D>)
-	{
+	public set cullPlanes(value: Array<Plane3D>) {
 		this._customCullPlanes = value;
 	}
 
-
-	public get renderBlended():boolean
-	{
+	public get renderBlended(): boolean {
 		return this._renderBlended;
 	}
 
-	public set renderBlended(value:boolean)
-	{
+	public set renderBlended(value: boolean) {
 		this._renderBlended = value;
 	}
 
-
-	public get disableColor():boolean
-	{
+	public get disableColor(): boolean {
 		return this._disableColor;
 	}
 
-	public set disableColor(value:boolean)
-	{
+	public set disableColor(value: boolean) {
 		if (this._disableColor == value)
 			return;
 
@@ -147,47 +134,43 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._invalid = true;
 	}
 
-	public get disableClear():boolean
-	{
+	public get disableClear(): boolean {
 		return this._disableClear;
 	}
 
-	public set disableClear(value:boolean)
-	{
+	public set disableClear(value: boolean) {
 		if (this._disableClear == value)
 			return;
 
 		this._disableClear = value;
-		
+
 		this._invalid = true;
 	}
 
 	/**
 	 *
 	 */
-	public get numElements():number
-	{
+	public get numElements(): number {
 		return this._pNumElements;
 	}
 
 	/**
 	 *
 	 */
-	public renderableSorter:IRenderEntitySorter;
+	public renderableSorter: IRenderEntitySorter;
 
 	/**
 	 * Creates a new RendererBase object.
 	 */
-	constructor(renderGroup:RenderGroup, partition:PartitionBase, pool:IAbstractionPool)
-	{
+	constructor(renderGroup: RenderGroup, partition: PartitionBase, pool: IAbstractionPool) {
 		super(partition, pool);
 
 		this._partition = partition;
 		this.sourceEntity = <IRenderEntity> partition.root;
 		this._maskId = partition.root.maskId;
 
-		this._onSizeInvalidateDelegate = (event:ViewEvent) => this.onSizeInvalidate(event);
-		this._onContextUpdateDelegate = (event:StageEvent) => this.onContextUpdate(event);
+		this._onSizeInvalidateDelegate = (event: ViewEvent) => this.onSizeInvalidate(event);
+		this._onContextUpdateDelegate = (event: StageEvent) => this.onContextUpdate(event);
 
 		//default sorting algorithm
 		this.renderableSorter = new RenderableMergeSort();
@@ -204,34 +187,30 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._context = <IContextGL> this._stage.context;
 	}
 
-	public get context():IContextGL
-	{
+	public get context(): IContextGL {
 		return this._context;
 	}
 
 	/**
 	 * The Stage that will provide the ContextGL used for rendering.
 	 */
-	public get stage():Stage
-	{
+	public get stage(): Stage {
 		return this._stage;
 	}
 
-	public get view():View
-	{
+	public get view(): View {
 		return this._view;
 	}
-	
-	public onClear(event:AssetEvent):void
-	{
+
+	public onClear(event: AssetEvent): void {
 		super.onClear(event);
 
 		this._renderGroup.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 		this._renderGroup.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 		this._renderGroup.removeEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 
-		this._onContextUpdateDelegate=null;
-		this._onSizeInvalidateDelegate=null;
+		this._onContextUpdateDelegate = null;
+		this._onSizeInvalidateDelegate = null;
 		this._view = null;
 		this._stage = null;
 		this._context = null;
@@ -245,8 +224,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
-	public render(enableDepthAndStencil:boolean = true, surfaceSelector:number = 0, mipmapSelector:number = 0, maskConfig:number = 0):void
-	{
+	public render(enableDepthAndStencil: boolean = true, surfaceSelector: number = 0, mipmapSelector: number = 0, maskConfig: number = 0): void {
 		//TODO refactor setTarget so that rendertextures are created before this check
 		// if (!this._stage || !this._context)
 		// 	return;
@@ -262,7 +240,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._disableColor = true;
 		}
 
-
 		this._renderGroup.update(this._partition);
 
 		// invalidate mipmaps (if target exists) to regenerate if required
@@ -273,7 +250,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		// this._pRttViewProjectionMatrix.appendScale(this.textureRatioX, this.textureRatioY, 1);
 
 		//TODO: allow sharedContexts for image targets
-		this._view.clear(!this._depthPrepass && !this._disableClear, enableDepthAndStencil, surfaceSelector, mipmapSelector, (!this._view.shareContext || this._view.target)? ContextGLClearMask.ALL : ContextGLClearMask.DEPTH);
+		this._view.clear(!this._depthPrepass && !this._disableClear, enableDepthAndStencil, surfaceSelector, mipmapSelector, (!this._view.shareContext || this._view.target) ? ContextGLClearMask.ALL : ContextGLClearMask.DEPTH);
 
 		/*
 		 if (_backgroundImageRenderer)
@@ -299,8 +276,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		}
 	}
 
-	public traverse():void
-	{
+	public traverse(): void {
 		//reset head values
 		this._pBlendedRenderableHead = null;
 		this._pOpaqueRenderableHead = null;
@@ -309,8 +285,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		this._cameraTransform = this._view.projection.transform.concatenatedMatrix3D;
 		this._cameraForward = this._view.projection.transform.forwardVector;
-		this._cullPlanes = this._customCullPlanes? this._customCullPlanes : this._view.projection.viewFrustumPlanes;
-		this._numCullPlanes = this._cullPlanes? this._cullPlanes.length : 0;
+		this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : this._view.projection.viewFrustumPlanes;
+		this._numCullPlanes = this._cullPlanes ? this._cullPlanes.length : 0;
 
 		RendererBase._collectionMark++;
 
@@ -325,8 +301,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._invalid = false;
 	}
 
-	public _iRenderCascades(projection:ProjectionBase, node:INode, enableDepthAndStencil:boolean = true, surfaceSelector:number = 0):void
-	{
+	public _iRenderCascades(projection: ProjectionBase, node: INode, enableDepthAndStencil: boolean = true, surfaceSelector: number = 0): void {
 		// this._stage.setRenderTarget(target, true, 0);
 		// this._context.clear(1, 1, 1, 1, 1, 0);
 
@@ -355,10 +330,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
-	public executeRender(enableDepthAndStencil:boolean = true, surfaceSelector:number = 0, mipmapSelector:number = 0):void
-	{
+	public executeRender(enableDepthAndStencil: boolean = true, surfaceSelector: number = 0, mipmapSelector: number = 0): void {
 		//if (this._invalid) TODO: this is not triggering as often as it should
-			this.traverse();
+		this.traverse();
 
 		//initialise color mask
 		if (this._disableColor)
@@ -378,19 +352,16 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this.drawRenderables(this._pBlendedRenderableHead);
 	}
 
-	
-	public onInvalidate(event:AssetEvent):void
-	{
+	public onInvalidate(event: AssetEvent): void {
 		super.onInvalidate(event);
 
 		this._renderGroup.invalidate();
 	}
-	
+
 	/*
 	 * Will draw the renderer's output on next render to the provided bitmap data.
 	 * */
-	public queueSnapshot(bmd:BitmapImage2D):void
-	{
+	public queueSnapshot(bmd: BitmapImage2D): void {
 		this._snapshotRequired = true;
 		this._snapshotBitmapImage2D = bmd;
 	}
@@ -432,16 +403,15 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 *
 	 * @param renderables The renderables to draw.
 	 */
-	public drawRenderables(renderRenderable:IRenderable):void
-	{
-		var i:number;
-		var r:IRenderable;
-		var renderMaterial:_Render_MaterialBase;
-		var numPasses:number;
+	public drawRenderables(renderRenderable: IRenderable): void {
+		let i: number;
+		let r: IRenderable;
+		let renderMaterial: _Render_MaterialBase;
+		let numPasses: number;
 
 		while (renderRenderable) {
 			renderMaterial = renderRenderable.renderMaterial;
-			numPasses = renderMaterial? renderMaterial.numPasses : 1;
+			numPasses = renderMaterial ? renderMaterial.numPasses : 1;
 
 			if (this._activeMasksDirty || this._checkMaskOwners(renderRenderable.maskOwners)) {
 				if (!(this._activeMaskOwners = renderRenderable.maskOwners)) {
@@ -453,7 +423,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				}
 				this._activeMasksDirty = false;
 			}
-
 
 			//iterate through each shader object
 			for (i = 0; i < numPasses; i++) {
@@ -478,8 +447,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	/**
 	 * Assign the context once retrieved
 	 */
-	private onContextUpdate(event:StageEvent):void
-	{
+	private onContextUpdate(event: StageEvent): void {
 		this._context = <IContextGL> this._stage.context;
 	}
 
@@ -505,7 +473,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 	 }
 
-
 	 this._background = value;
 
 	 if (this._backgroundImageRenderer)
@@ -519,12 +486,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 }
 	 */
 
-
 	/**
 	 *
 	 */
-	public onSizeInvalidate(event:ViewEvent):void
-	{
+	public onSizeInvalidate(event: ViewEvent): void {
 		if (this._pRttBufferManager) {
 			this._pRttBufferManager.viewWidth = this._view.width;
 			this._pRttBufferManager.viewHeight = this._view.height;
@@ -538,17 +503,15 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 * @param node
 	 * @returns {boolean}
 	 */
-	public enterNode(node:INode):boolean
-	{
-		var enter:boolean = node._collectionMark != RendererBase._collectionMark && node.isRenderable() && (this._maskConfig || node.isInFrustum(this._partition.root, this._cullPlanes, this._numCullPlanes, this._renderGroup.pickGroup)) && node.maskId == this._maskId;
+	public enterNode(node: INode): boolean {
+		const enter: boolean = node._collectionMark != RendererBase._collectionMark && node.isRenderable() && (this._maskConfig || node.isInFrustum(this._partition.root, this._cullPlanes, this._numCullPlanes, this._renderGroup.pickGroup)) && node.maskId == this._maskId;
 
 		node._collectionMark = RendererBase._collectionMark;
 
 		return enter;
 	}
 
-	public getTraverser(partition:PartitionBase):IPartitionTraverser
-	{
+	public getTraverser(partition: PartitionBase): IPartitionTraverser {
 		// var traverser:RendererBase = this._renderGroup.getRenderer(partition);
 		// traverser.renderableSorter = null;
 		// traverser.disableClear = true;
@@ -561,8 +524,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		return this;
 	}
 
-	public applyEntity(entity:IRenderEntity):void
-	{
+	public applyEntity(entity: IRenderEntity): void {
 		this._sourceEntity = entity;
 		this._renderEntity = this._renderGroup.getAbstraction(entity);
 
@@ -576,19 +538,17 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		entity._acceptTraverser(this);
 	}
 
-	public applyTraversable(traversable:ITraversable):void
-	{
-		var renderRenderable:_Render_RenderableBase = this._renderEntity.getAbstraction(traversable);
-
+	public applyTraversable(traversable: ITraversable): void {
+		const renderRenderable: _Render_RenderableBase = this._renderEntity.getAbstraction(traversable);
 
 		//set local vars for faster referencing
 		renderRenderable.cascaded = false;
-		
+
 		renderRenderable.zIndex = this._zIndex;
 		renderRenderable.maskId = this._sourceEntity.maskId;
 		renderRenderable.maskOwners = this._sourceEntity.maskOwners;
 
-		var renderMaterial:_Render_MaterialBase = renderRenderable.renderMaterial;
+		const renderMaterial: _Render_MaterialBase = renderRenderable.renderMaterial;
 		renderRenderable.materialID = renderMaterial.materialID;
 		renderRenderable.renderOrderId = renderMaterial.renderOrderId;
 
@@ -606,23 +566,22 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._pNumElements += renderRenderable.stageElements.elements.numElements; //need to re-trigger stageElements getter in case animator has changed
 	}
 
-	public _renderMasks(maskOwners:IPartitionEntity[]):void
-	{
+	public _renderMasks(maskOwners: IPartitionEntity[]): void {
 		//calculate the bit index of maskConfig devided by two
-		var halfBitIndex:number = Math.log2(this._maskConfig) >> 1;
+		const halfBitIndex: number = Math.log2(this._maskConfig) >> 1;
 
 		//create a new base and config value for the mask to be rendered
-		var newMaskBase:number = this._maskConfig? Math.pow(2, (halfBitIndex + 1) << 1) : 1;//maskBase set to next odd significant bit
-		var newMaskConfig:number = newMaskBase;
+		const newMaskBase: number = this._maskConfig ? Math.pow(2, (halfBitIndex + 1) << 1) : 1;//maskBase set to next odd significant bit
+		let newMaskConfig: number = newMaskBase;
 
 		this._context.enableStencil();
 		this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.ALWAYS, ContextGLStencilAction.SET, ContextGLStencilAction.SET, ContextGLStencilAction.SET);
-		var numLayers:number = maskOwners.length;
-		var children:Array<IPartitionEntity>;
-		var numChildren:number;
-		var mask:IPartitionEntity;
+		const numLayers: number = maskOwners.length;
+		let children: Array<IPartitionEntity>;
+		let numChildren: number;
+		let mask: IPartitionEntity;
 
-		for (var i:number = 0; i < numLayers; ++i) {
+		for (let i: number = 0; i < numLayers; ++i) {
 			if (i != 0)
 				this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.EQUAL, ContextGLStencilAction.SET, ContextGLStencilAction.SET, ContextGLStencilAction.KEEP);
 
@@ -632,11 +591,11 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			children = maskOwners[i].masks;
 			numChildren = children.length;
 
-			for (var j:number = 0; j < numChildren; ++j) {
+			for (let j: number = 0; j < numChildren; ++j) {
 				mask = children[j];
 				//todo: figure out why masks can be null here
-				if(mask)
-					this._renderGroup.getRenderer(mask.partition).render(true, 0, 0, newMaskConfig)
+				if (mask)
+					this._renderGroup.getRenderer(mask.partition).render(true, 0, 0, newMaskConfig);
 			}
 		}
 		this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.EQUAL, ContextGLStencilAction.SET, ContextGLStencilAction.SET, ContextGLStencilAction.KEEP);
@@ -646,20 +605,19 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._context.setColorMask(true, true, true, true);
 	}
 
-	private _checkMaskOwners(maskOwners:Array<IPartitionEntity>):boolean
-	{
+	private _checkMaskOwners(maskOwners: Array<IPartitionEntity>): boolean {
 		if (this._activeMaskOwners == null || maskOwners == null)
 			return Boolean(this._activeMaskOwners != maskOwners);
 
 		if (this._activeMaskOwners.length != maskOwners.length)
 			return true;
 
-		var numLayers:number = maskOwners.length;
-		var numMasks:number;
-		var masks:Array<IPartitionEntity>;
-		var activeNumMasks:number;
-		var activeMasks:Array<IPartitionEntity>;
-		for (var i:number = 0; i < numLayers; i++) {
+		const numLayers: number = maskOwners.length;
+		let numMasks: number;
+		let masks: Array<IPartitionEntity>;
+		let activeNumMasks: number;
+		let activeMasks: Array<IPartitionEntity>;
+		for (let i: number = 0; i < numLayers; i++) {
 			masks = maskOwners[i].masks;
 			numMasks = masks.length;
 			activeMasks = this._activeMaskOwners[i].masks;
@@ -667,7 +625,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			if (activeNumMasks != numMasks)
 				return true;
 
-			for (var j:number = 0; j < numMasks; j++) {
+			for (let j: number = 0; j < numMasks; j++) {
 				if (activeMasks[j] != masks[j])
 					return true;
 			}

@@ -1,9 +1,9 @@
-import {INode, PartitionBase} from "@awayjs/view";
-import {_IRender_MaterialClass} from "./base/_IRender_MaterialClass";
+import { INode, PartitionBase } from '@awayjs/view';
+import { _IRender_MaterialClass } from './base/_IRender_MaterialClass';
 
-import {RenderGroup} from "./RenderGroup";
+import { RenderGroup } from './RenderGroup';
 
-import {RendererBase} from "./RendererBase";
+import { RendererBase } from './RendererBase';
 import { IAbstractionPool } from '@awayjs/core';
 
 /**
@@ -11,24 +11,21 @@ import { IAbstractionPool } from '@awayjs/core';
  *
  * @class away.render.DistanceRenderer
  */
-export class DistanceRenderer extends RendererBase
-{
+export class DistanceRenderer extends RendererBase {
 	/**
 	 * Creates a new DistanceRenderer object.
 	 * @param renderBlended Indicates whether semi-transparent objects should be rendered.
 	 * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
 	 */
-	constructor(renderGroup:RenderGroup, partition:PartitionBase, pool:IAbstractionPool)
-	{
+	constructor(renderGroup: RenderGroup, partition: PartitionBase, pool: IAbstractionPool) {
 		super(renderGroup, partition, pool);
 	}
 
 	/**
 	 *
 	 */
-	public enterNode(node:INode):boolean
-	{
-		var enter:boolean = node._collectionMark != RendererBase._collectionMark && node.isCastingShadow();
+	public enterNode(node: INode): boolean {
+		const enter: boolean = node._collectionMark != RendererBase._collectionMark && node.isCastingShadow();
 
 		if (!enter) {
 			node._collectionMark = RendererBase._collectionMark;

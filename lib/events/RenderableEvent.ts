@@ -1,4 +1,4 @@
-import {EventBase, IAsset} from "@awayjs/core";
+import { EventBase, IAsset } from '@awayjs/core';
 
 /**
  * Dispatched to notify changes in a sub geometry object's state.
@@ -6,32 +6,30 @@ import {EventBase, IAsset} from "@awayjs/core";
  * @class away.events.RenderableEvent
  * @see away.core.base.Graphics
  */
-export class RenderableEvent extends EventBase
-{
+export class RenderableEvent extends EventBase {
 	/**
 	 * Dispatched when a Renderable has been updated.
 	 */
-	public static INVALIDATE_MATERIAL:string = "invalidateMaterial";
+	public static INVALIDATE_MATERIAL: string = 'invalidateMaterial';
 
 	/**
 	 *
 	 */
-	public static INVALIDATE_ELEMENTS:string = "invalidateElements";
+	public static INVALIDATE_ELEMENTS: string = 'invalidateElements';
 
 	/**
 	 *
 	 */
-	public static INVALIDATE_STYLE:string = "invalidateStyle";
+	public static INVALIDATE_STYLE: string = 'invalidateStyle';
 
-	private _renderable:IAsset;
+	private _renderable: IAsset;
 
 	/**
 	 * Create a new GraphicsEvent
 	 * @param type The event type.
 	 * @param dataType An optional data type of the vertex data being updated.
 	 */
-	constructor(type:string, renderable:IAsset)
-	{
+	constructor(type: string, renderable: IAsset) {
 		super(type);
 
 		this._renderable = renderable;
@@ -40,8 +38,7 @@ export class RenderableEvent extends EventBase
 	/**
 	 * The renderobject owner of the renderable owner.
 	 */
-	public get renderable():IAsset
-	{
+	public get renderable(): IAsset {
 		return this._renderable;
 	}
 
@@ -50,8 +47,7 @@ export class RenderableEvent extends EventBase
 	 *
 	 * @return An exact duplicate of the current object.
 	 */
-	public clone():RenderableEvent
-	{
+	public clone(): RenderableEvent {
 		return new RenderableEvent(this.type, this._renderable);
 	}
 }

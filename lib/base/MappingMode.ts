@@ -2,7 +2,7 @@
  *
  */
 export enum MappingMode
-{
+	{
 	/**
 	 *
 	 */

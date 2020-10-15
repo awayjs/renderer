@@ -4,25 +4,24 @@ import { _Stage_ElementsBase } from './_Stage_ElementsBase';
 import { IRenderEntity } from './IRenderEntity';
 import { _Render_MaterialBase } from './_Render_MaterialBase';
 
-
 export interface IRenderable extends IEventDispatcher
-{	
-	
-	materialID:number;
+{
 
-    renderOrderId:number;
+	materialID: number;
 
-    zIndex:number;
-	
-	next:IRenderable;
+	renderOrderId: number;
 
-	sourceEntity:IRenderEntity;
+	zIndex: number;
 
-	renderMaterial:_Render_MaterialBase;
-	
-	stageElements:_Stage_ElementsBase;
+	next: IRenderable;
 
-	maskOwners:Array<IPartitionEntity>;
+	sourceEntity: IRenderEntity;
 
-	executeRender(enableDepthAndStencil?:boolean, surfaceSelector?:number, mipmapSelector?:number, maskConfig?:number):void;
+	renderMaterial: _Render_MaterialBase;
+
+	stageElements: _Stage_ElementsBase;
+
+	maskOwners: Array<IPartitionEntity>;
+
+	executeRender(enableDepthAndStencil?: boolean, surfaceSelector?: number, mipmapSelector?: number, maskConfig?: number): void;
 }
