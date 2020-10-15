@@ -1,0 +1,105 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended"
+    ],
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+    },
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "@typescript-eslint"
+        ],
+    "rules": {
+        "array-bracket-spacing": "error",
+        "brace-style": ["error", "1tbs", { "allowSingleLine": true }],
+        "indent": "off",
+        "@typescript-eslint/indent": [
+            "error",
+            "tab"
+        ],
+        "keyword-spacing": "error",
+        "linebreak-style": [
+            "error",
+            "windows"
+        ],
+        "lines-between-class-members": [
+            "error",
+            "always", {
+                "exceptAfterSingleLine": true
+            }
+        ],
+        // "@typescript-eslint/member-ordering": [
+        //     "error",
+        //     {
+        //         "default": {
+        //             "memberTypes": [
+        //                 "public-static-field",
+        //                 "protected-static-field",
+        //                 "private-static-field",
+        //                 "public-instance-field",
+        //                 "protected-instance-field",
+        //                 "private-instance-field",
+        //                 "constructor",
+        //                 "public-static-method",
+        //                 "protected-static-method",
+        //                 "private-static-method",
+        //                 "public-instance-method",
+        //                 "protected-instance-method",
+        //                 "private-instance-method"
+        //             ],
+        //             "order": "alphabetically"
+        //         }
+        //     }
+        // ],
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": [
+            "error",
+            {
+                "args": "none"
+            }
+        ],
+        "no-prototype-builtins": "off",
+        "no-trailing-spaces": "error",
+        "object-curly-spacing": ["error", "always"],
+        "quotes": ["error", "single"],
+        "semi": "error",
+        "no-var": "warn",
+        "prefer-const": "warn",
+        "prefer-rest-params": "warn",
+        "prefer-spread": "warn",
+        "max-len": ["warn", { "code": 120 }],
+        "space-before-blocks": "error",
+        "space-in-parens": "error",
+        "space-infix-ops": [
+            "error",
+            {
+                "int32Hint": true
+            }
+        ],
+        "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 0 }],
+        "space-unary-ops": "error",
+        "@typescript-eslint/type-annotation-spacing": [
+            "error",
+            {
+                "before": false,
+                "after": true,
+                "overrides": {
+                    "arrow": {
+                        "before": true,
+                        "after": true
+                    }
+                }
+            }
+        ]
+    }
+}
