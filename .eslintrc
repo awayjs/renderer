@@ -28,10 +28,6 @@
             "tab"
         ],
         "keyword-spacing": "error",
-        "linebreak-style": [
-            "error",
-            "windows"
-        ],
         "lines-between-class-members": [
             "error",
             "always", {
