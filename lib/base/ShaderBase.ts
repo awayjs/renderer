@@ -1,16 +1,40 @@
-import { AssetBase, AbstractionBase, Matrix, Matrix3D, Vector3D, ColorTransform, ArgumentError, IAssetClass, IAbstractionPool, ProjectionBase, ByteArray, IAbstractionClass } from '@awayjs/core';
+import {
+	AssetBase,
+	AbstractionBase,
+	Matrix,
+	Matrix3D,
+	Vector3D,
+	ColorTransform,
+	ArgumentError,
+	IAssetClass,
+	IAbstractionPool,
+	ByteArray,
+	IAbstractionClass,
+} from '@awayjs/core';
 
-import { AGALMiniAssembler, ContextGLProfile, ContextGLBlendFactor, ContextGLCompareMode, ContextGLTriangleFace, ProgramData, Stage, BlendMode, ShaderRegisterCache, ShaderRegisterData, ShaderRegisterElement, RegisterPool } from '@awayjs/stage';
+import {
+	AGALMiniAssembler,
+	ContextGLProfile,
+	ContextGLBlendFactor,
+	ContextGLCompareMode,
+	ContextGLTriangleFace,
+	ProgramData,
+	Stage,
+	BlendMode,
+	ShaderRegisterCache,
+	ShaderRegisterData,
+	ShaderRegisterElement,
+} from '@awayjs/stage';
 
 import { _Render_RenderableBase } from './_Render_RenderableBase';
 import { _Render_ElementsBase } from './_Render_ElementsBase';
-import { IAnimationSet } from './IAnimationSet';
-import { IAnimator } from './IAnimator';
 import { AnimationRegisterData } from './AnimationRegisterData';
-import { IPass } from './IPass';
 import { _Render_MaterialBase } from './_Render_MaterialBase';
 import { _Stage_ElementsBase } from './_Stage_ElementsBase';
+import { IAnimationSet } from './IAnimationSet';
+import { IAnimator } from './IAnimator';
 import { View } from '@awayjs/view';
+import { IPass } from './IPass';
 
 /**
  * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
@@ -132,7 +156,8 @@ export class ShaderBase implements IAbstractionPool {
 	}
 
 	/**
-	 * The amount of used vertex streams in the vertex code. Used by the animation code generation to know from which index on streams are available.
+	 * The amount of used vertex streams in the vertex code.
+	 * Used by the animation code generation to know from which index on streams are available.
 	 */
 	public get numUsedStreams(): number {
 		if (this._invalidProgram)
@@ -231,7 +256,8 @@ export class ShaderBase implements IAbstractionPool {
 	public outputsTangentNormals: boolean;
 
 	/**
-	 * Indicates whether or not normal calculations are expected in tangent space. This is only the case if no world-space
+	 * Indicates whether or not normal calculations are
+	 * expected in tangent space. This is only the case if no world-space
 	 * dependencies exist and normals are being output.
 	 */
 	public usesTangentSpace: boolean;
@@ -357,7 +383,9 @@ export class ShaderBase implements IAbstractionPool {
 	}
 
 	public getAbstraction(asset: AssetBase): AbstractionBase {
-		return (this._abstractionPool[asset.id] || (this._abstractionPool[asset.id] = new (<IAbstractionClass> ShaderBase._abstractionClassPool[asset.assetType])(asset, this)));
+		return (this._abstractionPool[asset.id]
+				|| (this._abstractionPool[asset.id] = new (
+					<IAbstractionClass> ShaderBase._abstractionClassPool[asset.assetType])(asset, this)));
 	}
 
 	/**
@@ -409,7 +437,8 @@ export class ShaderBase implements IAbstractionPool {
 	 * The blend mode to use when drawing this renderable. The following blend modes are supported:
 	 * <ul>
 	 * <li>BlendMode.NORMAL: No blending, unless the material inherently needs it</li>
-	 * <li>BlendMode.LAYER: Force blending. This will draw the object the same as NORMAL, but without writing depth writes.</li>
+	 * <li>BlendMode.LAYER: Force blending.
+	 * This will draw the object the same as NORMAL, but without writing depth writes.</li>
 	 * <li>BlendMode.MULTIPLY</li>
 	 * <li>BlendMode.ADD</li>
 	 * <li>BlendMode.ALPHA</li>
@@ -463,14 +492,18 @@ export class ShaderBase implements IAbstractionPool {
 	public _activate(): void {
 		if (!this.programData.program) {
 			this.programData.program = this._stage.context.createProgram();
-			const vertexByteCode: ByteArray = (new AGALMiniAssembler().assemble('part vertex 1\n' + this.programData.vertexString + 'endpart'))['vertex'].data;
-			const fragmentByteCode: ByteArray = (new AGALMiniAssembler().assemble('part fragment 1\n' + this.programData.fragmentString + 'endpart'))['fragment'].data;
+			const vertexByteCode: ByteArray = (new AGALMiniAssembler()
+				.assemble('part vertex 1\n' + this.programData.vertexString + 'endpart'))['vertex'].data;
+			const fragmentByteCode: ByteArray = (new AGALMiniAssembler()
+				.assemble('part fragment 1\n' + this.programData.fragmentString + 'endpart'))['fragment'].data;
 			this.programData.program.upload(vertexByteCode, fragmentByteCode);
 		}
 
 		//set program data
 		this._stage.context.setProgram(this.programData.program);
-		this._stage.context.setCulling(this.useBothSides ? ContextGLTriangleFace.NONE : this._defaultCulling, this._view.projection.coordinateSystem);
+		this._stage.context.setCulling(
+			this.useBothSides ? ContextGLTriangleFace.NONE : this._defaultCulling,
+			this._view.projection.coordinateSystem);
 
 		if (!this.usesTangentSpace && this.cameraPositionIndex >= 0) {
 			const pos: Vector3D = this._view.projection.transform.concatenatedMatrix3D.position;
@@ -569,9 +602,23 @@ export class ShaderBase implements IAbstractionPool {
 			const y: number = pos.y;
 			const z: number = pos.z;
 
-			this.vertexConstantData[this.cameraPositionIndex] = this._pInverseSceneMatrix[0] * x + this._pInverseSceneMatrix[4] * y + this._pInverseSceneMatrix[8] * z + this._pInverseSceneMatrix[12];
-			this.vertexConstantData[this.cameraPositionIndex + 1] = this._pInverseSceneMatrix[1] * x + this._pInverseSceneMatrix[5] * y + this._pInverseSceneMatrix[9] * z + this._pInverseSceneMatrix[13];
-			this.vertexConstantData[this.cameraPositionIndex + 2] = this._pInverseSceneMatrix[2] * x + this._pInverseSceneMatrix[6] * y + this._pInverseSceneMatrix[10] * z + this._pInverseSceneMatrix[14];
+			this.vertexConstantData[this.cameraPositionIndex] =
+				this._pInverseSceneMatrix[0] * x +
+				this._pInverseSceneMatrix[4] * y +
+				this._pInverseSceneMatrix[8] * z +
+				this._pInverseSceneMatrix[12];
+
+			this.vertexConstantData[this.cameraPositionIndex + 1] =
+				this._pInverseSceneMatrix[1] * x +
+				this._pInverseSceneMatrix[5] * y +
+				this._pInverseSceneMatrix[9] * z +
+				this._pInverseSceneMatrix[13];
+
+			this.vertexConstantData[this.cameraPositionIndex + 2] =
+				this._pInverseSceneMatrix[2] * x +
+				this._pInverseSceneMatrix[6] * y +
+				this._pInverseSceneMatrix[10] * z +
+				this._pInverseSceneMatrix[14];
 		}
 	}
 
@@ -605,14 +652,19 @@ export class ShaderBase implements IAbstractionPool {
 		//compile custom vertex & fragment codes from pass
 		this._vertexCode += this._pass._getVertexCode(this._registerCache, this._sharedRegisters);
 		this._fragmentCode += this._pass._getFragmentCode(this._registerCache, this._sharedRegisters);
-		this._postAnimationFragmentCode += this._pass._getPostAnimationFragmentCode(this._registerCache, this._sharedRegisters);
+		this._postAnimationFragmentCode +=
+			this._pass._getPostAnimationFragmentCode(this._registerCache, this._sharedRegisters);
 
 		//check if alpha needs to be pre-multipled
-		if (this.usesPremultipliedAlpha)
-			this._postAnimationFragmentCode += 'mul ' + this._sharedRegisters.shadedTarget + '.xyz, ' + this._sharedRegisters.shadedTarget + ', ' + this._sharedRegisters.shadedTarget + '.w\n';
+		if (this.usesPremultipliedAlpha) {
+			const target = this._sharedRegisters.shadedTarget;
+			this._postAnimationFragmentCode += `mul ${target}.xyz, ${target}, ${target}.w\n`;
+		}
 
 		//assign the final output color to the output register
-		this._postAnimationFragmentCode += 'mov ' + this._registerCache.fragmentOutputRegister + ', ' + this._sharedRegisters.shadedTarget + '\n';
+		this._postAnimationFragmentCode +=
+			`mov ${this._registerCache.fragmentOutputRegister}, ${this._sharedRegisters.shadedTarget}\n`;
+
 		this._registerCache.removeFragmentTempUsage(this._sharedRegisters.shadedTarget);
 
 		this._compileAnimationCode();
@@ -620,7 +672,11 @@ export class ShaderBase implements IAbstractionPool {
 		//initialise the required shader constants
 		this._initConstantData();
 
-		const programData: ProgramData = this._stage.getProgramData(this._animationVertexCode + this._vertexCode, this._fragmentCode + this._animationFragmentCode + this._postAnimationFragmentCode);
+		const programData: ProgramData = this._stage.getProgramData(
+			this._animationVertexCode + this._vertexCode,
+			this._fragmentCode +
+			this._animationFragmentCode +
+			this._postAnimationFragmentCode);
 
 		//check program data hasn't changed, keep count of program usages
 		if (this._programData != programData) {
@@ -715,8 +771,9 @@ export class ShaderBase implements IAbstractionPool {
      * Compile the code for the methods.
      */
 	protected _compileDependencies(): void {
-		if (this.colorDependencies > 0)
-        	this._compileColorCode();
+		if (this.colorDependencies > 0) {
+			this._compileColorCode();
+		}
 
 		//compile the world-space position if required
 		if (this.globalPosDependencies > 0)
@@ -766,7 +823,7 @@ export class ShaderBase implements IAbstractionPool {
 			this.vertexConstantData = new Float32Array(usedVC * 4);
 
 		if (!this.fragmentConstantData || this.fragmentConstantData.length !== usedFC * 4)
-        	this.fragmentConstantData = new Float32Array(this._registerCache.numUsedFragmentConstants * 4);
+			this.fragmentConstantData = new Float32Array(this._registerCache.numUsedFragmentConstants * 4);
 
 		//Initialies viewMatrix
 		if (this.viewMatrixIndex >= 0) {
@@ -859,11 +916,12 @@ export class ShaderBase implements IAbstractionPool {
 		this.colorBufferIndex = this._sharedRegisters.colorInput.index;
 
 		this._sharedRegisters.colorVarying = this._registerCache.getFreeVarying();
-		this._vertexCode += 'mov ' + this._sharedRegisters.colorVarying + ', ' + this._sharedRegisters.colorInput + '\n';
+		this._vertexCode += `mov ${this._sharedRegisters.colorVarying}, ${this._sharedRegisters.colorInput}\n`;
 	}
 
 	private _compileGlobalPositionCode(): void {
-		this._registerCache.addVertexTempUsages(this._sharedRegisters.globalPositionVertex = this._registerCache.getFreeVertexVectorTemp(), this.globalPosDependencies);
+		const temp = this._sharedRegisters.globalPositionVertex = this._registerCache.getFreeVertexVectorTemp();
+		this._registerCache.addVertexTempUsages(temp, this.globalPosDependencies);
 
 		const sceneMatrixReg: ShaderRegisterElement = this._registerCache.getFreeVertexConstant();
 		this._registerCache.getFreeVertexConstant();
@@ -872,47 +930,37 @@ export class ShaderBase implements IAbstractionPool {
 
 		this.sceneMatrixIndex = sceneMatrixReg.index * 4;
 
-		this._vertexCode += 'm44 ' + this._sharedRegisters.globalPositionVertex + ', ' + this._sharedRegisters.animatedPosition + ', ' + sceneMatrixReg + '\n';
+		const r = this._sharedRegisters;
+		this._vertexCode += `m44 ${r.globalPositionVertex}, ${r.animatedPosition}, ${sceneMatrixReg}\n`;
 
 		if (this.usesGlobalPosFragment) {
-			this._sharedRegisters.globalPositionVarying = this._registerCache.getFreeVarying();
-			this._vertexCode += 'mov ' + this._sharedRegisters.globalPositionVarying + ', ' + this._sharedRegisters.globalPositionVertex + '\n';
+			r.globalPositionVarying = this._registerCache.getFreeVarying();
+			this._vertexCode += `mov ${r.globalPositionVarying}, ${r.globalPositionVertex}\n`;
 		}
 	}
 
 	private _compilePositionCode() {
-		this._sharedRegisters.positionVarying = this._registerCache.getFreeVarying();
-		this._vertexCode += 'mov ' + this._sharedRegisters.positionVarying + ', ' + this._sharedRegisters.animatedPosition + '\n';
+		const r = this._sharedRegisters;
+
+		r.positionVarying = this._registerCache.getFreeVarying();
+
+		this._vertexCode += `mov ${r.positionVarying}, ${r.animatedPosition}\n`;
 	}
 
 	private _compileCurvesCode(): void {
-		this._sharedRegisters.curvesInput = this._registerCache.getFreeVertexAttribute();
-		this.curvesIndex = this._sharedRegisters.curvesInput.index;
+		const r = this._sharedRegisters;
+		r.curvesInput = this._registerCache.getFreeVertexAttribute();
 
-		this._sharedRegisters.curvesVarying = this._registerCache.getFreeVarying();
-		this._vertexCode += 'mov ' + this._sharedRegisters.curvesVarying + ', ' + this._sharedRegisters.curvesInput + '\n';
+		this.curvesIndex = r.curvesInput.index;
 
-		const temp: ShaderRegisterElement = this._registerCache.getFreeFragmentSingleTemp();
+		r.curvesVarying = this._registerCache.getFreeVarying();
+		this._vertexCode += 'mov ' + r.curvesVarying + ', ' + r.curvesInput + '\n';
 
-		this._fragmentCode += 'mul ' + temp + ', ' + this._sharedRegisters.curvesVarying + '.y, ' + this._sharedRegisters.curvesVarying + '.y\n' +
-            'sub ' + temp + ', ' + temp + ', ' + this._sharedRegisters.curvesVarying + '.z\n' +
-            'mul ' + temp + ', ' + temp + ', ' + this._sharedRegisters.curvesVarying + '.x\n' +
+		const temp = this._registerCache.getFreeFragmentSingleTemp();
+		this._fragmentCode += 'mul ' + temp + ', ' + r.curvesVarying + '.y, ' + r.curvesVarying + '.y\n' +
+            'sub ' + temp + ', ' + temp + ', ' + r.curvesVarying + '.z\n' +
+            'mul ' + temp + ', ' + temp + ', ' + r.curvesVarying + '.x\n' +
             'kil ' + temp + '\n';
-
-		// var temp:ShaderRegisterElement = this._registerCache.getFreeFragmentVectorTemp();
-		//
-		// this._postAnimationFragmentCode += "mul " + temp + ".x, " + this._sharedRegisters.curvesVarying + ".y, " + this._sharedRegisters.curvesVarying + ".y\n" +
-		// 					"sub " + temp + ".x, " + temp + ".x, " + this._sharedRegisters.curvesVarying + ".z\n" +
-		// 					"mul " + temp + ".x, " + temp + ".x, " + this._sharedRegisters.curvesVarying + ".x\n" +
-		// 					"ddx " + temp + ".y," + temp + ".x\n" +
-		// 					"ddy " + temp + ".z," + temp + ".x\n" +
-		// 					"mul " + temp + ".y, " + temp + ".y, " + temp + ".y\n" +
-		// 					"mul " + temp + ".z, " + temp + ".z, " + temp + ".z\n" +
-		// 					"add " + this._sharedRegisters.shadedTarget + ".w, " + temp + ".y, " + temp + ".z\n" +
-		// 					"sqt " + this._sharedRegisters.shadedTarget + ".w, " + this._sharedRegisters.shadedTarget + ".w\n" +
-		// 					"div " + this._sharedRegisters.shadedTarget + ".w, " + temp + ".x, " + this._sharedRegisters.shadedTarget + ".w\n" +
-		// 					"max " + this._sharedRegisters.shadedTarget + ".w, " + this._sharedRegisters.shadedTarget + ".w, " + this._sharedRegisters.commons + ".y\n" +
-		// 					"min " + this._sharedRegisters.shadedTarget + ".w, " + this._sharedRegisters.shadedTarget + ".w, " + this._sharedRegisters.commons + ".w\n";
 	}
 
 	/**
@@ -921,11 +969,14 @@ export class ShaderBase implements IAbstractionPool {
 	private _compileColorTransformCode(): void {
 		// rm, gm, bm, am - multiplier
 		// ro, go, bo, ao - offset
-		const ct1: ShaderRegisterElement = this._registerCache.getFreeFragmentConstant();
-		const ct2: ShaderRegisterElement = this._registerCache.getFreeFragmentConstant();
+		const ct1 = this._registerCache.getFreeFragmentConstant();
+		const ct2 = this._registerCache.getFreeFragmentConstant();
+
+		const target = this._sharedRegisters.shadedTarget;
+ 
 		this.colorTransformIndex = ct1.index * 4;
-		this._postAnimationFragmentCode += 'mul ' + this._sharedRegisters.shadedTarget + ', ' + this._sharedRegisters.shadedTarget + ', ' + ct1 + '\n';
-		this._postAnimationFragmentCode += 'add ' + this._sharedRegisters.shadedTarget + ', ' + this._sharedRegisters.shadedTarget + ', ' + ct2 + '\n';
+		this._postAnimationFragmentCode += 'mul ' + target + ', ' + target + ', ' + ct1 + '\n';
+		this._postAnimationFragmentCode += 'add ' + target + ', ' + target + ', ' + ct2 + '\n';
 	}
 
 	/**
