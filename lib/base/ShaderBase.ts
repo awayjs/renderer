@@ -973,7 +973,7 @@ export class ShaderBase implements IAbstractionPool {
 		const ct2 = this._registerCache.getFreeFragmentConstant();
 
 		const target = this._sharedRegisters.shadedTarget;
- 
+
 		this.colorTransformIndex = ct1.index * 4;
 		this._postAnimationFragmentCode += 'mul ' + target + ', ' + target + ', ' + ct1 + '\n';
 		this._postAnimationFragmentCode += 'add ' + target + ', ' + target + ', ' + ct2 + '\n';
@@ -983,7 +983,9 @@ export class ShaderBase implements IAbstractionPool {
      * Calculate the (possibly animated) UV coordinates.
      */
 	private _compileUVCode(): void {
-		this._sharedRegisters.uvVarying = this._registerCache.getFreeVarying();
+		const r = this._sharedRegisters;
+
+		r.uvVarying = this._registerCache.getFreeVarying();
 
 		if (this.usesUVTransform) {
 			// a, b, 0, tx
@@ -992,11 +994,11 @@ export class ShaderBase implements IAbstractionPool {
 			const uvTransform2: ShaderRegisterElement = this._registerCache.getFreeVertexConstant();
 			this.uvMatrixIndex = uvTransform1.index * 4;
 
-			this._vertexCode += 'dp4 ' + this._sharedRegisters.uvVarying + '.x, ' +  this._sharedRegisters.uvInput + ', ' + uvTransform1 + '\n' +
-                'dp4 ' + this._sharedRegisters.uvVarying + '.y, ' +  this._sharedRegisters.uvInput + ', ' + uvTransform2 + '\n' +
-                'mov ' + this._sharedRegisters.uvVarying + '.zw, ' +  this._sharedRegisters.uvInput + '.zw \n';
+			this._vertexCode += 'dp4 ' + r.uvVarying + '.x, ' +  r.uvInput + ', ' + uvTransform1 + '\n' +
+                'dp4 ' + r.uvVarying + '.y, ' +  r.uvInput + ', ' + uvTransform2 + '\n' +
+                'mov ' + r.uvVarying + '.zw, ' +  r.uvInput + '.zw \n';
 		} else {
-			this._vertexCode += 'mov ' + this._sharedRegisters.uvVarying + ', ' + this._sharedRegisters.animatedUV + '\n';
+			this._vertexCode += 'mov ' + r.uvVarying + ', ' + r.animatedUV + '\n';
 		}
 	}
 
@@ -1005,48 +1007,57 @@ export class ShaderBase implements IAbstractionPool {
      */
 	private _compileSecondaryUVCode(): void {
 		const uvAttributeReg: ShaderRegisterElement = this._registerCache.getFreeVertexAttribute();
+		const r = this._sharedRegisters;
+
 		this.secondaryUVIndex = uvAttributeReg.index;
-		this._sharedRegisters.secondaryUVVarying = this._registerCache.getFreeVarying();
-		this._vertexCode += 'mov ' + this._sharedRegisters.secondaryUVVarying + ', ' + uvAttributeReg + '\n';
+
+		r.secondaryUVVarying = this._registerCache.getFreeVarying();
+
+		this._vertexCode += 'mov ' + r.secondaryUVVarying + ', ' + uvAttributeReg + '\n';
 	}
 
 	/**
      * Calculate the view direction.
      */
 	private _compileViewDirCode(): void {
-		const cameraPositionReg: ShaderRegisterElement = this._registerCache.getFreeVertexConstant();
-		this._sharedRegisters.viewDirVarying = this._registerCache.getFreeVarying();
-		this._sharedRegisters.viewDirFragment = this._registerCache.getFreeFragmentVectorTemp();
-		this._registerCache.addFragmentTempUsages(this._sharedRegisters.viewDirFragment, this.viewDirDependencies);
+		const camPosReg = this._registerCache.getFreeVertexConstant();
+		const r = this._sharedRegisters;
 
-		this.cameraPositionIndex = cameraPositionReg.index * 4;
+		r.viewDirVarying = this._registerCache.getFreeVarying();
+		r.viewDirFragment = this._registerCache.getFreeFragmentVectorTemp();
+
+		this._registerCache.addFragmentTempUsages(r.viewDirFragment, this.viewDirDependencies);
+
+		this.cameraPositionIndex = camPosReg.index * 4;
 
 		if (this.usesTangentSpace) {
-			const temp: ShaderRegisterElement = this._registerCache.getFreeVertexVectorTemp();
-			this._vertexCode += 'sub ' + temp + ', ' + cameraPositionReg + ', ' + this._sharedRegisters.animatedPosition + '\n' +
-                'm33 ' + this._sharedRegisters.viewDirVarying + '.xyz, ' + temp + ', ' + this._sharedRegisters.animatedTangent + '\n' +
-                'mov ' + this._sharedRegisters.viewDirVarying + '.w, ' + this._sharedRegisters.animatedPosition + '.w\n';
+			const temp = this._registerCache.getFreeVertexVectorTemp();
+
+			this._vertexCode += 'sub ' + temp + ', ' + camPosReg + ', ' + r.animatedPosition + '\n' +
+                'm33 ' + r.viewDirVarying + '.xyz, ' + temp + ', ' + r.animatedTangent + '\n' +
+                'mov ' + r.viewDirVarying + '.w, ' + r.animatedPosition + '.w\n';
 		} else {
-			this._vertexCode += 'sub ' + this._sharedRegisters.viewDirVarying + ', ' + cameraPositionReg + ', ' + this._sharedRegisters.globalPositionVertex + '\n';
+			this._vertexCode += 'sub ' + r.viewDirVarying + ', ' + camPosReg + ', ' + r.globalPositionVertex + '\n';
 			this._registerCache.removeVertexTempUsage(this._sharedRegisters.globalPositionVertex);
 		}
 
 		//TODO is this required in all cases? (re: distancemappass)
-		this._fragmentCode += 'nrm ' + this._sharedRegisters.viewDirFragment + '.xyz, ' + this._sharedRegisters.viewDirVarying + '\n' +
-            'mov ' + this._sharedRegisters.viewDirFragment + '.w,   ' + this._sharedRegisters.viewDirVarying + '.w\n';
+		this._fragmentCode += 'nrm ' + r.viewDirFragment + '.xyz, ' + r.viewDirVarying + '\n' +
+            'mov ' + r.viewDirFragment + '.w,   ' + r.viewDirVarying + '.w\n';
 	}
 
 	/**
      * Calculate the normal.
      */
 	private _compileNormalCode(): void {
-		this._sharedRegisters.normalFragment = this._registerCache.getFreeFragmentVectorTemp();
-		this._registerCache.addFragmentTempUsages(this._sharedRegisters.normalFragment, this.normalDependencies);
+		const r = this._sharedRegisters;
+		r.normalFragment = this._registerCache.getFreeFragmentVectorTemp();
+		this._registerCache.addFragmentTempUsages(r.normalFragment, this.normalDependencies);
 
 		//simple normal aquisition if no tangent space is being used
 		if (this.outputsNormals && !this.outputsTangentNormals) {
-			this._vertexCode += this._pass._getNormalVertexCode(this._registerCache, this._sharedRegisters);
-			this._fragmentCode += this._pass._getNormalFragmentCode(this._registerCache, this._sharedRegisters);
+			this._vertexCode += this._pass._getNormalVertexCode(this._registerCache, r);
+			this._fragmentCode += this._pass._getNormalFragmentCode(this._registerCache, r);
 
 			return;
 		}
@@ -1063,64 +1074,61 @@ export class ShaderBase implements IAbstractionPool {
 
 			this.sceneNormalMatrixIndex = normalMatrix[0].index * 4;
 
-			this._sharedRegisters.normalVarying = this._registerCache.getFreeVarying();
+			r.normalVarying = this._registerCache.getFreeVarying();
 		}
 
 		if (this.outputsNormals) {
 			if (this.usesTangentSpace) {
-				// normalize normal + tangent vector and generate (approximated) bitangent used in m33 operation for view
-				this._vertexCode += 'nrm ' + this._sharedRegisters.animatedNormal + '.xyz, ' + this._sharedRegisters.animatedNormal + '\n' +
-                    'nrm ' + this._sharedRegisters.animatedTangent + '.xyz, ' + this._sharedRegisters.animatedTangent + '\n' +
-                    'crs ' + this._sharedRegisters.bitangent + '.xyz, ' + this._sharedRegisters.animatedNormal + ', ' + this._sharedRegisters.animatedTangent + '\n';
+				// normalize normal + tangent vector and generate (approximated) bitangent
+				// used in m33 operation for view
+				this._vertexCode += 'nrm ' + r.animatedNormal + '.xyz, ' + r.animatedNormal + '\n' +
+                    'nrm ' + r.animatedTangent + '.xyz, ' + r.animatedTangent + '\n' +
+                    'crs ' + r.bitangent + '.xyz, ' + r.animatedNormal + ', ' + r.animatedTangent + '\n';
 
-				this._fragmentCode += this._pass._getNormalFragmentCode(this._registerCache, this._sharedRegisters);
+				this._fragmentCode += this._pass._getNormalFragmentCode(this._registerCache, r);
 			} else {
 				//Compiles the vertex shader code for tangent-space normal maps.
-				this._sharedRegisters.tangentVarying = this._registerCache.getFreeVarying();
-				this._sharedRegisters.bitangentVarying = this._registerCache.getFreeVarying();
+				r.tangentVarying = this._registerCache.getFreeVarying();
+				r.bitangentVarying = this._registerCache.getFreeVarying();
 				const temp: ShaderRegisterElement = this._registerCache.getFreeVertexVectorTemp();
 
-				this._vertexCode += 'm33 ' + temp + '.xyz, ' + this._sharedRegisters.animatedNormal + ', ' + normalMatrix[0] + '\n' +
-                    'nrm ' + this._sharedRegisters.animatedNormal + '.xyz, ' + temp + '\n' +
-                    'm33 ' + temp + '.xyz, ' + this._sharedRegisters.animatedTangent + ', ' + normalMatrix[0] + '\n' +
-                    'nrm ' + this._sharedRegisters.animatedTangent + '.xyz, ' + temp + '\n' +
-                    'mov ' + this._sharedRegisters.tangentVarying + '.x, ' + this._sharedRegisters.animatedTangent + '.x  \n' +
-                    'mov ' + this._sharedRegisters.tangentVarying + '.z, ' + this._sharedRegisters.animatedNormal + '.x  \n' +
-                    'mov ' + this._sharedRegisters.tangentVarying + '.w, ' + this._sharedRegisters.normalInput + '.w  \n' +
-                    'mov ' + this._sharedRegisters.bitangentVarying + '.x, ' + this._sharedRegisters.animatedTangent + '.y  \n' +
-                    'mov ' + this._sharedRegisters.bitangentVarying + '.z, ' + this._sharedRegisters.animatedNormal + '.y  \n' +
-                    'mov ' + this._sharedRegisters.bitangentVarying + '.w, ' + this._sharedRegisters.normalInput + '.w  \n' +
-                    'mov ' + this._sharedRegisters.normalVarying + '.x, ' + this._sharedRegisters.animatedTangent + '.z  \n' +
-                    'mov ' + this._sharedRegisters.normalVarying + '.z, ' + this._sharedRegisters.animatedNormal + '.z  \n' +
-                    'mov ' + this._sharedRegisters.normalVarying + '.w, ' + this._sharedRegisters.normalInput + '.w  \n' +
-                    'crs ' + temp + '.xyz, ' + this._sharedRegisters.animatedNormal + ', ' + this._sharedRegisters.animatedTangent + '\n' +
-                    'mov ' + this._sharedRegisters.tangentVarying + '.y, ' + temp + '.x    \n' +
-                    'mov ' + this._sharedRegisters.bitangentVarying + '.y, ' + temp + '.y  \n' +
-                    'mov ' + this._sharedRegisters.normalVarying + '.y, ' + temp + '.z    \n';
+				this._vertexCode += 'm33 ' + temp + '.xyz, ' + r.animatedNormal + ', ' + normalMatrix[0] + '\n' +
+                    'nrm ' + r.animatedNormal + '.xyz, ' + temp + '\n' +
+                    'm33 ' + temp + '.xyz, ' + r.animatedTangent + ', ' + normalMatrix[0] + '\n' +
+                    'nrm ' + r.animatedTangent + '.xyz, ' + temp + '\n' +
+                    'mov ' + r.tangentVarying + '.x, ' + r.animatedTangent + '.x  \n' +
+                    'mov ' + r.tangentVarying + '.z, ' + r.animatedNormal + '.x  \n' +
+                    'mov ' + r.tangentVarying + '.w, ' + r.normalInput + '.w  \n' +
+                    'mov ' + r.bitangentVarying + '.x, ' + r.animatedTangent + '.y  \n' +
+                    'mov ' + r.bitangentVarying + '.z, ' + r.animatedNormal + '.y  \n' +
+                    'mov ' + r.bitangentVarying + '.w, ' + r.normalInput + '.w  \n' +
+                    'mov ' + r.normalVarying + '.x, ' + r.animatedTangent + '.z  \n' +
+                    'mov ' + r.normalVarying + '.z, ' + r.animatedNormal + '.z  \n' +
+                    'mov ' + r.normalVarying + '.w, ' + r.normalInput + '.w  \n' +
+                    'crs ' + temp + '.xyz, ' + r.animatedNormal + ', ' + r.animatedTangent + '\n' +
+                    'mov ' + r.tangentVarying + '.y, ' + temp + '.x    \n' +
+                    'mov ' + r.bitangentVarying + '.y, ' + temp + '.y  \n' +
+                    'mov ' + r.normalVarying + '.y, ' + temp + '.z    \n';
 
-				this._registerCache.removeVertexTempUsage(this._sharedRegisters.animatedTangent);
+				this._registerCache.removeVertexTempUsage(r.animatedTangent);
 
 				//Compiles the fragment shader code for tangent-space normal maps.
-				let t: ShaderRegisterElement;
-				let b: ShaderRegisterElement;
-				let n: ShaderRegisterElement;
-
-				t = this._registerCache.getFreeFragmentVectorTemp();
+				const t = this._registerCache.getFreeFragmentVectorTemp();
 				this._registerCache.addFragmentTempUsages(t, 1);
-				b = this._registerCache.getFreeFragmentVectorTemp();
+				const b = this._registerCache.getFreeFragmentVectorTemp();
 				this._registerCache.addFragmentTempUsages(b, 1);
-				n = this._registerCache.getFreeFragmentVectorTemp();
+				const n = this._registerCache.getFreeFragmentVectorTemp();
 				this._registerCache.addFragmentTempUsages(n, 1);
 
-				this._fragmentCode += 'nrm ' + t + '.xyz, ' + this._sharedRegisters.tangentVarying + '\n' +
-                    'mov ' + t + '.w, ' + this._sharedRegisters.tangentVarying + '.w	\n' +
-                    'nrm ' + b + '.xyz, ' + this._sharedRegisters.bitangentVarying + '\n' +
-                    'nrm ' + n + '.xyz, ' + this._sharedRegisters.normalVarying + '\n';
+				this._fragmentCode += 'nrm ' + t + '.xyz, ' + r.tangentVarying + '\n' +
+                    'mov ' + t + '.w, ' + r.tangentVarying + '.w	\n' +
+                    'nrm ' + b + '.xyz, ' + r.bitangentVarying + '\n' +
+                    'nrm ' + n + '.xyz, ' + r.normalVarying + '\n';
 
 				//compile custom fragment code for normal calcs
-				this._fragmentCode += this._pass._getNormalFragmentCode(this._registerCache, this._sharedRegisters) +
-                    'm33 ' + this._sharedRegisters.normalFragment + '.xyz, ' + this._sharedRegisters.normalFragment + ', ' + t + '\n' +
-                    'mov ' + this._sharedRegisters.normalFragment + '.w, ' + this._sharedRegisters.normalVarying + '.w\n';
+				this._fragmentCode += this._pass._getNormalFragmentCode(this._registerCache, r) +
+                    'm33 ' + r.normalFragment + '.xyz, ' + r.normalFragment + ', ' + t + '\n' +
+                    'mov ' + r.normalFragment + '.w, ' + r.normalVarying + '.w\n';
 
 				this._registerCache.removeFragmentTempUsage(b);
 				this._registerCache.removeFragmentTempUsage(t);
@@ -1128,22 +1136,23 @@ export class ShaderBase implements IAbstractionPool {
 			}
 		} else {
 			// no output, world space is enough
-			this._vertexCode += 'm33 ' + this._sharedRegisters.normalVarying + '.xyz, ' + this._sharedRegisters.animatedNormal + ', ' + normalMatrix[0] + '\n' +
-                'mov ' + this._sharedRegisters.normalVarying + '.w, ' + this._sharedRegisters.animatedNormal + '.w\n';
+			this._vertexCode += 'm33 ' + r.normalVarying + '.xyz, ' + r.animatedNormal + ', ' + normalMatrix[0] + '\n' +
+                'mov ' + r.normalVarying + '.w, ' + r.animatedNormal + '.w\n';
 
-			this._fragmentCode += 'nrm ' + this._sharedRegisters.normalFragment + '.xyz, ' + this._sharedRegisters.normalVarying + '\n' +
-                'mov ' + this._sharedRegisters.normalFragment + '.w, ' + this._sharedRegisters.normalVarying + '.w\n';
+			this._fragmentCode += 'nrm ' + r.normalFragment + '.xyz, ' + r.normalVarying + '\n' +
+                'mov ' + r.normalFragment + '.w, ' + r.normalVarying + '.w\n';
 
 			if (this.tangentDependencies > 0) {
-				this._sharedRegisters.tangentVarying = this._registerCache.getFreeVarying();
+				r.tangentVarying = this._registerCache.getFreeVarying();
 
-				this._vertexCode += 'm33 ' + this._sharedRegisters.tangentVarying + '.xyz, ' + this._sharedRegisters.animatedTangent + ', ' + normalMatrix[0] + '\n' +
-                    'mov ' + this._sharedRegisters.tangentVarying + '.w, ' + this._sharedRegisters.animatedTangent + '.w\n';
+				this._vertexCode += 'm33 ' + r.tangentVarying + '.xyz, ' +
+					r.animatedTangent + ', ' + normalMatrix[0] + '\n' +
+                    'mov ' + r.tangentVarying + '.w, ' + r.animatedTangent + '.w\n';
 			}
 		}
 
 		if (!this.usesTangentSpace)
-			this._registerCache.removeVertexTempUsage(this._sharedRegisters.animatedNormal);
+			this._registerCache.removeVertexTempUsage(r.animatedNormal);
 	}
 
 	private _compileAnimationCode(): void {
@@ -1151,27 +1160,31 @@ export class ShaderBase implements IAbstractionPool {
 		this._animationVertexCode = '';
 		this._animationFragmentCode = '';
 
+		const r = this._sharedRegisters;
 		//check to see if GPU animation is used
 		if (this._usesAnimation) {
 
 			const animationSet: IAnimationSet = <IAnimationSet> this._renderMaterial.animationSet;
 
-			this._animationVertexCode += animationSet.getAGALVertexCode(this, this._registerCache, this._sharedRegisters);
+			this._animationVertexCode += animationSet.getAGALVertexCode(this, this._registerCache, r);
 
 			if (this.uvDependencies > 0 && !this.usesUVTransform)
-				this._animationVertexCode += animationSet.getAGALUVCode(this, this._registerCache, this._sharedRegisters);
+				this._animationVertexCode += animationSet.getAGALUVCode(this, this._registerCache, r);
 
 			if (this.usesFragmentAnimation)
-				this._animationFragmentCode += animationSet.getAGALFragmentCode(this, this._registerCache, this._sharedRegisters.shadedTarget);
+				this._animationFragmentCode += animationSet.getAGALFragmentCode(
+					this, this._registerCache, r.shadedTarget);
 		} else {
 			// simply write attributes to targets, do not animate them
 			// projection will pick up on targets[0] to do the projection
-			const len: number = this._sharedRegisters.animatableAttributes.length;
+			const len: number = r.animatableAttributes.length;
 			for (let i: number = 0; i < len; ++i)
-				this._animationVertexCode += 'mov ' + this._sharedRegisters.animationTargetRegisters[i] + ', ' + this._sharedRegisters.animatableAttributes[i] + '\n';
+				this._animationVertexCode += 'mov ' +
+					r.animationTargetRegisters[i] + ', ' +
+					r.animatableAttributes[i] + '\n';
 
 			if (this.uvDependencies > 0 && !this.usesUVTransform)
-				this._animationVertexCode += 'mov ' + this._sharedRegisters.animatedUV + ',' + this._sharedRegisters.uvInput + '\n';
+				this._animationVertexCode += 'mov ' + r.animatedUV + ',' + r.uvInput + '\n';
 		}
 	}
 
