@@ -47,7 +47,7 @@ class DefaultRendererPool implements IRendererPool {
 		 * @todo Remove for prevent leaks
 		 */
 		let asbt = this._abstractionPool[partition.id];
-		if (asbt) {
+		if (!asbt) {
 			asbt = this._abstractionPool[partition.id] = new DefaultRenderer(this._renderGroup, partition, this);
 		}
 
@@ -105,7 +105,7 @@ class DepthRendererPool implements IRendererPool {
 		 * @todo Remove for prevent leaks
 		 */
 		let asbt = this._abstractionPool[partition.id];
-		if (asbt) {
+		if (!asbt) {
 			asbt = this._abstractionPool[partition.id] = new DepthRenderer(this._renderGroup, partition, this);
 		}
 
@@ -163,7 +163,7 @@ class DistanceRendererPool implements IRendererPool {
 		 * @todo Remove for prevent leaks
 		 */
 		let asbt = this._abstractionPool[partition.id];
-		if (asbt) {
+		if (!asbt) {
 			asbt = this._abstractionPool[partition.id] = new DistanceRenderer(this._renderGroup, partition, this);
 		}
 
