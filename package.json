@@ -23,7 +23,7 @@
     "eslint": "eslint ./lib --fix",
     "eslint:commit": "npm run eslint && npm run --silent gitdiff || git add -u && git commit -m \"fixed by eslint\"",
     "gitdiff": "git diff --quiet && git diff --cached --quiet",
-    "preversion": "npm run gitdiff && npm run eslint:commit",
+    "preversion": "npm run gitdiff && npm run eslint:commit | exit 0",
     "prebuild": "npm run clean:dist",
     "build": "npm run tsc:build && npm run rollup && npm run uglifyjs",
     "copyVersionToIndex": "node ./copyVersionToIndex && git add ./index.ts && git commit -m \"update version number in index.ts\"",
