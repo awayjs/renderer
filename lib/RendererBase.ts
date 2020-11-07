@@ -1,8 +1,36 @@
-import { Matrix3D, Plane3D, Vector3D, ProjectionBase, IAbstractionPool, AbstractionBase, AssetEvent } from '@awayjs/core';
+import {
+	Matrix3D,
+	Plane3D,
+	Vector3D,
+	ProjectionBase,
+	IAbstractionPool,
+	AbstractionBase,
+	AssetEvent,
+} from '@awayjs/core';
 
-import { BitmapImage2D, ContextGLBlendFactor, ContextGLCompareMode, ContextGLStencilAction, ContextGLTriangleFace, IContextGL, Stage, StageEvent, ContextGLClearMask, RTTBufferManager } from '@awayjs/stage';
+import {
+	BitmapImage2D,
+	ContextGLBlendFactor,
+	ContextGLCompareMode,
+	ContextGLStencilAction,
+	ContextGLTriangleFace,
+	IContextGL,
+	Stage,
+	StageEvent,
+	ContextGLClearMask,
+	RTTBufferManager,
+} from '@awayjs/stage';
 
-import { View, ViewEvent, IPartitionTraverser, IEntityTraverser, INode, PartitionBase, IPartitionEntity, ITraversable } from '@awayjs/view';
+import {
+	View,
+	ViewEvent,
+	IPartitionTraverser,
+	IEntityTraverser,
+	INode,
+	PartitionBase,
+	IPartitionEntity,
+	ITraversable,
+} from '@awayjs/view';
 
 import { _Render_MaterialBase } from './base/_Render_MaterialBase';
 import { _Render_RenderableBase } from './base/_Render_RenderableBase';
@@ -10,7 +38,6 @@ import { RenderEntity } from './base/RenderEntity';
 import { RenderGroup } from './RenderGroup';
 
 import { IRenderEntity } from './base/IRenderEntity';
-import { IPass } from './base/IPass';
 import { IRenderEntitySorter } from './sort/IRenderEntitySorter';
 import { RenderableMergeSort } from './sort/RenderableMergeSort';
 import { IRenderable } from './base/IRenderable';
@@ -224,7 +251,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
-	public render(enableDepthAndStencil: boolean = true, surfaceSelector: number = 0, mipmapSelector: number = 0, maskConfig: number = 0): void {
+	public render(
+		enableDepthAndStencil: boolean = true, surfaceSelector: number = 0,
+		mipmapSelector: number = 0, maskConfig: number = 0): void {
+
 		//TODO refactor setTarget so that rendertextures are created before this check
 		// if (!this._stage || !this._context)
 		// 	return;
@@ -250,14 +280,21 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		// this._pRttViewProjectionMatrix.appendScale(this.textureRatioX, this.textureRatioY, 1);
 
 		//TODO: allow sharedContexts for image targets
-		this._view.clear(!this._depthPrepass && !this._disableClear, enableDepthAndStencil, surfaceSelector, mipmapSelector, (!this._view.shareContext || this._view.target) ? ContextGLClearMask.ALL : ContextGLClearMask.DEPTH);
+		this._view.clear(
+			!this._depthPrepass && !this._disableClear,
+			enableDepthAndStencil,
+			surfaceSelector,
+			mipmapSelector,
+			(!this._view.shareContext || this._view.target)
+				? ContextGLClearMask.ALL
+				: ContextGLClearMask.DEPTH);
 
 		/*
 		 if (_backgroundImageRenderer)
 		 _backgroundImageRenderer.render();
 		 */
 
-		 //initialise blend mode
+		//initialise blend mode
 		this._context.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
 
 		//initialise depth test
@@ -265,7 +302,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		this.executeRender(enableDepthAndStencil, surfaceSelector, mipmapSelector);
 
-		//line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
+		//line required for correct rendering when using away3d with starling.
+		//DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
 		//this._context.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //oopsie
 
 		if (!this._view.shareContext || this._view.target) {
@@ -301,7 +339,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._invalid = false;
 	}
 
-	public _iRenderCascades(projection: ProjectionBase, node: INode, enableDepthAndStencil: boolean = true, surfaceSelector: number = 0): void {
+	public _iRenderCascades(
+		projection: ProjectionBase, node: INode,
+		enableDepthAndStencil: boolean = true, surfaceSelector: number = 0): void {
 		// this._stage.setRenderTarget(target, true, 0);
 		// this._context.clear(1, 1, 1, 1, 1, 0);
 
@@ -319,7 +359,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		// 	first = false;
 		// }
 
-		// //line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
+		// line required for correct rendering when using away3d with starling.
+		// DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
 		// this._context.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL);
 	}
 
@@ -330,7 +371,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
-	public executeRender(enableDepthAndStencil: boolean = true, surfaceSelector: number = 0, mipmapSelector: number = 0): void {
+	public executeRender(
+		enableDepthAndStencil: boolean = true, surfaceSelector: number = 0, mipmapSelector: number = 0): void {
+
 		//if (this._invalid) TODO: this is not triggering as often as it should
 		this.traverse();
 
@@ -431,11 +474,17 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				r = renderRenderable;
 				do {
 					///console.log("maskOwners", renderRenderable2.maskOwners);
-					r.executeRender(this._enableDepthAndStencil, this._surfaceSelector, this._mipmapSelector, this._maskConfig);
+					r.executeRender(
+						this._enableDepthAndStencil,
+						this._surfaceSelector,
+						this._mipmapSelector,
+						this._maskConfig);
 
 					r = r.next;
 
-				} while (r && r.renderMaterial == renderMaterial && !(this._activeMasksDirty = this._checkMaskOwners(r.maskOwners)));
+				} while (r
+						&& r.renderMaterial == renderMaterial
+						&& !(this._activeMasksDirty = this._checkMaskOwners(r.maskOwners)));
 
 				renderMaterial && renderMaterial.deactivatePass();
 			}
@@ -504,7 +553,18 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 * @returns {boolean}
 	 */
 	public enterNode(node: INode): boolean {
-		const enter: boolean = node._collectionMark != RendererBase._collectionMark && node.isRenderable() && (this._maskConfig || node.isInFrustum(this._partition.root, this._cullPlanes, this._numCullPlanes, this._renderGroup.pickGroup)) && node.maskId == this._maskId;
+		const maskOrFrustrum = (
+			this._maskConfig
+			|| node.isInFrustum(
+				this._partition.root,
+				this._cullPlanes,
+				this._numCullPlanes,
+				this._renderGroup.pickGroup));
+
+		const enter = node._collectionMark != RendererBase._collectionMark
+			&& node.isRenderable()
+			&& maskOrFrustrum
+			&& node.maskId == this._maskId;
 
 		node._collectionMark = RendererBase._collectionMark;
 
@@ -529,7 +589,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._renderEntity = this._renderGroup.getAbstraction(entity);
 
 		// project onto camera's z-axis
-		this._zIndex = entity.zOffset + this._cameraTransform.position.subtract(entity.scenePosition).dotProduct(this._cameraForward);
+		this._zIndex = this._cameraTransform.position.subtract(entity.scenePosition).dotProduct(this._cameraForward);
+		this._zIndex += entity.zOffset;
 
 		//save sceneTransform
 		this._renderSceneTransform = entity.getRenderSceneTransform(this._cameraTransform);
@@ -563,7 +624,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._pOpaqueRenderableHead = renderRenderable;
 		}
 
-		this._pNumElements += renderRenderable.stageElements.elements.numElements; //need to re-trigger stageElements getter in case animator has changed
+		//need to re-trigger stageElements getter in case animator has changed
+		this._pNumElements += renderRenderable.stageElements.elements.numElements;
 	}
 
 	public _renderMasks(maskOwners: IPartitionEntity[]): void {
@@ -571,22 +633,41 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		const halfBitIndex: number = Math.log2(this._maskConfig) >> 1;
 
 		//create a new base and config value for the mask to be rendered
-		const newMaskBase: number = this._maskConfig ? Math.pow(2, (halfBitIndex + 1) << 1) : 1;//maskBase set to next odd significant bit
+		//maskBase set to next odd significant bit
+		const newMaskBase: number = this._maskConfig ? Math.pow(2, (halfBitIndex + 1) << 1) : 1;
 		let newMaskConfig: number = newMaskBase;
 
 		this._context.enableStencil();
-		this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.ALWAYS, ContextGLStencilAction.SET, ContextGLStencilAction.SET, ContextGLStencilAction.SET);
+		this._context.setStencilActions(
+			ContextGLTriangleFace.FRONT_AND_BACK,
+			ContextGLCompareMode.ALWAYS,
+			ContextGLStencilAction.SET,
+			ContextGLStencilAction.SET,
+			ContextGLStencilAction.SET);
+
 		const numLayers: number = maskOwners.length;
 		let children: Array<IPartitionEntity>;
 		let numChildren: number;
 		let mask: IPartitionEntity;
 
 		for (let i: number = 0; i < numLayers; ++i) {
-			if (i != 0)
-				this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.EQUAL, ContextGLStencilAction.SET, ContextGLStencilAction.SET, ContextGLStencilAction.KEEP);
+			if (i != 0) {
+				this._context.setStencilActions(
+					ContextGLTriangleFace.FRONT_AND_BACK,
+					ContextGLCompareMode.EQUAL,
+					ContextGLStencilAction.SET,
+					ContextGLStencilAction.SET,
+					ContextGLStencilAction.KEEP);
+			}
 
-			this._context.setStencilReferenceValue(0xFF, newMaskConfig, newMaskConfig = (newMaskConfig & newMaskBase) + newMaskBase); //flips between read odd write even to read even write odd
-			this._context.clear(0, 0, 0, 0, 0, 0, ContextGLClearMask.STENCIL);//clears write mask to zero
+			//flips between read odd write even to read even write odd
+			this._context.setStencilReferenceValue(
+				0xFF,
+				newMaskConfig,
+				newMaskConfig = (newMaskConfig & newMaskBase) + newMaskBase);
+
+			//clears write mask to zero
+			this._context.clear(0, 0, 0, 0, 0, 0, ContextGLClearMask.STENCIL);
 
 			children = maskOwners[i].masks;
 			numChildren = children.length;
@@ -598,11 +679,20 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 					this._renderGroup.getRenderer(mask.partition).render(true, 0, 0, newMaskConfig);
 			}
 		}
-		this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.EQUAL, ContextGLStencilAction.SET, ContextGLStencilAction.SET, ContextGLStencilAction.KEEP);
-		this._context.setStencilReferenceValue(0xFF, newMaskConfig, this._maskConfig); //reads from mask output, writes to previous mask state
+		this._context.setStencilActions(
+			ContextGLTriangleFace.FRONT_AND_BACK,
+			ContextGLCompareMode.EQUAL,
+			ContextGLStencilAction.SET,
+			ContextGLStencilAction.SET,
+			ContextGLStencilAction.KEEP);
 
-		if (!this._disableColor) //re-establish color mask settings (if not inside another mask)
+		//reads from mask output, writes to previous mask state
+		this._context.setStencilReferenceValue(0xFF, newMaskConfig, this._maskConfig);
+
+		//re-establish color mask settings (if not inside another mask)
+		if (!this._disableColor) {
 			this._context.setColorMask(true, true, true, true);
+		}
 	}
 
 	private _checkMaskOwners(maskOwners: Array<IPartitionEntity>): boolean {
@@ -617,6 +707,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		let masks: Array<IPartitionEntity>;
 		let activeNumMasks: number;
 		let activeMasks: Array<IPartitionEntity>;
+
 		for (let i: number = 0; i < numLayers; i++) {
 			masks = maskOwners[i].masks;
 			numMasks = masks.length;
