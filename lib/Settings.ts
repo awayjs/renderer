@@ -8,7 +8,7 @@ export const Settings: IRendererSettings = {
      * @description Apply alpha cutoff for masking, used for remove boxing artefacts
      * when used a bitmap mask
      */
-	USE_ALPHA_CUTOFF: true,
+	USE_ALPHA_CUTOFF: false,
 
 	/**
      * @description Alpha cutoff threshold value, 0 - 1, 0 or 1 is disable affect
