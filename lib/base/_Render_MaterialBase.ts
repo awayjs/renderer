@@ -1,25 +1,24 @@
 import { AssetEvent, AbstractionBase } from '@awayjs/core';
 
-import { Stage, _Stage_ImageBase, ImageBase, ImageSampler, ImageUtils } from '@awayjs/stage';
+import {
+	Stage,
+	_Stage_ImageBase,
+	ImageSampler,
+	ImageUtils,
+} from '@awayjs/stage';
 
+import { IPass } from './IPass';
+import { Style } from './Style';
+import { IMaterial } from './IMaterial';
+import { IAnimator } from './IAnimator';
 import { ITexture } from '../base/ITexture';
 import { PassEvent } from '../events/PassEvent';
 import { MaterialEvent } from '../events/MaterialEvent';
-
 import { RenderGroup } from '../RenderGroup';
-
-import { IRenderEntity } from './IRenderEntity';
-import { IPass } from './IPass';
-import { IMaterial } from './IMaterial';
-import { IAnimator } from './IAnimator';
 import { IAnimationSet } from './IAnimationSet';
 import { _Render_ElementsBase } from './_Render_ElementsBase';
 import { ShaderBase } from './ShaderBase';
-import { Style } from './Style';
-import { RenderEntity } from './RenderEntity';
 import { _Render_RenderableBase } from './_Render_RenderableBase';
-import { _Stage_ElementsBase } from './_Stage_ElementsBase';
-import { IRenderable } from './IRenderable';
 
 /**
  *
@@ -171,7 +170,9 @@ export class _Render_MaterialBase extends AbstractionBase {
 
 		if (owner.sourceEntity.animator) {
 			if (this._animationSet && animationSet != this._animationSet) {
-				throw new Error('A Material instance cannot be shared across material owners with different animation sets');
+				throw new Error(
+					'A Material instance cannot be shared across ' +
+					'material owners with different animation sets');
 			} else {
 				if (this._animationSet != animationSet) {
 
@@ -362,9 +363,14 @@ export class _Render_MaterialBase extends AbstractionBase {
 			numImages = texture.getNumImages();
 			images = this._imageIndices[texture.id] = new Array<number>();
 			for (let j: number = 0; j < numImages; j++) {
-				this.images[index] = <_Stage_ImageBase> this._stage.getAbstraction(texture.getImageAt(j) || (style ? style.getImageAt(texture, j) : null) || ImageUtils.getDefaultImage2D());
+				this.images[index] = <_Stage_ImageBase> this._stage.getAbstraction(
+					texture.getImageAt(j)
+					|| style?.getImageAt(texture, j)
+					|| ImageUtils.getDefaultImage2D());
 
-				this.samplers[index] = texture.getSamplerAt(j) || (style ? style.getSamplerAt(texture, j) : null) || ImageUtils.getDefaultSampler();
+				this.samplers[index] = texture.getSamplerAt(j)
+					|| style?.getSamplerAt(texture, j)
+					|| ImageUtils.getDefaultSampler();
 
 				images[j] = index++;
 			}
