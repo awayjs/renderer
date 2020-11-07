@@ -11,5 +11,5 @@ export enum MappingMode
 	/**
 	 *
 	 */
-	 RADIAL
+	RADIAL
 }

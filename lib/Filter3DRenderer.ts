@@ -1,6 +1,21 @@
 import { Rectangle, ProjectionBase } from '@awayjs/core';
 
-import { Image2D, ImageSampler, _Stage_ImageBase, Stage, ContextGLDrawMode, ContextGLBlendFactor, ContextGLVertexBufferFormat, IContextGL, IIndexBuffer, IVertexBuffer, RTTEvent, RTTBufferManager, Filter3DBase, Filter3DTaskBase } from '@awayjs/stage';
+import {
+	Image2D,
+	ImageSampler,
+	_Stage_ImageBase,
+	Stage,
+	ContextGLDrawMode,
+	ContextGLBlendFactor,
+	ContextGLVertexBufferFormat,
+	IContextGL,
+	IIndexBuffer,
+	IVertexBuffer,
+	RTTEvent,
+	RTTBufferManager,
+	Filter3DBase,
+	Filter3DTaskBase,
+} from '@awayjs/stage';
 
 /**
  * @class away.render.Filter3DRenderer
@@ -78,7 +93,6 @@ export class Filter3DRenderer {
 	}
 
 	private updateFilterTasks(stage: Stage): void {
-		let len: number;
 
 		if (this._filterSizesInvalid)
 			this.updateFilterSizes();
@@ -90,7 +104,7 @@ export class Filter3DRenderer {
 
 		this._tasks = new Array<Filter3DTaskBase>();
 
-		len = this._filters.length - 1;
+		const len = this._filters.length - 1;
 
 		let filter: Filter3DBase;
 
@@ -137,8 +151,17 @@ export class Filter3DRenderer {
 
 		if (len > 1) {
 			context.setProgram(this._tasks[0].getProgram(stage));
-			context.setVertexBufferAt(this._tasks[0]._positionIndex, vertexBuffer, 0, ContextGLVertexBufferFormat.FLOAT_2);
-			context.setVertexBufferAt(this._tasks[0]._uvIndex, vertexBuffer, 8, ContextGLVertexBufferFormat.FLOAT_2);
+			context.setVertexBufferAt(
+				this._tasks[0]._positionIndex,
+				vertexBuffer,
+				0,
+				ContextGLVertexBufferFormat.FLOAT_2);
+
+			context.setVertexBufferAt(
+				this._tasks[0]._uvIndex,
+				vertexBuffer,
+				8,
+				ContextGLVertexBufferFormat.FLOAT_2);
 		}
 
 		for (i = 0; i < len; ++i) {
@@ -149,7 +172,10 @@ export class Filter3DRenderer {
 
 			context.setProgram(task.getProgram(stage));
 
-			(<_Stage_ImageBase> stage.getAbstraction(task.getMainInputTexture(stage))).activate(task._inputTextureIndex, this._sampler);
+			(<_Stage_ImageBase> stage.getAbstraction(task.getMainInputTexture(stage)))
+				.activate(
+					task._inputTextureIndex,
+					this._sampler);
 
 			if (!task.target) {
 

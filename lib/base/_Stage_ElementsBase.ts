@@ -1,13 +1,8 @@
-import { AbstractionBase, AbstractMethodError, AssetEvent } from '@awayjs/core';
 
 import { Stage, Short3Attributes, AttributesView, _Stage_AttributesBuffer } from '@awayjs/stage';
-
-import { View } from '@awayjs/view';
-
+import { AbstractionBase, AbstractMethodError, AssetEvent } from '@awayjs/core';
 import { ElementsEvent } from '../events/ElementsEvent';
 import { ElementsUtils } from '../utils/ElementsUtils';
-
-import { _Render_RenderableBase } from './_Render_RenderableBase';
 import { ShaderBase } from './ShaderBase';
 import { IElements } from './IElements';
 import { IRenderable } from './IRenderable';
@@ -111,8 +106,17 @@ export class _Stage_ElementsBase extends AbstractionBase {
 	/**
 	 *
 	 */
-	public activateVertexBufferVO(index: number, attributesView: AttributesView, dimensions: number = 0, offset: number = 0): void {
-		this.getVertexBufferGL(attributesView).activate(index, attributesView.size, dimensions || attributesView.dimensions, attributesView.offset + offset, attributesView.unsigned);
+	public activateVertexBufferVO(
+		index: number, attributesView: AttributesView,
+		dimensions: number = 0, offset: number = 0): void {
+
+		this.getVertexBufferGL(attributesView)
+			.activate(
+				index,
+				attributesView.size,
+				dimensions || attributesView.dimensions,
+				attributesView.offset + offset,
+				attributesView.unsigned);
 	}
 
 	/**
@@ -158,7 +162,12 @@ export class _Stage_ElementsBase extends AbstractionBase {
 	public _updateIndices(indexOffset: number = 0): void {
 		const indices: Short3Attributes = this._elements.indices;
 		if (indices) {
-			this._indices = <_Stage_AttributesBuffer> this._stage.getAbstraction(ElementsUtils.getSubIndices(indices, this._elements.numVertices, this._indexMappings, indexOffset));
+			const sub = ElementsUtils.getSubIndices(
+				indices,
+				this._elements.numVertices,
+				this._indexMappings, indexOffset);
+
+			this._indices = <_Stage_AttributesBuffer> this._stage.getAbstraction(sub);
 			this._numIndices = this._indices._attributesBuffer.count * indices.dimensions;
 		} else {
 			this._indices = null;
@@ -197,9 +206,9 @@ export class _Stage_ElementsBase extends AbstractionBase {
 		this._numVertices = this._elements.numVertices;
 
 		const bufferId: number = attributesView.attributesBuffer.id;
+		const sub = ElementsUtils.getSubVertices(attributesView.attributesBuffer, this._indexMappings);
 
-		this._vertices[bufferId] = <_Stage_AttributesBuffer> this._stage.getAbstraction(ElementsUtils.getSubVertices(attributesView.attributesBuffer, this._indexMappings));
-
+		this._vertices[bufferId] = <_Stage_AttributesBuffer> this._stage.getAbstraction(sub);
 		this._verticesUpdated[bufferId] = true;
 	}
 

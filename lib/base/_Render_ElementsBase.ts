@@ -1,13 +1,11 @@
-import { IAssetClass, IAbstractionPool, AbstractMethodError } from '@awayjs/core';
 
 import { Stage, ShaderRegisterCache, ShaderRegisterData } from '@awayjs/stage';
-
-import { IMaterial } from './IMaterial';
 import { _IRender_MaterialClass } from './_IRender_MaterialClass';
 import { _Render_MaterialBase } from './_Render_MaterialBase';
-import { ShaderBase } from './ShaderBase';
-
+import { IAbstractionPool } from '@awayjs/core';
 import { RenderGroup } from '../RenderGroup';
+import { ShaderBase } from './ShaderBase';
+import { IMaterial } from './IMaterial';
 
 /**
  * @class away.pool.MaterialPoolBase
@@ -48,7 +46,12 @@ export class _Render_ElementsBase implements IAbstractionPool {
 	 * @returns IElements
 	 */
 	public getAbstraction(material: IMaterial): _Render_MaterialBase {
-		return (this._abstractionPool[material.id] || (this._abstractionPool[material.id] = new (<_IRender_MaterialClass> this._renderMaterialClassPool[material.assetType])(material, this)));
+		if (!this._abstractionPool[material.id]) {
+			this._abstractionPool[material.id] =
+				new (<_IRender_MaterialClass> this._renderMaterialClassPool[material.assetType])(material, this);
+		}
+
+		return this._abstractionPool[material.id];
 	}
 
 	/**
@@ -63,11 +66,17 @@ export class _Render_ElementsBase implements IAbstractionPool {
 	public _includeDependencies(shader: ShaderBase): void {
 	}
 
-	public _getVertexCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string {
+	public _getVertexCode(
+		shader: ShaderBase,
+		registerCache: ShaderRegisterCache,
+		sharedRegisters: ShaderRegisterData): string {
 		return '';
 	}
 
-	public _getFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string {
+	public _getFragmentCode(
+		shader: ShaderBase,
+		registerCache: ShaderRegisterCache,
+		sharedRegisters: ShaderRegisterData): string {
 		return '';
 	}
 }

@@ -1,6 +1,6 @@
 import { IAsset } from '@awayjs/core';
 
-import { AttributesView, Short3Attributes, Float3Attributes, Float2Attributes } from '@awayjs/stage';
+import { Short3Attributes } from '@awayjs/stage';
 
 /**
  * @class away.base.TriangleElements

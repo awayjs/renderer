@@ -1,5 +1,4 @@
 import { INode, PartitionBase } from '@awayjs/view';
-import { _IRender_MaterialClass } from './base/_IRender_MaterialClass';
 
 import { RenderGroup } from './RenderGroup';
 

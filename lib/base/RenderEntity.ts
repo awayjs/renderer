@@ -103,7 +103,22 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 	 * @returns IRenderState
 	 */
 	public getAbstraction(renderable: ITraversable): _Render_RenderableBase {
-		return this._abstractionPool[renderable.id] || (this._abstractionPool[renderable.id] = new (<_IRender_RenderableClass> RenderEntity._renderRenderableClassPool[renderable.assetType])(renderable, this));
+		let base = this._abstractionPool[renderable.id];
+
+		/**
+		 * @todo Remove me for preveting leaks
+		 */
+		if (!base) {
+			base =
+				this._abstractionPool[renderable.id] =
+					new (<_IRender_RenderableClass> RenderEntity._renderRenderableClassPool[renderable.assetType])
+					(
+						renderable,
+						this
+					);
+		}
+
+		return  base;
 	}
 
 	/**

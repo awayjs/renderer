@@ -1,4 +1,3 @@
-import { _Render_RenderableBase } from '../base/_Render_RenderableBase';
 import { IRenderable } from '../base/IRenderable';
 
 /**

@@ -4,8 +4,6 @@ import { BitmapImage2D, IContextGL, RTTBufferManager, Filter3DBase } from '@away
 
 import { INode, PartitionBase } from '@awayjs/view';
 
-import { _IRender_MaterialClass } from './base/_IRender_MaterialClass';
-
 import { RenderGroup } from './RenderGroup';
 
 import { DepthRenderer } from './DepthRenderer';
@@ -109,7 +107,12 @@ export class DefaultRenderer extends RendererBase {
 		return enter;
 	}
 
-	public render(enableDepthAndStencil: boolean = true, surfaceSelector: number = 0, mipmapSelector: number = 0, maskConfig: number = 0): void {
+	public render(
+		enableDepthAndStencil: boolean = true,
+		surfaceSelector: number = 0,
+		mipmapSelector: number = 0,
+		maskConfig: number = 0): void {
+
 		if (!this._stage.recoverFromDisposal()) {//if context has Disposed by the OS,don't render at this frame
 			return;
 		}
@@ -184,7 +187,10 @@ export class DefaultRenderer extends RendererBase {
 		if (this._depthRender)
 			this._depthRender.dispose();
 
-		this._depthRender = new BitmapImage2D(this._pRttBufferManager.textureWidth, this._pRttBufferManager.textureHeight);
+		this._depthRender = new BitmapImage2D(
+			this._pRttBufferManager.textureWidth,
+			this._pRttBufferManager.textureHeight);
+
 		this._depthRenderer.view.target = this._depthRender;
 		this._depthRenderer.view.projection = this._view.projection;
 	}

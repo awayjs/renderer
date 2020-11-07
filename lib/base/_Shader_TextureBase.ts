@@ -1,6 +1,11 @@
 import { AbstractMethodError, AssetEvent, AbstractionBase } from '@awayjs/core';
 
-import { Stage, ContextGLTextureFormat, ShaderRegisterCache, ShaderRegisterData, ShaderRegisterElement, ImageBase } from '@awayjs/stage';
+import {
+	Stage,
+	ShaderRegisterCache,
+	ShaderRegisterData,
+	ShaderRegisterElement,
+} from '@awayjs/stage';
 
 import { _Render_RenderableBase } from './_Render_RenderableBase';
 import { ShaderBase } from './ShaderBase';
@@ -58,7 +63,12 @@ export class _Shader_TextureBase extends AbstractionBase {
 
 	}
 
-	public _getFragmentCode(targetReg: ShaderRegisterElement, regCache: ShaderRegisterCache, sharedReg: ShaderRegisterData, inputReg: ShaderRegisterElement = null): string {
+	public _getFragmentCode(
+		targetReg: ShaderRegisterElement,
+		regCache: ShaderRegisterCache,
+		sharedReg: ShaderRegisterData,
+		inputReg: ShaderRegisterElement = null): string {
+
 		throw new AbstractMethodError();
 	}
 
@@ -70,8 +80,13 @@ export class _Shader_TextureBase extends AbstractionBase {
 		//overridden for activation logic
 	}
 
-	public getTextureReg(imageIndex: number, regCache: ShaderRegisterCache, sharedReg: ShaderRegisterData): ShaderRegisterElement {
-		const index: number = this._shader.imageIndices.indexOf(imageIndex); //todo: collapse the index based on duplicate image objects to save registrations
+	public getTextureReg(
+		imageIndex: number,
+		regCache: ShaderRegisterCache,
+		sharedReg: ShaderRegisterData): ShaderRegisterElement {
+
+		//todo: collapse the index based on duplicate image objects to save registrations
+		const index: number = this._shader.imageIndices.indexOf(imageIndex);
 
 		if (index == -1) {
 			const textureReg: ShaderRegisterElement = regCache.getFreeTextureReg();

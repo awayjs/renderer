@@ -1,14 +1,12 @@
-import { IAsset, ProjectionBase } from '@awayjs/core';
-
-import { Stage } from '@awayjs/stage';
-
+import { IAsset } from '@awayjs/core';
 import { _Render_RenderableBase } from './_Render_RenderableBase';
 import { IRenderEntity } from './IRenderEntity';
 import { ShaderBase } from './ShaderBase';
 import { IAnimationSet } from './IAnimationSet';
 
 /**
- * Provides an interface for animator classes that control animation output from a data set subtype of <code>AnimationSetBase</code>.
+ * Provides an interface for animator classes that control animation
+ * output from a data set subtype of <code>AnimationSetBase</code>.
  *
  * @see away.animators.IAnimationSet
  */

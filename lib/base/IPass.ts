@@ -4,7 +4,6 @@ import { ShaderRegisterCache, ShaderRegisterData } from '@awayjs/stage';
 
 import { View } from '@awayjs/view';
 
-import { _Render_RenderableBase } from './_Render_RenderableBase';
 import { ShaderBase } from './ShaderBase';
 import { IRenderable } from './IRenderable';
 

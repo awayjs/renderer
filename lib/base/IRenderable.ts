@@ -23,5 +23,6 @@ export interface IRenderable extends IEventDispatcher
 
 	maskOwners: Array<IPartitionEntity>;
 
-	executeRender(enableDepthAndStencil?: boolean, surfaceSelector?: number, mipmapSelector?: number, maskConfig?: number): void;
+	executeRender(
+		enableDepthAndStencil?: boolean, surfaceSelector?: number, mipmapSelector?: number, maskConfig?: number): void;
 }

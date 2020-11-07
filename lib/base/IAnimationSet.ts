@@ -44,12 +44,14 @@ export interface IAnimationSet extends IAsset
 	/**
      * @inheritDoc
      */
-	getAGALVertexCode(shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
+	getAGALVertexCode(
+		shader: ShaderBase, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
 
 	/**
 	 * @inheritDoc
 	 */
-	getAGALFragmentCode(shader: ShaderBase, registerCache: ShaderRegisterCache, shadedTarget: ShaderRegisterElement): string;
+	getAGALFragmentCode(
+		shader: ShaderBase, registerCache: ShaderRegisterCache, shadedTarget: ShaderRegisterElement): string;
 
 	/**
 	 * @inheritDoc

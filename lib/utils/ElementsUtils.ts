@@ -1,6 +1,14 @@
-import { Matrix3D, Vector3D, Box, Sphere, Rectangle, Point } from '@awayjs/core';
+import { Matrix3D, Vector3D } from '@awayjs/core';
 
-import { AttributesBuffer, AttributesView, Short2Attributes, Short3Attributes, Float2Attributes, Float3Attributes, Float4Attributes, Byte4Attributes } from '@awayjs/stage';
+import {
+	AttributesBuffer,
+	AttributesView,
+	Short2Attributes,
+	Short3Attributes,
+	Float3Attributes,
+	Float4Attributes,
+	Byte4Attributes,
+} from '@awayjs/stage';
 
 export class ElementsUtils {
 	private static tempFloat32x4: Float32Array = new Float32Array(4);
@@ -11,7 +19,13 @@ export class ElementsUtils {
 
 	private static _indexSwap: Array<number> = new Array<number>();
 
-	public static generateFaceNormals(indexAttributes: Short3Attributes, positionAttributes: AttributesView, faceNormalAttributes: Float4Attributes, count: number, offset: number = 0): Float4Attributes {
+	public static generateFaceNormals(
+		indexAttributes: Short3Attributes,
+		positionAttributes: AttributesView,
+		faceNormalAttributes: Float4Attributes,
+		count: number,
+		offset: number = 0): Float4Attributes {
+
 		const indices: Uint16Array = indexAttributes.get(count, offset);
 		const positions: ArrayBufferView = positionAttributes.get(positionAttributes.count);
 
@@ -82,7 +96,12 @@ export class ElementsUtils {
 		return faceNormalAttributes;
 	}
 
-	public static generateNormals(indexAttributes: Short3Attributes, faceNormalAttributes: Float4Attributes, normalAttributes: Float3Attributes, concatenatedBuffer: AttributesBuffer): Float3Attributes {
+	public static generateNormals(
+		indexAttributes: Short3Attributes,
+		faceNormalAttributes: Float4Attributes,
+		normalAttributes: Float3Attributes,
+		concatenatedBuffer: AttributesBuffer): Float3Attributes {
+
 		const indices: Uint16Array = indexAttributes.get(indexAttributes.count);
 		const faceNormals: Float32Array = faceNormalAttributes.get(faceNormalAttributes.count);
 
@@ -150,7 +169,15 @@ export class ElementsUtils {
 		return normalAttributes;
 	}
 
-	public static generateFaceTangents(indexAttributes: Short3Attributes, positionAttributes: AttributesView, uvAttributes: AttributesView, faceTangentAttributes: Float4Attributes, count: number, offset: number = 0, useFaceWeights: boolean = false): Float4Attributes {
+	public static generateFaceTangents(
+		indexAttributes: Short3Attributes,
+		positionAttributes: AttributesView,
+		uvAttributes: AttributesView,
+		faceTangentAttributes: Float4Attributes,
+		count: number,
+		offset: number = 0,
+		useFaceWeights: boolean = false): Float4Attributes {
+
 		const indices: Uint16Array = indexAttributes.get(count, offset);
 		const positions: ArrayBufferView = positionAttributes.get(positionAttributes.count);
 		const uvs: Float32Array = <Float32Array> uvAttributes.get(uvAttributes.count);
@@ -226,7 +253,13 @@ export class ElementsUtils {
 		return faceTangentAttributes;
 	}
 
-	public static generateTangents(indexAttributes: Short3Attributes, faceTangentAttributes: Float3Attributes, faceNormalAttributes: Float4Attributes, tangentAttributes: Float3Attributes, concatenatedBuffer: AttributesBuffer): Float3Attributes {
+	public static generateTangents(
+		indexAttributes: Short3Attributes,
+		faceTangentAttributes: Float3Attributes,
+		faceNormalAttributes: Float4Attributes,
+		tangentAttributes: Float3Attributes,
+		concatenatedBuffer: AttributesBuffer): Float3Attributes {
+
 		const indices: Uint16Array = indexAttributes.get(indexAttributes.count);
 		const faceTangents: Float32Array = faceTangentAttributes.get(faceTangentAttributes.count);
 		const faceNormals: Float32Array = faceNormalAttributes.get(faceNormalAttributes.count);
@@ -299,7 +332,13 @@ export class ElementsUtils {
 		return tangentAttributes;
 	}
 
-	public static generateColors(indexAttributes: Short3Attributes, colorAttributes: Byte4Attributes, concatenatedBuffer: AttributesBuffer, count: number, offset: number = 0): Byte4Attributes {
+	public static generateColors(
+		indexAttributes: Short3Attributes,
+		colorAttributes: Byte4Attributes,
+		concatenatedBuffer: AttributesBuffer,
+		count: number,
+		offset: number = 0): Byte4Attributes {
+
 		if (colorAttributes == null)
 			colorAttributes = new Byte4Attributes(concatenatedBuffer);
 
@@ -320,7 +359,14 @@ export class ElementsUtils {
 		return colorAttributes;
 	}
 
-	public static scale(scaleA: number, scaleB: number, scaleC: number, output: AttributesView, count: number, offset: number = 0): void {
+	public static scale(
+		scaleA: number,
+		scaleB: number,
+		scaleC: number,
+		output: AttributesView,
+		count: number,
+		offset: number = 0): void {
+
 		if (output.count < count + offset)
 			output.count = count + offset;
 
@@ -340,7 +386,14 @@ export class ElementsUtils {
 		output.invalidate();
 	}
 
-	public static applyTransformation(transform: Matrix3D, positionAttributes: AttributesView, normalAttributes: Float3Attributes, tangentAttributes: Float3Attributes, count: number, offset: number = 0): void {
+	public static applyTransformation(
+		transform: Matrix3D,
+		positionAttributes: AttributesView,
+		normalAttributes: Float3Attributes,
+		tangentAttributes: Float3Attributes,
+		count: number,
+		offset: number = 0): void {
+
 		//todo: make this compatible with 2-dimensional positions
 		const positions: ArrayBufferView = positionAttributes.get(count, offset);
 		const positionStride: number = positionAttributes.stride;
@@ -430,9 +483,12 @@ export class ElementsUtils {
 			tangentAttributes.invalidate();
 	}
 
+	/* eslint-disable */
 	public static getSubIndices(indexAttributes: Short2Attributes, numVertices: number, indexMappings: Array<number>, indexOffset?: number): AttributesBuffer;
 	public static getSubIndices(indexAttributes: Short3Attributes, numVertices: number, indexMappings: Array<number>, indexOffset?: number): AttributesBuffer;
 	public static getSubIndices(indexAttributes: AttributesView, numVertices: number, indexMappings: Array<number>, indexOffset: number = 0): AttributesBuffer {
+	/* eslint-enable */
+
 		let buffer: AttributesBuffer = indexAttributes.attributesBuffer;
 		const numIndices: number = indexAttributes.length;
 
@@ -460,7 +516,10 @@ export class ElementsUtils {
 		// Loop over all triangles
 
 		i = 0;
-		while (i < numIndices + offsetLength && i + 1 < ElementsUtils.LIMIT_INDICES && index + 1 < ElementsUtils.LIMIT_VERTS) {
+		while (i < numIndices + offsetLength
+			&& i + 1 < ElementsUtils.LIMIT_INDICES
+			&& index + 1 < ElementsUtils.LIMIT_VERTS) {
+
 			originalIndex = indices[i];
 
 			if (indexSwap[originalIndex] >= 0) {
@@ -478,7 +537,9 @@ export class ElementsUtils {
 			splitIndices[i++] = splitIndex;
 		}
 
-		buffer = new AttributesBuffer(indexAttributes.size * indexAttributes.dimensions, splitIndices.length / indexAttributes.dimensions);
+		buffer = new AttributesBuffer(
+			indexAttributes.size * indexAttributes.dimensions,
+			splitIndices.length / indexAttributes.dimensions);
 
 		indexAttributes = indexAttributes.clone(buffer);
 		indexAttributes.set(splitIndices);

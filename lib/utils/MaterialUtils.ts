@@ -1,9 +1,6 @@
-import { Sampler, BitmapImage2D, BitmapImageCube, ImageUtils } from '@awayjs/stage';
-
+import { ImageUtils } from '@awayjs/stage';
 import { IMaterial } from '../base/IMaterial';
 import { IMaterialClass } from '../base/IMaterialClass';
-
-import { DefaultRenderer } from '../DefaultRenderer';
 
 export class MaterialUtils {
 	private static _defaultMaterialClass: IMaterialClass;

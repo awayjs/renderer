@@ -43,7 +43,15 @@ class DefaultRendererPool implements IRendererPool {
 	 * @returns EntityNode
 	 */
 	public getAbstraction(partition: PartitionBase): DefaultRenderer {
-		return (this._abstractionPool[partition.id] || (this._abstractionPool[partition.id] = new DefaultRenderer(this._renderGroup, partition, this)));
+		/**
+		 * @todo Remove for prevent leaks
+		 */
+		let asbt = this._abstractionPool[partition.id];
+		if (asbt) {
+			asbt = this._abstractionPool[partition.id] = new DefaultRenderer(this._renderGroup, partition, this);
+		}
+
+		return asbt;
 	}
 
 	/**
@@ -93,7 +101,15 @@ class DepthRendererPool implements IRendererPool {
 	 * @returns EntityNode
 	 */
 	public getAbstraction(partition: PartitionBase): DepthRenderer {
-		return (this._abstractionPool[partition.id] || (this._abstractionPool[partition.id] = new DepthRenderer(this._renderGroup, partition, this)));
+		/**
+		 * @todo Remove for prevent leaks
+		 */
+		let asbt = this._abstractionPool[partition.id];
+		if (asbt) {
+			asbt = this._abstractionPool[partition.id] = new DepthRenderer(this._renderGroup, partition, this);
+		}
+
+		return asbt;
 	}
 
 	/**
@@ -143,7 +159,15 @@ class DistanceRendererPool implements IRendererPool {
 	 * @returns EntityNode
 	 */
 	public getAbstraction(partition: PartitionBase): DistanceRenderer {
-		return (this._abstractionPool[partition.id] || (this._abstractionPool[partition.id] = new DistanceRenderer(this._renderGroup, partition, this)));
+		/**
+		 * @todo Remove for prevent leaks
+		 */
+		let asbt = this._abstractionPool[partition.id];
+		if (asbt) {
+			asbt = this._abstractionPool[partition.id] = new DistanceRenderer(this._renderGroup, partition, this);
+		}
+
+		return asbt;
 	}
 
 	/**
@@ -211,7 +235,16 @@ export class RenderGroup extends EventDispatcher implements IAbstractionPool {
 	}
 
 	public static getInstance(view: View, rendererType: RendererType): RenderGroup {
-		return this._instancePool[rendererType][view.id] || (this._instancePool[rendererType][view.id] = new RenderGroup(view, rendererType));
+		let group = this._instancePool[rendererType][view.id];
+
+		/**
+		 * @todo Remove me for prevent leaks
+		 */
+		if (!group) {
+			group = this._instancePool[rendererType][view.id] = new RenderGroup(view, rendererType);
+		}
+
+		return group;
 	}
 
 	public static clearInstance(view: View, rendererType: RendererType): void {
@@ -318,17 +351,17 @@ export class RenderGroup extends EventDispatcher implements IAbstractionPool {
 	}
 
 	public _addMapper(mapper: IMapper) {
-    	if (this._mappers.indexOf(mapper) != -1)
-    		return;
+		if (this._mappers.indexOf(mapper) != -1)
+			return;
 
 		this._mappers.push(mapper);
 	}
 
 	public _removeMapper(mapper: IMapper) {
-    	const index: number = this._mappers.indexOf(mapper);
+		const index: number = this._mappers.indexOf(mapper);
 
-    	if (index != -1)
-        	this._mappers.splice(index, 1);
+		if (index != -1)
+			this._mappers.splice(index, 1);
 	}
 
 	/**
@@ -346,11 +379,30 @@ export class RenderGroup extends EventDispatcher implements IAbstractionPool {
 	}
 
 	public getRenderElements(elements: IAsset): _Render_ElementsBase {
-		return this._materialPools[elements.assetType] || (this._materialPools[elements.assetType] = new (<_IRender_ElementsClass> RenderGroup._renderElementsClassPool[elements.assetType])(this._stage, this._materialClassPool, this));
+		let el = this._materialPools[elements.assetType];
+		/**
+		 * @todo Remove me to prevent leaks
+		 */
+		if (!el) {
+			el =
+				this._materialPools[elements.assetType] =
+					new (<_IRender_ElementsClass> RenderGroup._renderElementsClassPool[elements.assetType])
+					(
+						this._stage,
+						this._materialClassPool,
+						this
+					);
+		}
+
+		return el;
 	}
 
 	public getAbstraction(entity: IRenderEntity): RenderEntity {
-		return this._entityPool[entity.id] || (this._entityPool[entity.id] = new RenderEntity(this._stage, entity, this));
+		/**
+		 * @todo Remove me to prevent leaks
+		 */
+		return this._entityPool[entity.id]
+			|| (this._entityPool[entity.id] = new RenderEntity(this._stage, entity, this));
 	}
 
 	public getRenderer(partition: PartitionBase): RendererBase {
@@ -373,15 +425,23 @@ export class RenderGroup extends EventDispatcher implements IAbstractionPool {
 		RenderGroup._renderElementsClassPool[elementsClass.assetType] = renderElementsClass;
 	}
 
-	public static registerDefaultMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IMaterialClass): void {
+	public static registerDefaultMaterial(
+		renderMaterialClass: _IRender_MaterialClass,
+		materialClass: IMaterialClass): void {
+
 		DefaultRendererPool.registerMaterial(renderMaterialClass, materialClass);
 	}
 
-	public static registerDepthMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IMaterialClass): void {
+	public static registerDepthMaterial(
+		renderMaterialClass: _IRender_MaterialClass,
+		materialClass: IMaterialClass): void {
 		DepthRendererPool.registerMaterial(renderMaterialClass, materialClass);
 	}
 
-	public static registerDistanceMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IMaterialClass): void {
+	public static registerDistanceMaterial(
+		renderMaterialClass: _IRender_MaterialClass,
+		materialClass: IMaterialClass): void {
+
 		DistanceRendererPool.registerMaterial(renderMaterialClass, materialClass);
 	}
 }
