@@ -1,14 +1,23 @@
-import { AbstractMethodError, AssetEvent, Matrix, Matrix3D, AbstractionBase, IAsset } from '@awayjs/core';
+import {
+	AbstractMethodError,
+	AssetEvent,
+	Matrix,
+	Matrix3D,
+	AbstractionBase,
+	IAsset,
+} from '@awayjs/core';
 
-import { Stage, _Stage_ImageBase, ImageSampler, ImageBase } from '@awayjs/stage';
+import {
+	Stage,
+	_Stage_ImageBase,
+	ImageSampler,
+	ImageBase,
+} from '@awayjs/stage';
 
-import { View, IPartitionEntity } from '@awayjs/view';
-
+import { IPartitionEntity } from '@awayjs/view';
 import { RenderableEvent } from '../events/RenderableEvent';
 import { MaterialUtils } from '../utils/MaterialUtils';
-
 import { RenderGroup } from '../RenderGroup';
-
 import { _Render_MaterialBase } from './_Render_MaterialBase';
 import { _Stage_ElementsBase } from './_Stage_ElementsBase';
 import { IRenderEntity } from './IRenderEntity';
@@ -19,6 +28,7 @@ import { ITexture } from './ITexture';
 import { Style } from './Style';
 import { IRenderable } from './IRenderable';
 import { ShaderBase } from './ShaderBase';
+import { Settings } from '../Settings';
 
 /**
  * @class RenderableListItem
@@ -112,7 +122,17 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 	/**
      *
      */
-	public maskId: number;
+	private _maskId: number = -1;
+	public set maskId(v: number) {
+		if (v !== this._maskId) {
+			this._updateMaskHack(v >= 0);
+		}
+		this._maskId = v;
+	}
+
+	public get maskId() {
+		return this._maskId;
+	}
 
 	/**
      *
@@ -170,17 +190,36 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 		this._asset.addEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateStyleDelegate);
 	}
 
+	private _updateMaskHack(enable: boolean) {
+		if (!Settings.USE_ALPHA_CUTOFF
+			|| Settings.ALPHA_CUTOFF_VALUE < 0
+			|| Settings.ALPHA_CUTOFF_VALUE > 1) {
+			return;
+		}
+
+		const mat = this.renderMaterial?.material as IMaterial & {alphaThreshold: number};
+		if (!mat) {
+			return;
+		}
+
+		mat.alphaThreshold = enable ? Settings.ALPHA_CUTOFF_VALUE : 0;
+	}
+
 	/**
      * Renders an object to the current render target.
      *
      * @private
      */
-	public executeRender(enableDepthAndStencil: boolean = true, surfaceSelector: number = 0, mipmapSelector: number = 0, maskConfig: number = 0): void {
+	public executeRender(
+		enableDepthAndStencil: boolean = true, surfaceSelector: number = 0,
+		mipmapSelector: number = 0, maskConfig: number = 0): void {
+
 		const pass: IPass = this._renderMaterial._activePass;
 		pass._setRenderState(this);
 
 		const shader: ShaderBase = pass.shader;
 		const elements: _Stage_ElementsBase = this.stageElements;
+
 		if (shader.activeElements != elements) {
 			shader.activeElements = elements;
 			elements._setRenderState(this, shader);
@@ -269,7 +308,7 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 			this._updateMaterial();
 
 		//create a cache of image & sampler objects for the renderable
-		var numImages: number = this._renderMaterial.numImages;
+		let numImages: number = this._renderMaterial.numImages;
 		const material: IMaterial = this._renderMaterial.material;
 
 		this._images.length = numImages;
@@ -278,7 +317,6 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 
 		const numTextures: number = this._renderMaterial.material.getNumTextures();
 		let texture: ITexture;
-		var numImages: number;
 		let image: ImageBase;
 		let index: number;
 
