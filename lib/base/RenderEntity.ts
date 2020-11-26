@@ -49,7 +49,7 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 		return this._renderGroup;
 	}
 
-	public readonly id:number;
+	public readonly id: number;
 
 	/**
 	 * //TODO

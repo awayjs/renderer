@@ -27,7 +27,7 @@ export class _Render_ElementsBase implements IAbstractionPool {
 		return this._renderGroup;
 	}
 
-	public readonly id:number;
+	public readonly id: number;
 
 	/**
 	 * //TODO
@@ -40,7 +40,6 @@ export class _Render_ElementsBase implements IAbstractionPool {
 		this._renderMaterialClassPool = renderMaterialClassPool;
 		this._renderGroup = renderGroup;
 	}
-
 
 	public _includeDependencies(shader: ShaderBase): void {
 	}

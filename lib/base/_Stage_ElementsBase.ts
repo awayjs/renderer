@@ -167,7 +167,7 @@ export class _Stage_ElementsBase extends AbstractionBase {
 				this._elements.numVertices,
 				this._indexMappings, indexOffset);
 
-			this._indices = <_Stage_AttributesBuffer> sub.getAbstraction(this._stage, Stage.abstractionClassPool[sub.assetType])
+			this._indices = <_Stage_AttributesBuffer> sub.getAbstraction(this._stage, Stage.abstractionClassPool[sub.assetType]);
 			this._numIndices = this._indices._attributesBuffer.count * indices.dimensions;
 		} else {
 			this._indices = null;
@@ -208,7 +208,7 @@ export class _Stage_ElementsBase extends AbstractionBase {
 		const bufferId: number = attributesView.attributesBuffer.id;
 		const sub = ElementsUtils.getSubVertices(attributesView.attributesBuffer, this._indexMappings);
 
-		this._vertices[bufferId] = <_Stage_AttributesBuffer> sub.getAbstraction(this._stage, Stage.abstractionClassPool[sub.assetType])
+		this._vertices[bufferId] = <_Stage_AttributesBuffer> sub.getAbstraction(this._stage, Stage.abstractionClassPool[sub.assetType]);
 		this._verticesUpdated[bufferId] = true;
 	}
 

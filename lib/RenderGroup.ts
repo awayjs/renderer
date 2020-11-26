@@ -32,7 +32,7 @@ class DefaultRendererPool implements IRendererPool {
 		return DefaultRendererPool._materialClassPool;
 	}
 
-	public readonly id:number;
+	public readonly id: number;
 
 	constructor(renderGroup: RenderGroup) {
 		this.id = AbstractionBase.ID_COUNT++;
@@ -63,7 +63,7 @@ class DepthRendererPool implements IRendererPool {
 		return DepthRendererPool._materialClassPool;
 	}
 
-	public readonly id:number;
+	public readonly id: number;
 
 	constructor(renderGroup: RenderGroup) {
 		this.id = AbstractionBase.ID_COUNT++;
@@ -94,13 +94,12 @@ class DistanceRendererPool implements IRendererPool {
 		return DistanceRendererPool._materialClassPool;
 	}
 
-	public readonly id:number;
+	public readonly id: number;
 
 	constructor(renderGroup: RenderGroup) {
 		this.id = AbstractionBase.ID_COUNT++;
 		this.renderGroup = renderGroup;
 	}
-
 
 	/**
 	 * Clears the resources used by the RendererPool.
@@ -214,7 +213,7 @@ export class RenderGroup extends EventDispatcher implements IAbstractionPool {
 		return this._distanceRenderGroup;
 	}
 
-	public readonly id:number;
+	public readonly id: number;
 
 	/**
 	 * //TODO

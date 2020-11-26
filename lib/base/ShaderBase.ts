@@ -367,7 +367,7 @@ export class ShaderBase implements IAbstractionPool {
 	 */
 	public imageIndices: Array<number> = new Array<number>();
 
-	public readonly id:number;
+	public readonly id: number;
 
 	/**
 	 * Creates a new MethodCompilerVO object.
