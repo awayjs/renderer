@@ -49,15 +49,17 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 		return this._renderGroup;
 	}
 
+	public readonly id:number;
+
 	/**
 	 * //TODO
 	 *
 	 * @param materialClassGL
 	 */
-	constructor(stage: Stage, entity: IRenderEntity, renderGroup: RenderGroup) {
+	constructor(entity: IRenderEntity, renderGroup: RenderGroup) {
 		super(entity, renderGroup);
 
-		this._stage = stage;
+		this._stage = renderGroup.stage;
 		this._renderGroup = renderGroup;
 
 		this._onInvalidateElementsDelegate = (event: RenderableEvent) => this._onInvalidateElements(event);

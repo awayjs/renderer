@@ -45,9 +45,7 @@ import { IPass } from './IPass';
  * @see RegisterPool.addUsage
  */
 export class ShaderBase implements IAbstractionPool {
-	public static _abstractionClassPool: Object = new Object();
-
-	private _abstractionPool: Object = new Object();
+	public static abstractionClassPool: Object = new Object();
 
 	private _renderElements: _Render_ElementsBase;
 	private _renderMaterial: _Render_MaterialBase;
@@ -369,10 +367,13 @@ export class ShaderBase implements IAbstractionPool {
 	 */
 	public imageIndices: Array<number> = new Array<number>();
 
+	public readonly id:number;
+
 	/**
 	 * Creates a new MethodCompilerVO object.
 	 */
 	constructor(renderElements: _Render_ElementsBase, renderMaterial: _Render_MaterialBase, pass: IPass, stage: Stage) {
+		this.id = AbstractionBase.ID_COUNT++;
 		this._renderElements = renderElements;
 		this._renderMaterial = renderMaterial;
 		this._pass = pass;
@@ -382,26 +383,12 @@ export class ShaderBase implements IAbstractionPool {
 		this.profile = this._stage.profile;
 	}
 
-	public getAbstraction(asset: AssetBase): AbstractionBase {
-		return (this._abstractionPool[asset.id]
-				|| (this._abstractionPool[asset.id] = new (
-					<IAbstractionClass> ShaderBase._abstractionClassPool[asset.assetType])(asset, this)));
-	}
-
-	/**
-	 *
-	 * @param image
-	 */
-	public clearAbstraction(asset: AssetBase): void {
-		delete this._abstractionPool[asset.id];
-	}
-
 	/**
 	 *
 	 * @param imageObjectClass
 	 */
 	public static registerAbstraction(abstractionClass: IAbstractionClass, assetClass: IAssetClass): void {
-		ShaderBase._abstractionClassPool[assetClass.assetType] = abstractionClass;
+		ShaderBase.abstractionClassPool[assetClass.assetType] = abstractionClass;
 	}
 
 	public _includeDependencies(): void {

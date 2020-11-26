@@ -127,6 +127,7 @@ export class Filter3DRenderer {
 		let len: number;
 		let i: number;
 		let task: Filter3DTaskBase;
+		let texture: Image2D;
 		const context: IContextGL = <IContextGL> stage.context;
 
 		const indexBuffer: IIndexBuffer = this._rttManager.indexBuffer;
@@ -172,7 +173,9 @@ export class Filter3DRenderer {
 
 			context.setProgram(task.getProgram(stage));
 
-			(<_Stage_ImageBase> stage.getAbstraction(task.getMainInputTexture(stage)))
+			texture = task.getMainInputTexture(stage);
+
+			(<_Stage_ImageBase> texture.getAbstraction(stage, Stage.abstractionClassPool[texture.assetType]))
 				.activate(
 					task._inputTextureIndex,
 					this._sampler);

@@ -5,6 +5,7 @@ import {
 	_Stage_ImageBase,
 	ImageSampler,
 	ImageUtils,
+	ImageBase,
 } from '@awayjs/stage';
 
 import { IPass } from './IPass';
@@ -356,6 +357,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 		let texture: ITexture;
 		let numImages: number;
 		let images: Array<number>;
+		let asset: ImageBase;
 		let index: number = 0;
 
 		for (let i: number = 0; i < numTextures; i++) {
@@ -363,10 +365,8 @@ export class _Render_MaterialBase extends AbstractionBase {
 			numImages = texture.getNumImages();
 			images = this._imageIndices[texture.id] = new Array<number>();
 			for (let j: number = 0; j < numImages; j++) {
-				this.images[index] = <_Stage_ImageBase> this._stage.getAbstraction(
-					texture.getImageAt(j)
-					|| style?.getImageAt(texture, j)
-					|| ImageUtils.getDefaultImage2D());
+				asset = texture.getImageAt(j) || style?.getImageAt(texture, j) || ImageUtils.getDefaultImage2D();
+				this.images[index] = <_Stage_ImageBase> asset.getAbstraction(this._stage, Stage.abstractionClassPool[asset.assetType]);
 
 				this.samplers[index] = texture.getSamplerAt(j)
 					|| style?.getSamplerAt(texture, j)

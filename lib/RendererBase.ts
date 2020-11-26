@@ -35,7 +35,7 @@ import {
 import { _Render_MaterialBase } from './base/_Render_MaterialBase';
 import { _Render_RenderableBase } from './base/_Render_RenderableBase';
 import { RenderEntity } from './base/RenderEntity';
-import { RenderGroup } from './RenderGroup';
+import { IRendererPool, RenderGroup } from './RenderGroup';
 
 import { IRenderEntity } from './base/IRenderEntity';
 import { IRenderEntitySorter } from './sort/IRenderEntitySorter';
@@ -189,7 +189,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	/**
 	 * Creates a new RendererBase object.
 	 */
-	constructor(renderGroup: RenderGroup, partition: PartitionBase, pool: IAbstractionPool) {
+	constructor(partition: PartitionBase, pool: IRendererPool) {
 		super(partition, pool);
 
 		this._partition = partition;
@@ -202,7 +202,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		//default sorting algorithm
 		this.renderableSorter = new RenderableMergeSort();
 
-		this._renderGroup = renderGroup;
+		this._renderGroup = pool.renderGroup;
 		this._renderGroup.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 		this._renderGroup.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 		this._renderGroup.addEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
@@ -586,7 +586,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 	public applyEntity(entity: IRenderEntity): void {
 		this._sourceEntity = entity;
-		this._renderEntity = this._renderGroup.getAbstraction(entity);
+		this._renderEntity = <RenderEntity> entity.getAbstraction(this._renderGroup, RenderEntity);
 
 		// project onto camera's z-axis
 		this._zIndex = this._cameraTransform.position.subtract(entity.scenePosition).dotProduct(this._cameraForward);

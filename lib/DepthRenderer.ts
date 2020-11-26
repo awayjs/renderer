@@ -2,7 +2,7 @@ import { IAbstractionPool } from '@awayjs/core';
 
 import { INode, PartitionBase } from '@awayjs/view';
 
-import { RenderGroup } from './RenderGroup';
+import { IRendererPool, RenderGroup } from './RenderGroup';
 import { RendererBase } from './RendererBase';
 
 /**
@@ -16,8 +16,8 @@ export class DepthRenderer extends RendererBase {
 	 * @param renderBlended Indicates whether semi-transparent objects should be rendered.
 	 * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
 	 */
-	constructor(renderGroup: RenderGroup, partition: PartitionBase, pool: IAbstractionPool) {
-		super(renderGroup, partition, pool);
+	constructor(partition: PartitionBase, pool: IRendererPool) {
+		super(partition, pool);
 	}
 
 	/**

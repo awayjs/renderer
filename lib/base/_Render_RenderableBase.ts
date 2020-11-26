@@ -233,7 +233,14 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 		this._asset.removeEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
 		this._asset.removeEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateStyleDelegate);
 
-		super.onClear(event);
+		if (this._asset) {
+			this._asset.removeEventListener(AssetEvent.CLEAR, this._onClearDelegate);
+			this._asset.removeEventListener(AssetEvent.INVALIDATE, this._onInvalidateDelegate);
+		}
+
+		(<RenderEntity> this._pool).clearAbstraction(this._asset);
+		this._pool = null;
+		this._asset = null;
 
 		this.renderSceneTransform = null;
 
@@ -326,7 +333,7 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 			for (let j: number = 0; j < numImages; j++) {
 				index = this._renderMaterial.getImageIndex(texture, j);
 				image =  style ? style.getImageAt(texture, j) : null;
-				this._images[index] = image ? <_Stage_ImageBase> this._stage.getAbstraction(image) : null;
+				this._images[index] = image ? <_Stage_ImageBase> image.getAbstraction(this._stage, Stage.abstractionClassPool[image.assetType]) : null;
 				this._samplers[index] = style ? style.getSamplerAt(texture, j) : null;
 			}
 		}

@@ -4,7 +4,7 @@ import { BitmapImage2D, IContextGL, RTTBufferManager, Filter3DBase } from '@away
 
 import { INode, PartitionBase } from '@awayjs/view';
 
-import { RenderGroup } from './RenderGroup';
+import { IRendererPool, RenderGroup } from './RenderGroup';
 
 import { DepthRenderer } from './DepthRenderer';
 import { DistanceRenderer } from './DistanceRenderer';
@@ -85,14 +85,14 @@ export class DefaultRenderer extends RendererBase {
 	 * @param antiAlias The amount of anti-aliasing to use.
 	 * @param renderMode The render mode to use.
 	 */
-	constructor(renderGroup: RenderGroup, partition: PartitionBase, pool: IAbstractionPool) {
-		super(renderGroup, partition, pool);
+	constructor(partition: PartitionBase, pool: IRendererPool) {
+		super(partition, pool);
 
 		this._pRttBufferManager = RTTBufferManager.getInstance(this._stage);
 
-		this._depthRenderer = renderGroup.depthRenderGroup.getRenderer(partition);
+		this._depthRenderer = pool.renderGroup.depthRenderGroup.getRenderer(partition);
 
-		this._distanceRenderer = renderGroup.distanceRenderGroup.getRenderer(partition);
+		this._distanceRenderer = pool.renderGroup.distanceRenderGroup.getRenderer(partition);
 	}
 
 	/**
