@@ -19,8 +19,6 @@ export interface IRendererPool extends IAbstractionPool
 {
 	readonly renderGroup: RenderGroup;
 	readonly materialClassPool: Object;
-
-	clearAll();
 }
 
 class DefaultRendererPool implements IRendererPool {
@@ -39,10 +37,10 @@ class DefaultRendererPool implements IRendererPool {
 		this.renderGroup = renderGroup;
 	}
 
-	/**
-	 * Clears the resources used by the RendererPool.
-	 */
-	public clearAll(): void {
+		
+	public requestAbstraction(asset: IAsset): IAbstractionClass
+	{
+		return DefaultRenderer;
 	}
 
 	/**
@@ -69,11 +67,10 @@ class DepthRendererPool implements IRendererPool {
 		this.id = AbstractionBase.ID_COUNT++;
 		this.renderGroup = renderGroup;
 	}
-
-	/**
-	 * Clears the resources used by the RendererPool.
-	 */
-	public clearAll(): void {
+		
+	public requestAbstraction(asset: IAsset): IAbstractionClass
+	{
+		return DepthRenderer;
 	}
 
 	/**
@@ -100,11 +97,10 @@ class DistanceRendererPool implements IRendererPool {
 		this.id = AbstractionBase.ID_COUNT++;
 		this.renderGroup = renderGroup;
 	}
-
-	/**
-	 * Clears the resources used by the RendererPool.
-	 */
-	public clearAll(): void {
+		
+	public requestAbstraction(asset: IAsset): IAbstractionClass
+	{
+		return DistanceRenderer;
 	}
 
 	/**
@@ -135,12 +131,6 @@ export class RenderGroup extends EventDispatcher implements IAbstractionPool {
 		[RendererType.DISTANCE]:DistanceRendererPool,
 	}
 
-	private static _rendererClass: Object = {
-		[RendererType.DEFAULT]:DefaultRenderer,
-		[RendererType.DEPTH]:DepthRenderer,
-		[RendererType.DISTANCE]:DistanceRenderer,
-	}
-
 	private static _defaultInstancePool: Object = new Object();
 	private static _depthInstancePool: Object = new Object();
 	private static _distanceInstancePool: Object = new Object();
@@ -166,11 +156,7 @@ export class RenderGroup extends EventDispatcher implements IAbstractionPool {
 		/**
 		 * @todo Remove me for prevent leaks
 		 */
-		if (!group) {
-			group = this._instancePool[rendererType][view.id] = new RenderGroup(view, rendererType);
-		}
-
-		return group;
+		return this._instancePool[rendererType][view.id] || (this._instancePool[rendererType][view.id] = new RenderGroup(view, rendererType));
 	}
 
 	public static clearInstance(view: View, rendererType: RendererType): void {
@@ -196,8 +182,7 @@ export class RenderGroup extends EventDispatcher implements IAbstractionPool {
 	public readonly pickGroup: PickGroup;
 	private _materialClassPool: Object;
 	private _materialPools: Object = new Object();
-	public readonly rendererPool: IRendererPool;
-	private _rendererClass: IAbstractionClass;
+	private _rendererPool: IRendererPool;
 
 	public get depthRenderGroup(): RenderGroup {
 		if (this._depthRenderGroup == null)
@@ -227,9 +212,8 @@ export class RenderGroup extends EventDispatcher implements IAbstractionPool {
 		this.view = view;
 		this.stage = view.stage;
 		this.pickGroup = PickGroup.getInstance(view);
-		this.rendererPool = new RenderGroup._rendererPool[rendererType](this);
-		this._rendererClass = RenderGroup._rendererClass[rendererType];
-		this._materialClassPool = this.rendererPool.materialClassPool;
+		this._rendererPool = new RenderGroup._rendererPool[rendererType](this);
+		this._materialClassPool = this._rendererPool.materialClassPool;
 
 		if (rendererType != RendererType.DEFAULT) //set shadow renderer backgrounds to white
 			this.view.backgroundColor = 0xFFFFFF;
@@ -249,8 +233,6 @@ export class RenderGroup extends EventDispatcher implements IAbstractionPool {
 		this.stage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 		this.stage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 		this.view.removeEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
-
-		this.rendererPool.clearAll();
 	}
 
 	public update(partition: PartitionBase): void {
@@ -311,8 +293,13 @@ export class RenderGroup extends EventDispatcher implements IAbstractionPool {
 		return el;
 	}
 
+	public requestAbstraction(asset: IAsset): IAbstractionClass
+	{
+		return RenderEntity;
+	}
+
 	public getRenderer(partition: PartitionBase): RendererBase {
-		return <RendererBase> partition.getAbstraction(this.rendererPool, this._rendererClass);
+		return partition.getAbstraction<RendererBase>(this._rendererPool);
 	}
 
 	/**

@@ -1,4 +1,4 @@
-import { IAssetClass, IAbstractionPool, AssetEvent, AbstractionBase } from '@awayjs/core';
+import { IAssetClass, IAbstractionPool, AssetEvent, AbstractionBase, IAsset, IAbstractionClass } from '@awayjs/core';
 
 import { Stage } from '@awayjs/stage';
 
@@ -129,6 +129,11 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 	 */
 	public clearAbstraction(renderable: ITraversable): void {
 		delete this._abstractionPool[renderable.id];
+	}
+
+	public requestAbstraction(asset: IAsset): IAbstractionClass
+	{
+		return null;
 	}
 
 	/**

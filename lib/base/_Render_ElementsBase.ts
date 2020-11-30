@@ -2,30 +2,20 @@
 import { Stage, ShaderRegisterCache, ShaderRegisterData } from '@awayjs/stage';
 import { _IRender_MaterialClass } from './_IRender_MaterialClass';
 import { _Render_MaterialBase } from './_Render_MaterialBase';
-import { AbstractionBase, IAbstractionPool } from '@awayjs/core';
+import { AbstractionBase, IAbstractionClass, IAbstractionPool, IAsset } from '@awayjs/core';
 import { RenderGroup } from '../RenderGroup';
 import { ShaderBase } from './ShaderBase';
-import { IMaterial } from './IMaterial';
 
 /**
  * @class away.pool.MaterialPoolBase
  */
 export class _Render_ElementsBase implements IAbstractionPool {
-	private _stage: Stage;
-	private _renderMaterialClassPool: Object;
-	private _renderGroup: RenderGroup;
 
-	public get stage(): Stage {
-		return this._stage;
-	}
+	private _materialClassPool: Object;
 
-	/**
-     *
-     * @returns {IRenderEntity}
-     */
-	public get renderGroup(): RenderGroup {
-		return this._renderGroup;
-	}
+	readonly stage: Stage;
+	readonly renderGroup: RenderGroup;
+
 
 	public readonly id: number;
 
@@ -34,11 +24,16 @@ export class _Render_ElementsBase implements IAbstractionPool {
 	 *
 	 * @param materialClassGL
 	 */
-	constructor(stage: Stage, renderMaterialClassPool: Object, renderGroup: RenderGroup) {
+	constructor(stage: Stage, materialClassPool: Object, renderGroup: RenderGroup) {
 		this.id = AbstractionBase.ID_COUNT++;
-		this._stage = stage;
-		this._renderMaterialClassPool = renderMaterialClassPool;
-		this._renderGroup = renderGroup;
+		this.stage = stage;
+		this._materialClassPool = materialClassPool;
+		this.renderGroup = renderGroup;
+	}
+	
+	public requestAbstraction(asset: IAsset): IAbstractionClass
+	{
+		return this._materialClassPool[asset.assetType];
 	}
 
 	public _includeDependencies(shader: ShaderBase): void {

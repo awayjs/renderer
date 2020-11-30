@@ -366,7 +366,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 			images = this._imageIndices[texture.id] = new Array<number>();
 			for (let j: number = 0; j < numImages; j++) {
 				asset = texture.getImageAt(j) || style?.getImageAt(texture, j) || ImageUtils.getDefaultImage2D();
-				this.images[index] = <_Stage_ImageBase> asset.getAbstraction(this._stage, Stage.abstractionClassPool[asset.assetType]);
+				this.images[index] = asset.getAbstraction<_Stage_ImageBase>(this._stage);
 
 				this.samplers[index] = texture.getSamplerAt(j)
 					|| style?.getSamplerAt(texture, j)

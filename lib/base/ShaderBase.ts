@@ -10,6 +10,7 @@ import {
 	IAbstractionPool,
 	ByteArray,
 	IAbstractionClass,
+	IAsset,
 } from '@awayjs/core';
 
 import {
@@ -45,7 +46,7 @@ import { IPass } from './IPass';
  * @see RegisterPool.addUsage
  */
 export class ShaderBase implements IAbstractionPool {
-	public static abstractionClassPool: Object = new Object();
+	private static _abstractionClassPool: Object = new Object();
 
 	private _renderElements: _Render_ElementsBase;
 	private _renderMaterial: _Render_MaterialBase;
@@ -382,13 +383,18 @@ export class ShaderBase implements IAbstractionPool {
 
 		this.profile = this._stage.profile;
 	}
+	
+	public requestAbstraction(asset: IAsset): IAbstractionClass
+	{
+		return ShaderBase._abstractionClassPool[asset.assetType];
+	}
 
 	/**
 	 *
 	 * @param imageObjectClass
 	 */
 	public static registerAbstraction(abstractionClass: IAbstractionClass, assetClass: IAssetClass): void {
-		ShaderBase.abstractionClassPool[assetClass.assetType] = abstractionClass;
+		ShaderBase._abstractionClassPool[assetClass.assetType] = abstractionClass;
 	}
 
 	public _includeDependencies(): void {

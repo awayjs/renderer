@@ -175,7 +175,7 @@ export class Filter3DRenderer {
 
 			texture = task.getMainInputTexture(stage);
 
-			(<_Stage_ImageBase> texture.getAbstraction(stage, Stage.abstractionClassPool[texture.assetType]))
+			(texture.getAbstraction<_Stage_ImageBase>(stage))
 				.activate(
 					task._inputTextureIndex,
 					this._sampler);

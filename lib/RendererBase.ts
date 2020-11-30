@@ -3,7 +3,6 @@ import {
 	Plane3D,
 	Vector3D,
 	ProjectionBase,
-	IAbstractionPool,
 	AbstractionBase,
 	AssetEvent,
 } from '@awayjs/core';
@@ -586,7 +585,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 	public applyEntity(entity: IRenderEntity): void {
 		this._sourceEntity = entity;
-		this._renderEntity = <RenderEntity> entity.getAbstraction(this._renderGroup, RenderEntity);
+		this._renderEntity = entity.getAbstraction<RenderEntity>(this._renderGroup);
 
 		// project onto camera's z-axis
 		this._zIndex = this._cameraTransform.position.subtract(entity.scenePosition).dotProduct(this._cameraForward);
