@@ -131,8 +131,7 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 		delete this._abstractionPool[renderable.id];
 	}
 
-	public requestAbstraction(asset: IAsset): IAbstractionClass
-	{
+	public requestAbstraction(asset: IAsset): IAbstractionClass {
 		return null;
 	}
 

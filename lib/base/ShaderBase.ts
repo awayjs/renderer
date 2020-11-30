@@ -383,9 +383,8 @@ export class ShaderBase implements IAbstractionPool {
 
 		this.profile = this._stage.profile;
 	}
-	
-	public requestAbstraction(asset: IAsset): IAbstractionClass
-	{
+
+	public requestAbstraction(asset: IAsset): IAbstractionClass {
 		return ShaderBase._abstractionClassPool[asset.assetType];
 	}
 

@@ -16,7 +16,6 @@ export class _Render_ElementsBase implements IAbstractionPool {
 	readonly stage: Stage;
 	readonly renderGroup: RenderGroup;
 
-
 	public readonly id: number;
 
 	/**
@@ -30,9 +29,8 @@ export class _Render_ElementsBase implements IAbstractionPool {
 		this._materialClassPool = materialClassPool;
 		this.renderGroup = renderGroup;
 	}
-	
-	public requestAbstraction(asset: IAsset): IAbstractionClass
-	{
+
+	public requestAbstraction(asset: IAsset): IAbstractionClass {
 		return this._materialClassPool[asset.assetType];
 	}
 

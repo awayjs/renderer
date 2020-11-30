@@ -37,9 +37,7 @@ class DefaultRendererPool implements IRendererPool {
 		this.renderGroup = renderGroup;
 	}
 
-		
-	public requestAbstraction(asset: IAsset): IAbstractionClass
-	{
+	public requestAbstraction(asset: IAsset): IAbstractionClass {
 		return DefaultRenderer;
 	}
 
@@ -67,9 +65,8 @@ class DepthRendererPool implements IRendererPool {
 		this.id = AbstractionBase.ID_COUNT++;
 		this.renderGroup = renderGroup;
 	}
-		
-	public requestAbstraction(asset: IAsset): IAbstractionClass
-	{
+
+	public requestAbstraction(asset: IAsset): IAbstractionClass {
 		return DepthRenderer;
 	}
 
@@ -97,9 +94,8 @@ class DistanceRendererPool implements IRendererPool {
 		this.id = AbstractionBase.ID_COUNT++;
 		this.renderGroup = renderGroup;
 	}
-		
-	public requestAbstraction(asset: IAsset): IAbstractionClass
-	{
+
+	public requestAbstraction(asset: IAsset): IAbstractionClass {
 		return DistanceRenderer;
 	}
 
@@ -151,7 +147,7 @@ export class RenderGroup extends EventDispatcher implements IAbstractionPool {
 	}
 
 	public static getInstance(view: View, rendererType: RendererType): RenderGroup {
-		let group = this._instancePool[rendererType][view.id];
+		const group = this._instancePool[rendererType][view.id];
 
 		/**
 		 * @todo Remove me for prevent leaks
@@ -293,8 +289,7 @@ export class RenderGroup extends EventDispatcher implements IAbstractionPool {
 		return el;
 	}
 
-	public requestAbstraction(asset: IAsset): IAbstractionClass
-	{
+	public requestAbstraction(asset: IAsset): IAbstractionClass {
 		return RenderEntity;
 	}
 
