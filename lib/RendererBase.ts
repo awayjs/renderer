@@ -599,7 +599,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	}
 
 	public applyTraversable(traversable: ITraversable): void {
-		const renderRenderable: _Render_RenderableBase = this._renderEntity.getAbstraction(traversable);
+		const renderRenderable: _Render_RenderableBase = traversable.getAbstraction(this._renderEntity);
 
 		//set local vars for faster referencing
 		renderRenderable.cascaded = false;

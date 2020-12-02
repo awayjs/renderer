@@ -233,14 +233,7 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 		this._asset.removeEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
 		this._asset.removeEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateStyleDelegate);
 
-		if (this._asset) {
-			this._asset.removeEventListener(AssetEvent.CLEAR, this._onClearDelegate);
-			this._asset.removeEventListener(AssetEvent.INVALIDATE, this._onInvalidateDelegate);
-		}
-
-		(<RenderEntity> this._pool).clearAbstraction(this._asset);
-		this._pool = null;
-		this._asset = null;
+		super.onClear(event);
 
 		this.renderSceneTransform = null;
 

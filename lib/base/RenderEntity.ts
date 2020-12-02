@@ -22,7 +22,6 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 
 	private _abstractionPool: Object = new Object();
 	private _stage: Stage;
-	private _entity: IRenderEntity;
 	private _renderGroup: RenderGroup;
 
 	/**
@@ -59,6 +58,7 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 	constructor(entity: IRenderEntity, renderGroup: RenderGroup) {
 		super(entity, renderGroup);
 
+		this.id = AbstractionBase.ID_COUNT++;
 		this._stage = renderGroup.stage;
 		this._renderGroup = renderGroup;
 
@@ -75,10 +75,6 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 		this._asset.removeEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
 		this._asset.removeEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
 		this._asset.removeEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateStyleDelegate);
-
-		//clear all renderables associated with this render entity
-		for (const key in this._abstractionPool)
-			(this._abstractionPool[key] as _Render_RenderableBase).onClear(null);
 
 		super.onClear(event);
 	}
@@ -98,41 +94,8 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 			(this._abstractionPool[key] as _Render_RenderableBase)._onInvalidateStyle();
 	}
 
-	/**
-	 * //TODO
-	 *
-	 * @param renderable
-	 * @returns IRenderState
-	 */
-	public getAbstraction(renderable: ITraversable): _Render_RenderableBase {
-		let base = this._abstractionPool[renderable.id];
-
-		/**
-		 * @todo Remove me for preveting leaks
-		 */
-		if (!base) {
-			base =
-				this._abstractionPool[renderable.id] =
-					new (<_IRender_RenderableClass> RenderEntity._renderRenderableClassPool[renderable.assetType])
-					(
-						renderable,
-						this
-					);
-		}
-
-		return  base;
-	}
-
-	/**
-	 *
-	 * @param renderable
-	 */
-	public clearAbstraction(renderable: ITraversable): void {
-		delete this._abstractionPool[renderable.id];
-	}
-
 	public requestAbstraction(asset: IAsset): IAbstractionClass {
-		return null;
+		return RenderEntity._renderRenderableClassPool[asset.assetType];
 	}
 
 	/**
