@@ -637,54 +637,55 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		let newMaskConfig: number = newMaskBase;
 
 		this._context.enableStencil();
-		this._context.setStencilActions(
-			ContextGLTriangleFace.FRONT_AND_BACK,
-			ContextGLCompareMode.ALWAYS,
-			ContextGLStencilAction.SET,
-			ContextGLStencilAction.SET,
-			ContextGLStencilAction.SET);
 
 		const numLayers: number = maskOwners.length;
 		let children: Array<IPartitionEntity>;
 		let numChildren: number;
 		let mask: IPartitionEntity;
+		let first: boolean = true;
 
 		for (let i: number = 0; i < numLayers; ++i) {
-			if (i != 0) {
-				this._context.setStencilActions(
-					ContextGLTriangleFace.FRONT_AND_BACK,
-					ContextGLCompareMode.EQUAL,
-					ContextGLStencilAction.SET,
-					ContextGLStencilAction.SET,
-					ContextGLStencilAction.KEEP);
-			}
-
-			//flips between read odd write even to read even write odd
-			this._context.setStencilReferenceValue(
-				0xFF,
-				newMaskConfig,
-				newMaskConfig = (newMaskConfig & newMaskBase) + newMaskBase);
-
-			//clears write mask to zero
-			this._context.clear(0, 0, 0, 0, 0, 0, ContextGLClearMask.STENCIL);
-
 			children = maskOwners[i].masks;
 			numChildren = children.length;
 
-			for (let j: number = 0; j < numChildren; ++j) {
-				mask = children[j];
-				//todo: figure out why masks can be null here
-				if (mask)
-					this._renderGroup.getRenderer(mask.partition).render(true, 0, 0, newMaskConfig);
+			if (numChildren) {
+				this._context.setStencilActions(
+					ContextGLTriangleFace.FRONT_AND_BACK,
+					(first)? ContextGLCompareMode.ALWAYS
+						: ContextGLCompareMode.EQUAL,
+					ContextGLStencilAction.SET,
+					ContextGLStencilAction.SET,
+					ContextGLStencilAction.KEEP);
+
+				first = false;
+
+				//flips between read odd write even to read even write odd
+				this._context.setStencilReferenceValue(
+					0xFF,
+					newMaskConfig,
+					newMaskConfig = (newMaskConfig & newMaskBase) + newMaskBase);
+	
+				//clears write mask to zero
+				this._context.clear(0, 0, 0, 0, 0, 0, ContextGLClearMask.STENCIL);
+	
+				for (let j: number = 0; j < numChildren; ++j) {
+					mask = children[j];
+					//todo: figure out why masks can be null here
+					if (mask)
+						this._renderGroup.getRenderer(mask.partition).render(true, 0, 0, newMaskConfig);
+				}	
 			}
 		}
-		this._context.setStencilActions(
-			ContextGLTriangleFace.FRONT_AND_BACK,
-			ContextGLCompareMode.EQUAL,
-			ContextGLStencilAction.SET,
-			ContextGLStencilAction.SET,
-			ContextGLStencilAction.KEEP);
 
+		if (!first) {
+			this._context.setStencilActions(
+				ContextGLTriangleFace.FRONT_AND_BACK,
+				ContextGLCompareMode.EQUAL,
+				ContextGLStencilAction.SET,
+				ContextGLStencilAction.SET,
+				ContextGLStencilAction.KEEP);
+		}
+	
 		//reads from mask output, writes to previous mask state
 		this._context.setStencilReferenceValue(0xFF, newMaskConfig, this._maskConfig);
 
