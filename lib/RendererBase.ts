@@ -651,7 +651,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			if (numChildren) {
 				this._context.setStencilActions(
 					ContextGLTriangleFace.FRONT_AND_BACK,
-					(first)? ContextGLCompareMode.ALWAYS
+					(first) ? ContextGLCompareMode.ALWAYS
 						: ContextGLCompareMode.EQUAL,
 					ContextGLStencilAction.SET,
 					ContextGLStencilAction.SET,
@@ -664,16 +664,16 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 					0xFF,
 					newMaskConfig,
 					newMaskConfig = (newMaskConfig & newMaskBase) + newMaskBase);
-	
+
 				//clears write mask to zero
 				this._context.clear(0, 0, 0, 0, 0, 0, ContextGLClearMask.STENCIL);
-	
+
 				for (let j: number = 0; j < numChildren; ++j) {
 					mask = children[j];
 					//todo: figure out why masks can be null here
 					if (mask)
 						this._renderGroup.getRenderer(mask.partition).render(true, 0, 0, newMaskConfig);
-				}	
+				}
 			}
 		}
 
@@ -685,7 +685,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				ContextGLStencilAction.SET,
 				ContextGLStencilAction.KEEP);
 		}
-	
+
 		//reads from mask output, writes to previous mask state
 		this._context.setStencilReferenceValue(0xFF, newMaskConfig, this._maskConfig);
 
