@@ -293,8 +293,8 @@ export class RenderGroup extends EventDispatcher implements IAbstractionPool {
 		return RenderEntity;
 	}
 
-	public getRenderer(partition: PartitionBase): RendererBase {
-		return partition.getAbstraction<RendererBase>(this._rendererPool);
+	public getRenderer<T extends RendererBase> (partition: PartitionBase): T {
+		return <T> partition.getAbstraction<RendererBase>(this._rendererPool);
 	}
 
 	/**

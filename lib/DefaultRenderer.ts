@@ -117,6 +117,8 @@ export class DefaultRenderer extends RendererBase {
 			return;
 		}
 
+		this._stage.onRenderBegin && this._stage.onRenderBegin();
+
 		if (this._requireDepthRender)
 			this._renderSceneDepthToTexture();
 
@@ -134,6 +136,8 @@ export class DefaultRenderer extends RendererBase {
 
 		if (!maskConfig)
 			this._view.present();
+
+		this._stage.onRenderEnd && this._stage.onRenderEnd();
 	}
 
 	public onClear(event: AssetEvent): void {
