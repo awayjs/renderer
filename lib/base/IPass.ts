@@ -4,20 +4,16 @@ import { ShaderRegisterCache, ShaderRegisterData } from '@awayjs/stage';
 
 import { View } from '@awayjs/view';
 
-import { ShaderBase } from './ShaderBase';
 import { IRenderable } from './IRenderable';
+import { IShaderBase } from './IShaderBase';
 
-/**
- *
- * @class away.pool.Passes
- */
-export interface IPass extends IEventDispatcher
-{
-	shader: ShaderBase;
+export interface ISimplePass extends IEventDispatcher {
 
-	_includeDependencies(shader: ShaderBase);
+	shader: IShaderBase;
 
-	_initConstantData();
+	_includeDependencies(shader: IShaderBase): void;
+
+	_initConstantData(): void;
 
 	/**
 	 * Sets the material state for the pass that is independent of the rendered object. This needs to be called before
@@ -26,9 +22,9 @@ export interface IPass extends IEventDispatcher
 	 * @param camera The camera from which the scene is viewed.
 	 * @private
 	 */
-	_activate(view: View);
+	_activate(view: View): void;
 
-	_setRenderState(renderState: IRenderable)
+	_setRenderState(renderState: IRenderable): void;
 
 	/**
 	 * Clears the surface state for the pass. This needs to be called before activating another pass.
@@ -36,12 +32,19 @@ export interface IPass extends IEventDispatcher
 	 *
 	 * @private
 	 */
-	_deactivate();
+	_deactivate(): void;
 
-	invalidate();
+	invalidate(): void;
 
-	dispose();
+	dispose(): void;
+}
 
+/**
+ *
+ * @class away.pool.Passes
+ */
+export interface IPass extends ISimplePass
+{
 	_getVertexCode(registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;
 
 	_getFragmentCode(registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData): string;

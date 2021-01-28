@@ -3,9 +3,9 @@ import { Stage, Short3Attributes, AttributesView, _Stage_AttributesBuffer } from
 import { AbstractionBase, AbstractMethodError, AssetEvent } from '@awayjs/core';
 import { ElementsEvent } from '../events/ElementsEvent';
 import { ElementsUtils } from '../utils/ElementsUtils';
-import { ShaderBase } from './ShaderBase';
 import { IElements } from './IElements';
 import { IRenderable } from './IRenderable';
+import { IShaderBase } from './IShaderBase';
 
 /**
  *
@@ -139,7 +139,7 @@ export class _Stage_ElementsBase extends AbstractionBase {
 		}
 	}
 
-	public _setRenderState(renderable: IRenderable, shader: ShaderBase): void {
+	public _setRenderState(renderable: IRenderable, shader: IShaderBase): void {
 		if (!this._verticesUpdated)
 			this._updateIndices();
 
@@ -150,7 +150,7 @@ export class _Stage_ElementsBase extends AbstractionBase {
 		// 	this._overflow._iRender(renderable, camera, viewProjection);
 	}
 
-	public draw(renderable: IRenderable, shader: ShaderBase, count: number, offset: number): void {
+	public draw(renderable: IRenderable, shader: IShaderBase, count: number, offset: number): void {
 		throw new AbstractMethodError();
 	}
 

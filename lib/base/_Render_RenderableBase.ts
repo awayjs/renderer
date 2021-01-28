@@ -27,8 +27,8 @@ import { RenderEntity } from './RenderEntity';
 import { ITexture } from './ITexture';
 import { Style } from './Style';
 import { IRenderable } from './IRenderable';
-import { ShaderBase } from './ShaderBase';
 import { Settings } from '../Settings';
+import { IShaderBase } from './IShaderBase';
 
 /**
  * @class RenderableListItem
@@ -217,7 +217,7 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 		const pass: IPass = this._renderMaterial._activePass;
 		pass._setRenderState(this);
 
-		const shader: ShaderBase = pass.shader;
+		const shader: IShaderBase = pass.shader;
 		const elements: _Stage_ElementsBase = this.stageElements;
 
 		if (shader.activeElements != elements) {

@@ -44,7 +44,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 	protected _renderGroup: RenderGroup;
 
 	private _invalidAnimation: boolean = true;
-	private _invalidRender: boolean = true;
+	protected _invalidRender: boolean = true;
 	private _invalidImages: boolean = true;
 
 	private _imageIndices: Object = new Object();
@@ -323,7 +323,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 		let shader: ShaderBase;
 		const len: number = this._passes.length;
 		for (let i: number = 0; i < len; i++) {
-			shader = this._passes[i].shader;
+			shader = <ShaderBase> this._passes[i].shader;
 			shader.usesAnimation = usesAnimation;
 
 			// this is getter, this enforce update programData
@@ -395,7 +395,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 			const len: number = this._passes.length;
 			let shader: ShaderBase;
 			for (let i: number = 0; i < len; i++) {
-				shader = this._passes[i].shader;
+				shader = <ShaderBase> this._passes[i].shader;
 				shader.usesAnimation = false;
 				for (let j: number = 0; j < numOwners; j++)
 					if (entities[j].sourceEntity.animator)

@@ -5,7 +5,7 @@ export { IMaterial } from './lib/base/IMaterial';
 export { IMaterialClass } from './lib/base/IMaterialClass';
 export { _IRender_ElementsClass } from './lib/base/_IRender_ElementsClass';
 export { _IRender_MaterialClass } from './lib/base/_IRender_MaterialClass';
-export { IPass } from './lib/base/IPass';
+export { IPass, ISimplePass } from './lib/base/IPass';
 export { ITexture } from './lib/base/ITexture';
 export { IElements } from './lib/base/IElements';
 export { ShaderBase } from './lib/base/ShaderBase';
@@ -48,5 +48,7 @@ export { RenderGroup, RendererType } from './lib/RenderGroup';
 export { IRenderEntitySorter } from './lib/sort/IRenderEntitySorter';
 export { RenderableMergeSort } from './lib/sort/RenderableMergeSort';
 export { RenderableNullSort } from './lib/sort/RenderableNullSort';
+
+export { IShaderBase } from './lib/base/IShaderBase';
 
 export * from './lib/Settings';

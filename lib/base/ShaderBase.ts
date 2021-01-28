@@ -1,5 +1,4 @@
 import {
-	AssetBase,
 	AbstractionBase,
 	Matrix,
 	Matrix3D,
@@ -7,7 +6,6 @@ import {
 	ColorTransform,
 	ArgumentError,
 	IAssetClass,
-	IAbstractionPool,
 	ByteArray,
 	IAbstractionClass,
 	IAsset,
@@ -36,6 +34,7 @@ import { IAnimationSet } from './IAnimationSet';
 import { IAnimator } from './IAnimator';
 import { View } from '@awayjs/view';
 import { IPass } from './IPass';
+import { IShaderBase } from './IShaderBase';
 
 /**
  * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
@@ -45,7 +44,7 @@ import { IPass } from './IPass';
  *
  * @see RegisterPool.addUsage
  */
-export class ShaderBase implements IAbstractionPool {
+export class ShaderBase implements IShaderBase {
 	private static _abstractionClassPool: Object = new Object();
 
 	private _renderElements: _Render_ElementsBase;
