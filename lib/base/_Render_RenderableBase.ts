@@ -14,13 +14,12 @@ import {
 	ImageBase,
 } from '@awayjs/stage';
 
-import { IPartitionEntity } from '@awayjs/view';
+import { EntityNode, ContainerNode } from '@awayjs/view';
 import { RenderableEvent } from '../events/RenderableEvent';
 import { MaterialUtils } from '../utils/MaterialUtils';
 import { RenderGroup } from '../RenderGroup';
 import { _Render_MaterialBase } from './_Render_MaterialBase';
 import { _Stage_ElementsBase } from './_Stage_ElementsBase';
-import { IRenderEntity } from './IRenderEntity';
 import { IPass } from './IPass';
 import { IMaterial } from './IMaterial';
 import { RenderEntity } from './RenderEntity';
@@ -85,7 +84,7 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 	/**
 	 *
 	 */
-	public sourceEntity: IRenderEntity;
+	public sourceEntity: EntityNode;
 
 	/**
 	 *
@@ -137,7 +136,7 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 	/**
      *
      */
-	public maskOwners: Array<IPartitionEntity>;
+	public maskOwners: ContainerNode[];
 
 	/**
      *

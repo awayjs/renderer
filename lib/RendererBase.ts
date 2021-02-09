@@ -29,6 +29,8 @@ import {
 	PartitionBase,
 	IPartitionEntity,
 	ITraversable,
+	EntityNode,
+	ContainerNode,
 } from '@awayjs/view';
 
 import { _Render_MaterialBase } from './base/_Render_MaterialBase';
@@ -56,7 +58,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _maskConfig: number;
 	private _maskId: number;
 	private _activeMasksDirty: boolean;
-	private _activeMaskOwners: Array<IPartitionEntity>;
+	private _activeMaskOwners: ContainerNode[];
 
 	protected _partition: PartitionBase;
 	protected _context: IContextGL;
@@ -87,7 +89,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _cullPlanes: Array<Plane3D>;
 	private _customCullPlanes: Array<Plane3D>;
 	private _numCullPlanes: number = 0;
-	private _sourceEntity: IRenderEntity;
+	private _sourceEntity: EntityNode;
 	protected _renderGroup: RenderGroup;
 	private _renderEntity: RenderEntity;
 	private _zIndex: number;
@@ -110,14 +112,14 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 	public next: IRenderable;
 
-	public sourceEntity: IRenderEntity;
+	public sourceEntity: ContainerNode;
 
 	public renderMaterial: _Render_MaterialBase;
 
 	public stageElements: _Stage_ElementsBase;
 
-	public get maskOwners(): Array<IPartitionEntity> {
-		return this.sourceEntity.maskOwners;
+	public get maskOwners(): ContainerNode[] {
+		return this.sourceEntity.getMaskOwners();
 	}
 
 	public get partition(): PartitionBase {
@@ -192,8 +194,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		super(partition, pool);
 
 		this._partition = partition;
-		this.sourceEntity = <IRenderEntity> partition.root;
-		this._maskId = partition.root.maskId;
+		this.sourceEntity = partition.rootNode;
+		this._maskId = partition.rootNode.getMaskId();
 
 		this._onSizeInvalidateDelegate = (event: ViewEvent) => this.onSizeInvalidate(event);
 		this._onContextUpdateDelegate = (event: StageEvent) => this.onContextUpdate(event);
@@ -320,7 +322,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._pNumElements = 0;
 		this._activeMaskOwners = null;
 
-		this._cameraTransform = this._view.projection.transform.concatenatedMatrix3D;
+		this._cameraTransform = this._view.projection.transform.matrix3D;
 		this._cameraForward = this._view.projection.transform.forwardVector;
 		this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : this._view.projection.viewFrustumPlanes;
 		this._numCullPlanes = this._cullPlanes ? this._cullPlanes.length : 0;
@@ -555,7 +557,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		const maskOrFrustrum = (
 			this._maskConfig
 			|| node.isInFrustum(
-				this._partition.root,
+				this._partition.rootNode,
 				this._cullPlanes,
 				this._numCullPlanes,
 				this._renderGroup.pickGroup));
@@ -563,7 +565,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		const enter = node._collectionMark != RendererBase._collectionMark
 			&& node.isRenderable()
 			&& maskOrFrustrum
-			&& node.maskId == this._maskId;
+			&& node.getMaskId() == this._maskId;
 
 		node._collectionMark = RendererBase._collectionMark;
 
@@ -583,19 +585,19 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		return this;
 	}
 
-	public applyEntity(entity: IRenderEntity): void {
+	public applyEntity(entity: EntityNode): void {
 		this._sourceEntity = entity;
 		this._renderEntity = entity.getAbstraction<RenderEntity>(this._renderGroup);
 
 		// project onto camera's z-axis
-		this._zIndex = this._cameraTransform.position.subtract(entity.scenePosition).dotProduct(this._cameraForward);
-		this._zIndex += entity.zOffset;
+		this._zIndex = this._cameraTransform.position.subtract(this._sourceEntity.parent.getPosition()).dotProduct(this._cameraForward);
+		this._zIndex += (<IRenderEntity> this._sourceEntity.entity).zOffset;
 
 		//save sceneTransform
-		this._renderSceneTransform = entity.getRenderSceneTransform(this._cameraTransform);
+		this._renderSceneTransform = this._sourceEntity.parent.getRenderMatrix3D(this._cameraTransform);
 
 		//collect renderables
-		entity._acceptTraverser(this);
+		this._sourceEntity.entity._acceptTraverser(this);
 	}
 
 	public applyTraversable(traversable: ITraversable): void {
@@ -605,8 +607,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		renderRenderable.cascaded = false;
 
 		renderRenderable.zIndex = this._zIndex;
-		renderRenderable.maskId = this._sourceEntity.maskId;
-		renderRenderable.maskOwners = this._sourceEntity.maskOwners;
+		renderRenderable.maskId = this._sourceEntity.parent.getMaskId();
+		renderRenderable.maskOwners = this._sourceEntity.parent.getMaskOwners();
 
 		const renderMaterial: _Render_MaterialBase = renderRenderable.renderMaterial;
 		renderRenderable.materialID = renderMaterial.materialID;
@@ -627,7 +629,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._pNumElements += renderRenderable.stageElements.elements.numElements;
 	}
 
-	public _renderMasks(maskOwners: IPartitionEntity[]): void {
+	public _renderMasks(maskOwners: ContainerNode[]): void {
 		//calculate the bit index of maskConfig devided by two
 		const halfBitIndex: number = Math.log2(this._maskConfig) >> 1;
 
@@ -639,13 +641,13 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._context.enableStencil();
 
 		const numLayers: number = maskOwners.length;
-		let children: Array<IPartitionEntity>;
+		let children: INode[];
 		let numChildren: number;
-		let mask: IPartitionEntity;
+		let mask: INode;
 		let first: boolean = true;
 
 		for (let i: number = 0; i < numLayers; ++i) {
-			children = maskOwners[i].masks;
+			children = maskOwners[i].getMasks();
 			numChildren = children.length;
 
 			if (numChildren) {
@@ -695,7 +697,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		}
 	}
 
-	private _checkMaskOwners(maskOwners: Array<IPartitionEntity>): boolean {
+	private _checkMaskOwners(maskOwners: ContainerNode[]): boolean {
 		if (this._activeMaskOwners == null || maskOwners == null)
 			return Boolean(this._activeMaskOwners != maskOwners);
 
@@ -704,14 +706,14 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		const numLayers: number = maskOwners.length;
 		let numMasks: number;
-		let masks: Array<IPartitionEntity>;
+		let masks: INode[];
 		let activeNumMasks: number;
-		let activeMasks: Array<IPartitionEntity>;
+		let activeMasks: INode[];
 
 		for (let i: number = 0; i < numLayers; i++) {
-			masks = maskOwners[i].masks;
+			masks = maskOwners[i].getMasks();
 			numMasks = masks.length;
-			activeMasks = this._activeMaskOwners[i].masks;
+			activeMasks = this._activeMaskOwners[i].getMasks();
 			activeNumMasks = activeMasks.length;
 			if (activeNumMasks != numMasks)
 				return true;

@@ -2,12 +2,11 @@ import { IAssetClass, IAbstractionPool, AssetEvent, AbstractionBase, IAsset, IAb
 
 import { Stage } from '@awayjs/stage';
 
-import { IRenderEntity } from './IRenderEntity';
 import { _IRender_RenderableClass } from './_IRender_RenderableClass';
 import { _Render_RenderableBase } from './_Render_RenderableBase';
 
 import { RenderGroup } from '../RenderGroup';
-import { ITraversable } from '@awayjs/view';
+import { EntityNode } from '@awayjs/view';
 import { RenderableEvent } from '../events/RenderableEvent';
 
 /**
@@ -20,7 +19,7 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 	private _onInvalidateMaterialDelegate: (event: RenderableEvent) => void;
 	private _onInvalidateStyleDelegate: (event: RenderableEvent) => void;
 
-	private _abstractionPool: Object = new Object();
+	// private _abstractionPool: Object = new Object();
 	private _stage: Stage;
 	private _renderGroup: RenderGroup;
 
@@ -34,15 +33,15 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 
 	/**
      *
-     * @returns {IRenderEntity}
+     * @returns {EntityNode}
      */
-	public get entity(): IRenderEntity {
-		return this._asset as IRenderEntity;
+	public get entity(): EntityNode {
+		return this._asset as EntityNode;
 	}
 
 	/**
      *
-     * @returns {IRenderEntity}
+     * @returns {EntityNode}
      */
 	public get renderGroup(): RenderGroup {
 		return this._renderGroup;
@@ -55,7 +54,7 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 	 *
 	 * @param materialClassGL
 	 */
-	constructor(entity: IRenderEntity, renderGroup: RenderGroup) {
+	constructor(entity: EntityNode, renderGroup: RenderGroup) {
 		super(entity, renderGroup);
 
 		this.id = AbstractionBase.ID_COUNT++;
@@ -80,18 +79,18 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 	}
 
 	private _onInvalidateElements(event: RenderableEvent): void {
-		for (const key in this._abstractionPool)
-			(this._abstractionPool[key] as _Render_RenderableBase)._onInvalidateElements();
+		// for (const key in this._abstractionPool)
+		// 	(this._abstractionPool[key] as _Render_RenderableBase)._onInvalidateElements();
 	}
 
 	private _onInvalidateMaterial(event: RenderableEvent): void {
-		for (const key in this._abstractionPool)
-			(this._abstractionPool[key] as _Render_RenderableBase)._onInvalidateMaterial();
+		// for (const key in this._abstractionPool)
+		// 	(this._abstractionPool[key] as _Render_RenderableBase)._onInvalidateMaterial();
 	}
 
 	private _onInvalidateStyle(event: RenderableEvent): void {
-		for (const key in this._abstractionPool)
-			(this._abstractionPool[key] as _Render_RenderableBase)._onInvalidateStyle();
+		// for (const key in this._abstractionPool)
+		// 	(this._abstractionPool[key] as _Render_RenderableBase)._onInvalidateStyle();
 	}
 
 	public requestAbstraction(asset: IAsset): IAbstractionClass {

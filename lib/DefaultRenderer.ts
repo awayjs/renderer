@@ -102,7 +102,7 @@ export class DefaultRenderer extends RendererBase {
 		const enter: boolean = super.enterNode(node);
 
 		if (enter && node.boundsVisible)
-			this.applyEntity(<IRenderEntity> node.getBoundsPrimitive(this._renderGroup.pickGroup));
+			this.applyEntity(node.getBoundsPrimitive(this._renderGroup.pickGroup));
 
 		return enter;
 	}

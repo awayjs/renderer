@@ -35,6 +35,7 @@ import { IAnimator } from './IAnimator';
 import { View } from '@awayjs/view';
 import { IPass } from './IPass';
 import { IShaderBase } from './IShaderBase';
+import { IRenderEntity } from './IRenderEntity';
 
 /**
  * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
@@ -497,7 +498,7 @@ export class ShaderBase implements IShaderBase {
 			this._view.projection.coordinateSystem);
 
 		if (!this.usesTangentSpace && this.cameraPositionIndex >= 0) {
-			const pos: Vector3D = this._view.projection.transform.concatenatedMatrix3D.position;
+			const pos: Vector3D = this._view.projection.transform.matrix3D.position;
 
 			this.vertexConstantData[this.cameraPositionIndex] = pos.x;
 			this.vertexConstantData[this.cameraPositionIndex + 1] = pos.y;
@@ -529,8 +530,8 @@ export class ShaderBase implements IShaderBase {
 	 * @param camera
 	 */
 	public _setRenderState(renderState: _Render_RenderableBase): void {
-		if (renderState.sourceEntity.animator)
-			(<IAnimator> renderState.sourceEntity.animator).setRenderState(this, renderState);
+		if ((<IRenderEntity> renderState.sourceEntity.entity).animator)
+			(<IRenderEntity> renderState.sourceEntity.entity).animator.setRenderState(this, renderState);
 
 		let rawData: Float32Array;
 
@@ -557,7 +558,7 @@ export class ShaderBase implements IShaderBase {
 		}
 		if (this.usesColorTransform) {
 
-			const colorTransform: ColorTransform = renderState.sourceEntity._iAssignedColorTransform();
+			const colorTransform: ColorTransform = renderState.sourceEntity.parent.getColorTransform();
 
 			if (colorTransform) {
 				//TODO: AWDParser to write normalised color offsets
@@ -582,13 +583,13 @@ export class ShaderBase implements IShaderBase {
 			}
 		}
 		if (this.sceneNormalMatrixIndex >= 0) {
-			this.sceneNormalMatrix.copyFrom(renderState.sourceEntity.transform.inverseConcatenatedMatrix3D);
+			this.sceneNormalMatrix.copyFrom(renderState.sourceEntity.parent.getInverseMatrix3D());
 		}
 
 		if (this.usesTangentSpace && this.cameraPositionIndex >= 0) {
 
-			renderState.sourceEntity.transform.inverseConcatenatedMatrix3D.copyRawDataTo(this._pInverseSceneMatrix);
-			const pos: Vector3D = this._view.projection.transform.concatenatedMatrix3D.position;
+			renderState.sourceEntity.parent.getInverseMatrix3D().copyRawDataTo(this._pInverseSceneMatrix);
+			const pos: Vector3D = this._view.projection.transform.matrix3D.position;
 			const x: number = pos.x;
 			const y: number = pos.y;
 			const z: number = pos.z;
