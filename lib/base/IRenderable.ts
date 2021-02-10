@@ -15,7 +15,7 @@ export interface IRenderable extends IEventDispatcher
 
 	next: IRenderable;
 
-	sourceEntity: INode;
+	readonly node: INode;
 
 	renderMaterial: _Render_MaterialBase;
 

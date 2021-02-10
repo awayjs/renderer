@@ -165,12 +165,12 @@ export class _Render_MaterialBase extends AbstractionBase {
 		this._owners.push(owner);
 
 		let animationSet: IAnimationSet;
-		const animator: IAnimator = (<IRenderEntity> owner.sourceEntity.entity).animator;
+		const animator: IAnimator = (<IRenderEntity> owner.node.entity).animator;
 
 		if (animator)
 			animationSet = <IAnimationSet> animator.animationSet;
 
-		if ((<IRenderEntity> owner.sourceEntity.entity).animator) {
+		if ((<IRenderEntity> owner.node.entity).animator) {
 			if (this._animationSet && animationSet != this._animationSet) {
 				throw new Error(
 					'A Material instance cannot be shared across ' +
@@ -399,8 +399,8 @@ export class _Render_MaterialBase extends AbstractionBase {
 				shader = <ShaderBase> this._passes[i].shader;
 				shader.usesAnimation = false;
 				for (let j: number = 0; j < numOwners; j++)
-					if ((<IRenderEntity> entities[j].sourceEntity.entity).animator)
-						(<IRenderEntity> entities[j].sourceEntity.entity).animator.testGPUCompatibility(shader);
+					if ((<IRenderEntity> entities[j].node.entity).animator)
+						(<IRenderEntity> entities[j].node.entity).animator.testGPUCompatibility(shader);
 			}
 
 			return !this._animationSet.usesCPU;

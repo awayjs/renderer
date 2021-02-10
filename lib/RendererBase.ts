@@ -89,7 +89,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _cullPlanes: Array<Plane3D>;
 	private _customCullPlanes: Array<Plane3D>;
 	private _numCullPlanes: number = 0;
-	private _sourceEntity: EntityNode;
+	private _node: EntityNode;
 	protected _renderGroup: RenderGroup;
 	private _renderEntity: RenderEntity;
 	private _zIndex: number;
@@ -112,14 +112,14 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 	public next: IRenderable;
 
-	public sourceEntity: ContainerNode;
+	public node: ContainerNode;
 
 	public renderMaterial: _Render_MaterialBase;
 
 	public stageElements: _Stage_ElementsBase;
 
 	public get maskOwners(): ContainerNode[] {
-		return this.sourceEntity.getMaskOwners();
+		return this.node.getMaskOwners();
 	}
 
 	public get partition(): PartitionBase {
@@ -194,7 +194,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		super(partition, pool);
 
 		this._partition = partition;
-		this.sourceEntity = partition.rootNode;
+		this.node = partition.rootNode;
 		this._maskId = partition.rootNode.getMaskId();
 
 		this._onSizeInvalidateDelegate = (event: ViewEvent) => this.onSizeInvalidate(event);
@@ -426,7 +426,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	//		do {
 	//			// if completely in front, it will fall in a different cascade
 	//			// do not use near and far planes
-	//			if (!cullPlanes || renderRenderable2.sourceEntity.worldBounds.isInFrustum(cullPlanes, 4)) {
+	//			if (!cullPlanes || renderRenderable2.node.worldBounds.isInFrustum(cullPlanes, 4)) {
 	//				renderRenderable2._iRender(pass, camera, this._pRttViewProjectionMatrix);
 	//			} else {
 	//				renderRenderable2.cascaded = true;
@@ -586,18 +586,18 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	}
 
 	public applyEntity(entity: EntityNode): void {
-		this._sourceEntity = entity;
+		this._node = entity;
 		this._renderEntity = entity.getAbstraction<RenderEntity>(this._renderGroup);
 
 		// project onto camera's z-axis
-		this._zIndex = this._cameraTransform.position.subtract(this._sourceEntity.parent.getPosition()).dotProduct(this._cameraForward);
-		this._zIndex += (<IRenderEntity> this._sourceEntity.entity).zOffset;
+		this._zIndex = this._cameraTransform.position.subtract(this._node.parent.getPosition()).dotProduct(this._cameraForward);
+		this._zIndex += (<IRenderEntity> this._node.entity).zOffset;
 
 		//save sceneTransform
-		this._renderSceneTransform = this._sourceEntity.parent.getRenderMatrix3D(this._cameraTransform);
+		this._renderSceneTransform = this._node.parent.getRenderMatrix3D(this._cameraTransform);
 
 		//collect renderables
-		this._sourceEntity.entity._acceptTraverser(this);
+		this._node.entity._acceptTraverser(this);
 	}
 
 	public applyTraversable(traversable: ITraversable): void {
@@ -607,8 +607,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		renderRenderable.cascaded = false;
 
 		renderRenderable.zIndex = this._zIndex;
-		renderRenderable.maskId = this._sourceEntity.parent.getMaskId();
-		renderRenderable.maskOwners = this._sourceEntity.parent.getMaskOwners();
+		renderRenderable.maskId = this._node.parent.getMaskId();
+		renderRenderable.maskOwners = this._node.parent.getMaskOwners();
 
 		const renderMaterial: _Render_MaterialBase = renderRenderable.renderMaterial;
 		renderRenderable.materialID = renderMaterial.materialID;

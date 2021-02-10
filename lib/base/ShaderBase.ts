@@ -530,8 +530,8 @@ export class ShaderBase implements IShaderBase {
 	 * @param camera
 	 */
 	public _setRenderState(renderState: _Render_RenderableBase): void {
-		if ((<IRenderEntity> renderState.sourceEntity.entity).animator)
-			(<IRenderEntity> renderState.sourceEntity.entity).animator.setRenderState(this, renderState);
+		if ((<IRenderEntity> renderState.node.entity).animator)
+			(<IRenderEntity> renderState.node.entity).animator.setRenderState(this, renderState);
 
 		let rawData: Float32Array;
 
@@ -558,7 +558,7 @@ export class ShaderBase implements IShaderBase {
 		}
 		if (this.usesColorTransform) {
 
-			const colorTransform: ColorTransform = renderState.sourceEntity.parent.getColorTransform();
+			const colorTransform: ColorTransform = renderState.node.parent.getColorTransform();
 
 			if (colorTransform) {
 				//TODO: AWDParser to write normalised color offsets
@@ -583,12 +583,12 @@ export class ShaderBase implements IShaderBase {
 			}
 		}
 		if (this.sceneNormalMatrixIndex >= 0) {
-			this.sceneNormalMatrix.copyFrom(renderState.sourceEntity.parent.getInverseMatrix3D());
+			this.sceneNormalMatrix.copyFrom(renderState.node.parent.getInverseMatrix3D());
 		}
 
 		if (this.usesTangentSpace && this.cameraPositionIndex >= 0) {
 
-			renderState.sourceEntity.parent.getInverseMatrix3D().copyRawDataTo(this._pInverseSceneMatrix);
+			renderState.node.parent.getInverseMatrix3D().copyRawDataTo(this._pInverseSceneMatrix);
 			const pos: Vector3D = this._view.projection.transform.matrix3D.position;
 			const x: number = pos.x;
 			const y: number = pos.y;

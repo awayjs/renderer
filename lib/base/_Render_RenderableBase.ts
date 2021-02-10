@@ -84,7 +84,7 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 	/**
 	 *
 	 */
-	public sourceEntity: EntityNode;
+	readonly node: EntityNode;
 
 	/**
 	 *
@@ -180,7 +180,7 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 		this._onInvalidateStyleDelegate = (event: RenderableEvent) => this._onInvalidateStyle(event);
 
 		//store references
-		this.sourceEntity = renderEntity.entity;
+		this.node = renderEntity.entity;
 		this._stage = renderEntity.stage;
 		this.renderGroup = renderEntity.renderGroup;
 
