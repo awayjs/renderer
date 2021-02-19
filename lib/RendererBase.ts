@@ -638,6 +638,11 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		const newMaskBase: number = this._maskConfig ? Math.pow(2, (halfBitIndex + 1) << 1) : 1;
 		let newMaskConfig: number = newMaskBase;
 
+		if (newMaskConfig > 0xff) {
+			console.warn('[RenderBase] Mask bit overflow, maskConfig %d', newMaskConfig);
+			return;
+		}
+
 		this._context.enableStencil();
 
 		const numLayers: number = maskOwners.length;
