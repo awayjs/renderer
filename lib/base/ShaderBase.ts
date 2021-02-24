@@ -31,7 +31,6 @@ import { AnimationRegisterData } from './AnimationRegisterData';
 import { _Render_MaterialBase } from './_Render_MaterialBase';
 import { _Stage_ElementsBase } from './_Stage_ElementsBase';
 import { IAnimationSet } from './IAnimationSet';
-import { IAnimator } from './IAnimator';
 import { View } from '@awayjs/view';
 import { IPass } from './IPass';
 import { IShaderBase } from './IShaderBase';

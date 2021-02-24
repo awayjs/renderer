@@ -1,16 +1,15 @@
-import { IAbstractionPool, AssetEvent } from '@awayjs/core';
+import { AssetEvent } from '@awayjs/core';
 
 import { BitmapImage2D, IContextGL, RTTBufferManager, Filter3DBase } from '@awayjs/stage';
 
 import { INode, PartitionBase } from '@awayjs/view';
 
-import { IRendererPool, RenderGroup } from './RenderGroup';
+import { IRendererPool } from './RenderGroup';
 
 import { DepthRenderer } from './DepthRenderer';
 import { DistanceRenderer } from './DistanceRenderer';
 import { Filter3DRenderer } from './Filter3DRenderer';
 import { RendererBase } from './RendererBase';
-import { IRenderEntity } from './base/IRenderEntity';
 
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the

@@ -1,8 +1,6 @@
-import { IAbstractionPool } from '@awayjs/core';
-
 import { INode, PartitionBase } from '@awayjs/view';
 
-import { IRendererPool, RenderGroup } from './RenderGroup';
+import { IRendererPool } from './RenderGroup';
 import { RendererBase } from './RendererBase';
 
 /**

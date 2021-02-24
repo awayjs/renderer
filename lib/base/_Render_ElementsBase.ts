@@ -1,7 +1,5 @@
 
 import { Stage, ShaderRegisterCache, ShaderRegisterData } from '@awayjs/stage';
-import { _IRender_MaterialClass } from './_IRender_MaterialClass';
-import { _Render_MaterialBase } from './_Render_MaterialBase';
 import { AbstractionBase, IAbstractionClass, IAbstractionPool, IAsset } from '@awayjs/core';
 import { RenderGroup } from '../RenderGroup';
 import { ShaderBase } from './ShaderBase';

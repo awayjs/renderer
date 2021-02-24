@@ -1,9 +1,8 @@
 import { INode, PartitionBase } from '@awayjs/view';
 
-import { IRendererPool, RenderGroup } from './RenderGroup';
+import { IRendererPool } from './RenderGroup';
 
 import { RendererBase } from './RendererBase';
-import { IAbstractionPool } from '@awayjs/core';
 
 /**
  * The DistanceRenderer class renders 32-bit depth information encoded as RGBA

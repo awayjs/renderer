@@ -3,7 +3,6 @@ import { IAssetClass, IAbstractionPool, AssetEvent, AbstractionBase, IAsset, IAb
 import { Stage } from '@awayjs/stage';
 
 import { _IRender_RenderableClass } from './_IRender_RenderableClass';
-import { _Render_RenderableBase } from './_Render_RenderableBase';
 
 import { RenderGroup } from '../RenderGroup';
 import { EntityNode } from '@awayjs/view';

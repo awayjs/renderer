@@ -1,8 +1,14 @@
-import { IAssetClass, IAsset, IAbstractionPool, EventDispatcher, AbstractionBase, IAbstractionClass } from '@awayjs/core';
+import {
+	IAssetClass,
+	IAsset,
+	IAbstractionPool,
+	EventDispatcher,
+	AbstractionBase,
+	IAbstractionClass
+} from '@awayjs/core';
 
 import { Stage, StageEvent } from '@awayjs/stage';
 
-import { IRenderEntity } from './base/IRenderEntity';
 import { RenderEntity } from './base/RenderEntity';
 import { _IRender_ElementsClass } from './base/_IRender_ElementsClass';
 import { _Render_ElementsBase } from './base/_Render_ElementsBase';
@@ -147,12 +153,8 @@ export class RenderGroup extends EventDispatcher implements IAbstractionPool {
 	}
 
 	public static getInstance(view: View, rendererType: RendererType): RenderGroup {
-		const group = this._instancePool[rendererType][view.id];
-
-		/**
-		 * @todo Remove me for prevent leaks
-		 */
-		return this._instancePool[rendererType][view.id] || (this._instancePool[rendererType][view.id] = new RenderGroup(view, rendererType));
+		return this._instancePool[rendererType][view.id]
+				|| (this._instancePool[rendererType][view.id] = new RenderGroup(view, rendererType));
 	}
 
 	public static clearInstance(view: View, rendererType: RendererType): void {

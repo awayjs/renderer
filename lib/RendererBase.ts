@@ -27,7 +27,6 @@ import {
 	IEntityTraverser,
 	INode,
 	PartitionBase,
-	IPartitionEntity,
 	ITraversable,
 	EntityNode,
 	ContainerNode,
@@ -590,8 +589,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._renderEntity = entity.getAbstraction<RenderEntity>(this._renderGroup);
 
 		// project onto camera's z-axis
-		this._zIndex = this._cameraTransform.position.subtract(this._node.parent.getPosition()).dotProduct(this._cameraForward);
-		this._zIndex += (<IRenderEntity> this._node.entity).zOffset;
+		this._zIndex = this._cameraTransform.position.subtract(this._node.parent.getPosition())
+			.dotProduct(this._cameraForward)
+			+ (<IRenderEntity> this._node.entity).zOffset;
 
 		//save sceneTransform
 		this._renderSceneTransform = this._node.parent.getRenderMatrix3D(this._cameraTransform);
