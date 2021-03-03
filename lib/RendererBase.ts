@@ -630,7 +630,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				this._context.setStencilActions(ContextGLTriangleFace.FRONT_AND_BACK, ContextGLCompareMode.EQUAL, ContextGLStencilAction.SET, ContextGLStencilAction.SET, ContextGLStencilAction.KEEP);
 
 			this._context.setStencilReferenceValue(0xFF, newMaskConfig, newMaskConfig = (newMaskConfig & newMaskBase) + newMaskBase); //flips between read odd write even to read even write odd
-			this._context.clear(0, 0, 0, 0, 0, 0, ContextGLClearMask.STENCIL);//clears write mask to zero
+			this._context.clear(0, 0, 0, 0, 1, 0, ContextGLClearMask.STENCIL | ContextGLClearMask.DEPTH);//clears write mask to zero
 
 			children = maskOwners[i].masks;
 			numChildren = children.length;
