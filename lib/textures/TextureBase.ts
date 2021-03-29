@@ -71,10 +71,10 @@ export class TextureBase extends AssetBase implements ITexture {
 	}
 
 	// /**
-    //  * Marks the shader program as invalid, so it will be recompiled before the next render.
-    //  *
-    //  * @internal
-    //  */
+	//  * Marks the shader program as invalid, so it will be recompiled before the next render.
+	//  *
+	//  * @internal
+	//  */
 	// public invalidateShaderProgram(): void {
 	// 	this.invalidate();
 

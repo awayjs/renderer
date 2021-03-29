@@ -3,7 +3,6 @@ import { AbstractionBase, IAbstractionClass } from '@awayjs/core';
 import { RenderGroup } from '../RenderGroup';
 import { _IRender_MaterialClass } from './_IRender_MaterialClass';
 
-
 /**
  *
  */

@@ -6,7 +6,6 @@ import { View, PickingCollision, ContainerNode } from '@awayjs/view';
 import { ElementsEvent } from '../events/ElementsEvent';
 import { IElements } from '../base/IElements';
 
-
 import { IHullImpl } from '../utils/ConvexHullUtils';
 import { IMaterial } from '../base/IMaterial';
 

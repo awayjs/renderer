@@ -356,7 +356,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		enableDepthAndStencil: boolean = true, surfaceSelector: number = 0, mipmapSelector: number = 0): void {
 
 		//if (this._invalid)
-			this.traverse();
+		this.traverse();
 
 		//initialise color mask
 		if (this._disableColor)
@@ -556,30 +556,30 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		//if (false) {
 		if (partition.rootNode.renderToImage) {
 			//new node for the container
-			var node: ContainerNode = partition.getLocalNode();
+			const node: ContainerNode = partition.getLocalNode();
 
-			var traverser:CacheRenderer = RenderGroup
+			const traverser: CacheRenderer = RenderGroup
 				.getInstance(partition.getLocalView(this._stage), this._traverserClass)
 				.getRenderer(node.partition);
 
 			traverser.renderableSorter = null;
 
 			//if (this._invalid) {
-				this._renderEntity = traverser;
+			this._renderEntity = traverser;
 
-				// project onto camera's z-axis
-				this._zIndex = this._cameraTransform.position.subtract(partition.rootNode.getPosition())
-					.dotProduct(this._cameraForward)
+			// project onto camera's z-axis
+			this._zIndex = this._cameraTransform.position.subtract(partition.rootNode.getPosition())
+				.dotProduct(this._cameraForward)
 					+ partition.rootNode.container.zOffset;
 
-				//save sceneTransform
-				this._renderSceneTransform = partition.rootNode.getRenderMatrix3D(this._cameraTransform);
+			//save sceneTransform
+			this._renderSceneTransform = partition.rootNode.getRenderMatrix3D(this._cameraTransform);
 
-				//save mask id
-				this._entityMaskId = partition.rootNode.getMaskId();
-				this._entityMaskOwners = partition.rootNode.getMaskOwners();
+			//save mask id
+			this._entityMaskId = partition.rootNode.getMaskId();
+			this._entityMaskOwners = partition.rootNode.getMaskOwners();
 
-				this.applyTraversable(traverser);
+			this.applyTraversable(traverser);
 			//}
 
 			return traverser;

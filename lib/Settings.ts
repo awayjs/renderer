@@ -20,7 +20,7 @@ export const Settings: IRendererSettings = {
 	 * @description Alpha cutoff threshold value, 0 - 1, 0 or 1 is disable affect
 	 */
 	ALPHA_CUTOFF_VALUE: 0.5,
-	
+
 	/**
 	 * @description Allow vao for elements
 	 */

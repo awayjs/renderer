@@ -33,7 +33,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 	public static materialClassPool: Record<string, _IRender_MaterialClass> = {};
 
-	public static renderGroupPool: Record<string, RenderGroup> = {}; 
+	public static renderGroupPool: Record<string, RenderGroup> = {};
 
 	public static defaultBackground: number = 0x0;
 
@@ -46,9 +46,9 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	private _blendMode: string = BlendMode.NORMAL;
 	private _onTextureInvalidate: (event: AssetEvent) => void;
 	private _onInvalidateProperties: (event: StyleEvent) => void;
-	
+
 	public node: ContainerNode;
-	
+
 	public animateUVs: boolean = false;
 
 	public bothSides: boolean = false;
@@ -65,8 +65,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		return CacheRenderer.assetType;
 	}
 
-	public getBounds(): Box
-	{
+	public getBounds(): Box {
 		if (this._boundsDirty) {
 			this._boundsDirty = false;
 
@@ -77,7 +76,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 		return this._bounds;
 	}
-	
+
 	/**
 	 * The blend mode to use when drawing this renderable. The following blend modes are supported:
 	 * <ul>
@@ -124,7 +123,6 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this._invalidateStyle();
 	}
 
-		
 	/**
 	* The 2d texture to use as a bitmap cache.
 	*/
@@ -149,7 +147,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 		this.invalidatePasses();
 	}
-	
+
 	constructor(partition: PartitionBase, pool: RendererPool) {
 		super(partition, pool);
 
@@ -203,7 +201,6 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		return _Render_Renderer;
 	}
 
-	
 	/**
 	 * Marks the shader programs for all passes as invalid, so they will be recompiled before the next use.
 	 *
@@ -252,7 +249,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	private _updateBounds(): void {
 		this._bounds = this._boundsPicker.getBoxBounds(this.node, true, true);
 
-		const padding: number = this.node.container.scale9Grid? 1 : 2;
+		const padding: number = this.node.container.scale9Grid ? 1 : 2;
 		this._bounds.x = (this._bounds.x - padding) | 0;
 		this._bounds.y = (this._bounds.y - padding) | 0;
 		this._bounds.width = (this._bounds.width + padding * 2) | 0;
@@ -265,11 +262,11 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this._view.projection.originY = 1 + 2 * this._bounds.y / this._bounds.height;
 		this._view.projection.scale = 1000 / this._bounds.height;
 	}
+
 	public static registerMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IAssetClass): void {
 		CacheRenderer.materialClassPool[materialClass.assetType] = renderMaterialClass;
 	}
 }
-
 
 export class _Render_Renderer extends _Render_RenderableBase {
 
@@ -330,7 +327,6 @@ export class _Render_Renderer extends _Render_RenderableBase {
 	}
 
 	protected _getStyle(): Style {
-		
 
 		return (<CacheRenderer> this._asset).style;
 	}

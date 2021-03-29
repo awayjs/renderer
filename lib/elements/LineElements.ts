@@ -36,7 +36,7 @@ export class LineElements extends ElementsBase {
 	 * Initial position buffer, store only XY values
 	 */
 	public initialSlice9Positions: number[] | Float32Array;
-	 
+
 	//used for hittesting geometry
 	public hitTestCache: Object = new Object();
 

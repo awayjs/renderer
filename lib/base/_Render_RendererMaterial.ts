@@ -1,13 +1,13 @@
-import { AssetEvent } from "@awayjs/core";
+import { AssetEvent } from '@awayjs/core';
 
-import { BlendMode, ContextGLCompareMode, ShaderRegisterCache, ShaderRegisterData } from "@awayjs/stage";
+import { BlendMode, ContextGLCompareMode, ShaderRegisterCache, ShaderRegisterData } from '@awayjs/stage';
 
-import { CacheRenderer } from "../CacheRenderer";
-import { ShaderBase } from "./ShaderBase";
-import { _Render_ElementsBase } from "./_Render_ElementsBase";
-import { _Render_MaterialPassBase } from "./_Render_MaterialPassBase";
-import { _Render_RenderableBase } from "./_Render_RenderableBase";
-import { _Shader_TextureBase } from "./_Shader_TextureBase";
+import { CacheRenderer } from '../CacheRenderer';
+import { ShaderBase } from './ShaderBase';
+import { _Render_ElementsBase } from './_Render_ElementsBase';
+import { _Render_MaterialPassBase } from './_Render_MaterialPassBase';
+import { _Render_RenderableBase } from './_Render_RenderableBase';
+import { _Shader_TextureBase } from './_Shader_TextureBase';
 
 export class _Render_RendererMaterial extends _Render_MaterialPassBase {
 	public _renderer: CacheRenderer;

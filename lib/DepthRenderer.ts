@@ -14,7 +14,7 @@ export class DepthRenderer extends RendererBase {
 
 	public static materialClassPool: Record<string, _IRender_MaterialClass> = {};
 
-	public static renderGroupPool: Record<string, RenderGroup> = {}; 
+	public static renderGroupPool: Record<string, RenderGroup> = {};
 
 	public static defaultBackground: number = 0x0;
 

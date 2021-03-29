@@ -884,44 +884,44 @@ export class _Stage_TriangleElements extends _Stage_ElementsBase {
 		super._setRenderState(renderRenderable, shader);
 
 		//if (!this._vao || this._vaoIsInvalid) {
-			//set buffers
-			//TODO: find a better way to update a concatenated buffer when autoderiving
-			if (shader.normalIndex >= 0 && this._triangleElements.autoDeriveNormals)
-				this._triangleElements.normals;
+		//set buffers
+		//TODO: find a better way to update a concatenated buffer when autoderiving
+		if (shader.normalIndex >= 0 && this._triangleElements.autoDeriveNormals)
+			this._triangleElements.normals;
 
-			if (shader.tangentIndex >= 0 && this._triangleElements.autoDeriveTangents)
-				this._triangleElements.tangents;
+		if (shader.tangentIndex >= 0 && this._triangleElements.autoDeriveTangents)
+			this._triangleElements.tangents;
 
-			if (shader.curvesIndex >= 0)
-				this.activateVertexBufferVO(shader.curvesIndex, this._triangleElements.getCustomAtributes('curves'));
+		if (shader.curvesIndex >= 0)
+			this.activateVertexBufferVO(shader.curvesIndex, this._triangleElements.getCustomAtributes('curves'));
 
-			if (shader.uvIndex >= 0)
-				this.activateVertexBufferVO(
-					shader.uvIndex, this._triangleElements.uvs || this._triangleElements.positions);
+		if (shader.uvIndex >= 0)
+			this.activateVertexBufferVO(
+				shader.uvIndex, this._triangleElements.uvs || this._triangleElements.positions);
 
-			if (shader.secondaryUVIndex >= 0) {
-				this.activateVertexBufferVO(
-					shader.secondaryUVIndex,
-					this._triangleElements.getCustomAtributes('secondaryUVs')
+		if (shader.secondaryUVIndex >= 0) {
+			this.activateVertexBufferVO(
+				shader.secondaryUVIndex,
+				this._triangleElements.getCustomAtributes('secondaryUVs')
 						|| this._triangleElements.uvs
 						|| this._triangleElements.positions);
-			}
+		}
 
-			if (shader.normalIndex >= 0)
-				this.activateVertexBufferVO(shader.normalIndex, this._triangleElements.normals);
+		if (shader.normalIndex >= 0)
+			this.activateVertexBufferVO(shader.normalIndex, this._triangleElements.normals);
 
-			if (shader.tangentIndex >= 0)
-				this.activateVertexBufferVO(shader.tangentIndex, this._triangleElements.tangents);
+		if (shader.tangentIndex >= 0)
+			this.activateVertexBufferVO(shader.tangentIndex, this._triangleElements.tangents);
 
-			if (shader.jointIndexIndex >= 0)
-				this.activateVertexBufferVO(shader.jointIndexIndex, this._triangleElements.jointIndices);
+		if (shader.jointIndexIndex >= 0)
+			this.activateVertexBufferVO(shader.jointIndexIndex, this._triangleElements.jointIndices);
 
-			if (shader.jointWeightIndex >= 0)
-				this.activateVertexBufferVO(shader.jointIndexIndex, this._triangleElements.jointWeights);
+		if (shader.jointWeightIndex >= 0)
+			this.activateVertexBufferVO(shader.jointIndexIndex, this._triangleElements.jointWeights);
 
-			this.activateVertexBufferVO(0, this._triangleElements.positions);
+		this.activateVertexBufferVO(0, this._triangleElements.positions);
 
-			this._vaoIsInvalid = false;
+		this._vaoIsInvalid = false;
 		//}
 	}
 

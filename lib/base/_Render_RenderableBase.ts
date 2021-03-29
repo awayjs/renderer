@@ -85,7 +85,6 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 	 *
 	 */
 	public renderGroup: RenderGroup;
-	
 
 	/**
 	 *
