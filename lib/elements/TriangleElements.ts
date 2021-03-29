@@ -758,8 +758,13 @@ export class TriangleElements extends ElementsBase {
 				if (!(u < 0) && t > 0 && t < collision.rayEntryDistance) { // all tests passed
 					collisionTriangleIndex = index / 3;
 					collision.rayEntryDistance = t;
-					collision.position = new Vector3D(cx, cy, cz);
-					collision.normal = new Vector3D(nx, ny, nz);
+
+					collision.position = collision.position || new Vector3D();
+					collision.position.setTo(cx, cy, cz);
+
+					collision.normal = collision.normal || new Vector3D();
+					collision.normal.setTo(nx, ny, nz);
+
 					if (this.uvs) { //uv calculations
 						const uvs: ArrayBufferView = this.uvs.get(this.numVertices);
 						const uvStride: number = this.uvs.stride;
