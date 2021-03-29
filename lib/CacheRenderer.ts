@@ -1,5 +1,5 @@
 import { AssetEvent, Box, IAbstractionClass, IAbstractionPool, IAsset, IAssetClass, } from '@awayjs/core';
-import { AttributesBuffer, BlendMode, ContextGLTriangleFace, Image2D, ImageSampler } from '@awayjs/stage';
+import { AttributesBuffer, BlendMode, Image2D, ImageSampler } from '@awayjs/stage';
 import { BoundsPicker, ContainerNode, INode, PartitionBase } from '@awayjs/view';
 import { IMaterial } from './base/IMaterial';
 import { ITexture } from './base/ITexture';
@@ -16,12 +16,6 @@ import { RendererBase } from './RendererBase';
 import { RendererPool, RenderGroup } from './RenderGroup';
 import { ImageTexture2D } from './textures/ImageTexture2D';
 
-/**
- * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
- * materials assigned to them.
- *
- * @class away.render.DefaultRenderer
- */
 export class CacheRenderer extends RendererBase implements IMaterial, IAbstractionPool {
 
 	public static assetType: string = '[renderer CacheRenderer]';
@@ -72,17 +66,6 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		return this._bounds;
 	}
 
-	/**
-	 * The blend mode to use when drawing this renderable. The following blend modes are supported:
-	 * <ul>
-	 * <li>BlendMode.NORMAL: No blending, unless the material inherently needs it</li>
-	 * <li>BlendMode.LAYER: Force blending.
-	 * This will draw the object the same as NORMAL, but without writing depth writes.</li>
-	 * <li>BlendMode.MULTIPLY</li>
-	 * <li>BlendMode.ADD</li>
-	 * <li>BlendMode.ALPHA</li>
-	 * </ul>
-	 */
 	public get blendMode(): string {
 		return this._blendMode;
 	}
@@ -149,8 +132,8 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this.node = partition.rootNode;
 		this.node.transformDisabled = true;
 
-		this._onTextureInvalidate = (event: AssetEvent) => this.invalidate();
-		this._onInvalidateProperties = (event: StyleEvent) => this._invalidateStyle();
+		this._onTextureInvalidate = (_event: AssetEvent) => this.invalidate();
+		this._onInvalidateProperties = (_event: StyleEvent) => this._invalidateStyle();
 
 		this.style = new Style();
 
@@ -281,26 +264,26 @@ export class _Render_Renderer extends _Render_RenderableBase {
 		let elements: TriangleElements = _Render_Renderer._samplerElements[id];
 
 		if (!elements) {
-			elements = _Render_Renderer._samplerElements[id] = new TriangleElements(new AttributesBuffer(11, 4));
-			elements.autoDeriveNormals = false;
-			elements.autoDeriveTangents = false;
-			elements.setIndices([0, 1, 2, 0, 2, 3]);
-			elements.setPositions(
-				[bounds.left, bounds.bottom, 0,
-					bounds.right, bounds.bottom, 0,
-					bounds.right, bounds.top, 0,
-					bounds.left, bounds.top, 0]);
+			elements = _Render_Renderer._samplerElements[id] = new TriangleElements(new AttributesBuffer(5, 6));
+			elements.setPositions([
+				bounds.left, bounds.top, 0,
+				bounds.right, bounds.bottom, 0,
+				bounds.right, bounds.top, 0,
 
-			elements.setNormals([1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0]);
-			elements.setTangents([0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1]);
-			elements.setUVs([0, 1, 1, 1, 1, 0, 0, 0]);
-		} else {
+				bounds.left, bounds.top, 0,
+				bounds.left, bounds.bottom, 0,
+				bounds.right, bounds.bottom, 0,
+			]);
+			elements.setUVs([0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1]);
+		}
+		// because bounds is same, not required invalidate buffers
+		/*else {
 			elements.setPositions(
 				[bounds.left, bounds.bottom, 0,
 					bounds.right, bounds.bottom, 0,
 					bounds.right, bounds.top, 0,
 					bounds.left, bounds.top, 0]);
-		}
+		}*/
 
 		return elements.getAbstraction<_Stage_TriangleElements>(this._stage);
 	}
@@ -310,7 +293,7 @@ export class _Render_Renderer extends _Render_RenderableBase {
 		surfaceSelector: number = 0, mipmapSelector: number = 0, maskConfig: number = 0): void {
 
 		// disable cull, because for render to texture it is bugged
-		this._stage.context.setCulling(ContextGLTriangleFace.NONE);
+		// this._stage.context.setCulling(ContextGLTriangleFace.NONE);
 
 		super.executeRender(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
 	}

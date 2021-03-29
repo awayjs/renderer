@@ -1,11 +1,7 @@
-import { AbstractionBase, AssetEvent, IAssetClass } from '@awayjs/core';
-
+import { AssetEvent, IAssetClass } from '@awayjs/core';
 import { BitmapImage2D, IContextGL, RTTBufferManager, Filter3DBase } from '@awayjs/stage';
-
 import { INode, PartitionBase, View } from '@awayjs/view';
-
 import { RendererPool, RenderGroup } from './RenderGroup';
-
 import { DepthRenderer } from './DepthRenderer';
 import { DistanceRenderer } from './DistanceRenderer';
 import { Filter3DRenderer } from './Filter3DRenderer';
