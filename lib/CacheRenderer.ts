@@ -1,18 +1,13 @@
-import { AssetEvent, Box, IAbstractionClass, IAbstractionPool, IAsset, IAssetClass, Rectangle } from '@awayjs/core';
-import { AttributesBuffer, BlendMode, ContextGLCompareMode, ContextGLTriangleFace, Image2D, ImageSampler, ShaderRegisterCache, ShaderRegisterData } from '@awayjs/stage';
+import { AssetEvent, Box, IAbstractionClass, IAbstractionPool, IAsset, IAssetClass, } from '@awayjs/core';
+import { AttributesBuffer, BlendMode, ContextGLTriangleFace, Image2D, ImageSampler } from '@awayjs/stage';
 import { BoundsPicker, ContainerNode, INode, PartitionBase } from '@awayjs/view';
 import { IMaterial } from './base/IMaterial';
 import { ITexture } from './base/ITexture';
-import { ShaderBase } from './base/ShaderBase';
 import { Style } from './base/Style';
 import { _IRender_MaterialClass } from './base/_IRender_MaterialClass';
-import { _Render_ElementsBase } from './base/_Render_ElementsBase';
-import { _Render_MaterialPassBase } from './base/_Render_MaterialPassBase';
 import { _Render_RenderableBase } from './base/_Render_RenderableBase';
 import { _Render_RendererMaterial } from './base/_Render_RendererMaterial';
-import { _Shader_TextureBase } from './base/_Shader_TextureBase';
 import { _Stage_ElementsBase } from './base/_Stage_ElementsBase';
-import { DefaultRenderer } from './DefaultRenderer';
 import { TriangleElements, _Stage_TriangleElements } from './elements/TriangleElements';
 import { MaterialEvent } from './events/MaterialEvent';
 import { RenderableEvent } from './events/RenderableEvent';
@@ -88,7 +83,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	 * <li>BlendMode.ALPHA</li>
 	 * </ul>
 	 */
-	 public get blendMode(): string {
+	public get blendMode(): string {
 		return this._blendMode;
 	}
 
@@ -206,7 +201,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	 *
 	 * @private
 	 */
-	 public invalidatePasses(): void {
+	public invalidatePasses(): void {
 		this.dispatchEvent(new MaterialEvent(MaterialEvent.INVALIDATE_PASSES, this));
 	}
 
@@ -249,11 +244,10 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	private _updateBounds(): void {
 		this._bounds = this._boundsPicker.getBoxBounds(this.node, true, true);
 
-		const padding: number = this.node.container.scale9Grid ? 1 : 2;
-		this._bounds.x = (this._bounds.x - padding) | 0;
-		this._bounds.y = (this._bounds.y - padding) | 0;
-		this._bounds.width = (this._bounds.width + padding * 2) | 0;
-		this._bounds.height = (this._bounds.height + padding * 2) | 0;
+		this._bounds.x = (this._bounds.x - 2) | 0;
+		this._bounds.y = (this._bounds.y - 2) | 0;
+		this._bounds.width = (this._bounds.width + 4) | 0;
+		this._bounds.height = (this._bounds.height + 4) | 0;
 
 		//this._view.width = this._bounds.width;
 		//this._view.height = this._bounds.height;

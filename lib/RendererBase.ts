@@ -5,7 +5,6 @@ import {
 	ProjectionBase,
 	AbstractionBase,
 	AssetEvent,
-	IAbstractionPool,
 } from '@awayjs/core';
 
 import {
@@ -19,7 +18,6 @@ import {
 	StageEvent,
 	ContextGLClearMask,
 	RTTBufferManager,
-	Image2D,
 } from '@awayjs/stage';
 
 import {
@@ -32,9 +30,6 @@ import {
 	ITraversable,
 	EntityNode,
 	ContainerNode,
-	BoundsPicker,
-	NodePool,
-	BasicPartition,
 } from '@awayjs/view';
 
 import { _Render_MaterialBase } from './base/_Render_MaterialBase';
@@ -45,13 +40,6 @@ import { RendererPool, RenderGroup } from './RenderGroup';
 import { IRenderEntitySorter } from './sort/IRenderEntitySorter';
 import { RenderableMergeSort } from './sort/RenderableMergeSort';
 import { IRenderable } from './base/IRenderable';
-import { _Stage_ElementsBase } from './base/_Stage_ElementsBase';
-import { Style } from './base/Style';
-import { _Stage_TriangleElements } from './elements/TriangleElements';
-import { _Shader_TextureBase } from './base/_Shader_TextureBase';
-import { _Render_ElementsBase } from './base/_Render_ElementsBase';
-import { _Render_MaterialPassBase } from './base/_Render_MaterialPassBase';
-import { ImageTexture2D } from './textures/ImageTexture2D';
 import { CacheRenderer } from './CacheRenderer';
 import { IRendererClass } from './base/IRendererClass';
 
