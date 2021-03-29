@@ -259,7 +259,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		//this._view.height = this._bounds.height;
 		this._view.projection.ratio = (this._bounds.width / this._bounds.height);
 		this._view.projection.originX = -1 - 2 * this._bounds.x / this._bounds.width;
-		this._view.projection.originY = 1 + 2 * this._bounds.y / this._bounds.height;
+		this._view.projection.originY = -1 - 2 * this._bounds.y / this._bounds.height;
 		this._view.projection.scale = 1000 / this._bounds.height;
 	}
 
