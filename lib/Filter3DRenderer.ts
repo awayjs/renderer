@@ -113,13 +113,13 @@ export class Filter3DRenderer {
 			// make sure all internal tasks are linked together
 			filter = this._filters[i];
 
-			filter.setRenderTargets(i == len ? null : this._filters[i + 1].getMainInputTexture(stage), stage);
+			// filter.setRenderTargets(i == len ? null : this._filters[i + 1].getMainInputTexture(stage), stage);
 
 			this._tasks = this._tasks.concat(filter.tasks);
 
 		}
 
-		this._mainInputTexture = this._filters[0].getMainInputTexture(stage);
+		this._mainInputTexture = null;//this._filters[0].getMainInputTexture(stage);
 
 	}
 
@@ -158,11 +158,12 @@ export class Filter3DRenderer {
 				0,
 				ContextGLVertexBufferFormat.FLOAT_2);
 
+			/*
 			context.setVertexBufferAt(
-				this._tasks[0]._uvIndex,
+				1, //this._tasks[0]._uvIndex,
 				vertexBuffer,
 				8,
-				ContextGLVertexBufferFormat.FLOAT_2);
+				ContextGLVertexBufferFormat.FLOAT_2);*/
 		}
 
 		for (i = 0; i < len; ++i) {
@@ -173,18 +174,18 @@ export class Filter3DRenderer {
 
 			context.setProgram(task.getProgram(stage));
 
-			texture = task.getMainInputTexture(stage);
+			texture = task.target;// getMainInputTexture(stage);
 
 			(texture.getAbstraction<_Stage_ImageBase>(stage))
 				.activate(
-					task._inputTextureIndex,
+					0, //task._inputTextureIndex,
 					this._sampler);
 
 			if (!task.target) {
 
 				vertexBuffer = this._rttManager.renderToScreenVertexBuffer;
 				context.setVertexBufferAt(task._positionIndex, vertexBuffer, 0, ContextGLVertexBufferFormat.FLOAT_2);
-				context.setVertexBufferAt(task._uvIndex, vertexBuffer, 8, ContextGLVertexBufferFormat.FLOAT_2);
+				//context.setVertexBufferAt(task._uvIndex, vertexBuffer, 8, ContextGLVertexBufferFormat.FLOAT_2);
 
 			}
 			context.clear(0.0, 0.0, 0.0, 0.0);
@@ -203,13 +204,14 @@ export class Filter3DRenderer {
 	}
 
 	private updateFilterSizes(): void {
+		/*
 		for (let i: number = 0; i < this._filters.length; ++i) {
 			this._filters[i].textureWidth = this._rttManager.textureWidth;
 			this._filters[i].textureHeight = this._rttManager.textureHeight;
 			this._filters[i].rttManager = this._rttManager;
-		}
+		}*/
 
-		const scale: number = this._filters[0].textureScale;
+		const scale: number = 1;//this._filters[0].textureScale;
 
 		this._renderToTextureRect.x = this._rttManager.renderToTextureRect.x / scale;
 		this._renderToTextureRect.y = this._rttManager.renderToTextureRect.y / scale;
