@@ -1,15 +1,18 @@
-import { AssetEvent } from '@awayjs/core';
+import { AbstractionBase, AssetEvent, IAssetClass } from '@awayjs/core';
 
 import { BitmapImage2D, IContextGL, RTTBufferManager, Filter3DBase } from '@awayjs/stage';
 
-import { INode, PartitionBase } from '@awayjs/view';
+import { INode, PartitionBase, View } from '@awayjs/view';
 
-import { IRendererPool } from './RenderGroup';
+import { RendererPool, RenderGroup } from './RenderGroup';
 
 import { DepthRenderer } from './DepthRenderer';
 import { DistanceRenderer } from './DistanceRenderer';
 import { Filter3DRenderer } from './Filter3DRenderer';
 import { RendererBase } from './RendererBase';
+import { _IRender_MaterialClass } from './base/_IRender_MaterialClass';
+import { CacheRenderer } from './CacheRenderer';
+import { _Render_RendererMaterial } from './base/_Render_RendererMaterial';
 
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
@@ -18,6 +21,13 @@ import { RendererBase } from './RendererBase';
  * @class away.render.DefaultRenderer
  */
 export class DefaultRenderer extends RendererBase {
+
+	public static materialClassPool: Record<string, _IRender_MaterialClass> = {};
+
+	public static renderGroupPool: Record<string, RenderGroup> = {}; 
+
+	public static defaultBackground: number = 0xFFFFFF;
+
 	private _requireDepthRender: boolean;
 
 	private _distanceRenderer: DistanceRenderer;
@@ -84,14 +94,20 @@ export class DefaultRenderer extends RendererBase {
 	 * @param antiAlias The amount of anti-aliasing to use.
 	 * @param renderMode The render mode to use.
 	 */
-	constructor(partition: PartitionBase, pool: IRendererPool) {
+	constructor(partition: PartitionBase, pool: RendererPool) {
 		super(partition, pool);
 
 		this._pRttBufferManager = RTTBufferManager.getInstance(this._stage);
 
-		this._depthRenderer = pool.renderGroup.depthRenderGroup.getRenderer(partition);
+		this._depthRenderer = RenderGroup
+			.getInstance(new View(null, this.stage), DepthRenderer)
+			.getRenderer(partition);
 
-		this._distanceRenderer = pool.renderGroup.distanceRenderGroup.getRenderer(partition);
+		this._distanceRenderer = RenderGroup
+			.getInstance(new View(null, this.stage), DistanceRenderer)
+			.getRenderer(partition);
+
+		this._traverserClass = CacheRenderer;
 	}
 
 	/**
@@ -193,4 +209,10 @@ export class DefaultRenderer extends RendererBase {
 		this._depthRenderer.view.target = this._depthRender;
 		this._depthRenderer.view.projection = this._view.projection;
 	}
+
+	public static registerMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IAssetClass): void {
+		DefaultRenderer.materialClassPool[materialClass.assetType] = renderMaterialClass;
+	}
 }
+
+DefaultRenderer.registerMaterial(_Render_RendererMaterial, CacheRenderer);

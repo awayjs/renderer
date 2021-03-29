@@ -5,7 +5,7 @@ import { Stage } from '@awayjs/stage';
 import { _IRender_RenderableClass } from './_IRender_RenderableClass';
 
 import { RenderGroup } from '../RenderGroup';
-import { EntityNode } from '@awayjs/view';
+import { ContainerNode, EntityNode } from '@awayjs/view';
 import { RenderableEvent } from '../events/RenderableEvent';
 
 /**
@@ -20,7 +20,6 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 
 	// private _abstractionPool: Object = new Object();
 	private _stage: Stage;
-	private _renderGroup: RenderGroup;
 
 	/**
 	 *
@@ -34,16 +33,8 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
      *
      * @returns {EntityNode}
      */
-	public get entity(): EntityNode {
-		return this._asset as EntityNode;
-	}
-
-	/**
-     *
-     * @returns {EntityNode}
-     */
-	public get renderGroup(): RenderGroup {
-		return this._renderGroup;
+	public get node(): ContainerNode {
+		return (<EntityNode> this._asset).parent;
 	}
 
 	public readonly id: number;
@@ -58,7 +49,6 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 
 		this.id = AbstractionBase.ID_COUNT++;
 		this._stage = renderGroup.stage;
-		this._renderGroup = renderGroup;
 
 		this._onInvalidateElementsDelegate = (event: RenderableEvent) => this._onInvalidateElements(event);
 		this._onInvalidateMaterialDelegate = (event: RenderableEvent) => this._onInvalidateMaterial(event);

@@ -34,7 +34,7 @@ import { IAnimationSet } from './IAnimationSet';
 import { View } from '@awayjs/view';
 import { IPass } from './IPass';
 import { IShaderBase } from './IShaderBase';
-import { IRenderEntity } from './IRenderEntity';
+import { IRenderContainer } from './IRenderContainer';
 
 /**
  * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
@@ -529,8 +529,8 @@ export class ShaderBase implements IShaderBase {
 	 * @param camera
 	 */
 	public _setRenderState(renderState: _Render_RenderableBase): void {
-		if ((<IRenderEntity> renderState.node.entity).animator)
-			(<IRenderEntity> renderState.node.entity).animator.setRenderState(this, renderState);
+		if ((<IRenderContainer> renderState.node.container).animator)
+			(<IRenderContainer> renderState.node.container).animator.setRenderState(this, renderState);
 
 		let rawData: Float32Array;
 
@@ -557,7 +557,7 @@ export class ShaderBase implements IShaderBase {
 		}
 		if (this.usesColorTransform) {
 
-			const colorTransform: ColorTransform = renderState.node.parent.getColorTransform();
+			const colorTransform: ColorTransform = renderState.node.getColorTransform();
 
 			if (colorTransform) {
 				//TODO: AWDParser to write normalised color offsets
@@ -582,12 +582,12 @@ export class ShaderBase implements IShaderBase {
 			}
 		}
 		if (this.sceneNormalMatrixIndex >= 0) {
-			this.sceneNormalMatrix.copyFrom(renderState.node.parent.getInverseMatrix3D());
+			this.sceneNormalMatrix.copyFrom(renderState.node.getInverseMatrix3D());
 		}
 
 		if (this.usesTangentSpace && this.cameraPositionIndex >= 0) {
 
-			renderState.node.parent.getInverseMatrix3D().copyRawDataTo(this._pInverseSceneMatrix);
+			renderState.node.getInverseMatrix3D().copyRawDataTo(this._pInverseSceneMatrix);
 			const pos: Vector3D = this._view.projection.transform.matrix3D.position;
 			const x: number = pos.x;
 			const y: number = pos.y;

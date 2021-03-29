@@ -14,7 +14,7 @@ import {
 	ImageBase,
 } from '@awayjs/stage';
 
-import { EntityNode, ContainerNode } from '@awayjs/view';
+import { EntityNode, ContainerNode, INode } from '@awayjs/view';
 import { RenderableEvent } from '../events/RenderableEvent';
 import { MaterialUtils } from '../utils/MaterialUtils';
 import { RenderGroup } from '../RenderGroup';
@@ -28,6 +28,8 @@ import { Style } from './Style';
 import { IRenderable } from './IRenderable';
 import { Settings } from '../Settings';
 import { IShaderBase } from './IShaderBase';
+import { RendererBase } from '../RendererBase';
+import { CacheRenderer } from '../CacheRenderer';
 
 /**
  * @class RenderableListItem
@@ -53,8 +55,6 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 
 	protected _stage: Stage;
 	protected _renderMaterial: _Render_MaterialBase;
-
-	public renderGroup: RenderGroup;
 
 	/**
      *
@@ -84,7 +84,13 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 	/**
 	 *
 	 */
-	readonly node: EntityNode;
+	public renderGroup: RenderGroup;
+	
+
+	/**
+	 *
+	 */
+	readonly node: ContainerNode;
 
 	/**
 	 *
@@ -172,7 +178,7 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 	 * @param surface
 	 * @param renderer
 	 */
-	constructor(renderable: IAsset, renderEntity: RenderEntity) {
+	constructor(renderable: IAsset, renderEntity: RenderEntity | CacheRenderer) {
 		super(renderable, renderEntity);
 
 		this._onInvalidateElementsDelegate = (event: RenderableEvent) => this._onInvalidateElements(event);
@@ -180,9 +186,8 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 		this._onInvalidateStyleDelegate = (event: RenderableEvent) => this._onInvalidateStyle(event);
 
 		//store references
-		this.node = renderEntity.entity;
+		this.node = renderEntity.node;
 		this._stage = renderEntity.stage;
-		this.renderGroup = renderEntity.renderGroup;
 
 		this._asset.addEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
 		this._asset.addEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);

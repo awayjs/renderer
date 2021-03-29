@@ -5,6 +5,7 @@ import {
 	ProjectionBase,
 	AbstractionBase,
 	AssetEvent,
+	IAbstractionPool,
 } from '@awayjs/core';
 
 import {
@@ -18,6 +19,7 @@ import {
 	StageEvent,
 	ContextGLClearMask,
 	RTTBufferManager,
+	Image2D,
 } from '@awayjs/stage';
 
 import {
@@ -30,18 +32,28 @@ import {
 	ITraversable,
 	EntityNode,
 	ContainerNode,
+	BoundsPicker,
+	NodePool,
+	BasicPartition,
 } from '@awayjs/view';
 
 import { _Render_MaterialBase } from './base/_Render_MaterialBase';
 import { _Render_RenderableBase } from './base/_Render_RenderableBase';
 import { RenderEntity } from './base/RenderEntity';
-import { IRendererPool, RenderGroup } from './RenderGroup';
+import { RendererPool, RenderGroup } from './RenderGroup';
 
-import { IRenderEntity } from './base/IRenderEntity';
 import { IRenderEntitySorter } from './sort/IRenderEntitySorter';
 import { RenderableMergeSort } from './sort/RenderableMergeSort';
 import { IRenderable } from './base/IRenderable';
 import { _Stage_ElementsBase } from './base/_Stage_ElementsBase';
+import { Style } from './base/Style';
+import { _Stage_TriangleElements } from './elements/TriangleElements';
+import { _Shader_TextureBase } from './base/_Shader_TextureBase';
+import { _Render_ElementsBase } from './base/_Render_ElementsBase';
+import { _Render_MaterialPassBase } from './base/_Render_MaterialPassBase';
+import { ImageTexture2D } from './textures/ImageTexture2D';
+import { CacheRenderer } from './CacheRenderer';
+import { IRendererClass } from './base/IRendererClass';
 
 /**
  * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
@@ -49,7 +61,7 @@ import { _Stage_ElementsBase } from './base/_Stage_ElementsBase';
  *
  * @class away.render.RendererBase
  */
-export class RendererBase extends AbstractionBase implements IPartitionTraverser, IEntityTraverser, IRenderable {
+export class RendererBase extends AbstractionBase implements IPartitionTraverser, IEntityTraverser {
 	public static _collectionMark = 0;
 	private _enableDepthAndStencil: boolean;
 	private _surfaceSelector: number;
@@ -63,6 +75,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	protected _context: IContextGL;
 	protected _stage: Stage;
 	protected _view: View;
+
+	private _entityMaskId: number;
+	private _entityMaskOwners: ContainerNode[];
 
 	public _cameraTransform: Matrix3D;
 	private _cameraForward: Vector3D = new Vector3D();
@@ -88,45 +103,14 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _cullPlanes: Array<Plane3D>;
 	private _customCullPlanes: Array<Plane3D>;
 	private _numCullPlanes: number = 0;
-	private _node: EntityNode;
 	protected _renderGroup: RenderGroup;
-	private _renderEntity: RenderEntity;
+	protected _traverserClass: IRendererClass;
+	private _renderEntity: RenderEntity | CacheRenderer;
 	private _zIndex: number;
 	private _renderSceneTransform: Matrix3D;
 
-	/**
-     *
-     */
-	public materialID: number;
-
-	/**
-     *
-     */
-	public renderOrderId: number;
-
-	/**
-     *
-     */
-	public zIndex: number;
-
-	public next: IRenderable;
-
-	public node: ContainerNode;
-
-	public renderMaterial: _Render_MaterialBase;
-
-	public stageElements: _Stage_ElementsBase;
-
-	public get maskOwners(): ContainerNode[] {
-		return this.node.getMaskOwners();
-	}
-
 	public get partition(): PartitionBase {
 		return this._partition;
-	}
-
-	public get renderGroup(): RenderGroup {
-		return this._renderGroup;
 	}
 
 	/**
@@ -189,11 +173,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	/**
 	 * Creates a new RendererBase object.
 	 */
-	constructor(partition: PartitionBase, pool: IRendererPool) {
+	constructor(partition: PartitionBase, pool: RendererPool) {
 		super(partition, pool);
 
 		this._partition = partition;
-		this.node = partition.rootNode;
 		this._maskId = partition.rootNode.getMaskId();
 
 		this._onSizeInvalidateDelegate = (event: ViewEvent) => this.onSizeInvalidate(event);
@@ -241,8 +224,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._view = null;
 		this._stage = null;
 		this._context = null;
-
-		this.next = null;
 	}
 
 	/**
@@ -374,8 +355,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	public executeRender(
 		enableDepthAndStencil: boolean = true, surfaceSelector: number = 0, mipmapSelector: number = 0): void {
 
-		//if (this._invalid) TODO: this is not triggering as often as it should
-		this.traverse();
+		//if (this._invalid)
+			this.traverse();
 
 		//initialise color mask
 		if (this._disableColor)
@@ -572,50 +553,74 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	}
 
 	public getTraverser(partition: PartitionBase): IPartitionTraverser {
-		// var traverser:RendererBase = this._renderGroup.getRenderer(partition);
-		// traverser.renderableSorter = null;
-		// traverser.disableClear = true;
+		//if (false) {
+		if (partition.rootNode.renderToImage) {
+			//new node for the container
+			var node: ContainerNode = partition.getLocalNode();
 
-		// if (this._invalid) {
-		// 	traverser.next = this._pBlendedRenderableHead;
-		// 	this._pBlendedRenderableHead = traverser;
-		// }
+			var traverser:CacheRenderer = RenderGroup
+				.getInstance(partition.getLocalView(this._stage), this._traverserClass)
+				.getRenderer(node.partition);
+
+			traverser.renderableSorter = null;
+
+			//if (this._invalid) {
+				this._renderEntity = traverser;
+
+				// project onto camera's z-axis
+				this._zIndex = this._cameraTransform.position.subtract(partition.rootNode.getPosition())
+					.dotProduct(this._cameraForward)
+					+ partition.rootNode.container.zOffset;
+
+				//save sceneTransform
+				this._renderSceneTransform = partition.rootNode.getRenderMatrix3D(this._cameraTransform);
+
+				//save mask id
+				this._entityMaskId = partition.rootNode.getMaskId();
+				this._entityMaskOwners = partition.rootNode.getMaskOwners();
+
+				this.applyTraversable(traverser);
+			//}
+
+			return traverser;
+		}
 
 		return this;
 	}
 
-	public applyEntity(entity: EntityNode): void {
-		this._node = entity;
-		this._renderEntity = entity.getAbstraction<RenderEntity>(this._renderGroup);
+	public applyEntity(node: EntityNode): void {
+		this._renderEntity = node.getAbstraction<RenderEntity>(this._renderGroup);
 
 		// project onto camera's z-axis
-		this._zIndex = this._cameraTransform.position.subtract(this._node.parent.getPosition())
+		this._zIndex = this._cameraTransform.position.subtract(node.parent.getPosition())
 			.dotProduct(this._cameraForward)
-			+ (<IRenderEntity> this._node.entity).zOffset;
+			+ node.entity.zOffset;
 
 		//save sceneTransform
-		this._renderSceneTransform = this._node.parent.getRenderMatrix3D(this._cameraTransform);
+		this._renderSceneTransform = node.parent.getRenderMatrix3D(this._cameraTransform);
+
+		//save mask id
+		this._entityMaskId = node.parent.getMaskId();
+		this._entityMaskOwners = node.parent.getMaskOwners();
 
 		//collect renderables
-		this._node.entity._acceptTraverser(this);
+		node.entity._acceptTraverser(this);
 	}
 
 	public applyTraversable(traversable: ITraversable): void {
-		const renderRenderable: _Render_RenderableBase = traversable.getAbstraction(this._renderEntity);
+		const renderRenderable: IRenderable = traversable.getAbstraction<_Render_RenderableBase>(this._renderEntity);
 
-		//set local vars for faster referencing
+		//store renderable properties
 		renderRenderable.cascaded = false;
-
 		renderRenderable.zIndex = this._zIndex;
-		renderRenderable.maskId = this._node.parent.getMaskId();
-		renderRenderable.maskOwners = this._node.parent.getMaskOwners();
+		renderRenderable.maskId = this._entityMaskId;
+		renderRenderable.maskOwners = this._entityMaskOwners;
+		renderRenderable.renderSceneTransform = this._renderSceneTransform;
+		renderRenderable.renderGroup = this._renderGroup;
 
 		const renderMaterial: _Render_MaterialBase = renderRenderable.renderMaterial;
 		renderRenderable.materialID = renderMaterial.materialID;
 		renderRenderable.renderOrderId = renderMaterial.renderOrderId;
-
-		//store reference to scene transform
-		renderRenderable.renderSceneTransform = this._renderSceneTransform;
 
 		if (renderMaterial.requiresBlending) {
 			renderRenderable.next = this._pBlendedRenderableHead;
@@ -629,7 +634,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._pNumElements += renderRenderable.stageElements.elements.numElements;
 	}
 
-	public _renderMasks(maskOwners: ContainerNode[]): void {
+	protected _renderMasks(maskOwners: ContainerNode[]): void {
 		//calculate the bit index of maskConfig devided by two
 		const halfBitIndex: number = Math.log2(this._maskConfig) >> 1;
 

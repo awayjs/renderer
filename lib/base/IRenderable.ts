@@ -1,10 +1,12 @@
-import { IEventDispatcher } from '@awayjs/core';
+import { IEventDispatcher, Matrix3D } from '@awayjs/core';
 import { ContainerNode, INode } from '@awayjs/view';
 import { _Stage_ElementsBase } from './_Stage_ElementsBase';
 import { _Render_MaterialBase } from './_Render_MaterialBase';
+import { RenderGroup } from '../RenderGroup';
 
 export interface IRenderable extends IEventDispatcher
 {
+	cascaded: boolean;
 
 	materialID: number;
 
@@ -20,7 +22,13 @@ export interface IRenderable extends IEventDispatcher
 
 	stageElements: _Stage_ElementsBase;
 
+	maskId: number;
+
 	maskOwners: ContainerNode[];
+
+	renderSceneTransform: Matrix3D;
+
+	renderGroup: RenderGroup;
 
 	executeRender(
 		enableDepthAndStencil?: boolean, surfaceSelector?: number, mipmapSelector?: number, maskConfig?: number): void;

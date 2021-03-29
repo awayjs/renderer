@@ -13,6 +13,8 @@ export interface IMaterial extends IAsset
 {
 	style: Style;
 
+	alphaThreshold: number;
+
 	bothSides: boolean;
 
 	curves: boolean;
@@ -22,6 +24,8 @@ export interface IMaterial extends IAsset
 	animateUVs: boolean;
 
 	blendMode: string;
+
+	useColorTransform: boolean;
 
 	getNumTextures(): number;
 

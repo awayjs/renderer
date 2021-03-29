@@ -1,6 +1,6 @@
 console.debug('AwayJS - Renderer - 0.11.13');
 
-export { IRenderEntity } from './lib/base/IRenderEntity';
+export { IRenderContainer } from './lib/base/IRenderContainer';
 export { IMaterial } from './lib/base/IMaterial';
 export { IMaterialClass } from './lib/base/IMaterialClass';
 export { _IRender_ElementsClass } from './lib/base/_IRender_ElementsClass';
@@ -11,6 +11,7 @@ export { IElements } from './lib/base/IElements';
 export { ShaderBase } from './lib/base/ShaderBase';
 export { _IRender_RenderableClass } from './lib/base/_IRender_RenderableClass';
 export { _Render_MaterialBase } from './lib/base/_Render_MaterialBase';
+export { _Render_MaterialPassBase } from './lib/base/_Render_MaterialPassBase';
 export { _Render_ElementsBase } from './lib/base/_Render_ElementsBase';
 export { _Render_RenderableBase } from './lib/base/_Render_RenderableBase';
 export { RenderEntity } from './lib/base/RenderEntity';
@@ -24,12 +25,19 @@ export { _Stage_ElementsBase } from './lib/base/_Stage_ElementsBase';
 export { ChunkVO } from './lib/base/ChunkVO';
 export { IMapper } from './lib/base/IMapper';
 export { MappingMode } from './lib/base/MappingMode';
+export { IRendererClass } from './lib/base/IRendererClass';
 
 export { DefaultRenderer } from './lib/DefaultRenderer';
 
 export { DepthRenderer } from './lib/DepthRenderer';
 
 export { DistanceRenderer } from './lib/DistanceRenderer';
+
+export { ElementsBase } from './lib/elements/ElementsBase';
+export { ElementsType } from './lib/elements/ElementsType';
+export { LineElements, _Render_LineElements, _Stage_LineElements } from './lib/elements/LineElements';
+export { TriangleElements, _Render_TriangleElements, _Stage_TriangleElements } from './lib/elements/TriangleElements';
+export { LineScaleMode } from './lib/elements/LineScaleMode';
 
 export { RenderableEvent } from './lib/events/RenderableEvent';
 export { PassEvent } from './lib/events/PassEvent';
@@ -39,11 +47,20 @@ export { ElementsEvent } from './lib/events/ElementsEvent';
 
 export { Filter3DRenderer } from './lib/Filter3DRenderer';
 
+export {ImageTexture2D, _Shader_ImageTexture2D} from "./lib/textures/ImageTexture2D";
+export {ImageTextureCube, _Shader_ImageTexture} from "./lib/textures/ImageTextureCube";
+export {Texture2D} from "./lib/textures/Texture2D";
+export {TextureBase} from "./lib/textures/TextureBase";
+export {TextureCube} from "./lib/textures/TextureCube";
+
+export { HitTestCache } from './lib/utils/HitTestCache';
 export { ElementsUtils } from './lib/utils/ElementsUtils';
 export { MaterialUtils } from './lib/utils/MaterialUtils';
+export { TriangleElementsUtils } from './lib/utils/TriangleElementsUtils';
+export { LineElementsUtils } from './lib/utils/LineElementsUtils';
 
 export { RendererBase } from './lib/RendererBase';
-export { RenderGroup, RendererType } from './lib/RenderGroup';
+export { RenderGroup } from './lib/RenderGroup';
 
 export { IRenderEntitySorter } from './lib/sort/IRenderEntitySorter';
 export { RenderableMergeSort } from './lib/sort/RenderableMergeSort';

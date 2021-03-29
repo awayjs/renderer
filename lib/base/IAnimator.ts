@@ -1,6 +1,6 @@
 import { IAsset } from '@awayjs/core';
 import { _Render_RenderableBase } from './_Render_RenderableBase';
-import { IRenderEntity } from './IRenderEntity';
+import { IRenderContainer } from './IRenderContainer';
 import { ShaderBase } from './ShaderBase';
 import { IAnimationSet } from './IAnimationSet';
 
@@ -32,14 +32,14 @@ export interface IAnimator extends IAsset
 	 *
 	 * @private
 	 */
-	addOwner(entity: IRenderEntity);
+	addOwner(entity: IRenderContainer);
 
 	/**
 	 * Used by the graphics object from which the animator is removed, unregisters the owner for internal use.
 	 *
 	 * @private
 	 */
-	removeOwner(entity: IRenderEntity);
+	removeOwner(entity: IRenderContainer);
 
 	testGPUCompatibility(shader: ShaderBase): void;
 
