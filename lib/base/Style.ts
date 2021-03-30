@@ -81,7 +81,7 @@ export class Style extends EventDispatcher {
 	constructor() {
 		super();
 
-		this._onClearImage = (event:AssetEvent) => this._invalidateProperties();
+		this._onClearImage = (event: AssetEvent) => this._invalidateProperties();
 	}
 
 	public getImageAt(texture: ITexture, index: number = 0): ImageBase {
