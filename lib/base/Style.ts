@@ -1,4 +1,4 @@
-import { Matrix, EventDispatcher } from '@awayjs/core';
+import { Matrix, EventDispatcher, AssetEvent } from '@awayjs/core';
 
 import { ImageBase, ImageSampler } from '@awayjs/stage';
 
@@ -9,6 +9,7 @@ import { ITexture } from '../base/ITexture';
  *
  */
 export class Style extends EventDispatcher {
+	private _onClearImage: (event: AssetEvent) => void;
 	private _sampler: ImageSampler;
 	private _samplers: Object = new Object();
 	private _image: ImageBase;
@@ -37,7 +38,13 @@ export class Style extends EventDispatcher {
 		if (this._image == value)
 			return;
 
+		if (this._image)
+			this._image.removeEventListener(AssetEvent.CLEAR, this._onClearImage);
+
 		this._image = value;
+
+		if (this._image)
+			this._image.addEventListener(AssetEvent.CLEAR, this._onClearImage);
 
 		this._invalidateProperties();
 	}
@@ -73,6 +80,8 @@ export class Style extends EventDispatcher {
 
 	constructor() {
 		super();
+
+		this._onClearImage = (event:AssetEvent) => this._invalidateProperties();
 	}
 
 	public getImageAt(texture: ITexture, index: number = 0): ImageBase {
@@ -88,6 +97,10 @@ export class Style extends EventDispatcher {
 			this._images[texture.id] = new Array<ImageBase>();
 
 		this._images[texture.id][index] = image;
+
+		image.addEventListener(AssetEvent.CLEAR, this._onClearImage);
+
+		this._invalidateProperties();
 	}
 
 	public addSamplerAt(sampler: ImageSampler, texture: ITexture, index: number = 0): void {
@@ -100,9 +113,12 @@ export class Style extends EventDispatcher {
 	}
 
 	public removeImageAt(texture: ITexture, index: number = 0): void {
-		if (!this._images[texture.id])
+		const image: ImageBase = this._images[texture.id]?.[index];
+
+		if (!image)
 			return;
 
+		image.removeEventListener(AssetEvent.CLEAR, this._onClearImage);
 		this._images[texture.id][index] = null;
 
 		this._invalidateProperties();
