@@ -207,6 +207,8 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 		this.dispatchEvent(new RenderableEvent(RenderableEvent.INVALIDATE_STYLE, this));
 
+		this.invalidatePasses();
+
 		this._boundsDirty = true;
 	}
 
