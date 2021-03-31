@@ -1,6 +1,6 @@
-import { AssetEvent, Box, IAbstractionClass, IAbstractionPool, IAsset, IAssetClass, } from '@awayjs/core';
+import { AssetEvent, Box, IAbstractionClass, IAbstractionPool, IAsset, IAssetClass, Rectangle, } from '@awayjs/core';
 import { AttributesBuffer, BlendMode, Image2D, ImageSampler } from '@awayjs/stage';
-import { BoundsPicker, ContainerNode, INode, PartitionBase } from '@awayjs/view';
+import { BoundsPicker, ContainerNode, INode, IPartitionContainer, PartitionBase } from '@awayjs/view';
 import { IMaterial } from './base/IMaterial';
 import { ITexture } from './base/ITexture';
 import { Style } from './base/Style';
@@ -49,6 +49,8 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	public useColorTransform: boolean = true;
 
 	public alphaThreshold: number = 0;
+
+	public hasValidCache = true;
 
 	public get assetType(): string {
 		return CacheRenderer.assetType;
@@ -149,6 +151,32 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this._view.target = this._style.image;
 
 		this._traverserClass = CacheRenderer;
+
+		const container = this.node.container;
+
+		if (container.scale9Grid) {
+			this.node.update9Slice(this._bounds);
+		}
+
+		this.hasValidCache = container.cacheAsBitmap;
+	}
+
+	public render(
+		enableDepthAndStencil: boolean = true, surfaceSelector: number = 0,
+		mipmapSelector: number = 0, maskConfig: number = 0): void {
+
+		super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
+
+		const container = this.node.container;
+		//@ts-ignore
+		const filters = container.filters;
+		const image = <Image2D> this.style.image;
+
+		if (filters && filters.length > 0) {
+			this._stage.filterManager.applyFilterStack(
+				image, image, image.rect, image.rect, filters
+			);
+		}
 	}
 
 	public getNumTextures(): number {
