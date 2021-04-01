@@ -50,8 +50,6 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 	public alphaThreshold: number = 0;
 
-	public hasValidCache = true;
-
 	public get assetType(): string {
 		return CacheRenderer.assetType;
 	}
@@ -113,6 +111,12 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		return this._texture;
 	}
 
+	public get hasValidCache() {
+		const container = this.node.container;
+
+		return container.cacheAsBitmap || (container.filters && container.filters.length > 0);
+	}
+
 	public set texture(value: ImageTexture2D) {
 		if (this._texture == value)
 			return;
@@ -158,12 +162,15 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 			this.node.update9Slice(this._bounds);
 		}
 
-		this.hasValidCache = container.cacheAsBitmap;
 	}
 
 	public render(
 		enableDepthAndStencil: boolean = true, surfaceSelector: number = 0,
 		mipmapSelector: number = 0, maskConfig: number = 0): void {
+
+		if (!this.hasValidCache) {
+			return;
+		}
 
 		super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
 
