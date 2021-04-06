@@ -1,6 +1,6 @@
-import { AssetEvent, Box, IAbstractionClass, IAbstractionPool, IAsset, IAssetClass, Rectangle, } from '@awayjs/core';
+import { AssetEvent, Box, IAbstractionClass, IAbstractionPool, IAsset, IAssetClass, Matrix3D, Rectangle, Vector3D, } from '@awayjs/core';
 import { AttributesBuffer, BlendMode, Image2D, ImageSampler } from '@awayjs/stage';
-import { BoundsPicker, ContainerNode, INode, IPartitionContainer, PartitionBase } from '@awayjs/view';
+import { BoundsPicker, ContainerEvent, ContainerNode, ContainerNodeEvent, INode, IPartitionContainer, PartitionBase, PickGroup } from '@awayjs/view';
 import { IMaterial } from './base/IMaterial';
 import { ITexture } from './base/ITexture';
 import { Style } from './base/Style';
@@ -30,11 +30,13 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	private _bounds: Box;
 	private _boundsDirty: boolean;
 	private _style: Style;
+	private _parentNode: ContainerNode;
 	private _texture: ImageTexture2D;
 	private _textures: Array<ITexture> = new Array<ITexture>();
 	private _blendMode: string = BlendMode.NORMAL;
 	private _onTextureInvalidate: (event: AssetEvent) => void;
 	private _onInvalidateProperties: (event: StyleEvent) => void;
+	private _onInvalidateParentNode: (event: ContainerNodeEvent) => void;
 
 	public node: ContainerNode;
 
@@ -55,13 +57,8 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	}
 
 	public getBounds(): Box {
-		if (this._boundsDirty) {
-			this._boundsDirty = false;
-
+		if (this._boundsDirty)
 			this._updateBounds();
-
-			(<Image2D> this._style.image)._setSize(this._bounds.width, this._bounds.height);
-		}
 
 		return this._bounds;
 	}
@@ -83,6 +80,9 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	 *
 	 */
 	public get style(): Style {
+		if (this._boundsDirty)
+			this._updateBounds();
+
 		return this._style;
 	}
 
@@ -136,10 +136,13 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		super(partition, pool);
 
 		this.node = partition.rootNode;
-		this.node.transformDisabled = true;
 
 		this._onTextureInvalidate = (_event: AssetEvent) => this.invalidate();
 		this._onInvalidateProperties = (_event: StyleEvent) => this._invalidateStyle();
+		this._onInvalidateParentNode = (_event: ContainerNodeEvent) => this.onInvalidate(null);
+
+		this._parentNode = partition.parent.rootNode;
+		this._parentNode.addEventListener(ContainerNodeEvent.INVALIDATE_MATRIX3D, this._onInvalidateParentNode);
 
 		this.style = new Style();
 
@@ -147,12 +150,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 		this._boundsPicker = this._renderGroup.pickGroup.getBoundsPicker(this._partition);
 
-		this._updateBounds();
-
-		this._style.image = new Image2D(this._bounds.width, this._bounds.height, false);
-		this._style.sampler = new ImageSampler(false, false, false);
-
-		this._view.target = this._style.image;
+		this._boundsDirty = true;
 
 		this._traverserClass = CacheRenderer;
 
@@ -242,6 +240,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 		this.dispatchEvent(new RenderableEvent(RenderableEvent.INVALIDATE_STYLE, this));
 
+		this.invalidate();
 		this.invalidatePasses();
 
 		this._boundsDirty = true;
@@ -262,7 +261,12 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	}
 
 	private _updateBounds(): void {
-		this._bounds = this._boundsPicker.getBoxBounds(this.node, true, true);
+		this._boundsDirty = false;
+
+		const matrix3D: Matrix3D = Matrix3D.CALCULATION_MATRIX;
+		matrix3D.copyFrom(this._parentNode.getMatrix3D());
+
+		this._bounds = matrix3D.transformBox(this._boundsPicker.getBoxBounds(this.node, true, true));
 
 		this._bounds.x = (this._bounds.x - 2) | 0;
 		this._bounds.y = (this._bounds.y - 2) | 0;
@@ -271,10 +275,22 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 		//this._view.width = this._bounds.width;
 		//this._view.height = this._bounds.height;
+		matrix3D.invert();
+		matrix3D._rawData[14] = -1000;
+		this._view.projection.transform.matrix3D = matrix3D;
 		this._view.projection.ratio = (this._bounds.width / this._bounds.height);
 		this._view.projection.originX = -1 - 2 * this._bounds.x / this._bounds.width;
 		this._view.projection.originY = -1 - 2 * this._bounds.y / this._bounds.height;
 		this._view.projection.scale = 1000 / this._bounds.height;
+
+		if (this._style.image) {
+			(<Image2D> this._style.image)._setSize(this._bounds.width, this._bounds.height);
+		} else {
+			this._style.image = new Image2D(this._bounds.width, this._bounds.height, false);
+			this._style.sampler = new ImageSampler(false, false, false);
+	
+			this._view.target = this._style.image;
+		}
 	}
 
 	public static registerMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IAssetClass): void {
@@ -298,29 +314,30 @@ export class _Render_Renderer extends _Render_RenderableBase {
 		const bounds: Box = (<CacheRenderer> this._asset).getBounds();
 		const id: string = bounds.toString();
 
+		const matrix3D: Matrix3D = Matrix3D.CALCULATION_MATRIX;
+		matrix3D.copyFrom(this.renderSceneTransform);
+		matrix3D.invert();
+
+		const vectors: number[] = [
+			bounds.left, bounds.top, 0,
+			bounds.right, bounds.bottom, 0,
+			bounds.right, bounds.top, 0,
+
+			bounds.left, bounds.top, 0,
+			bounds.left, bounds.bottom, 0,
+			bounds.right, bounds.bottom, 0,
+		]
+		matrix3D.transformVectors(vectors, vectors);
+
 		let elements: TriangleElements = _Render_Renderer._samplerElements[id];
 
 		if (!elements) {
 			elements = _Render_Renderer._samplerElements[id] = new TriangleElements(new AttributesBuffer(5, 6));
-			elements.setPositions([
-				bounds.left, bounds.top, 0,
-				bounds.right, bounds.bottom, 0,
-				bounds.right, bounds.top, 0,
-
-				bounds.left, bounds.top, 0,
-				bounds.left, bounds.bottom, 0,
-				bounds.right, bounds.bottom, 0,
-			]);
+			elements.setPositions(vectors);
 			elements.setUVs([0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1]);
+		} else {
+			elements.setPositions(vectors);
 		}
-		// because bounds is same, not required invalidate buffers
-		/*else {
-			elements.setPositions(
-				[bounds.left, bounds.bottom, 0,
-					bounds.right, bounds.bottom, 0,
-					bounds.right, bounds.top, 0,
-					bounds.left, bounds.top, 0]);
-		}*/
 
 		return elements.getAbstraction<_Stage_TriangleElements>(this._stage);
 	}
