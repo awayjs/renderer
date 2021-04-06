@@ -288,7 +288,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		} else {
 			this._style.image = new Image2D(this._bounds.width, this._bounds.height, false);
 			this._style.sampler = new ImageSampler(false, false, false);
-	
+
 			this._view.target = this._style.image;
 		}
 	}
@@ -326,7 +326,7 @@ export class _Render_Renderer extends _Render_RenderableBase {
 			bounds.left, bounds.top, 0,
 			bounds.left, bounds.bottom, 0,
 			bounds.right, bounds.bottom, 0,
-		]
+		];
 		matrix3D.transformVectors(vectors, vectors);
 
 		let elements: TriangleElements = _Render_Renderer._samplerElements[id];
