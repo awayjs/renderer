@@ -304,6 +304,9 @@ export class _Render_MaterialBase extends AbstractionBase {
 	 * @private
 	 */
 	public _pUpdateRender(): void {
+		if (this._invalidImages)
+			this._updateImages();
+
 		this._invalidRender = false;
 	}
 
