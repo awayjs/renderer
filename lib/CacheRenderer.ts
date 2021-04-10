@@ -1,6 +1,26 @@
-import { AssetEvent, Box, IAbstractionClass, IAbstractionPool, IAsset, IAssetClass, Matrix3D, Rectangle, Vector3D, } from '@awayjs/core';
-import { AttributesBuffer, BlendMode, Image2D, ImageSampler } from '@awayjs/stage';
-import { BoundsPicker, ContainerEvent, ContainerNode, ContainerNodeEvent, INode, IPartitionContainer, PartitionBase, PickGroup } from '@awayjs/view';
+import {
+	AssetEvent,
+	Box,
+	IAbstractionClass,
+	IAbstractionPool,
+	IAsset,
+	IAssetClass,
+	Matrix3D,
+} from '@awayjs/core';
+import {
+	AttributesBuffer,
+	BlendMode,
+	Image2D,
+	ImageSampler
+} from '@awayjs/stage';
+import {
+	BoundsPicker,
+	ContainerNode,
+	ContainerNodeEvent,
+	INode,
+	PartitionBase
+} from '@awayjs/view';
+
 import { IMaterial } from './base/IMaterial';
 import { ITexture } from './base/ITexture';
 import { Style } from './base/Style';
@@ -28,6 +48,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 	private _boundsPicker: BoundsPicker;
 	private _bounds: Box;
+	private _localBounds: Box;
 	private _boundsDirty: boolean;
 	private _style: Style;
 	private _parentNode: ContainerNode;
@@ -157,7 +178,8 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		const container = this.node.container;
 
 		if (container.scale9Grid) {
-			this.node.update9Slice(this._bounds);
+			this._localBounds = this._boundsPicker.getBoxBounds(this.node, true, true);
+			this.node.update9Slice(this._localBounds);
 		}
 
 	}
@@ -277,7 +299,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		//this._view.height = this._bounds.height;
 		matrix3D.invert();
 		matrix3D._rawData[14] = -1000;
-		this._view.projection.transform.matrix3D = matrix3D;
+		this._view.projection.transform.matrix3D.copyFrom(matrix3D);
 		this._view.projection.ratio = (this._bounds.width / this._bounds.height);
 		this._view.projection.originX = -1 - 2 * this._bounds.x / this._bounds.width;
 		this._view.projection.originY = -1 - 2 * this._bounds.y / this._bounds.height;
