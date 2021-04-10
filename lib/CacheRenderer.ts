@@ -165,6 +165,9 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this._parentNode = partition.parent.rootNode;
 		this._parentNode.addEventListener(ContainerNodeEvent.INVALIDATE_MATRIX3D, this._onInvalidateParentNode);
 
+		// for check filters changings
+		this.node.container.addEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateParentNode);
+
 		this.style = new Style();
 
 		this.texture = new ImageTexture2D();
