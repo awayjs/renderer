@@ -1,4 +1,4 @@
-import { AbstractMethodError, Box, Sphere, Matrix3D, Vector3D, AssetBase } from '@awayjs/core';
+import { AbstractMethodError, Box, Sphere, Matrix3D, Vector3D, AssetBase, Rectangle } from '@awayjs/core';
 
 import { AttributesBuffer, AttributesView, Float3Attributes, Short3Attributes } from '@awayjs/stage';
 
@@ -36,6 +36,24 @@ export class ElementsBase extends AssetBase implements IElements {
 
 	public _verticesDirty: Object = new Object();
 	public _invalidateVertices: Object = new Object();
+
+	/**
+	 * Original Bounds for 9Slice
+	 */
+	public originalScale9Bounds: Rectangle;
+	/**
+	 * Scale constraints! Not a Recangle. x - left side, width - right side, y - top, height - bottom
+	 */
+	public scale9Grid: Rectangle;
+	/**
+	 * Right index bound for vertices for scalable regions
+	 * Lenght MUST BE A 9
+	 */
+	public scale9Indices: number[];
+	/**
+	 * Initial position buffer, store only XY values
+	 */
+	public initialScale9Positions: ArrayLike<number>;
 
 	public usages: number = 0;
 
@@ -234,6 +252,14 @@ export class ElementsBase extends AssetBase implements IElements {
 
 		if (this._customAttributesNames.indexOf(name) == -1)
 			this._customAttributesNames.push(name);
+	}
+
+	public updateScale9(targetScaleX: number, targetScaleY: number): void {
+		throw new AbstractMethodError('UpdateScale9 MUST be overridden by subclass');
+	}
+
+	public prepareScale9(bounds: Rectangle, grid: Rectangle, clone: boolean) {
+		throw new AbstractMethodError('prepareScale9 MUST be overridden by subclass');
 	}
 
 	/**

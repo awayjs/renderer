@@ -19,24 +19,6 @@ export class LineElements extends ElementsBase {
 	private _colors: Byte4Attributes;
 	private _thicknessScale: Vector3D = new Vector3D();
 
-	/**
-	 * Original Bounds for 9Slice
-	 */
-	public originalSlice9Size: Rectangle;
-	/**
-	 * Slice constraints! Not a Recangle. x - left side, width - right side, y - top, height - bottom
-	 */
-	public slice9offsets: Rectangle;
-	/**
-	 * Right index bound for vertices for scalable regions
-	 * Lenght MUST BE A 9
-	 */
-	public slice9Indices: number[];
-	/**
-	 * Initial position buffer, store only XY values
-	 */
-	public initialSlice9Positions: number[] | Float32Array;
-
 	//used for hittesting geometry
 	public hitTestCache: Object = new Object();
 
@@ -110,6 +92,25 @@ export class LineElements extends ElementsBase {
 		super(concatenatedBuffer);
 
 		this._positions = new AttributesView(Float32Array, 6, concatenatedBuffer);
+	}
+
+	public prepareScale9(bounds: Rectangle, grid: Rectangle, clone: boolean): LineElements {
+		return LineElementsUtils.prepareScale9(this, bounds, grid, clone);
+	}
+
+	public updateScale9(scaleX: number, scaleY: number) {
+		if (!this.scale9Indices) {
+			return;
+		}
+
+		LineElementsUtils.updateScale9(
+			this,
+			this.originalScale9Bounds,
+			scaleX,
+			scaleY,
+			false,
+			false
+		);
 	}
 
 	public getBoxBounds(

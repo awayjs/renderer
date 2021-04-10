@@ -547,10 +547,10 @@ export class TriangleElementsUtils {
 		return output;
 	}
 
-	public static prepareSlice9 (
+	public static prepareScale9 (
 		elem: TriangleElements,
 		bounds: Rectangle,
-		offsets: Rectangle,
+		grid: Rectangle,
 		copy: boolean
 	): TriangleElements {
 
@@ -568,15 +568,15 @@ export class TriangleElementsUtils {
 
 		const sliceX = [
 			-Infinity,
-			offsets.x,
-			offsets.right,
+			grid.x,
+			grid.right,
 			Infinity
 		];
 
 		const sliceY = [
 			-Infinity,
-			offsets.y,
-			offsets.bottom,
+			grid.y,
+			grid.bottom,
 			Infinity
 		];
 
@@ -608,14 +608,14 @@ export class TriangleElementsUtils {
 			}
 		}
 
-		target.slice9offsets = offsets;
-		target.originalSlice9Size = bounds;
-		const indices = target.slice9Indices = Array.from({ length: 9 }, (_) => 0);
+		target.scale9Grid = grid;
+		target.originalScale9Bounds = bounds;
+		const indices = target.scale9Indices = Array.from({ length: 9 }, (_) => 0);
 
 		// shape already in valid region
 		// not require run slicer for this case
 		if (chunkX.from === chunkX.to && chunkY.from === chunkY.to) {
-			target.slice9Indices[chunkY.from * 3 + chunkX.from] = target._numVertices;
+			target.scale9Indices[chunkY.from * 3 + chunkX.from] = target._numVertices;
 
 			return target;
 		}
@@ -690,7 +690,7 @@ export class TriangleElementsUtils {
 		return target;
 	}
 
-	public static updateSlice9(
+	public static updateScale9(
 		elem: TriangleElements,
 		originalRect: Rectangle,
 		scaleX: number,
@@ -700,17 +700,17 @@ export class TriangleElementsUtils {
 	): TriangleElements {
 		// todo: for now this only works for Float2Attributes.
 
-		if (elem.slice9Indices.length !== 9) {
+		if (elem.scale9Indices.length !== 9) {
 			throw 'ElementUtils: Error - triangleElement does not provide valid slice9Indices!';
 		}
 
-		const offsets = elem.slice9offsets;
+		const offsets = elem.scale9Grid;
 		const left = offsets.x - originalRect.x;
 		const right = originalRect.right - offsets.right;
 		const top = offsets.y - originalRect.y;
 		const bottom = originalRect.bottom - offsets.bottom;
 
-		const s_len = elem.slice9Indices.length;
+		const s_len = elem.scale9Indices.length;
 
 		let innerWidth = originalRect.width * scaleX - (left + right);
 		let innerHeight = originalRect.height * scaleY - (top + bottom);
@@ -747,9 +747,9 @@ export class TriangleElementsUtils {
 			// should working
 			newElem = elem.clone();
 
-			newElem.slice9offsets = elem.slice9offsets;
-			newElem.initialSlice9Positions = elem.initialSlice9Positions;
-			newElem.slice9Indices = elem.slice9Indices;
+			newElem.scale9Grid = elem.scale9Grid;
+			newElem.initialScale9Positions = elem.initialScale9Positions;
+			newElem.scale9Indices = elem.scale9Indices;
 
 			positions = newElem.positions.get(newElem._numVertices);
 		} else {
@@ -761,7 +761,7 @@ export class TriangleElementsUtils {
 
 		let initPos: number[];
 
-		if (init || !elem.initialSlice9Positions) {
+		if (init || !elem.initialScale9Positions) {
 			initPos = [];
 			// we store only XY, but buffer can be XYZ
 			initPos.length = elem._numVertices * 2;
@@ -775,12 +775,12 @@ export class TriangleElementsUtils {
 				vindex += 2;
 			}
 
-			elem.initialSlice9Positions = initPos;
+			elem.initialScale9Positions = initPos;
 		} else {
-			initPos = elem.initialSlice9Positions;
+			initPos = <number[]>elem.initialScale9Positions;
 		}
 
-		const slice9Indices: number[] = elem.slice9Indices;
+		const slice9Indices: number[] = elem.scale9Indices;
 
 		const slice9Offsets_x = [
 			0,

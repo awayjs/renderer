@@ -347,14 +347,14 @@ export class LineElementsUtils {
 		return output;
 	}
 
-	public static prepareSlice9 (
+	public static prepareScale9 (
 		elem: LineElements,
 		bounds: Rectangle,
-		offsets: Rectangle,
-		copy: boolean
+		grid: Rectangle,
+		clone: boolean
 	): LineElements {
 
-		const target = copy ? elem.clone() : elem;
+		const target = clone ? elem.clone() : elem;
 
 		const shapeBounds = LineElementsUtils.getBoxBounds (
 			elem.positions,
@@ -368,15 +368,15 @@ export class LineElementsUtils {
 
 		const sliceX = [
 			-Infinity,
-			offsets.x,
-			offsets.right,
+			grid.x,
+			grid.right,
 			Infinity
 		];
 
 		const sliceY = [
 			-Infinity,
-			offsets.y,
-			offsets.bottom,
+			grid.y,
+			grid.bottom,
 			Infinity
 		];
 
@@ -408,9 +408,9 @@ export class LineElementsUtils {
 			}
 		}
 
-		target.slice9offsets = offsets;
-		target.originalSlice9Size = bounds;
-		const indices = target.slice9Indices = Array.from({ length: 9 }, (_) => 0);
+		target.scale9Grid = grid;
+		target.originalScale9Bounds = bounds;
+		const indices = target.scale9Indices = Array.from({ length: 9 }, (_) => 0);
 
 		const stack = this.restoreLineSegments (target);
 
@@ -426,8 +426,8 @@ export class LineElementsUtils {
 				buff[i * 3 + 2] = 0;
 			}
 
-			target.initialSlice9Positions = buff;
-			target.slice9Indices[chunkY.from * 3 + chunkX.from] = target._numElements || target._numVertices;
+			target.initialScale9Positions = <any>buff;
+			target.scale9Indices[chunkY.from * 3 + chunkX.from] = target._numElements || target._numVertices;
 
 			return target;
 		}
@@ -516,7 +516,7 @@ export class LineElementsUtils {
 			indices[i] = nextIndices;
 		}
 
-		target.initialSlice9Positions = posBuff;
+		target.initialScale9Positions = posBuff;
 
 		target.setPositions(posBuff);
 		target.setThickness(thinBuff);
@@ -571,7 +571,7 @@ export class LineElementsUtils {
 		return out;
 	}
 
-	public static updateSlice9(
+	public static updateScale9(
 		elem: LineElements,
 		originalRect: Rectangle,
 		scaleX: number,
@@ -581,17 +581,17 @@ export class LineElementsUtils {
 	): LineElements {
 		// todo: for now this only works for Float2Attributes.
 
-		if (elem.slice9Indices.length !== 9) {
+		if (elem.scale9Indices.length !== 9) {
 			throw 'ElementUtils: Error - triangleElement does not provide valid slice9Indices!';
 		}
 
-		const offsets = elem.slice9offsets;
+		const offsets = elem.scale9Grid;
 		const left = offsets.x - originalRect.x;
 		const right = originalRect.right - offsets.right;
 		const top = offsets.y - originalRect.y;
 		const bottom = originalRect.bottom - offsets.bottom;
 
-		const s_len = elem.slice9Indices.length;
+		const s_len = elem.scale9Indices.length;
 
 		let innerWidth = originalRect.width * scaleX - (left + right);
 		let innerHeight = originalRect.height * scaleY - (top + bottom);
@@ -623,9 +623,9 @@ export class LineElementsUtils {
 		// todo: i had trouble when just cloning the positions
 		//	for now i just create the initialSlice9Positions by iterating the positions
 
-		const initPos = elem.initialSlice9Positions;
+		const initPos = elem.initialScale9Positions;
 
-		const slice9Indices: number[] = elem.slice9Indices;
+		const slice9Indices: number[] = elem.scale9Indices;
 
 		const slice9Offsets_x = [
 			0,

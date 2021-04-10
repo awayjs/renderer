@@ -1,4 +1,4 @@
-import { Rectangle, Box, Sphere, Matrix3D, Vector3D, Point } from '@awayjs/core';
+import { Box, Sphere, Matrix3D, Vector3D, Point, Rectangle } from '@awayjs/core';
 
 import { View, PickingCollision, ContainerNode } from '@awayjs/view';
 
@@ -14,7 +14,7 @@ import {
 import { IMaterial } from '../base/IMaterial';
 import { ElementsUtils } from '../utils/ElementsUtils';
 import { TriangleElementsUtils } from '../utils/TriangleElementsUtils';
-import {  ConvexHullUtils } from '../utils/ConvexHullUtils';
+import { ConvexHullUtils } from '../utils/ConvexHullUtils';
 
 import { ElementsBase, THullImplId } from './ElementsBase';
 
@@ -43,28 +43,6 @@ export class TriangleElements extends ElementsBase {
 
 	//used for hittesting geometry
 	public hitTestCache: Object = new Object();
-
-	/**
-	 * Original Bounds for 9Slice
-	 */
-	public originalSlice9Size: Rectangle;
-	/**
-	 * Slice constraints! Not a Recangle. x - left side, width - right side, y - top, height - bottom
-	 */
-	public slice9offsets: Rectangle;
-	/**
-	 * Right index bound for vertices for scalable regions
-	 * Lenght MUST BE A 9
-	 */
-	public slice9Indices: number[];
-	/**
-	 * Initial position buffer, store only XY values
-	 */
-	public initialSlice9Positions: number[];
-
-	public updateSlice9(width: number, height: number) {
-
-	}
 
 	public get assetType(): string {
 		return TriangleElements.assetType;
@@ -167,6 +145,25 @@ export class TriangleElements extends ElementsBase {
 	 */
 	public get jointWeights(): AttributesView {
 		return this._jointWeights;
+	}
+
+	public prepareScale9(bounds: Rectangle, grid: Rectangle, clone: boolean): TriangleElements {
+		return TriangleElementsUtils.prepareScale9(this, bounds, grid, clone);
+	}
+
+	public updateScale9(scaleX: number, scaleY: number) {
+		if (!this.scale9Indices) {
+			return;
+		}
+
+		TriangleElementsUtils.updateScale9(
+			this,
+			this.originalScale9Bounds,
+			scaleX,
+			scaleY,
+			false,
+			false
+		);
 	}
 
 	public getBoxBounds(
@@ -581,11 +578,11 @@ export class TriangleElements extends ElementsBase {
 		elements.autoDeriveNormals = this._autoDeriveNormals = autoDeriveNormals;
 		elements.autoDeriveTangents = this._autoDeriveTangents = autoDeriveTangents;
 
-		if (this.slice9Indices) {
-			elements.originalSlice9Size = this.originalSlice9Size;
-			elements.slice9offsets = this.slice9offsets;
-			elements.slice9Indices = this.slice9Indices;
-			elements.initialSlice9Positions = this.initialSlice9Positions;
+		if (this.scale9Indices) {
+			elements.originalScale9Bounds = this.originalScale9Bounds;
+			elements.scale9Grid = this.scale9Grid;
+			elements.scale9Indices = this.scale9Indices;
+			elements.initialScale9Positions = this.initialScale9Positions;
 		}
 	}
 
@@ -934,9 +931,9 @@ export class _Stage_TriangleElements extends _Stage_ElementsBase {
 		renderRenderable: _Render_RenderableBase,
 		shader: ShaderBase & { supportModernAPI?: boolean, syncUniforms?: () => void },
 		count: number,
-		offset: number): void {
+		offset: number
+	): void {
 
-		const elements = this._triangleElements;
 		const modern = shader.supportModernAPI;
 
 		//set constants
