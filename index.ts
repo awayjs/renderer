@@ -1,4 +1,4 @@
-console.debug('AwayJS - Renderer - 0.11.20');
+console.debug('AwayJS - Renderer - 0.11.21');
 
 export { IRenderContainer } from './lib/base/IRenderContainer';
 export { IMaterial } from './lib/base/IMaterial';
