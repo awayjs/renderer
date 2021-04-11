@@ -302,7 +302,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		//this._view.height = this._bounds.height;
 		matrix3D.invert();
 		matrix3D._rawData[14] = -1000;
-		this._view.projection.transform.matrix3D.copyFrom(matrix3D);
+		this._view.projection.transform.matrix3D = matrix3D;
 		this._view.projection.ratio = (this._bounds.width / this._bounds.height);
 		this._view.projection.originX = -1 - 2 * this._bounds.x / this._bounds.width;
 		this._view.projection.originY = -1 - 2 * this._bounds.y / this._bounds.height;
