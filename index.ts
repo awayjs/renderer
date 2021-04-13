@@ -27,6 +27,7 @@ export { IMapper } from './lib/base/IMapper';
 export { MappingMode } from './lib/base/MappingMode';
 export { IRendererClass } from './lib/base/IRendererClass';
 
+export { CacheRenderer } from './lib/CacheRenderer';
 export { DefaultRenderer } from './lib/DefaultRenderer';
 
 export { DepthRenderer } from './lib/DepthRenderer';
