@@ -6,6 +6,7 @@ import {
 	IAsset,
 	IAssetClass,
 	Matrix3D,
+	Rectangle,
 } from '@awayjs/core';
 import {
 	AttributesBuffer,
@@ -48,6 +49,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 	private _boundsPicker: BoundsPicker;
 	private _bounds: Box;
+	private _paddedBounds: Rectangle = new Rectangle();
 	private _localBounds: Box;
 	private _boundsDirty: boolean;
 	private _style: Style;
@@ -75,6 +77,13 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 	public get assetType(): string {
 		return CacheRenderer.assetType;
+	}
+
+	public getPaddedBounds(): Rectangle {
+		if (this._boundsDirty)
+			this._updateBounds();
+
+		return this._paddedBounds;
 	}
 
 	public getBounds(): Box {
@@ -203,7 +212,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		const image = <Image2D> this.style.image;
 
 		if (filters && filters.length > 0) {
-			this._stage.filterManager.applyFilterStack(
+			this._stage.filterManager.applyFilters(
 				image, image, image.rect, image.rect, filters
 			);
 		}
@@ -288,30 +297,47 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	private _updateBounds(): void {
 		this._boundsDirty = false;
 
-		const matrix3D: Matrix3D = Matrix3D.CALCULATION_MATRIX;
+		const matrix3D = Matrix3D.CALCULATION_MATRIX;
+		const container = this.node.container;
+		const pad = this._paddedBounds;
+
 		matrix3D.copyFrom(this._parentNode.getMatrix3D());
 
 		this._bounds = matrix3D.transformBox(this._boundsPicker.getBoxBounds(this.node, true, true));
 
-		this._bounds.x = (this._bounds.x - 2) | 0;
-		this._bounds.y = (this._bounds.y - 2) | 0;
-		this._bounds.width = (this._bounds.width + 4) | 0;
-		this._bounds.height = (this._bounds.height + 4) | 0;
+		pad.setTo(
+			this._bounds.x,
+			this._bounds.y,
+			this._bounds.width,
+			this._bounds.height
+		);
+
+		if (container.filters && container.filters.length > 0) {
+			this._stage.filterManager.computeFiltersPadding(pad, container.filters, pad);
+		} else {
+			pad.x = (pad.x - 2) | 0;
+			pad.y = (pad.y - 2) | 0;
+			pad.width = (pad.width + 4) | 0;
+			pad.height = (pad.height + 4) | 0;
+		}
+
+		const ox = pad.x - this._bounds.x;
+		const oy = pad.y - this._bounds.y;
 
 		//this._view.width = this._bounds.width;
 		//this._view.height = this._bounds.height;
 		matrix3D.invert();
 		matrix3D._rawData[14] = -1000;
 		this._view.projection.transform.matrix3D = matrix3D;
-		this._view.projection.ratio = (this._bounds.width / this._bounds.height);
-		this._view.projection.originX = -1 - 2 * this._bounds.x / this._bounds.width;
-		this._view.projection.originY = -1 - 2 * this._bounds.y / this._bounds.height;
-		this._view.projection.scale = 1000 / this._bounds.height;
+		this._view.projection.ratio = (pad.width / pad.height);
+		this._view.projection.originX = -1 - 2 * (pad.x - ox * 0.5) / pad.width;
+		this._view.projection.originY = -1 - 2 * (pad.y - oy * 0.5) / pad.height;
+		this._view.projection.scale = 1000 / pad.height;
 
 		if (this._style.image) {
-			(<Image2D> this._style.image)._setSize(this._bounds.width, this._bounds.height);
+			(<Image2D> this._style.image)._setSize(pad.width, pad.height);
 		} else {
-			this._style.image = new Image2D(this._bounds.width, this._bounds.height, false);
+			this._style.image = new Image2D(pad.width, pad.height, false);
 			this._style.sampler = new ImageSampler(false, false, false);
 
 			this._view.target = this._style.image;
@@ -336,21 +362,26 @@ export class _Render_Renderer extends _Render_RenderableBase {
      */
 	protected _getStageElements(): _Stage_ElementsBase {
 
-		const bounds: Box = (<CacheRenderer> this._asset).getBounds();
-		const id: string = bounds.toString();
-
+		const asset = <CacheRenderer> this._asset;
+		const paddedBounds = asset.getPaddedBounds();
+		const bounds = asset.getBounds();
+		const offsetX = paddedBounds.x - bounds.x;
+		const offsetY = paddedBounds.y - bounds.y;
+		const id = paddedBounds.toString();
 		const matrix3D: Matrix3D = Matrix3D.CALCULATION_MATRIX;
+
 		matrix3D.copyFrom(this.renderSceneTransform);
+		matrix3D.appendTranslation(offsetX * 0.5, offsetY * 0.5, 0);
 		matrix3D.invert();
 
 		const vectors: number[] = [
-			bounds.left, bounds.top, 0,
-			bounds.right, bounds.bottom, 0,
-			bounds.right, bounds.top, 0,
+			paddedBounds.left, paddedBounds.top, 0,
+			paddedBounds.right, paddedBounds.bottom, 0,
+			paddedBounds.right, paddedBounds.top, 0,
 
-			bounds.left, bounds.top, 0,
-			bounds.left, bounds.bottom, 0,
-			bounds.right, bounds.bottom, 0,
+			paddedBounds.left, paddedBounds.top, 0,
+			paddedBounds.left, paddedBounds.bottom, 0,
+			paddedBounds.right, paddedBounds.bottom, 0,
 		];
 		matrix3D.transformVectors(vectors, vectors);
 
