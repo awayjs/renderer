@@ -1,4 +1,4 @@
-import { Box, Rectangle, Sphere, Vector3D } from '@awayjs/core';
+import { Box, Matrix, Rectangle, Sphere, Vector3D } from '@awayjs/core';
 
 import { AttributesBuffer, AttributesView, Byte4Attributes, Float1Attributes } from '@awayjs/stage';
 
@@ -94,7 +94,13 @@ export class LineElements extends ElementsBase {
 		this._positions = new AttributesView(Float32Array, 6, concatenatedBuffer);
 	}
 
-	public prepareScale9(bounds: Rectangle, grid: Rectangle, clone: boolean): LineElements {
+	public prepareScale9(
+		bounds: Rectangle,
+		grid: Rectangle,
+		clone: boolean,
+		_emitUV?: boolean,
+		_uvMatrix?: Matrix
+	): LineElements {
 		return LineElementsUtils.prepareScale9(this, bounds, grid, clone);
 	}
 

@@ -1,4 +1,4 @@
-import { Matrix3D, Vector3D, Box, Sphere, Rectangle } from '@awayjs/core';
+import { Matrix3D, Vector3D, Box, Sphere, Rectangle, Matrix } from '@awayjs/core';
 import { AttributesView, Short2Attributes } from '@awayjs/stage';
 import { TriangleElements } from '../elements/TriangleElements';
 import { GeneratorUtils, MeshView } from './GeneratorUtils';
@@ -551,7 +551,9 @@ export class TriangleElementsUtils {
 		elem: TriangleElements,
 		bounds: Rectangle,
 		grid: Rectangle,
-		copy: boolean
+		copy: boolean,
+		emitUV?: boolean,
+		uvMatrix?: Matrix
 	): TriangleElements {
 
 		if (elem._numElements !== 0) {
@@ -608,20 +610,41 @@ export class TriangleElementsUtils {
 			}
 		}
 
+		const indices = Array.from({ length: 9 }, (_) => 0);
+
+		target.scale9Indices = indices;
 		target.scale9Grid = grid;
 		target.originalScale9Bounds = bounds;
-		const indices = target.scale9Indices = Array.from({ length: 9 }, (_) => 0);
+
+		if (emitUV) {
+			if (target.positions.dimensions !== 2) {
+				throw 'Emit UV support only 2D position buffer';
+			}
+
+			const uv = (<Float32Array> target.positions.get(target._numVertices, 0)).slice(0);
+			const raw = uvMatrix.rawData;
+
+			for (let i = 0; i < uv.length; i += 2) {
+				const x = uv[i + 0];
+				const y = uv[i + 1];
+
+				uv[i + 0] = x * raw[0] + y * raw[2] + raw[4];
+				uv[i + 1] = x * raw[1] + y * raw[3] + raw[5];
+			}
+
+			target.setUVs(uv);
+			target.invalidate();
+		}
 
 		// shape already in valid region
 		// not require run slicer for this case
 		if (chunkX.from === chunkX.to && chunkY.from === chunkY.to) {
 			target.scale9Indices[chunkY.from * 3 + chunkX.from] = target._numVertices;
-
 			return target;
 		}
 
 		// run splitter
-		const attrs = [target.positions, target.uvs].filter(e => !!e);
+		const attrs = target.uvs ? [target.positions, target.uvs] : [target.positions];
 
 		let mesh = MeshView.fromAttributes<number>(attrs, target._numVertices, 3);
 

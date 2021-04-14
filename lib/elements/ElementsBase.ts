@@ -1,4 +1,4 @@
-import { AbstractMethodError, Box, Sphere, Matrix3D, Vector3D, AssetBase, Rectangle } from '@awayjs/core';
+import { AbstractMethodError, Box, Sphere, Matrix3D, Vector3D, AssetBase, Rectangle, Matrix } from '@awayjs/core';
 
 import { AttributesBuffer, AttributesView, Float3Attributes, Short3Attributes } from '@awayjs/stage';
 
@@ -258,7 +258,13 @@ export class ElementsBase extends AssetBase implements IElements {
 		throw new AbstractMethodError('UpdateScale9 MUST be overridden by subclass');
 	}
 
-	public prepareScale9(bounds: Rectangle, grid: Rectangle, clone: boolean) {
+	public prepareScale9(
+		bounds: Rectangle,
+		grid: Rectangle,
+		clone: boolean,
+		emitUV?: boolean,
+		uvMatrix?: Matrix
+	): ElementsBase {
 		throw new AbstractMethodError('prepareScale9 MUST be overridden by subclass');
 	}
 

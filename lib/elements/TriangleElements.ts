@@ -1,4 +1,4 @@
-import { Box, Sphere, Matrix3D, Vector3D, Point, Rectangle } from '@awayjs/core';
+import { Box, Sphere, Matrix3D, Vector3D, Point, Rectangle, Matrix } from '@awayjs/core';
 
 import { View, PickingCollision, ContainerNode } from '@awayjs/view';
 
@@ -147,8 +147,14 @@ export class TriangleElements extends ElementsBase {
 		return this._jointWeights;
 	}
 
-	public prepareScale9(bounds: Rectangle, grid: Rectangle, clone: boolean): TriangleElements {
-		return TriangleElementsUtils.prepareScale9(this, bounds, grid, clone);
+	public prepareScale9(
+		bounds: Rectangle,
+		grid: Rectangle,
+		clone: boolean,
+		emitUV?: boolean,
+		uvMatrix?: Matrix
+	): TriangleElements {
+		return TriangleElementsUtils.prepareScale9(this, bounds, grid, clone, emitUV, uvMatrix);
 	}
 
 	public updateScale9(scaleX: number, scaleY: number) {
