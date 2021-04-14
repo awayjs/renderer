@@ -652,14 +652,15 @@ export class TriangleElementsUtils {
 				// because all polygons should be inside rect, all their points should too,
 				// we can use any points to chek chunk
 				// but use middle point to redice slicing errors
+				// BUT this is not garanteed stable results
 				const data = p.middle.getData(0);
 				const px = data[0];
 				const py = data[1];
 
 				if (
-					(px > sliceX[i % 3]) &&
+					(px >= sliceX[i % 3]) &&
 					(px < sliceX[i % 3 + 1]) &&
-					(py > sliceY[i / 3 | 0]) &&
+					(py >= sliceY[i / 3 | 0]) &&
 					(py < sliceY[(i / 3 | 0) + 1])
 				) {
 					// slicer can not generate user data
