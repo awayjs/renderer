@@ -550,11 +550,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				.getInstance(partition.getLocalView(this._stage), this._traverserClass)
 				.getRenderer(node.partition);
 
-			// cache is not collected, supress
-			if (!traverser.hasValidCache) {
-				return this;
-			}
-
 			traverser.renderableSorter = null;
 
 			//if (this._invalid) {

@@ -50,7 +50,6 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	private _boundsPicker: BoundsPicker;
 	private _bounds: Box;
 	private _paddedBounds: Rectangle = new Rectangle();
-	private _localBounds: Box;
 	private _boundsDirty: boolean;
 	private _style: Style;
 	private _parentNode: ContainerNode;
@@ -141,12 +140,6 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		return this._texture;
 	}
 
-	public get hasValidCache() {
-		const container = this.node.container;
-
-		return container.cacheAsBitmap || (container.filters && container.filters.length > 0);
-	}
-
 	public set texture(value: ImageTexture2D) {
 		if (this._texture == value)
 			return;
@@ -188,21 +181,11 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this._traverserClass = CacheRenderer;
 
 		const container = this.node.container;
-
-		if (container.scale9Grid) {
-			this._localBounds = this._boundsPicker.getBoxBounds(this.node, true, true);
-			this.node.update9Slice(this._localBounds);
-		}
-
 	}
 
 	public render(
 		enableDepthAndStencil: boolean = true, surfaceSelector: number = 0,
 		mipmapSelector: number = 0, maskConfig: number = 0): void {
-
-		if (!this.hasValidCache) {
-			return;
-		}
 
 		super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
 
