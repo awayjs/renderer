@@ -6,11 +6,14 @@ import {
 	IAsset,
 	IAssetClass,
 	Matrix3D,
+	PerspectiveProjection,
 	Rectangle,
 } from '@awayjs/core';
 import {
 	AttributesBuffer,
 	BlendMode,
+	ContextGLClearMask,
+	ContextWebGL,
 	Image2D,
 	ImageSampler
 } from '@awayjs/stage';
@@ -306,10 +309,10 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 			this._stage.filterManager.computeFiltersPadding(pad, container.filters, pad);
 		}
 
-			pad.x = (pad.x - 2) | 0;
-			pad.y = (pad.y - 2) | 0;
-			pad.width = (pad.width + 4) | 0;
-			pad.height = (pad.height + 4) | 0;
+		pad.x = (pad.x - 2) | 0;
+		pad.y = (pad.y - 2) | 0;
+		pad.width = (pad.width + 4) | 0;
+		pad.height = (pad.height + 4) | 0;
 
 		const ox = pad.x - this._bounds.x;
 		const oy = pad.y - this._bounds.y;
@@ -328,8 +331,12 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this._view.projection.originY = -1 - 2 * (pad.y - oy * 0.5) / pad.height;
 		this._view.projection.scale = scale * 1000 / pad.height;
 
-		if (this._style.image) {
-			(<Image2D> this._style.image)._setSize(pad.width, pad.height);
+		const image =  <Image2D> this._style.image;
+		if (image) {
+			// resize only when we have texture lower that was, reduce texture swappings
+			if (image.width < pad.width || image.height < pad.height) {
+				(<Image2D> this._style.image)._setSize(pad.width, pad.height);
+			}
 		} else {
 			this._style.image = new Image2D(pad.width, pad.height, false);
 			this._style.sampler = new ImageSampler(false, false, false);
@@ -400,7 +407,6 @@ export class _Render_Renderer extends _Render_RenderableBase {
 
 		// disable cull, because for render to texture it is bugged
 		// this._stage.context.setCulling(ContextGLTriangleFace.NONE);
-
 		super.executeRender(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
 	}
 
