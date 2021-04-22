@@ -338,6 +338,8 @@ export class _Render_Renderer extends _Render_RenderableBase {
 
 	private static _samplerElements: Object = new Object();
 
+	private _elements: TriangleElements;
+
 	/**
      * //TODO
      *
@@ -350,7 +352,6 @@ export class _Render_Renderer extends _Render_RenderableBase {
 		const bounds = asset.getBounds();
 		const offsetX = paddedBounds.x - bounds.x;
 		const offsetY = paddedBounds.y - bounds.y;
-		const id = paddedBounds.toString();
 		const matrix3D: Matrix3D = Matrix3D.CALCULATION_MATRIX;
 
 		matrix3D.copyFrom(this.renderSceneTransform);
@@ -368,10 +369,10 @@ export class _Render_Renderer extends _Render_RenderableBase {
 		];
 		matrix3D.transformVectors(vectors, vectors);
 
-		let elements: TriangleElements = _Render_Renderer._samplerElements[id];
+		let elements: TriangleElements = this._elements;
 
 		if (!elements) {
-			elements = _Render_Renderer._samplerElements[id] = new TriangleElements(new AttributesBuffer(5, 6));
+			elements = this._elements = new TriangleElements(new AttributesBuffer(5, 6));
 			elements.setPositions(vectors);
 			elements.setUVs([0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1]);
 		} else {
