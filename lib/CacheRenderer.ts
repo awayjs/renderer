@@ -48,8 +48,9 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	public static defaultBackground: number = 0x0;
 
 	private _boundsPicker: BoundsPicker;
-	private _bounds: Box;
+	private _bounds: Box = new Box();
 	private _paddedBounds: Rectangle = new Rectangle();
+	/*internal*/ _boundsScale: number = 1;
 	private _boundsDirty: boolean;
 	private _style: Style;
 	private _parentNode: ContainerNode;
@@ -179,8 +180,6 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this._boundsDirty = true;
 
 		this._traverserClass = CacheRenderer;
-
-		const container = this.node.container;
 	}
 
 	public render(
@@ -284,9 +283,17 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		const container = this.node.container;
 		const pad = this._paddedBounds;
 
+		//should be method to evaluate real scale relative screen
+		const scale = this._boundsScale = 1;
+
 		matrix3D.copyFrom(this._parentNode.getMatrix3D());
 
-		this._bounds = matrix3D.transformBox(this._boundsPicker.getBoxBounds(this.node, true, true));
+		if (scale !== 1)
+			matrix3D.appendScale(scale, scale, scale);
+
+		this._bounds.copyFrom(this._boundsPicker.getBoxBounds(this.node, true, true));
+
+		matrix3D.transformBox(this._bounds, this._bounds);
 
 		pad.setTo(
 			this._bounds.x,
@@ -297,12 +304,12 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 		if (container.filters && container.filters.length > 0) {
 			this._stage.filterManager.computeFiltersPadding(pad, container.filters, pad);
-		} else {
+		}
+
 			pad.x = (pad.x - 2) | 0;
 			pad.y = (pad.y - 2) | 0;
 			pad.width = (pad.width + 4) | 0;
 			pad.height = (pad.height + 4) | 0;
-		}
 
 		const ox = pad.x - this._bounds.x;
 		const oy = pad.y - this._bounds.y;
@@ -311,11 +318,15 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		//this._view.height = this._bounds.height;
 		matrix3D.invert();
 		matrix3D._rawData[14] = -1000;
+
+		// without this we will handle empty image when target is big (scale > +3)
+		this._view.projection.far = 4000;
+		this._view.projection.near = 1;
 		this._view.projection.transform.matrix3D = matrix3D;
 		this._view.projection.ratio = (pad.width / pad.height);
 		this._view.projection.originX = -1 - 2 * (pad.x - ox * 0.5) / pad.width;
 		this._view.projection.originY = -1 - 2 * (pad.y - oy * 0.5) / pad.height;
-		this._view.projection.scale = 1000 / pad.height;
+		this._view.projection.scale = scale * 1000 / pad.height;
 
 		if (this._style.image) {
 			(<Image2D> this._style.image)._setSize(pad.width, pad.height);
@@ -355,6 +366,7 @@ export class _Render_Renderer extends _Render_RenderableBase {
 		const matrix3D: Matrix3D = Matrix3D.CALCULATION_MATRIX;
 
 		matrix3D.copyFrom(this.renderSceneTransform);
+		matrix3D.appendScale(asset._boundsScale, asset._boundsScale, asset._boundsScale);
 		matrix3D.appendTranslation(offsetX * 0.5, offsetY * 0.5, 0);
 		matrix3D.invert();
 
