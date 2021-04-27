@@ -6,14 +6,11 @@ import {
 	IAsset,
 	IAssetClass,
 	Matrix3D,
-	PerspectiveProjection,
 	Rectangle,
 } from '@awayjs/core';
 import {
 	AttributesBuffer,
 	BlendMode,
-	ContextGLClearMask,
-	ContextWebGL,
 	Image2D,
 	ImageSampler
 } from '@awayjs/stage';
@@ -77,6 +74,8 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	public useColorTransform: boolean = true;
 
 	public alphaThreshold: number = 0;
+
+	public isInvalid = false;
 
 	public get assetType(): string {
 		return CacheRenderer.assetType;
@@ -287,14 +286,21 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		const pad = this._paddedBounds;
 
 		//should be method to evaluate real scale relative screen
-		const scale = this._boundsScale = 1;
+		const scale: number = this._boundsScale = 2;
 
 		matrix3D.copyFrom(this._parentNode.getMatrix3D());
 
 		if (scale !== 1)
 			matrix3D.appendScale(scale, scale, scale);
 
-		this._bounds.copyFrom(this._boundsPicker.getBoxBounds(this.node, true, true));
+		const bounds = this._boundsPicker.getBoxBounds(this.node, true, true);
+
+		if (!bounds) {
+			console.error('[CachedRenderer] Bounds invalid, supress calculation', this.node);
+			return;
+		}
+
+		this._bounds.copyFrom(bounds);
 
 		matrix3D.transformBox(this._bounds, this._bounds);
 
@@ -339,7 +345,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 			}
 		} else {
 			this._style.image = new Image2D(pad.width, pad.height, false);
-			this._style.sampler = new ImageSampler(false, false, false);
+			this._style.sampler = new ImageSampler(false, true, false);
 
 			this._view.target = this._style.image;
 		}
