@@ -19,7 +19,8 @@ import {
 	ContainerNode,
 	ContainerNodeEvent,
 	INode,
-	PartitionBase
+	PartitionBase,
+	View
 } from '@awayjs/view';
 
 import { IMaterial } from './base/IMaterial';
@@ -75,7 +76,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 	public alphaThreshold: number = 0;
 
-	public isInvalid = false;
+	public rootView: View;
 
 	public get assetType(): string {
 		return CacheRenderer.assetType;
@@ -284,9 +285,11 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		const matrix3D = Matrix3D.CALCULATION_MATRIX;
 		const container = this.node.container;
 		const pad = this._paddedBounds;
+		const view = this.rootView;
 
 		//should be method to evaluate real scale relative screen
-		const scale: number = this._boundsScale = 2;
+		const scale: number = view ? Math.min(3, view.projection.scale) : 1;
+		this._boundsScale = scale;
 
 		matrix3D.copyFrom(this._parentNode.getMatrix3D());
 
@@ -392,6 +395,7 @@ export class _Render_Renderer extends _Render_RenderableBase {
 			paddedBounds.left, paddedBounds.bottom, 0,
 			paddedBounds.right, paddedBounds.bottom, 0,
 		];
+
 		matrix3D.transformVectors(vectors, vectors);
 
 		let elements: TriangleElements = this._elements;

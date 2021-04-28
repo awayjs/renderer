@@ -550,6 +550,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				.getInstance(partition.getLocalView(this._stage), this._traverserClass)
 				.getRenderer(node.partition);
 
+			traverser.rootView = this._view;
 			traverser.renderableSorter = null;
 
 			//if (this._invalid) {
