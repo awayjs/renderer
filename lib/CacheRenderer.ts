@@ -197,6 +197,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		const image = <Image2D> this.style.image;
 
 		if (filters && filters.length > 0) {
+			filters.forEach((e) => e && (e.imageScale = this._boundsScale));
 			this._stage.filterManager.applyFilters(
 				image, image, image.rect, image.rect, filters
 			);
@@ -315,6 +316,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		);
 
 		if (container.filters && container.filters.length > 0) {
+			container.filters.forEach((e) => e && (e.imageScale = scale));
 			this._stage.filterManager.computeFiltersPadding(pad, container.filters, pad);
 		}
 
