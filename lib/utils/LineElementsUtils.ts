@@ -617,6 +617,7 @@ export class LineElementsUtils {
 
 		const stride = elem.positions.stride;
 		const attrOffset = elem.positions.offset;
+		const dim = elem.positions.dimensions;
 
 		const positions = elem.positions.get(elem._numVertices);
 
@@ -674,21 +675,26 @@ export class LineElementsUtils {
 				const vye = originalRect.y + (offsety + (initPos[vindex * 3 + 4] - originalRect.y) * scaley) / scaleY;
 
 				for (let i = 0; i < 2; i++) {
+					let index = attrindex;
 					// super complex, line has a lot of doubled vertices
-					positions[attrindex + 0] = vxs;
-					positions[attrindex + 1] = vys;
-					positions[attrindex + 2] = 0;
-					positions[attrindex + 3] = vxe;
-					positions[attrindex + 4] = vye;
-					positions[attrindex + 5] = 0;
+					positions[index++] = vxs;
+					positions[index++] = vys;
+					dim === 6 && (positions[index++] = 0);
+
+					positions[index++] = vxe;
+					positions[index++] = vye;
+					dim === 6 && (positions[index++] = 0);
 
 					attrindex += stride;
-					positions[attrindex + 0] = vxe;
-					positions[attrindex + 1] = vye;
-					positions[attrindex + 2] = 0;
-					positions[attrindex + 3] = vxs;
-					positions[attrindex + 4] = vys;
-					positions[attrindex + 5] = 0;
+					index = attrindex;
+
+					positions[index++] = vxe;
+					positions[index++] = vye;
+					dim === 6 && (positions[index++] = 0);
+
+					positions[index++] = vxs;
+					positions[index++] = vys;
+					dim === 6 && (positions[index++] = 0);
 
 					attrindex += stride;
 				}

@@ -24,6 +24,7 @@ export class LineElements extends ElementsBase {
 
 	public half_thickness: number = 5;
 	public scaleMode: LineScaleMode = LineScaleMode.HAIRLINE;
+	public dimension: number = 3;
 
 	public getThicknessScale(view: View, entity: ContainerNode, strokeFlag: boolean): Vector3D {
 		if (!strokeFlag && this.scaleMode == LineScaleMode.HAIRLINE) {
@@ -91,7 +92,8 @@ export class LineElements extends ElementsBase {
 	constructor(concatenatedBuffer: AttributesBuffer = null) {
 		super(concatenatedBuffer);
 
-		this._positions = new AttributesView(Float32Array, 6, concatenatedBuffer);
+		this.dimension = Settings.LINE_BUFFER_DIM;
+		this._positions = new AttributesView(Float32Array, this.dimension * 2, concatenatedBuffer);
 	}
 
 	public prepareScale9(
@@ -237,6 +239,8 @@ export class LineElements extends ElementsBase {
 	public setPositions(arrayBufferView: ArrayBufferView, offset?: number): void;
 	public setPositions(attributesView: AttributesView, offset?: number): void;
 	public setPositions(values: any, offset: number = 0): void {
+		const dimension = this.dimension * 2;
+
 		if (values instanceof AttributesView) {
 			this.clearVertices(this._positions);
 			this._positions = <AttributesView> values;
@@ -244,7 +248,8 @@ export class LineElements extends ElementsBase {
 			let i: number = 0;
 			let j: number = 0;
 			let index: number = 0;
-			const positions: Float32Array = new Float32Array(values.length * 4);
+
+			const positions: Float32Array = new Float32Array(dimension * 4 * (values.length / 6));
 			const indices: Uint16Array = new Uint16Array(values.length);
 
 			//oders incoming startpos/endpos values to look like the following 6-dimensional attributes view:
@@ -253,26 +258,28 @@ export class LineElements extends ElementsBase {
 			//startpos x, y, z endpos x, y, z
 			//endpos x, y, z startpos x, y, z
 			while (i < values.length) {
-				if (index / 6 & 1) { //if number is odd, reverse the order of startpos/endpos
-					positions[index] = values[i + 3];
-					positions[index + 1] = values[i + 4];
-					positions[index + 2] = values[i + 5];
-					positions[index + 3] = values[i];
-					positions[index + 4] = values[i + 1];
-					positions[index + 5] = values[i + 2];
+				if (index / dimension & 1) { //if number is odd, reverse the order of startpos/endpos
+					positions[index++] = values[i + 3];
+					positions[index++] = values[i + 4];
+					dimension === 6 && (positions[index++] = values[i + 5]);
+
+					positions[index++] = values[i];
+					positions[index++] = values[i + 1];
+					dimension === 6 && (positions[index++] = values[i + 2]);
 				} else {
-					positions[index] = values[i];
-					positions[index + 1] = values[i + 1];
-					positions[index + 2] = values[i + 2];
-					positions[index + 3] = values[i + 3];
-					positions[index + 4] = values[i + 4];
-					positions[index + 5] = values[i + 5];
+					positions[index++] = values[i];
+					positions[index++] = values[i + 1];
+					dimension === 6 && (positions[index++] = values[i + 2]);
+
+					positions[index++] = values[i + 3];
+					positions[index++] = values[i + 4];
+					dimension === 6 && (positions[index++] = values[i + 5]);
 				}
 
-				index += 6;
+				//index += 6;
 
 				if (++j == 4) {
-					const o: number = index / 6 - 4;
+					const o: number = index / dimension - 4;
 					indices.set([o, o + 1, o + 2, o + 3, o + 2, o + 1], i);
 					j = 0;
 					i += 6;
@@ -284,7 +291,7 @@ export class LineElements extends ElementsBase {
 			this.setIndices(indices, offset);
 		} else {
 			this.clearVertices(this._positions);
-			this._positions = new AttributesView(Float32Array, 6, this._concatenatedBuffer);
+			this._positions = new AttributesView(Float32Array, dimension, this._concatenatedBuffer);
 		}
 
 		this._numVertices = this._positions.count;
@@ -515,6 +522,7 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
 	public _setRenderState(renderRenderable: _Render_RenderableBase, shader: ShaderBase): void {
 		super._setRenderState(renderRenderable, shader);
 
+		const asset = <LineElements> this._asset;
 		const view: View = shader.view;
 		const renderElements = <_Render_LineElements> renderRenderable
 			.renderGroup.getRenderElements(renderRenderable.stageElements.elements);
@@ -522,8 +530,13 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
 		if (shader.colorBufferIndex >= 0)
 			this.activateVertexBufferVO(shader.colorBufferIndex, this._lineElements.colors);
 
-		this.activateVertexBufferVO(0, this._lineElements.positions, 3);
-		this.activateVertexBufferVO(renderElements.secondaryPositionIndex, this._lineElements.positions, 3, 12);
+		this.activateVertexBufferVO(0, this._lineElements.positions, asset.dimension);
+		this.activateVertexBufferVO(
+			renderElements.secondaryPositionIndex,
+			this._lineElements.positions,
+			asset.dimension,
+			asset.dimension * 2 * 2
+		);
 		this.activateVertexBufferVO(renderElements.thicknessIndex, this._lineElements.thickness);
 
 		if (shader.uvIndex >= 0) {
