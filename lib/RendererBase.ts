@@ -427,17 +427,16 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 * @param renderables The renderables to draw.
 	 */
 	public drawRenderables(renderRenderable: IRenderable): void {
-		let i: number;
-		let r: IRenderable;
-		let renderMaterial: _Render_MaterialBase;
-		let numPasses: number;
+		let nextRenderable: IRenderable;
 
 		while (renderRenderable) {
-			renderMaterial = renderRenderable.renderMaterial;
-			numPasses = renderMaterial ? renderMaterial.numPasses : 1;
+			const renderMaterial = renderRenderable.renderMaterial;
+			const numPasses = renderMaterial ? renderMaterial.numPasses : 1;
 
-			if (this._activeMasksDirty || this._checkMaskOwners(renderRenderable.maskOwners)) {
-				if (!(this._activeMaskOwners = renderRenderable.maskOwners)) {
+			if (this._checkMaskOwners(renderRenderable.maskOwners)) {
+				this._activeMaskOwners = renderRenderable.maskOwners;
+
+				if (!this._activeMaskOwners) {
 					//re-establish stencil settings (if not inside another mask)
 					if (!this._activeRenderState.maskConfig) {
 						this._context.disableStencil();
@@ -448,32 +447,33 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				} else {
 					this._renderMasks(this._activeMaskOwners);
 				}
+
 				this._activeMasksDirty = false;
 			}
 
 			//iterate through each shader object
-			for (i = 0; i < numPasses; i++) {
+			for (let i = 0; i < numPasses; i++) {
 				renderMaterial && renderMaterial.activatePass(i);
 
-				r = renderRenderable;
+				nextRenderable = renderRenderable;
 				do {
 					///console.log("maskOwners", renderRenderable2.maskOwners);
-					r.executeRender(
+					nextRenderable.executeRender(
 						this._enableDepthAndStencil,
 						this._surfaceSelector,
 						this._mipmapSelector,
 						this._activeRenderState.maskConfig);
 
-					r = r.next;
+					nextRenderable = nextRenderable.next;
 
-				} while (r
-						&& r.renderMaterial == renderMaterial
-						&& !(this._activeMasksDirty = this._checkMaskOwners(r.maskOwners)));
+				} while (nextRenderable
+						&& nextRenderable.renderMaterial == renderMaterial
+						&& !(this._activeMasksDirty = this._checkMaskOwners(nextRenderable.maskOwners)));
 
 				renderMaterial && renderMaterial.deactivatePass();
 			}
 
-			renderRenderable = r;
+			renderRenderable = nextRenderable;
 		}
 	}
 
@@ -769,6 +769,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	}
 
 	private _checkMaskOwners(maskOwners: ContainerNode[]): boolean {
+		if (this._activeMasksDirty) {
+			return true;
+		}
+
 		if (this._activeMaskOwners == null || maskOwners == null)
 			return Boolean(this._activeMaskOwners != maskOwners);
 
