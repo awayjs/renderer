@@ -7,6 +7,7 @@ export interface IRendererSettings {
 
 	USE_ALPHA_CUTOFF: boolean;
 	ALPHA_CUTOFF_VALUE: number;
+	USE_FAST_RECT: boolean;
 
 	LINE_BUFFER_DIM: number;
 }
@@ -18,6 +19,10 @@ export const Settings: IRendererSettings = {
 	 */
 	USE_ALPHA_CUTOFF: false,
 
+	/**
+	 * @description Use scissor-rect for single rectangular mask for reduce stencil state swappings
+	 */
+	USE_FAST_RECT: false,
 	/**
 	 * @description Alpha cutoff threshold value, 0 - 1, 0 or 1 is disable affect
 	 */

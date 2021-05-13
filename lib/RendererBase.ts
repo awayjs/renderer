@@ -5,6 +5,8 @@ import {
 	ProjectionBase,
 	AbstractionBase,
 	AssetEvent,
+	Rectangle,
+	Box,
 } from '@awayjs/core';
 
 import {
@@ -42,6 +44,9 @@ import { RenderableMergeSort } from './sort/RenderableMergeSort';
 import { IRenderable } from './base/IRenderable';
 import { CacheRenderer } from './CacheRenderer';
 import { IRendererClass } from './base/IRendererClass';
+import { Settings } from './Settings';
+
+const COMPUTE_BOX = new Box();
 
 /**
  * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
@@ -428,8 +433,12 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			if (this._activeMasksDirty || this._checkMaskOwners(renderRenderable.maskOwners)) {
 				if (!(this._activeMaskOwners = renderRenderable.maskOwners)) {
 					//re-establish stencil settings (if not inside another mask)
-					if (!this._maskConfig)
+					if (!this._maskConfig) {
 						this._context.disableStencil();
+						if (this._fastRect) {
+							this._stage.setScissor(this._fastRect = null);
+						}
+					}
 				} else {
 					this._renderMasks(this._activeMaskOwners);
 				}
@@ -623,7 +632,63 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._pNumElements += renderRenderable.stageElements.elements.numElements;
 	}
 
+	private _fastRect: Rectangle = null;
+	private _renderMaskAsScissor(maskOwners: ContainerNode[]): boolean {
+		if (!Settings.USE_FAST_RECT) {
+			return false;
+		}
+
+		if (this._fastRect) {
+			this._stage.setScissor(this._fastRect = null);
+		}
+
+		// fast rect not working with framebuffer as should
+		// and owners shpuld be 1 (or more ?)
+		if (maskOwners.length > 1 || this.view.target) {
+			return false;
+		}
+
+		// and mask should be 1
+		const masks = maskOwners[0].getMasks();
+		if (masks.length > 1) {
+			return false;
+		}
+
+		const renderable = this._renderGroup.getRenderer(masks[0].partition);
+		// hack, force traverser
+		renderable.traverse();
+
+		// eslint-disable-next-line max-len
+		const shape = <{ isSimpleRect: boolean, globalBounds: () => Box } & IRenderable> renderable._pBlendedRenderableHead;
+
+		// single renderable shape, we not support multiple fast rects
+		if (shape && !shape.next && shape.isSimpleRect) {
+			const bounds = this.view.viewMatrix3D.transformBox(shape.globalBounds(), COMPUTE_BOX);
+
+			const {
+				width, height
+			} = this.view;
+
+			// convert from normalised screen coords to canvas and apply projection scale (1000)
+			this._fastRect = new Rectangle(
+				width * 0.5 * (1. + bounds.x / 1000),
+				height * 0.5 * (1. + bounds.y / 1000),
+				width * bounds.width / 2000,
+				height * bounds.height / 2000
+			);
+
+			this._stage.setScissor(this._fastRect);
+		}
+
+		return true;
+	}
+
 	protected _renderMasks(maskOwners: ContainerNode[]): void {
+		// we render by scissor, supress stencil
+		if (this._renderMaskAsScissor(maskOwners)) {
+			return;
+		}
+
 		//calculate the bit index of maskConfig devided by two
 		const halfBitIndex: number = Math.log2(this._maskConfig) >> 1;
 
