@@ -9,6 +9,7 @@ import { RendererBase } from './RendererBase';
 import { _IRender_MaterialClass } from './base/_IRender_MaterialClass';
 import { CacheRenderer } from './CacheRenderer';
 import { _Render_RendererMaterial } from './base/_Render_RendererMaterial';
+import { RenderState } from './RenderState';
 
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
@@ -122,7 +123,7 @@ export class DefaultRenderer extends RendererBase {
 		enableDepthAndStencil: boolean = true,
 		surfaceSelector: number = 0,
 		mipmapSelector: number = 0,
-		maskConfig: number = 0): void {
+		renderState: RenderState = null): void {
 
 		if (!this._stage.recoverFromDisposal()) {//if context has Disposed by the OS,don't render at this frame
 			return;
@@ -140,10 +141,10 @@ export class DefaultRenderer extends RendererBase {
 			this._filter3DRenderer.render(this._stage, this._view.projection, this._depthRender);
 		} else {
 			//this._view.target = null;
-			super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
+			super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, renderState);
 		}
 
-		if (!maskConfig)
+		if (!renderState || !renderState.maskConfig)
 			this._view.present();
 	}
 

@@ -45,6 +45,7 @@ import { IRenderable } from './base/IRenderable';
 import { CacheRenderer } from './CacheRenderer';
 import { IRendererClass } from './base/IRendererClass';
 import { Settings } from './Settings';
+import { RenderState } from './RenderState';
 
 const COMPUTE_BOX = new Box();
 
@@ -101,6 +102,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _renderEntity: RenderEntity | CacheRenderer;
 	private _zIndex: number;
 	private _renderSceneTransform: Matrix3D;
+	private _activeRenderState: RenderState;
 
 	public get partition(): PartitionBase {
 		return this._partition;
@@ -226,8 +228,11 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
 	public render(
-		enableDepthAndStencil: boolean = true, surfaceSelector: number = 0,
-		mipmapSelector: number = 0, maskConfig: number = 0): void {
+		enableDepthAndStencil: boolean = true,
+		surfaceSelector: number = 0,
+		mipmapSelector: number = 0,
+		state: RenderState = null
+	): void {
 
 		//TODO refactor setTarget so that rendertextures are created before this check
 		// if (!this._stage || !this._context)
@@ -236,10 +241,11 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._enableDepthAndStencil = enableDepthAndStencil;
 		this._surfaceSelector = surfaceSelector;
 		this._mipmapSelector = mipmapSelector;
-		this._maskConfig = maskConfig;
+
+		this._activeRenderState = state || new RenderState();
 
 		//check for mask rendering
-		if (this._maskConfig) {
+		if (this._activeRenderState.maskConfig) {
 			this._disableClear = true;
 			this._disableColor = true;
 		}
@@ -358,7 +364,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._context.setColorMask(true, true, true, true);
 
 		//initialise stencil
-		if (this._maskConfig)
+		if (this._activeRenderState.maskConfig)
 			this._context.enableStencil();
 		else
 			this._context.disableStencil();
@@ -433,7 +439,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			if (this._activeMasksDirty || this._checkMaskOwners(renderRenderable.maskOwners)) {
 				if (!(this._activeMaskOwners = renderRenderable.maskOwners)) {
 					//re-establish stencil settings (if not inside another mask)
-					if (!this._maskConfig) {
+					if (!this._activeRenderState.maskConfig) {
 						this._context.disableStencil();
 						if (this._fastRect) {
 							this._stage.setScissor(this._fastRect = null);
@@ -456,7 +462,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 						this._enableDepthAndStencil,
 						this._surfaceSelector,
 						this._mipmapSelector,
-						this._maskConfig);
+						this._activeRenderState.maskConfig);
 
 					r = r.next;
 
@@ -532,8 +538,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 */
 	public enterNode(node: INode): boolean {
 		const maskOrFrustrum = (
-			this._maskConfig
-			|| node.isInFrustum(
+			this._activeRenderState.maskConfig ||
+			node.isInFrustum(
 				this._partition.rootNode,
 				this._cullPlanes,
 				this._numCullPlanes,
@@ -738,7 +744,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 					mask = children[j];
 					//todo: figure out why masks can be null here
 					if (mask)
-						this._renderGroup.getRenderer(mask.partition).render(true, 0, 0, newMaskConfig);
+						this._renderGroup
+							.getRenderer(mask.partition)
+							.render(true, 0, 0, this._activeRenderState.extend(newMaskConfig));
 				}
 			}
 		}

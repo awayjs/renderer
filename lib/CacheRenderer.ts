@@ -36,6 +36,7 @@ import { RenderableEvent } from './events/RenderableEvent';
 import { StyleEvent } from './events/StyleEvent';
 import { RendererBase } from './RendererBase';
 import { RendererPool, RenderGroup } from './RenderGroup';
+import { RenderState } from './RenderState';
 import { ImageTexture2D } from './textures/ImageTexture2D';
 
 export class CacheRenderer extends RendererBase implements IMaterial, IAbstractionPool {
@@ -186,10 +187,12 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	}
 
 	public render(
-		enableDepthAndStencil: boolean = true, surfaceSelector: number = 0,
-		mipmapSelector: number = 0, maskConfig: number = 0): void {
-
-		super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
+		enableDepthAndStencil: boolean = true,
+		surfaceSelector: number = 0,
+		mipmapSelector: number = 0,
+		state: RenderState = null
+	): void {
+		super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, state);
 
 		const container = this.node.container;
 		//@ts-ignore
