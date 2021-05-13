@@ -695,6 +695,12 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			return;
 		}
 
+		const USE_NEW_RENDER = true;
+
+		if (USE_NEW_RENDER) {
+			return this._renderMasksNew(maskOwners);
+		}
+
 		const {
 			SET, KEEP
 		} = ContextGLStencilAction;
@@ -761,6 +767,88 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		//reads from mask output, writes to previous mask state
 		this._context.setStencilReferenceValue(0xFF, newMaskConfig, this._maskConfig);
+
+		//re-establish color mask settings (if not inside another mask)
+		if (!this._disableColor) {
+			this._context.setColorMask(true, true, true, true);
+		}
+	}
+
+	protected _renderMasksNew(maskOwners: ContainerNode[]): void {
+
+		const {
+			SET, KEEP, INCREMENT_SATURATE
+		} = ContextGLStencilAction;
+
+		const {
+			ALWAYS, EQUAL
+		} = ContextGLCompareMode;
+
+		const  {
+			FRONT_AND_BACK
+		} = ContextGLTriangleFace;
+
+		//calculate the bit index of maskConfig devided by two
+		const halfBitIndex: number = Math.log2(this._maskConfig) >> 1;
+
+		//create a new base and config value for the mask to be rendered
+		//maskBase set to next odd significant bit
+		const newMaskBase: number = this._maskConfig ? 1 << ((halfBitIndex + 1) << 1) : 1;
+		let newMaskConfig: number = newMaskBase;
+
+		if (newMaskConfig > 0xff) {
+			console.warn('[RenderBase] Mask bit overflow, maskConfig %d', newMaskConfig);
+			return;
+		}
+
+		this._context.enableStencil();
+
+		let first: boolean = true;
+
+		for (let i = 0; i < maskOwners.length; i++) {
+			const children = maskOwners[i].getMasks();
+
+			if (!children.length) {
+				continue;
+			}
+
+			this._context.setStencilActions (
+				FRONT_AND_BACK, first ? ALWAYS : EQUAL, SET, SET, KEEP);
+
+			first = false;
+
+			const nextMaskConfig = (newMaskConfig & newMaskBase) + newMaskBase;
+			//flips between read odd write even to read even write odd
+			this._context.setStencilReferenceValue(0xFF, newMaskConfig, nextMaskConfig);
+
+			newMaskConfig = nextMaskConfig;
+
+			// not require render all masks, because we always clear it before
+			// this is strange
+			if (i !== maskOwners.length - 1) {
+				continue;
+			}
+
+			// clears write mask to zero
+			// this is stupid, because no needed render ALL owners, we always drop buffer before next pass
+			this._context.clear(0, 0, 0, 0, 0, 0, ContextGLClearMask.STENCIL);
+
+			for (const mask of children) {
+				//todo: figure out why masks can be null here
+				if (mask) {
+					this._renderGroup
+						.getRenderer(mask.partition)
+						.render(true, 0, 0, this._activeRenderState.extend(newMaskConfig));
+				}
+			}
+		}
+
+		if (!first) {
+			this._context.setStencilActions(FRONT_AND_BACK, EQUAL, SET, SET, KEEP);
+		}
+
+		//reads from mask output, writes to previous mask state
+		this._context.setStencilReferenceValue(0xFF, newMaskConfig, 0xFF/*this._maskConfig*/);
 
 		//re-establish color mask settings (if not inside another mask)
 		if (!this._disableColor) {
