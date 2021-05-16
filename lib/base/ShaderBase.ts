@@ -36,6 +36,11 @@ import { IPass } from './IPass';
 import { IShaderBase } from './IShaderBase';
 import { IRenderContainer } from './IRenderContainer';
 
+// SRC, DST, ?SRC_ALPHA, ?DST_ALPHA
+type IBlendFactorType =
+	[ContextGLBlendFactor, ContextGLBlendFactor] |
+	[ContextGLBlendFactor, ContextGLBlendFactor, ContextGLBlendFactor, ContextGLBlendFactor];
+
 /**
  * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
  * Named registers are that are not necessarily limited to a single method. They are created by the compiler and
@@ -54,8 +59,11 @@ export class ShaderBase implements IShaderBase {
 	public _stage: Stage;
 	private _programData: ProgramData;
 
+	private _blendFactor: IBlendFactorType = [ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO];
+	/*
 	private _blendFactorSource: ContextGLBlendFactor = ContextGLBlendFactor.ONE;
 	private _blendFactorDest: ContextGLBlendFactor = ContextGLBlendFactor.ZERO;
+	*/
 
 	private _invalidProgram: boolean = true;
 	private _animationVertexCode: string = '';
@@ -436,44 +444,59 @@ export class ShaderBase implements IShaderBase {
 	 * </ul>
 	 */
 	public setBlendMode(value: string): void {
+		this.usesBlending = true;
+		this.usesPremultipliedAlpha = true;
+
 		switch (value) {
-			case BlendMode.NORMAL:
-				this._blendFactorSource = ContextGLBlendFactor.ONE;
-				this._blendFactorDest = ContextGLBlendFactor.ZERO;
+			case BlendMode.NORMAL: {
+				this._blendFactor = [
+					ContextGLBlendFactor.ONE,
+					ContextGLBlendFactor.ZERO
+				];
 				this.usesBlending = false;
 				this.usesPremultipliedAlpha = false;
 				break;
-
-			case BlendMode.LAYER:
-				this._blendFactorSource = ContextGLBlendFactor.ONE;
-				this._blendFactorDest = ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA;
-				this.usesBlending = true;
-				this.usesPremultipliedAlpha = true;
+			}
+			case BlendMode.LAYER: {
+				this._blendFactor = [
+					ContextGLBlendFactor.ONE,
+					ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA
+				];
 				break;
-
-			case BlendMode.MULTIPLY:
-				this._blendFactorSource = ContextGLBlendFactor.ZERO;
-				this._blendFactorDest = ContextGLBlendFactor.SOURCE_COLOR;
-				this.usesBlending = true;
-				this.usesPremultipliedAlpha = true;
+			}
+			case BlendMode.MULTIPLY: {
+				this._blendFactor = [
+					ContextGLBlendFactor.DESTINATION_COLOR,
+					ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA,
+					ContextGLBlendFactor.ONE,
+					ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA
+				];
 				break;
-
-			case BlendMode.ADD:
-				this._blendFactorSource = ContextGLBlendFactor.ONE;
-				this._blendFactorDest = ContextGLBlendFactor.ONE;
-				this.usesBlending = true;
-				this.usesPremultipliedAlpha = true;
+			}
+			case BlendMode.ADD: {
+				this._blendFactor = [
+					ContextGLBlendFactor.ONE,
+					ContextGLBlendFactor.ONE
+				];
 				break;
-
-			case BlendMode.ALPHA:
-				this._blendFactorSource = ContextGLBlendFactor.ZERO;
-				this._blendFactorDest = ContextGLBlendFactor.SOURCE_ALPHA;
-				this.usesBlending = true;
+			}
+			case BlendMode.SCREEN: {
+				this._blendFactor = [
+					ContextGLBlendFactor.ONE,
+					ContextGLBlendFactor.ONE_MINUS_SOURCE_COLOR,
+					ContextGLBlendFactor.ONE,
+					ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA
+				];
+				break;
+			}
+			case BlendMode.ALPHA: {
+				this._blendFactor = [ContextGLBlendFactor.ZERO, ContextGLBlendFactor.SOURCE_ALPHA];
 				this.usesPremultipliedAlpha = false;
 				break;
-
-			default:
-				throw new ArgumentError('Unsupported blend mode!');
+			}
+			default: {
+				throw new ArgumentError(`Unsupported blend mode: ${value}`);
+			}
 		}
 	}
 
@@ -506,7 +529,12 @@ export class ShaderBase implements IShaderBase {
 
 		this._stage.context.setDepthTest((this.writeDepth && !this.usesBlending), this.depthCompareMode);
 
-		this._stage.context.setBlendFactors(this._blendFactorSource, this._blendFactorDest);
+		//@ts-ignore
+		this._stage.context.setBlendFactors(
+			this._blendFactor[0], this._blendFactor[1],
+			// MUST be undef for non-separated mode
+			this._blendFactor[2], this._blendFactor[3]
+		);
 
 		this.activeElements = null;
 	}
