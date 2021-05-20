@@ -604,12 +604,12 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		const renderRenderable: IRenderable = traversable.getAbstraction<_Render_RenderableBase>(this._renderEntity);
 
 		//store renderable properties
+		renderRenderable.renderGroup = this._renderGroup;
 		renderRenderable.cascaded = false;
 		renderRenderable.zIndex = this._zIndex;
 		renderRenderable.maskId = this._entityMaskId;
 		renderRenderable.maskOwners = this._entityMaskOwners;
 		renderRenderable.renderSceneTransform = this._renderSceneTransform;
-		renderRenderable.renderGroup = this._renderGroup;
 
 		const renderMaterial: _Render_MaterialBase = renderRenderable.renderMaterial;
 		renderRenderable.materialID = renderMaterial.materialID;
