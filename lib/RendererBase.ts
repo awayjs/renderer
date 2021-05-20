@@ -30,6 +30,7 @@ import {
 	ITraversable,
 	EntityNode,
 	ContainerNode,
+	BoundsPicker,
 } from '@awayjs/view';
 
 import { _Render_MaterialBase } from './base/_Render_MaterialBase';
@@ -545,10 +546,13 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		if (partition.rootNode.renderToImage) {
 			//new node for the container
 			const node: ContainerNode = partition.getLocalNode();
+			const renderGroup: RenderGroup = RenderGroup.getInstance(partition.getLocalView(this._stage), this._traverserClass);
+			const boundsPicker: BoundsPicker = renderGroup.pickGroup.getBoundsPicker(node.partition);
 
-			const traverser: CacheRenderer = RenderGroup
-				.getInstance(partition.getLocalView(this._stage), this._traverserClass)
-				.getRenderer(node.partition);
+			if (!boundsPicker.getBoxBounds(node, true, true))
+				return this;
+
+			const traverser: CacheRenderer = renderGroup.getRenderer(node.partition);
 
 			traverser.rootView = this._view;
 			traverser.renderableSorter = null;
