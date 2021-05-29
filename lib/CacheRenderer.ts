@@ -41,12 +41,13 @@ import { ImageTexture2D } from './textures/ImageTexture2D';
 export class CacheRenderer extends RendererBase implements IMaterial, IAbstractionPool {
 
 	public static assetType: string = '[renderer CacheRenderer]';
-
 	public static materialClassPool: Record<string, _IRender_MaterialClass> = {};
-
 	public static renderGroupPool: Record<string, RenderGroup> = {};
-
 	public static defaultBackground: number = 0x0;
+
+	public static isValidForCache (node: ContainerNode) {
+
+	}
 
 	private _boundsPicker: BoundsPicker;
 	private _bounds: Box = new Box();
@@ -168,8 +169,10 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this._onInvalidateProperties = (_event: StyleEvent) => this._invalidateStyle();
 		this._onInvalidateParentNode = (_event: ContainerNodeEvent) => this.onInvalidate(null);
 
-		this._parentNode = partition.parent.rootNode;
-		this._parentNode.addEventListener(ContainerNodeEvent.INVALIDATE_MATRIX3D, this._onInvalidateParentNode);
+		if (partition.parent) {
+			this._parentNode = partition.parent.rootNode;
+			this._parentNode.addEventListener(ContainerNodeEvent.INVALIDATE_MATRIX3D, this._onInvalidateParentNode);
+		}
 
 		// for check filters changings
 		this.node.container.addEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateParentNode);
@@ -292,7 +295,12 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		const scale: number = view ? Math.min(3, view.projection.scale) : 1;
 		this._boundsScale = scale;
 
-		matrix3D.copyFrom(this._parentNode.getMatrix3D());
+		if (this._parentNode) {
+			matrix3D.copyFrom(this._parentNode.getMatrix3D());
+		} else {
+			// no parent - no transform
+			matrix3D.identity();
+		}
 
 		if (scale !== 1)
 			matrix3D.appendScale(scale, scale, scale);
