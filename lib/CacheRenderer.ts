@@ -37,6 +37,7 @@ import { StyleEvent } from './events/StyleEvent';
 import { RendererBase } from './RendererBase';
 import { RendererPool, RenderGroup } from './RenderGroup';
 import { ImageTexture2D } from './textures/ImageTexture2D';
+import { Settings as StageSettings } from '@awayjs/stage';
 
 export class CacheRenderer extends RendererBase implements IMaterial, IAbstractionPool {
 
@@ -50,6 +51,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	}
 
 	private _boundsPicker: BoundsPicker;
+	private _renderMatrix: Matrix3D = new Matrix3D();
 	private _bounds: Box = new Box();
 	private _paddedBounds: Rectangle = new Rectangle();
 	/*internal*/ _boundsScale: number = 1;
@@ -189,21 +191,62 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	}
 
 	public render(
-		enableDepthAndStencil: boolean = true, surfaceSelector: number = 0,
-		mipmapSelector: number = 0, maskConfig: number = 0): void {
+		enableDepthAndStencil: boolean = true,
+		surfaceSelector: number = 0,
+		mipmapSelector: number = 0,
+		maskConfig: number = 0
+	): void {
 
+		const stage = this._stage;
+		const sourceImage = <Image2D> this._style.image;
+
+		if (!sourceImage) {
+			return super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
+		}
+
+		let targetImage: Image2D;
+
+		// we not require use TMP texture when not have MSAA
+		if (stage.context.glVersion === 2 &&
+			StageSettings.ENABLE_MULTISAMPLE_TEXTURE
+		) {
+			targetImage = stage.filterManager.popTemp(
+				sourceImage.width,
+				sourceImage.height,
+				true
+			);
+
+		}
+
+		this._initRender(targetImage || sourceImage);
 		super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
 
 		const container = this.node.container;
 		//@ts-ignore
 		const filters = container.filters;
-		const image = <Image2D> this.style.image;
-
 		if (filters && filters.length > 0) {
 			filters.forEach((e) => e && (e.imageScale = this._boundsScale));
-			this._stage.filterManager.applyFilters(
-				image, image, image.rect, image.rect, filters
+			stage.filterManager.applyFilters(
+				targetImage || sourceImage,
+				sourceImage, // because we use source as filter target - we not require copy
+				sourceImage.rect,
+				sourceImage.rect,
+				filters
 			);
+		} else if (targetImage) {
+			// this is fast, it should only call blitFramebuffer,
+			// same as in regular MSAA
+			stage.filterManager.copyPixels(
+				targetImage,
+				sourceImage,
+				sourceImage.rect,
+				sourceImage.rect.topLeft,
+				false
+			);
+		}
+
+		if (targetImage) {
+			stage.filterManager.pushTemp(targetImage);
 		}
 	}
 
@@ -286,7 +329,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	private _updateBounds(): void {
 		this._boundsDirty = false;
 
-		const matrix3D = Matrix3D.CALCULATION_MATRIX;
+		const matrix3D = this._renderMatrix;
 		const container = this.node.container;
 		const pad = this._paddedBounds;
 		const view = this.rootView;
@@ -315,6 +358,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this._bounds.copyFrom(bounds);
 
 		matrix3D.transformBox(this._bounds, this._bounds);
+		matrix3D.invert();
 
 		pad.setTo(
 			this._bounds.x,
@@ -333,35 +377,41 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		pad.width = (pad.width + 4) | 0;
 		pad.height = (pad.height + 4) | 0;
 
-		const ox = pad.x - this._bounds.x;
-		const oy = pad.y - this._bounds.y;
-
-		//this._view.width = this._bounds.width;
-		//this._view.height = this._bounds.height;
-		matrix3D.invert();
-		matrix3D._rawData[14] = -1000;
-
-		// without this we will handle empty image when target is big (scale > +3)
-		this._view.projection.far = 4000;
-		this._view.projection.near = 1;
-		this._view.projection.transform.matrix3D = matrix3D;
-		this._view.projection.ratio = (pad.width / pad.height);
-		this._view.projection.originX = -1 - 2 * (pad.x - ox * 0.5) / pad.width;
-		this._view.projection.originY = -1 - 2 * (pad.y - oy * 0.5) / pad.height;
-		this._view.projection.scale = scale * 1000 / pad.height;
-
 		const image =  <Image2D> this._style.image;
 		if (image) {
 			// resize only when we have texture lower that was, reduce texture swappings
-			if (image.width < pad.width || image.height < pad.height) {
-				(<Image2D> this._style.image)._setSize(pad.width, pad.height);
-			}
+			//if (image.width < pad.width || image.height < pad.height) {
+			(<Image2D> this._style.image)._setSize(pad.width, pad.height);
+			//}
 		} else {
+
 			this._style.image = new Image2D(pad.width, pad.height, false);
 			this._style.sampler = new ImageSampler(false, true, false);
-
-			this._view.target = this._style.image;
+			//this._view.target = this._style.image;
 		}
+	}
+
+	private _initRender(target: Image2D) {
+		const pad = this._paddedBounds;
+		const scale = this._boundsScale;
+		const matrix3D = this._renderMatrix;
+		const ox = pad.x - this._bounds.x;
+		const oy = pad.y - this._bounds.y;
+		const view = this._view;
+		const proj = view.projection;
+
+		matrix3D._rawData[14] = -1000;
+
+		// without this we will handle empty image when target is big (scale > +3)
+		proj.far = 4000;
+		proj.near = 1;
+		proj.transform.matrix3D = matrix3D;
+		proj.ratio = (target.width / target.height);
+		proj.originX = -1 - 2 * (pad.x - ox * 0.5) / target.width;
+		proj.originY = -1 - 2 * (pad.y - oy * 0.5) / target.height;
+		proj.scale = scale * 1000 / target.height;
+
+		view.target = target;
 	}
 
 	public static registerMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IAssetClass): void {
@@ -373,15 +423,8 @@ export class _Render_Renderer extends _Render_RenderableBase {
 
 	public static assetType: string = '[render Renderer]';
 
-	private static _samplerElements: Object = new Object();
-
 	private _elements: TriangleElements;
 
-	/**
-     * //TODO
-     *
-     * @returns {away.base.TriangleElements}
-     */
 	protected _getStageElements(): _Stage_ElementsBase {
 
 		const asset = <CacheRenderer> this._asset;
