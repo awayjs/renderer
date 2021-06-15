@@ -684,7 +684,7 @@ export class _Render_LineElements extends _Render_ElementsBase {
             // test if behind camera near plane
             // if 0 - Q0.z < Camera.near then the point needs to be clipped
             'slt ' + behind + '.x, ' + q0 + '.z, ' + misc + '.z\n' + // behind = ( 0 - Q0.z < -Camera.near ) ? 1 : 0
-            'sub ' + behind + '.y, ' + const01n1 + '.y, ' + behind + '.x			\n' + // !behind = 1 - behind
+            'sub ' + behind + '.y, #native( 1.0 )native#, ' + behind + '.x			\n' + // !behind = 1 - behind
 
 		// p = point on the plane (0,0,-near)
 		// n = plane normal (0,0,-1)
@@ -696,14 +696,14 @@ export class _Render_LineElements extends _Render_ElementsBase {
             'sub ' + offset + '.y, ' + q0 + '.z, ' + q1 + '.z			\n' + // Q0.z - Q1.z
 
             // fix divide by zero for horizontal lines
-            'seq ' + offset + '.z, ' + offset + '.y ' + const01n1 + '.x\n' + // offset = (Q0.z - Q1.z)==0 ? 1 : 0
+            'seq ' + offset + '.z, ' + offset + '.y, #native( vec4(0.0) )native#\n' + // offset = (Q0.z - Q1.z)==0 ? 1 : 0
             'add ' + offset + '.y, ' + offset + '.y, ' + offset + '.z\n' + // ( Q0.z - Q1.z ) + offset
 
             'div ' + offset + '.z, ' + offset + '.x, ' + offset + '.y\n' + // t = ( Q0.z - near ) / ( Q0.z - Q1.z )
 
             'mul ' + offset + '.xyz, ' + offset + '.zzz, ' + l + '.xyz	\n' + // t(L)
             'add ' + qclipped + '.xyz, ' + q0 + '.xyz, ' + offset + '.xyz	\n' + // Qclipped = Q0 + t(L)
-            'mov ' + qclipped + '.w, ' + const01n1 + '.y			\n' + // Qclipped.w = 1
+            'mov ' + qclipped + '.w, #native( 1.0 )native#			\n' + // Qclipped.w = 1
 
             // If necessary, replace Q0 with new Qclipped
             'mul ' + q0 + ', ' + q0 + ', ' + behind + '.yyyy			\n' + // !behind * Q0
@@ -713,17 +713,17 @@ export class _Render_LineElements extends _Render_ElementsBase {
             // calculate side vector for line
             'nrm ' + l + '.xyz, ' + l + '.xyz			\n' + // normalize( L )
             'nrm ' + behind + '.xyz, ' + q0 + '.xyz			\n' + // D = normalize( Q1 )
-            'mov ' + behind + '.w, ' + const01n1 + '.y				\n' + // D.w = 1
+            'mov ' + behind + '.w, #native( 1.0 )native#				\n' + // D.w = 1
             'crs ' + qclipped + '.xyz, ' + l + ', ' + behind + '			\n' + // S = L x D
             'nrm ' + qclipped + '.xyz, ' + qclipped + '.xyz			\n' + // normalize( S )
 
             // face the side vector properly for the given point
             'mul ' + qclipped + '.xyz, ' + qclipped + '.xyz, ' + thickness + '.xxx	\n' + // S *= weight
-            'mov ' + qclipped + '.w, ' + const01n1 + '.y			\n' + // S.w = 1
+            'mov ' + qclipped + '.w, #native( 1.0 )native#			\n' + // S.w = 1
 
 		// calculate the amount required to move at the point's distance to correspond to the line's pixel width
 		// scale the side vector by that amount
-			'mul ' + offset + '.x, ' + q0 + '.z, ' + const01n1 + '.z			\n' + // distance = dot( view )
+			'mul ' + offset + '.x, ' + q0 + '.z, #native( -1.0 )native#			\n' + // distance = dot( view )
 			'mul ' + qclipped + '.xyz, ' + qclipped + '.xyz, ' + offset + '.xxx	\n' + // S.xyz *= pixelScaleFactor
 			'mul ' + qclipped + '.xyz, ' + qclipped + '.xyz, ' + misc + '.xy	\n' + // distance *= vpsod
 
