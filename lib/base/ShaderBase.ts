@@ -23,6 +23,7 @@ import {
 	ShaderRegisterCache,
 	ShaderRegisterData,
 	ShaderRegisterElement,
+	Part,
 } from '@awayjs/stage';
 
 import { _Render_RenderableBase } from './_Render_RenderableBase';
@@ -506,11 +507,15 @@ export class ShaderBase implements IShaderBase {
 	public _activate(): void {
 		if (!this.programData.program) {
 			this.programData.program = this._stage.context.createProgram();
-			const vertexByteCode: ByteArray = (new AGALMiniAssembler()
-				.assemble('part vertex 1\n' + this.programData.vertexString + 'endpart'))['vertex'].data;
-			const fragmentByteCode: ByteArray = (new AGALMiniAssembler()
-				.assemble('part fragment 1\n' + this.programData.fragmentString + 'endpart'))['fragment'].data;
-			this.programData.program.upload(vertexByteCode, fragmentByteCode);
+
+			const vertexPart: Part = (new AGALMiniAssembler()
+				.assemble('part vertex 1\n' + this.programData.vertexString + 'endpart')).vertex;
+
+			const fragmentPart: Part = (new AGALMiniAssembler()
+				.assemble('part fragment 1\n' + this.programData.fragmentString + 'endpart')).fragment;
+
+			//@ts-ignore
+			this.programData.program.upload(vertexPart, fragmentPart);
 		}
 
 		//set program data
