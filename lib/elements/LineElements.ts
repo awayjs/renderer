@@ -483,6 +483,7 @@ import {
 	ShaderRegisterCache,
 	ShaderRegisterElement,
 	ShaderRegisterData,
+	IVao
 } from '@awayjs/stage';
 
 import { ElementsUtils } from '../utils/ElementsUtils';
@@ -504,19 +505,35 @@ import { LineScaleMode } from './LineScaleMode';
 export class _Stage_LineElements extends _Stage_ElementsBase {
 	private _scale: Vector3D = new Vector3D();
 	private _thickness: number = 1;
-
+	private _vao: IVao;
 	private _lineElements: LineElements;
+	private _vaoIsInvalid: boolean = true;
 
 	constructor(lineElements: LineElements, stage: Stage) {
 		super(lineElements, stage);
 
 		this._lineElements = lineElements;
+		this._vao = (stage.context.hasVao && Settings.ALLOW_VAO && !this._lineElements.isDynamic)
+			? stage.context.createVao()
+			: null;
+	}
+
+	public onInvalidate(event: AssetEvent) {
+		super.onInvalidate(event);
+
+		this._vaoIsInvalid = true;
 	}
 
 	public onClear(event: AssetEvent): void {
 		super.onClear(event);
 
 		this._lineElements = null;
+
+		this._vaoIsInvalid = true;
+		if (this._vao) {
+			this._vao.dispose();
+			this._vao = null;
+		}
 	}
 
 	public _setRenderState(renderRenderable: _Render_RenderableBase, shader: ShaderBase): void {
@@ -527,33 +544,33 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
 		const renderElements = <_Render_LineElements> renderRenderable
 			.renderGroup.getRenderElements(renderRenderable.stageElements.elements);
 
-		if (shader.colorBufferIndex >= 0)
-			this.activateVertexBufferVO(shader.colorBufferIndex, this._lineElements.colors);
+		this._vao && this._vao.bind();
 
-		this.activateVertexBufferVO(0, this._lineElements.positions, asset.dimension);
-		this.activateVertexBufferVO(
-			renderElements.secondaryPositionIndex,
-			this._lineElements.positions,
-			asset.dimension,
-			asset.dimension * 2 * 2
-		);
-		this.activateVertexBufferVO(renderElements.thicknessIndex, this._lineElements.thickness);
+		if (!this._vao || this._vaoIsInvalid) {
+			if (shader.colorBufferIndex >= 0)
+				this.activateVertexBufferVO(shader.colorBufferIndex, this._lineElements.colors);
 
-		if (shader.uvIndex >= 0) {
-			this.activateVertexBufferVO(shader.uvIndex, this._lineElements.positions, 2);
+			this.activateVertexBufferVO(0, this._lineElements.positions, asset.dimension);
+			this.activateVertexBufferVO(
+				renderElements.secondaryPositionIndex,
+				this._lineElements.positions,
+				asset.dimension,
+				asset.dimension * 2 * 2
+			);
+			this.activateVertexBufferVO(renderElements.thicknessIndex, this._lineElements.thickness);
+
+			if (shader.uvIndex >= 0) {
+				this.activateVertexBufferVO(shader.uvIndex, this._lineElements.positions, 2);
+			}
+
+			this._vaoIsInvalid = false;
 		}
 
 		const {
-			oConst01n1,
 			oMisc
 		} = renderElements.uOffsets;
 
 		const data: Float32Array = shader.vertexConstantData;
-
-		data[oConst01n1 + 0] = 0;
-		data[oConst01n1 + 1] = 1;
-		data[oConst01n1 + 2] = -1;
-		data[oConst01n1 + 3] = -1;
 
 		this._scale.copyFrom(renderRenderable.node.getMatrix3D().decompose()[3]);
 
@@ -597,6 +614,8 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
 			this.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, offset * 3, count * 3 || this.numIndices);
 		else
 			this._stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, offset, count || this.numVertices);
+
+		this._vao && this._vao.unbind();
 	}
 
 	/**
@@ -623,7 +642,6 @@ export class _Render_LineElements extends _Render_ElementsBase {
 	public thicknessIndex: number = -1;
 
 	public uOffsets = {
-		oConst01n1: 0,
 		oMisc: 0,
 	};
 
@@ -649,9 +667,6 @@ export class _Render_LineElements extends _Render_ElementsBase {
 		registerCache.getFreeVertexConstant();
 		registerCache.getFreeVertexConstant();
 		shader.viewMatrixIndex = viewMatrixReg.index * 4;
-
-		const const01n1 = registerCache.getFreeVertexConstant();
-		this.uOffsets.oConst01n1 = const01n1.index * 4;
 
 		const misc = registerCache.getFreeVertexConstant();
 		this.uOffsets.oMisc = misc.index * 4;
