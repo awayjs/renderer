@@ -78,7 +78,12 @@ export class _Shader_ImageTexture2D extends _Shader_ImageTexture {
      * @returns {string}
      * @private
      */
-	public _getFragmentCode(targetReg: ShaderRegisterElement, regCache: ShaderRegisterCache, sharedReg: ShaderRegisterData, inputReg: ShaderRegisterElement): string {
+	public _getFragmentCode(
+		targetReg: ShaderRegisterElement,
+		regCache: ShaderRegisterCache,
+		sharedReg: ShaderRegisterData,
+		inputReg: ShaderRegisterElement
+	): string {
 		let code: string = '';
 
 		let temp: ShaderRegisterElement;
@@ -107,8 +112,13 @@ export class _Shader_ImageTexture2D extends _Shader_ImageTexture {
 		code += super._getFragmentCode(targetReg, regCache, sharedReg, inputReg);
 
 		//un-premultiply alpha if is is required
-		if (this._shader.usesPremultipliedAlpha)
-			code += 'div ' + targetReg + '.xyz, ' + targetReg + ', ' + targetReg + '.w\n';
+		if (this._shader.usesPremultipliedAlpha) {
+			const tmp = regCache.getFreeFragmentSingleTemp();
+
+			code += 'sge ' + tmp +  ' #native vec4(0.0) native#, ' +  targetReg + '.w  \n';
+			code += 'add ' + tmp + ', ' + tmp + ',' + targetReg + '.w \n';
+			code += 'div ' + targetReg + '.xyz, ' + targetReg + ', ' + tmp + '\n';
+		}
 
 		return code;
 	}

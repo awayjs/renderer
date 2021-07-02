@@ -6,7 +6,6 @@ import {
 	ColorTransform,
 	ArgumentError,
 	IAssetClass,
-	ByteArray,
 	IAbstractionClass,
 	IAsset,
 } from '@awayjs/core';
