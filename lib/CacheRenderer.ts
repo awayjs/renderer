@@ -100,16 +100,20 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	}
 
 	public get blendMode(): string {
-		return this._blendMode;
-	}
+		const containerBlend = <string> this.node.container.blendMode;
 
-	public set blendMode(value: string) {
-		if (this._blendMode == value)
-			return;
+		// native blends
+		switch (containerBlend) {
+			case BlendMode.LAYER:
+			case BlendMode.MULTIPLY:
+			case BlendMode.NORMAL:
+			case BlendMode.ADD:
+			case BlendMode.SCREEN:
+			case BlendMode.ALPHA:
+				return containerBlend;
+		}
 
-		this._blendMode = value;
-
-		this.invalidate();
+		return BlendMode.LAYER;
 	}
 
 	/**
@@ -248,6 +252,11 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		if (targetImage) {
 			stage.filterManager.pushTemp(targetImage);
 		}
+	}
+
+	// apply blend modes and swap texture if needed
+	public preActivateRenderPass() {
+
 	}
 
 	public getNumTextures(): number {

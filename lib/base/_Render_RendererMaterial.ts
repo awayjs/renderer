@@ -40,12 +40,15 @@ export class _Render_RendererMaterial extends _Render_MaterialPassBase {
 	public _pUpdateRender(): void {
 		super._pUpdateRender();
 
-		(<CacheRenderer> this._asset).render();
+		const asset = <CacheRenderer> this._asset;
+
+		asset.render();
+
 		this.shader._stage.setRenderTarget(null);
 
 		this.requiresBlending = true;
 
-		this.shader.setBlendMode(BlendMode.LAYER);
+		this.shader.setBlendMode(asset.blendMode || BlendMode.LAYER);
 	}
 
 	public _includeDependencies(shader: ShaderBase): void {
