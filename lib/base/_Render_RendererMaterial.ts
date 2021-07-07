@@ -42,6 +42,8 @@ export class _Render_RendererMaterial extends _Render_MaterialPassBase {
 
 		const asset = <CacheRenderer> this._asset;
 
+		this.shader.setBlendMode(BlendMode.LAYER);
+
 		asset.render();
 
 		this.shader._stage.setRenderTarget(null);

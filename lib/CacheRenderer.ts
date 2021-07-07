@@ -99,7 +99,13 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		return this._bounds;
 	}
 
+	private _lockBlendMode = false;
+
 	public get blendMode(): string {
+		if (this._lockBlendMode) {
+			return BlendMode.LAYER;
+		}
+
 		const containerBlend = <string> this.node.container.blendMode;
 
 		// native blends
@@ -222,8 +228,11 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 		}
 
+		this._lockBlendMode = true;
 		this._initRender(targetImage || sourceImage);
 		super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
+
+		this._lockBlendMode = false;
 
 		const container = this.node.container;
 		//@ts-ignore
