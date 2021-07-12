@@ -8,6 +8,8 @@ export interface IRendererSettings {
 	USE_ALPHA_CUTOFF: boolean;
 	ALPHA_CUTOFF_VALUE: number;
 
+	SMOOTH_CACHED_IMAGE: boolean;
+
 	LINE_BUFFER_DIM: number;
 }
 
@@ -41,6 +43,11 @@ export const Settings: IRendererSettings = {
 	 * @description Threshold for points count, that enable a hull generator
 	 */
 	POINTS_COUNT_FOR_CONVEX: 10,
+
+	/**
+	 * @description use smoothed image for cacheAsBitmap and filters
+	 */
+	SMOOTH_CACHED_IMAGE: true,
 
 	/**
 	 * @description Dimensions for LineElements buffer, 2 or 3, 3 is standart, but more memory-expensive, we can use 2

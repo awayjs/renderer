@@ -38,6 +38,7 @@ import { RendererBase } from './RendererBase';
 import { RendererPool, RenderGroup } from './RenderGroup';
 import { ImageTexture2D } from './textures/ImageTexture2D';
 import { Settings as StageSettings } from '@awayjs/stage';
+import { Settings } from './Settings';
 
 export class CacheRenderer extends RendererBase implements IMaterial, IAbstractionPool {
 
@@ -404,7 +405,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		} else {
 
 			this._style.image = new Image2D(pad.width, pad.height, false);
-			this._style.sampler = new ImageSampler(false, true, false);
+			this._style.sampler = new ImageSampler(false, Settings.SMOOTH_CACHED_IMAGE, false);
 			//this._view.target = this._style.image;
 		}
 	}
