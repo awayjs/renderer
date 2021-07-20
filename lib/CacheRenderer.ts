@@ -229,10 +229,18 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 		}
 
+		// we should not render itself blended, disable it
 		this._lockBlendMode = true;
+		// we should render with colorTransform to self, enable it
+		this.node.colorTransformDisabled = false;
+
 		this._initRender(targetImage || sourceImage);
 		super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
 
+		// restore colorTransform state as in transform state
+		this.node.colorTransformDisabled = this.node.transformDisabled;
+
+		// end enable blend
 		this._lockBlendMode = false;
 
 		const container = this.node.container;
