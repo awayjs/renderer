@@ -1,10 +1,9 @@
 import { AssetEvent, IAssetClass } from '@awayjs/core';
-import { BitmapImage2D, IContextGL, RTTBufferManager, Filter3DBase } from '@awayjs/stage';
+import { BitmapImage2D, IContextGL } from '@awayjs/stage';
 import { INode, PartitionBase, View } from '@awayjs/view';
 import { RendererPool, RenderGroup } from './RenderGroup';
 import { DepthRenderer } from './DepthRenderer';
 import { DistanceRenderer } from './DistanceRenderer';
-import { Filter3DRenderer } from './Filter3DRenderer';
 import { RendererBase } from './RendererBase';
 import { _IRender_MaterialClass } from './base/_IRender_MaterialClass';
 import { CacheRenderer } from './CacheRenderer';
@@ -28,7 +27,6 @@ export class DefaultRenderer extends RendererBase {
 
 	private _distanceRenderer: DistanceRenderer;
 	private _depthRenderer: DepthRenderer;
-	private _filter3DRenderer: Filter3DRenderer;
 
 	public _depthRender: BitmapImage2D;
 
@@ -52,39 +50,6 @@ export class DefaultRenderer extends RendererBase {
 	}
 
 	/**
-	 *
-	 * @returns {*}
-	 */
-	public get filters3d(): Array<Filter3DBase> {
-		return this._filter3DRenderer ? this._filter3DRenderer.filters : null;
-	}
-
-	public set filters3d(value: Array<Filter3DBase>) {
-		if (value && value.length == 0)
-			value = null;
-
-		if (this._filter3DRenderer && !value) {
-			this._filter3DRenderer.dispose();
-			this._filter3DRenderer = null;
-		} else if (!this._filter3DRenderer && value) {
-			this._filter3DRenderer = new Filter3DRenderer(this._stage);
-			this._filter3DRenderer.filters = value;
-		}
-
-		if (this._filter3DRenderer) {
-			this._filter3DRenderer.filters = value;
-			this._requireDepthRender = this._filter3DRenderer.requireDepthRender;
-		} else {
-			this._requireDepthRender = false;
-
-			if (this._depthRender) {
-				this._depthRender.dispose();
-				this._depthRender = null;
-			}
-		}
-	}
-
-	/**
 	 * Creates a new DefaultRenderer object.
 	 *
 	 * @param antiAlias The amount of anti-aliasing to use.
@@ -92,8 +57,6 @@ export class DefaultRenderer extends RendererBase {
 	 */
 	constructor(partition: PartitionBase, pool: RendererPool) {
 		super(partition, pool);
-
-		this._pRttBufferManager = RTTBufferManager.getInstance(this._stage);
 
 		this._depthRenderer = RenderGroup
 			.getInstance(new View(null, this.stage), DepthRenderer)
@@ -134,14 +97,8 @@ export class DefaultRenderer extends RendererBase {
 		if (this._depthPrepass)
 			this._renderDepthPrepass();
 
-		if (this._filter3DRenderer) { //TODO
-			this._view.target = this._filter3DRenderer.getMainInputTexture(this._stage);
-			super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector);
-			this._filter3DRenderer.render(this._stage, this._view.projection, this._depthRender);
-		} else {
-			//this._view.target = null;
-			super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
-		}
+		//this._view.target = null;
+		super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
 
 		if (!maskConfig)
 			this._view.present();
@@ -168,13 +125,8 @@ export class DefaultRenderer extends RendererBase {
 		this._depthRenderer.disableColor = true;
 
 		this._depthRenderer.view.projection = this._view.projection;
-		if (this._filter3DRenderer) {
-			this._depthRenderer.view.target = this._filter3DRenderer.getMainInputTexture(this._stage);
-			this._depthRenderer.render();
-		} else {
-			this._depthRenderer.view.target = null;
-			this._depthRenderer.render();
-		}
+		this._depthRenderer.view.target = null;
+		this._depthRenderer.render();
 
 		this._depthRenderer.disableColor = false;
 	}

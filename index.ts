@@ -46,13 +46,11 @@ export { MaterialEvent } from './lib/events/MaterialEvent';
 export { StyleEvent } from './lib/events/StyleEvent';
 export { ElementsEvent } from './lib/events/ElementsEvent';
 
-export { Filter3DRenderer } from './lib/Filter3DRenderer';
-
-export {ImageTexture2D, _Shader_ImageTexture2D} from "./lib/textures/ImageTexture2D";
-export {ImageTextureCube, _Shader_ImageTexture} from "./lib/textures/ImageTextureCube";
-export {Texture2D} from "./lib/textures/Texture2D";
-export {TextureBase} from "./lib/textures/TextureBase";
-export {TextureCube} from "./lib/textures/TextureCube";
+export { ImageTexture2D, _Shader_ImageTexture2D } from './lib/textures/ImageTexture2D';
+export { ImageTextureCube, _Shader_ImageTexture } from './lib/textures/ImageTextureCube';
+export { Texture2D } from './lib/textures/Texture2D';
+export { TextureBase } from './lib/textures/TextureBase';
+export { TextureCube } from './lib/textures/TextureCube';
 
 export { HitTestCache } from './lib/utils/HitTestCache';
 export { ElementsUtils } from './lib/utils/ElementsUtils';

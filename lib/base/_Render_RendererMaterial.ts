@@ -46,7 +46,8 @@ export class _Render_RendererMaterial extends _Render_MaterialPassBase {
 
 		asset.render();
 
-		this.shader._stage.setRenderTarget(null);
+		// LOL, this will broke state
+		// this.shader._stage.setRenderTarget(null);
 
 		this.requiresBlending = true;
 

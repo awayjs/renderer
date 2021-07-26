@@ -215,6 +215,10 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 			return super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
 		}
 
+		// WE MUST store older render target config,
+		// because node can have cached child, that can be filtered
+		this._stage.pushRenderTargetConfig();
+
 		let targetImage: Image2D;
 
 		// we not require use TMP texture when not have MSAA
@@ -270,6 +274,10 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		if (targetImage) {
 			stage.filterManager.pushTemp(targetImage);
 		}
+
+		// pop render target after any filters,
+		// required for deep filters (when node with filter has filtered child)
+		this._stage.popRenderTarget();
 	}
 
 	// apply blend modes and swap texture if needed
