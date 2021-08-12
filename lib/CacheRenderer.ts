@@ -12,7 +12,8 @@ import {
 	AttributesBuffer,
 	BlendMode,
 	Image2D,
-	ImageSampler
+	ImageSampler,
+	ContextGLTriangleFace
 } from '@awayjs/stage';
 import {
 	BoundsPicker,
@@ -414,10 +415,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 		const image =  <Image2D> this._style.image;
 		if (image) {
-			// resize only when we have texture lower that was, reduce texture swappings
-			//if (image.width < pad.width || image.height < pad.height) {
 			(<Image2D> this._style.image)._setSize(pad.width, pad.height);
-			//}
 		} else {
 
 			this._style.image = new Image2D(pad.width, pad.height, false);
@@ -504,7 +502,7 @@ export class _Render_Renderer extends _Render_RenderableBase {
 		surfaceSelector: number = 0, mipmapSelector: number = 0, maskConfig: number = 0): void {
 
 		// disable cull, because for render to texture it is bugged
-		// this._stage.context.setCulling(ContextGLTriangleFace.NONE);
+		this._stage.context.setCulling(ContextGLTriangleFace.NONE);
 		super.executeRender(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
 	}
 
