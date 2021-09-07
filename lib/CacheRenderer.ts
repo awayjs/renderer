@@ -118,6 +118,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 			case BlendMode.ADD:
 			case BlendMode.SCREEN:
 			case BlendMode.ALPHA:
+			case BlendMode.SUBTRACT:
 				return containerBlend;
 		}
 

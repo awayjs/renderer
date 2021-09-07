@@ -14,6 +14,7 @@ import {
 	AGALMiniAssembler,
 	ContextGLProfile,
 	ContextGLBlendFactor,
+	ContextGLBlendEquation,
 	ContextGLCompareMode,
 	ContextGLTriangleFace,
 	ProgramData,
@@ -40,6 +41,7 @@ import { IRenderContainer } from './IRenderContainer';
 type IBlendFactorType =
 	[ContextGLBlendFactor, ContextGLBlendFactor] |
 	[ContextGLBlendFactor, ContextGLBlendFactor, ContextGLBlendFactor, ContextGLBlendFactor];
+type IBlendEquationType = [ContextGLBlendEquation] | [ContextGLBlendEquation, ContextGLBlendEquation];
 
 /**
  * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
@@ -59,7 +61,15 @@ export class ShaderBase implements IShaderBase {
 	public _stage: Stage;
 	private _programData: ProgramData;
 
-	private _blendFactor: IBlendFactorType = [ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO];
+	private _blendFactor: IBlendFactorType = [
+		ContextGLBlendFactor.ONE,
+		ContextGLBlendFactor.ZERO
+	];
+
+	private _blendEquation: IBlendEquationType = [
+		ContextGLBlendEquation.ADD,
+		ContextGLBlendEquation.ADD
+	];
 	/*
 	private _blendFactorSource: ContextGLBlendFactor = ContextGLBlendFactor.ONE;
 	private _blendFactorDest: ContextGLBlendFactor = ContextGLBlendFactor.ZERO;
@@ -447,6 +457,9 @@ export class ShaderBase implements IShaderBase {
 		this.usesBlending = true;
 		this.usesPremultipliedAlpha = true;
 
+		// reset blend equation onto ADD, ADD
+		this._blendEquation = [0,0]; //ADD
+
 		switch (value) {
 			case BlendMode.NORMAL: {
 				this._blendFactor = [
@@ -488,6 +501,19 @@ export class ShaderBase implements IShaderBase {
 					ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA
 				];
 				break;
+			}
+
+			case BlendMode.SUBTRACT: {
+				this._blendFactor = [
+					ContextGLBlendFactor.ONE,
+					ContextGLBlendFactor.ONE,
+					ContextGLBlendFactor.ONE,
+					ContextGLBlendFactor.ONE
+				];
+				this._blendEquation = [
+					ContextGLBlendEquation.SUBTRACT,
+					ContextGLBlendEquation.ADD
+				];
 			}
 			case BlendMode.ALPHA: {
 				this._blendFactor = [ContextGLBlendFactor.ZERO, ContextGLBlendFactor.SOURCE_ALPHA];
@@ -532,6 +558,12 @@ export class ShaderBase implements IShaderBase {
 		}
 
 		this._stage.context.setDepthTest((this.writeDepth && !this.usesBlending), this.depthCompareMode);
+
+		//@ts-ignore
+		this._stage.context.setBlendEquation(
+			this._blendEquation[0],
+			this._blendEquation[1]
+		);
 
 		//@ts-ignore
 		this._stage.context.setBlendFactors(
