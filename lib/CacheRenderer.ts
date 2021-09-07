@@ -66,6 +66,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	private _onTextureInvalidate: (event: AssetEvent) => void;
 	private _onInvalidateProperties: (event: StyleEvent) => void;
 	private _onInvalidateParentNode: (event: ContainerNodeEvent) => void;
+	private _onInvalidateColorTransform: (event: ContainerNodeEvent) => void;
 
 	public node: ContainerNode;
 
@@ -183,14 +184,20 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this._onTextureInvalidate = (_event: AssetEvent) => this.invalidate();
 		this._onInvalidateProperties = (_event: StyleEvent) => this._invalidateStyle();
 		this._onInvalidateParentNode = (_event: ContainerNodeEvent) => this.onInvalidate(null);
+		this._onInvalidateColorTransform = (_event: ContainerNodeEvent) => {
+			this.onInvalidate(null);
+		};
 
 		if (partition.parent) {
 			this._parentNode = partition.parent.rootNode;
 			this._parentNode.addEventListener(ContainerNodeEvent.INVALIDATE_MATRIX3D, this._onInvalidateParentNode);
+
+			this._parentNode.addEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
 		}
 
-		// for check filters changings
+		// for check filters/blends changes
 		this.node.container.addEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateParentNode);
+		this.node.container.addEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
 
 		this.style = new Style();
 
