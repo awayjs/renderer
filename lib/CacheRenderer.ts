@@ -48,10 +48,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	public static renderGroupPool: Record<string, RenderGroup> = {};
 	public static defaultBackground: number = 0x0;
 
-	public static isValidForCache (node: ContainerNode) {
-
-	}
-
+	private _invalidDimension: boolean = false;
 	private _boundsPicker: BoundsPicker;
 	private _renderMatrix: Matrix3D = new Matrix3D();
 	private _bounds: Box = new Box();
@@ -62,7 +59,6 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	private _parentNode: ContainerNode;
 	private _texture: ImageTexture2D;
 	private _textures: Array<ITexture> = new Array<ITexture>();
-	private _blendMode: string = BlendMode.NORMAL;
 	private _onTextureInvalidate: (event: AssetEvent) => void;
 	private _onInvalidateProperties: (event: StyleEvent) => void;
 	private _onInvalidateParentNode: (event: ContainerNodeEvent) => void;
@@ -256,6 +252,10 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		// end enable blend
 		this._lockBlendMode = false;
 
+		if (sourceImage.width * sourceImage.height === 0) {
+			debugger;
+		}
+
 		const container = this.node.container;
 		//@ts-ignore
 		const filters = container.filters;
@@ -399,6 +399,11 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 			return;
 		}
 
+		if (isNaN(bounds.width) || isNaN(bounds.height)) {
+			console.error('[CachedRenderer] Bounds invalid (NaN), supress calculation', this.node);
+			return;
+		}
+
 		this._bounds.copyFrom(bounds);
 
 		matrix3D.transformBox(this._bounds, this._bounds);
@@ -422,6 +427,11 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		pad.height = (pad.height + 4) | 0;
 
 		const image =  <Image2D> this._style.image;
+
+		if (pad.width * pad.height == 0) {
+			debugger;
+		}
+
 		if (image) {
 			(<Image2D> this._style.image)._setSize(pad.width, pad.height);
 		} else {
