@@ -81,7 +81,7 @@ export class _Render_RendererMaterial extends _Render_MaterialPassBase {
 		// this.shader._stage.setRenderTarget(null);
 		super._activate();
 
-		this._stage.context.setDepthTest(false, ContextGLCompareMode.LESS);
+		this._stage.context.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL);
 
 		this._texture.activate();
 	}
