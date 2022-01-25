@@ -7,6 +7,8 @@ import { _IRender_RenderableClass } from './_IRender_RenderableClass';
 import { RenderGroup } from '../RenderGroup';
 import { ContainerNode, EntityNode } from '@awayjs/view';
 import { RenderableEvent } from '../events/RenderableEvent';
+import { CacheRenderer } from '../CacheRenderer';
+import { RendererBase } from '../RendererBase';
 
 /**
  * @class away.pool.RenderEntity
@@ -34,7 +36,7 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
      * @returns {EntityNode}
      */
 	public get node(): ContainerNode {
-		return (<EntityNode> this._asset).parent;
+		return (<EntityNode | CacheRenderer> this._asset).parent;
 	}
 
 	public readonly id: number;
@@ -44,7 +46,7 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 	 *
 	 * @param materialClassGL
 	 */
-	constructor(entity: EntityNode, renderGroup: RenderGroup) {
+	constructor(entity: EntityNode | CacheRenderer, renderGroup: RendererBase) {
 		super(entity, renderGroup);
 
 		this.id = AbstractionBase.ID_COUNT++;

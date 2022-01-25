@@ -21,6 +21,7 @@ import {
 	ContainerNodeEvent,
 	INode,
 	PartitionBase,
+	PickGroup,
 	View
 } from '@awayjs/view';
 
@@ -36,12 +37,13 @@ import { MaterialEvent } from './events/MaterialEvent';
 import { RenderableEvent } from './events/RenderableEvent';
 import { StyleEvent } from './events/StyleEvent';
 import { RendererBase } from './RendererBase';
-import { RendererPool, RenderGroup } from './RenderGroup';
+import { RenderGroup } from './RenderGroup';
 import { ImageTexture2D } from './textures/ImageTexture2D';
 import { Settings as StageSettings } from '@awayjs/stage';
 import { Settings } from './Settings';
+import { RenderEntity } from './base/RenderEntity';
 
-export class CacheRenderer extends RendererBase implements IMaterial, IAbstractionPool {
+export class CacheRenderer extends RendererBase implements IMaterial {
 
 	public static assetType: string = '[renderer CacheRenderer]';
 	public static materialClassPool: Record<string, _IRender_MaterialClass> = {};
@@ -82,6 +84,10 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 	public get assetType(): string {
 		return CacheRenderer.assetType;
+	}
+
+	public get parent(): ContainerNode {
+		return this.node;
 	}
 
 	public getPaddedBounds(): Rectangle {
@@ -172,7 +178,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this.invalidatePasses();
 	}
 
-	constructor(partition: PartitionBase, pool: RendererPool) {
+	constructor(partition: PartitionBase, pool: RenderGroup) {
 		super(partition, pool);
 
 		this.node = partition.rootNode;
@@ -199,11 +205,11 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 		this.texture = new ImageTexture2D();
 
-		this._boundsPicker = this._renderGroup.pickGroup.getBoundsPicker(this._partition);
+		this._boundsPicker = PickGroup.getInstance(this._view).getBoundsPicker(this._partition);
 
 		this._boundsDirty = true;
 
-		this._traverserClass = CacheRenderer;
+		this._traverserGroup = RenderGroup.getInstance(CacheRenderer);
 	}
 
 	public render(
@@ -318,10 +324,6 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this.invalidate();
 	}
 
-	public requestAbstraction(asset: IAsset): IAbstractionClass {
-		return _Render_Renderer;
-	}
-
 	/**
 	 * Marks the shader programs for all passes as invalid, so they will be recompiled before the next use.
 	 *
@@ -338,7 +340,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		const enter: boolean = super.enterNode(node);
 
 		if (enter && node.boundsVisible)
-			this.applyEntity(node.getBoundsPrimitive(this._renderGroup.pickGroup));
+			this.applyEntity(node.getBoundsPrimitive(PickGroup.getInstance(this._view)));
 
 		return enter;
 	}
@@ -466,7 +468,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	}
 
 	public static registerMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IAssetClass): void {
-		CacheRenderer.materialClassPool[materialClass.assetType] = renderMaterialClass;
+		RenderGroup.getInstance(CacheRenderer).materialClassPool[materialClass.assetType] = renderMaterialClass;
 	}
 }
 
@@ -536,3 +538,4 @@ export class _Render_Renderer extends _Render_RenderableBase {
 }
 
 CacheRenderer.registerMaterial(_Render_RendererMaterial, CacheRenderer);
+RenderEntity.registerRenderable(_Render_Renderer, CacheRenderer);

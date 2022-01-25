@@ -3,6 +3,7 @@ import { ContainerNode, INode } from '@awayjs/view';
 import { _Stage_ElementsBase } from './_Stage_ElementsBase';
 import { _Render_MaterialBase } from './_Render_MaterialBase';
 import { RenderGroup } from '../RenderGroup';
+import { RendererBase } from '../RendererBase';
 
 export interface IRenderable extends IEventDispatcher
 {
@@ -28,7 +29,7 @@ export interface IRenderable extends IEventDispatcher
 
 	renderSceneTransform: Matrix3D;
 
-	renderGroup: RenderGroup;
+	renderGroup: RendererBase;
 
 	executeRender(
 		enableDepthAndStencil?: boolean, surfaceSelector?: number, mipmapSelector?: number, maskConfig?: number): void;

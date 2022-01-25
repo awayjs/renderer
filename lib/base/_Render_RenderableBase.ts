@@ -84,7 +84,7 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 	/**
 	 *
 	 */
-	public renderGroup: RenderGroup;
+	public renderGroup: RendererBase;
 
 	/**
 	 *
@@ -177,7 +177,7 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 	 * @param surface
 	 * @param renderer
 	 */
-	constructor(renderable: IAsset, renderEntity: RenderEntity | CacheRenderer) {
+	constructor(renderable: IAsset, renderEntity: RenderEntity) {
 		super(renderable, renderEntity);
 
 		this._onInvalidateElementsDelegate = (event: RenderableEvent) => this._onInvalidateElements(event);

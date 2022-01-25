@@ -21,6 +21,7 @@ import { _Render_ElementsBase } from './_Render_ElementsBase';
 import { ShaderBase } from './ShaderBase';
 import { _Render_RenderableBase } from './_Render_RenderableBase';
 import { IRenderContainer } from './IRenderContainer';
+import { RendererBase } from '../RendererBase';
 
 /**
  *
@@ -42,7 +43,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 	private _animationSet: IAnimationSet;
 	protected _renderElements: _Render_ElementsBase;
 	protected _stage: Stage;
-	protected _renderGroup: RenderGroup;
+	protected _renderGroup: RendererBase;
 
 	private _invalidAnimation: boolean = true;
 	protected _invalidRender: boolean = true;
@@ -98,7 +99,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 		return this._material.style;
 	}
 
-	public get renderGroup(): RenderGroup {
+	public get renderGroup(): RendererBase {
 		return this._renderGroup;
 	}
 

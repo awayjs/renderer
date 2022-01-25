@@ -1,7 +1,7 @@
 import { AssetEvent, IAssetClass } from '@awayjs/core';
 import { BitmapImage2D, IContextGL } from '@awayjs/stage';
-import { INode, PartitionBase, View } from '@awayjs/view';
-import { RendererPool, RenderGroup } from './RenderGroup';
+import { INode, PartitionBase, PickGroup, View } from '@awayjs/view';
+import { RenderGroup } from './RenderGroup';
 import { DepthRenderer } from './DepthRenderer';
 import { DistanceRenderer } from './DistanceRenderer';
 import { RendererBase } from './RendererBase';
@@ -16,6 +16,8 @@ import { _Render_RendererMaterial } from './base/_Render_RendererMaterial';
  * @class away.render.DefaultRenderer
  */
 export class DefaultRenderer extends RendererBase {
+
+	public static assetType: string = '[renderer DefaultRenderer]';
 
 	public static materialClassPool: Record<string, _IRender_MaterialClass> = {};
 
@@ -55,18 +57,18 @@ export class DefaultRenderer extends RendererBase {
 	 * @param antiAlias The amount of anti-aliasing to use.
 	 * @param renderMode The render mode to use.
 	 */
-	constructor(partition: PartitionBase, pool: RendererPool) {
+	constructor(partition: PartitionBase, pool: RenderGroup) {
 		super(partition, pool);
 
 		this._depthRenderer = RenderGroup
-			.getInstance(new View(null, this.stage), DepthRenderer)
+			.getInstance(DepthRenderer)
 			.getRenderer(partition);
 
 		this._distanceRenderer = RenderGroup
-			.getInstance(new View(null, this.stage), DistanceRenderer)
+			.getInstance(DistanceRenderer)
 			.getRenderer(partition);
 
-		this._traverserClass = CacheRenderer;
+		this._traverserGroup = RenderGroup.getInstance(CacheRenderer);
 	}
 
 	/**
@@ -76,7 +78,7 @@ export class DefaultRenderer extends RendererBase {
 		const enter: boolean = super.enterNode(node);
 
 		if (enter && node.boundsVisible)
-			this.applyEntity(node.getBoundsPrimitive(this._renderGroup.pickGroup));
+			this.applyEntity(node.getBoundsPrimitive(PickGroup.getInstance(this._view)));
 
 		return enter;
 	}
@@ -159,7 +161,7 @@ export class DefaultRenderer extends RendererBase {
 	}
 
 	public static registerMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IAssetClass): void {
-		DefaultRenderer.materialClassPool[materialClass.assetType] = renderMaterialClass;
+		RenderGroup.getInstance(DefaultRenderer).materialClassPool[materialClass.assetType] = renderMaterialClass;
 	}
 }
 
