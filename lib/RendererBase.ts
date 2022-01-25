@@ -108,8 +108,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		return this._partition;
 	}
 
-	public get group(): RenderGroup
-	{
+	public get group(): RenderGroup {
 		return <RenderGroup> this._pool;
 	}
 
@@ -192,7 +191,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._stage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 		this._view.addEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 
-
 		if (this._stage.context)
 			this._context = <IContextGL> this._stage.context;
 	}
@@ -225,7 +223,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._stage = null;
 		this._context = null;
 	}
-		
+
 	public update(partition: PartitionBase): void {
 		//update mappers
 		const len: number = this._mappers.length;
