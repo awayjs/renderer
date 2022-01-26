@@ -56,8 +56,7 @@ export class RenderGroup implements IAbstractionPool {
 		RenderGroup._renderElementsClassPool[elementsClass.assetType] = renderElementsClass;
 	}
 
-	public static getRenderElements(elementsClass: IAssetClass): _IRender_ElementsClass
-	{
+	public static getRenderElements(elementsClass: IAssetClass): _IRender_ElementsClass {
 		return RenderGroup._renderElementsClassPool[elementsClass.assetType];
 	}
 }
