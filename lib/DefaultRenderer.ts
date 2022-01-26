@@ -16,14 +16,7 @@ import { _Render_RendererMaterial } from './base/_Render_RendererMaterial';
  * @class away.render.DefaultRenderer
  */
 export class DefaultRenderer extends RendererBase {
-
 	public static assetType: string = '[renderer DefaultRenderer]';
-
-	public static materialClassPool: Record<string, _IRender_MaterialClass> = {};
-
-	public static renderGroupPool: Record<string, RenderGroup> = {};
-
-	public static defaultBackground: number = 0xFFFFFF;
 
 	private _requireDepthRender: boolean;
 
@@ -78,7 +71,7 @@ export class DefaultRenderer extends RendererBase {
 		const enter: boolean = super.enterNode(node);
 
 		if (enter && node.boundsVisible)
-			this.applyEntity(node.getBoundsPrimitive(PickGroup.getInstance(this._view)));
+			this.applyEntity(node.getBoundsPrimitive(PickGroup.getInstance()));
 
 		return enter;
 	}

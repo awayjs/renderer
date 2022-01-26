@@ -184,7 +184,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		//default sorting algorithm
 		this.renderableSorter = new RenderableMergeSort();
 
-		this._view = this._partition.rootNode.pool;
+		this._view = this._partition.rootNode.view;
 		this._stage = this._view.stage;
 
 		this._stage.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
@@ -562,7 +562,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				this._partition.rootNode,
 				this._cullPlanes,
 				this._numCullPlanes,
-				PickGroup.getInstance(this._view)));
+				PickGroup.getInstance()));
 
 		const enter = node._collectionMark != RendererBase._collectionMark
 			&& node.isRenderable()
@@ -579,12 +579,12 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		if (partition.rootNode.renderToImage) {
 			//new node for the container
 			const node: ContainerNode = partition.getLocalNode();
-			const boundsPicker: BoundsPicker = PickGroup.getInstance(this._view).getBoundsPicker(node.partition);
+			const boundsPicker: BoundsPicker = PickGroup.getInstance().getBoundsPicker(node.partition);
 
 			if (!boundsPicker.getBoxBounds(node, true, true))
 				return this;
 
-			const traverser: CacheRenderer = node.partition.getAbstraction<CacheRenderer>(this._traverserGroup);
+			const traverser: CacheRenderer = <CacheRenderer> this._traverserGroup.getRenderer(node.partition);
 
 			traverser.rootView = this._view;
 			traverser.renderableSorter = null;
@@ -636,7 +636,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		const renderRenderable: IRenderable = traversable.getAbstraction<_Render_RenderableBase>(this._renderEntity);
 
 		//store renderable properties
-		renderRenderable.renderGroup = this;
+		renderRenderable.renderer = this;
 		renderRenderable.cascaded = false;
 		renderRenderable.zIndex = this._zIndex;
 		renderRenderable.maskId = this._entityMaskId;

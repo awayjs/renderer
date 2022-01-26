@@ -14,7 +14,7 @@ export class _Render_ElementsBase implements IAbstractionPool {
 	private _materialClassPool: Record<string, _IRender_MaterialClass>;
 
 	readonly stage: Stage;
-	readonly renderGroup: RendererBase;
+	readonly renderer: RendererBase;
 
 	public readonly id: number;
 
@@ -23,11 +23,11 @@ export class _Render_ElementsBase implements IAbstractionPool {
 	 *
 	 * @param materialClassGL
 	 */
-	constructor(renderGroup: RendererBase) {
+	constructor(renderer: RendererBase) {
 		this.id = AbstractionBase.ID_COUNT++;
-		this.stage = renderGroup.stage;
-		this._materialClassPool = renderGroup.group.materialClassPool;
-		this.renderGroup = renderGroup;
+		this.renderer = renderer;
+		this.stage = renderer.view.stage;
+		this._materialClassPool = renderer.group.materialClassPool;
 	}
 
 	public requestAbstraction(asset: IAsset): IAbstractionClass {

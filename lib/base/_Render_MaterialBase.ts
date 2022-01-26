@@ -43,7 +43,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 	private _animationSet: IAnimationSet;
 	protected _renderElements: _Render_ElementsBase;
 	protected _stage: Stage;
-	protected _renderGroup: RendererBase;
+	protected _renderer: RendererBase;
 
 	private _invalidAnimation: boolean = true;
 	protected _invalidRender: boolean = true;
@@ -99,8 +99,8 @@ export class _Render_MaterialBase extends AbstractionBase {
 		return this._material.style;
 	}
 
-	public get renderGroup(): RendererBase {
-		return this._renderGroup;
+	public get renderer(): RendererBase {
+		return this._renderer;
 	}
 
 	public get renderElements(): _Render_ElementsBase {
@@ -114,7 +114,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 		this._material = material;
 		this._renderElements = renderElements;
 		this._stage = renderElements.stage;
-		this._renderGroup = renderElements.renderGroup;
+		this._renderer = renderElements.renderer;
 
 		this._onInvalidateTexturesDelegate = (event: MaterialEvent) => this.onInvalidateTextures(event);
 		this._onInvalidatePassesDelegate = (event: MaterialEvent) => this.onInvalidatePasses(event);
@@ -139,7 +139,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 			this._stage.context.setTextureAt(i, null);
 
 		//activate shader object through pass
-		this._activePass._activate(this._renderGroup.view);
+		this._activePass._activate(this._renderer.view);
 	}
 
 	public deactivatePass(): void {

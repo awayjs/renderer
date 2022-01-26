@@ -7,8 +7,8 @@ import { _IRender_RenderableClass } from './_IRender_RenderableClass';
 import { RenderGroup } from '../RenderGroup';
 import { ContainerNode, EntityNode } from '@awayjs/view';
 import { RenderableEvent } from '../events/RenderableEvent';
-import { CacheRenderer } from '../CacheRenderer';
 import { RendererBase } from '../RendererBase';
+import { CacheRenderer } from '../CacheRenderer';
 
 /**
  * @class away.pool.RenderEntity
@@ -46,11 +46,11 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 	 *
 	 * @param materialClassGL
 	 */
-	constructor(entity: EntityNode | CacheRenderer, renderGroup: RendererBase) {
-		super(entity, renderGroup);
+	constructor(entity: EntityNode | CacheRenderer, renderer: RendererBase) {
+		super(entity, renderer);
 
 		this.id = AbstractionBase.ID_COUNT++;
-		this._stage = renderGroup.stage;
+		this._stage = renderer.stage;
 
 		this._onInvalidateElementsDelegate = (event: RenderableEvent) => this._onInvalidateElements(event);
 		this._onInvalidateMaterialDelegate = (event: RenderableEvent) => this._onInvalidateMaterial(event);

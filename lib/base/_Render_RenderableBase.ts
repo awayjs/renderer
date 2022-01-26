@@ -17,7 +17,6 @@ import {
 import { EntityNode, ContainerNode, INode } from '@awayjs/view';
 import { RenderableEvent } from '../events/RenderableEvent';
 import { MaterialUtils } from '../utils/MaterialUtils';
-import { RenderGroup } from '../RenderGroup';
 import { _Render_MaterialBase } from './_Render_MaterialBase';
 import { _Stage_ElementsBase } from './_Stage_ElementsBase';
 import { IPass } from './IPass';
@@ -84,7 +83,7 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 	/**
 	 *
 	 */
-	public renderGroup: RendererBase;
+	public renderer: RendererBase;
 
 	/**
 	 *

@@ -4,6 +4,7 @@ import { RenderGroup } from './RenderGroup';
 import { RendererBase } from './RendererBase';
 import { _IRender_MaterialClass } from './base/_IRender_MaterialClass';
 import { IAssetClass } from '@awayjs/core';
+import { CacheRenderer } from './CacheRenderer';
 
 /**
  * The DepthRenderer class renders 32-bit depth information encoded as RGBA
@@ -13,12 +14,6 @@ import { IAssetClass } from '@awayjs/core';
 export class DepthRenderer extends RendererBase {
 	public static assetType: string = '[renderer DepthRenderer]';
 
-	public static materialClassPool: Record<string, _IRender_MaterialClass> = {};
-
-	public static renderGroupPool: Record<string, RenderGroup> = {};
-
-	public static defaultBackground: number = 0x0;
-
 	/**
 	 * Creates a new DepthRenderer object.
 	 * @param renderBlended Indicates whether semi-transparent objects should be rendered.
@@ -26,6 +21,8 @@ export class DepthRenderer extends RendererBase {
 	 */
 	constructor(partition: PartitionBase, pool: RenderGroup) {
 		super(partition, pool);
+
+		this._traverserGroup = RenderGroup.getInstance(CacheRenderer);
 	}
 
 	/**

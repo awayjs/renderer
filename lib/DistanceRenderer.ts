@@ -5,6 +5,7 @@ import { RenderGroup } from './RenderGroup';
 import { RendererBase } from './RendererBase';
 import { _IRender_MaterialClass } from './base/_IRender_MaterialClass';
 import { IAssetClass } from '@awayjs/core';
+import { CacheRenderer } from './CacheRenderer';
 
 /**
  * The DistanceRenderer class renders 32-bit depth information encoded as RGBA
@@ -14,12 +15,6 @@ import { IAssetClass } from '@awayjs/core';
 export class DistanceRenderer extends RendererBase {
 	public static assetType: string = '[renderer DistanceRenderer]';
 
-	public static materialClassPool: Record<string, _IRender_MaterialClass> = {};
-
-	public static renderGroupPool: Record<string, RenderGroup> = {};
-
-	public static defaultBackground: number = 0x0;
-
 	/**
 	 * Creates a new DistanceRenderer object.
 	 * @param renderBlended Indicates whether semi-transparent objects should be rendered.
@@ -27,6 +22,8 @@ export class DistanceRenderer extends RendererBase {
 	 */
 	constructor(partition: PartitionBase, pool: RenderGroup) {
 		super(partition, pool);
+
+		this._traverserGroup = RenderGroup.getInstance(CacheRenderer);
 	}
 
 	/**
