@@ -5,6 +5,8 @@ import {
 	ProjectionBase,
 	AbstractionBase,
 	AssetEvent,
+	IAsset,
+	IAbstractionClass,
 } from '@awayjs/core';
 
 import {
@@ -31,18 +33,21 @@ import {
 	EntityNode,
 	ContainerNode,
 	BoundsPicker,
+	PickGroup,
 } from '@awayjs/view';
 
 import { _Render_MaterialBase } from './base/_Render_MaterialBase';
 import { _Render_RenderableBase } from './base/_Render_RenderableBase';
 import { RenderEntity } from './base/RenderEntity';
-import { RendererPool, RenderGroup } from './RenderGroup';
+import { IMapper } from './base/IMapper';
+import { RenderGroup } from './RenderGroup';
 
 import { IRenderEntitySorter } from './sort/IRenderEntitySorter';
 import { RenderableMergeSort } from './sort/RenderableMergeSort';
 import { IRenderable } from './base/IRenderable';
 import { CacheRenderer } from './CacheRenderer';
-import { IRendererClass } from './base/IRendererClass';
+import { _Render_ElementsBase } from './base/_Render_ElementsBase';
+import { _IRender_MaterialClass } from './base/_IRender_MaterialClass';
 
 /**
  * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
@@ -65,6 +70,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	protected _stage: Stage;
 	protected _view: View;
 
+	private _mappers: Array<IMapper> = new Array<IMapper>();
+	private _elementsPools: Record<string, _Render_ElementsBase> = {};
 	private _entityMaskId: number;
 	private _entityMaskOwners: ContainerNode[];
 
@@ -92,14 +99,17 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _cullPlanes: Array<Plane3D>;
 	private _customCullPlanes: Array<Plane3D>;
 	private _numCullPlanes: number = 0;
-	protected _renderGroup: RenderGroup;
-	protected _traverserClass: IRendererClass;
-	private _renderEntity: RenderEntity | CacheRenderer;
+	protected _traverserGroup: RenderGroup;
+	private _renderEntity: RenderEntity;
 	private _zIndex: number;
 	private _renderSceneTransform: Matrix3D;
 
 	public get partition(): PartitionBase {
 		return this._partition;
+	}
+
+	public get group(): RenderGroup {
+		return <RenderGroup> this._pool;
 	}
 
 	/**
@@ -162,7 +172,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	/**
 	 * Creates a new RendererBase object.
 	 */
-	constructor(partition: PartitionBase, pool: RendererPool) {
+	constructor(partition: PartitionBase, pool: RenderGroup) {
 		super(partition, pool);
 
 		this._partition = partition;
@@ -174,13 +184,12 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		//default sorting algorithm
 		this.renderableSorter = new RenderableMergeSort();
 
-		this._renderGroup = pool.renderGroup;
-		this._renderGroup.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
-		this._renderGroup.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
-		this._renderGroup.addEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
+		this._view = this._partition.rootNode.view;
+		this._stage = this._view.stage;
 
-		this._view = this._renderGroup.view;
-		this._stage = this._renderGroup.stage;
+		this._stage.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
+		this._stage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
+		this._view.addEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 
 		if (this._stage.context)
 			this._context = <IContextGL> this._stage.context;
@@ -204,15 +213,46 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	public onClear(event: AssetEvent): void {
 		super.onClear(event);
 
-		this._renderGroup.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
-		this._renderGroup.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
-		this._renderGroup.removeEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
+		this._stage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
+		this._stage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
+		this._view.removeEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 
 		this._onContextUpdateDelegate = null;
 		this._onSizeInvalidateDelegate = null;
 		this._view = null;
 		this._stage = null;
 		this._context = null;
+	}
+
+	public update(partition: PartitionBase): void {
+		//update mappers
+		const len: number = this._mappers.length;
+		for (let i: number = 0; i < len; i++)
+			this._mappers[i].update(partition);
+	}
+
+	public _addMapper(mapper: IMapper) {
+		if (this._mappers.indexOf(mapper) != -1)
+			return;
+
+		this._mappers.push(mapper);
+	}
+
+	public _removeMapper(mapper: IMapper) {
+		const index: number = this._mappers.indexOf(mapper);
+
+		if (index != -1)
+			this._mappers.splice(index, 1);
+	}
+
+	public getRenderElements(elements: IAsset): _Render_ElementsBase {
+
+		return this._elementsPools[elements.assetType]
+			|| (this._elementsPools[elements.assetType] = new (RenderGroup.getRenderElements(elements))(this));
+	}
+
+	public requestAbstraction(asset: IAsset): IAbstractionClass {
+		return RenderEntity;
 	}
 
 	/**
@@ -240,7 +280,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._disableColor = true;
 		}
 
-		this._renderGroup.update(this._partition);
+		this.update(this._partition);
 
 		// invalidate mipmaps (if target exists) to regenerate if required
 		if (this._view.target)
@@ -310,7 +350,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	}
 
 	public _iRenderCascades(
-		projection: ProjectionBase, node: INode,
 		enableDepthAndStencil: boolean = true, surfaceSelector: number = 0): void {
 		// this._stage.setRenderTarget(target, true, 0);
 		// this._context.clear(1, 1, 1, 1, 1, 0);
@@ -363,12 +402,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		if (this._renderBlended)
 			this.drawRenderables(this._pBlendedRenderableHead);
-	}
-
-	public onInvalidate(event: AssetEvent): void {
-		super.onInvalidate(event);
-
-		this._renderGroup.invalidate();
 	}
 
 	/*
@@ -529,7 +562,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				this._partition.rootNode,
 				this._cullPlanes,
 				this._numCullPlanes,
-				this._renderGroup.pickGroup));
+				PickGroup.getInstance()));
 
 		const enter = node._collectionMark != RendererBase._collectionMark
 			&& node.isRenderable()
@@ -546,19 +579,18 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		if (partition.rootNode.renderToImage) {
 			//new node for the container
 			const node: ContainerNode = partition.getLocalNode();
-			const renderGroup: RenderGroup = RenderGroup.getInstance(partition.getLocalView(this._stage), this._traverserClass);
-			const boundsPicker: BoundsPicker = renderGroup.pickGroup.getBoundsPicker(node.partition);
+			const boundsPicker: BoundsPicker = PickGroup.getInstance().getBoundsPicker(node.partition);
 
 			if (!boundsPicker.getBoxBounds(node, true, true))
 				return this;
 
-			const traverser: CacheRenderer = renderGroup.getRenderer(node.partition);
+			const traverser: CacheRenderer = <CacheRenderer> this._traverserGroup.getRenderer(node.partition);
 
 			traverser.rootView = this._view;
 			traverser.renderableSorter = null;
 
 			//if (this._invalid) {
-			this._renderEntity = traverser;
+			this._renderEntity = traverser.getAbstraction<RenderEntity>(this);
 
 			// project onto camera's z-axis
 			this._zIndex = this._cameraTransform.position.subtract(partition.rootNode.getPosition())
@@ -582,7 +614,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	}
 
 	public applyEntity(node: EntityNode): void {
-		this._renderEntity = node.getAbstraction<RenderEntity>(this._renderGroup);
+		this._renderEntity = node.getAbstraction<RenderEntity>(this);
 
 		// project onto camera's z-axis
 		this._zIndex = this._cameraTransform.position.subtract(node.parent.getPosition())
@@ -604,7 +636,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		const renderRenderable: IRenderable = traversable.getAbstraction<_Render_RenderableBase>(this._renderEntity);
 
 		//store renderable properties
-		renderRenderable.renderGroup = this._renderGroup;
+		renderRenderable.renderer = this;
 		renderRenderable.cascaded = false;
 		renderRenderable.zIndex = this._zIndex;
 		renderRenderable.maskId = this._entityMaskId;
@@ -677,7 +709,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 					mask = children[j];
 					//todo: figure out why masks can be null here
 					if (mask)
-						this._renderGroup.getRenderer(mask.partition).render(true, 0, 0, newMaskConfig);
+						mask.partition.getAbstraction<RendererBase>(this._pool).render(true, 0, 0, newMaskConfig);
 				}
 			}
 		}

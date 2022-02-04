@@ -542,7 +542,7 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
 		const asset = <LineElements> this._asset;
 		const view: View = shader.view;
 		const renderElements = <_Render_LineElements> renderRenderable
-			.renderGroup.getRenderElements(renderRenderable.stageElements.elements);
+			.renderer.getRenderElements(renderRenderable.stageElements.elements);
 
 		this._vao && this._vao.bind();
 

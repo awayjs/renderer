@@ -17,7 +17,6 @@ import {
 import { EntityNode, ContainerNode, INode } from '@awayjs/view';
 import { RenderableEvent } from '../events/RenderableEvent';
 import { MaterialUtils } from '../utils/MaterialUtils';
-import { RenderGroup } from '../RenderGroup';
 import { _Render_MaterialBase } from './_Render_MaterialBase';
 import { _Stage_ElementsBase } from './_Stage_ElementsBase';
 import { IPass } from './IPass';
@@ -84,7 +83,7 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 	/**
 	 *
 	 */
-	public renderGroup: RenderGroup;
+	public renderer: RendererBase;
 
 	/**
 	 *
@@ -177,7 +176,7 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 	 * @param surface
 	 * @param renderer
 	 */
-	constructor(renderable: IAsset, renderEntity: RenderEntity | CacheRenderer) {
+	constructor(renderable: IAsset, renderEntity: RenderEntity) {
 		super(renderable, renderEntity);
 
 		this._onInvalidateElementsDelegate = (event: RenderableEvent) => this._onInvalidateElements(event);

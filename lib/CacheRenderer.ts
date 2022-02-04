@@ -19,8 +19,10 @@ import {
 	BoundsPicker,
 	ContainerNode,
 	ContainerNodeEvent,
+	IEntityTraverser,
 	INode,
 	PartitionBase,
+	PickGroup,
 	View
 } from '@awayjs/view';
 
@@ -36,17 +38,14 @@ import { MaterialEvent } from './events/MaterialEvent';
 import { RenderableEvent } from './events/RenderableEvent';
 import { StyleEvent } from './events/StyleEvent';
 import { RendererBase } from './RendererBase';
-import { RendererPool, RenderGroup } from './RenderGroup';
+import { RenderGroup } from './RenderGroup';
 import { ImageTexture2D } from './textures/ImageTexture2D';
 import { Settings as StageSettings } from '@awayjs/stage';
 import { Settings } from './Settings';
+import { RenderEntity } from './base/RenderEntity';
 
 export class CacheRenderer extends RendererBase implements IMaterial, IAbstractionPool {
-
 	public static assetType: string = '[renderer CacheRenderer]';
-	public static materialClassPool: Record<string, _IRender_MaterialClass> = {};
-	public static renderGroupPool: Record<string, RenderGroup> = {};
-	public static defaultBackground: number = 0x0;
 
 	private _invalidDimension: boolean = false;
 	private _boundsPicker: BoundsPicker;
@@ -64,7 +63,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	private _onInvalidateParentNode: (event: ContainerNodeEvent) => void;
 	private _onInvalidateColorTransform: (event: ContainerNodeEvent) => void;
 
-	public node: ContainerNode;
+	private _node: ContainerNode;
 
 	public animateUVs: boolean = false;
 
@@ -82,6 +81,14 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 	public get assetType(): string {
 		return CacheRenderer.assetType;
+	}
+
+	/**
+	 *
+	 * @returns {EntityNode}
+	 */
+	public get parent(): ContainerNode {
+		return this._node;
 	}
 
 	public getPaddedBounds(): Rectangle {
@@ -105,7 +112,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 			return BlendMode.LAYER;
 		}
 
-		const containerBlend = <string> this.node.container.blendMode;
+		const containerBlend = <string> this._node.container.blendMode;
 
 		// native blends
 		switch (containerBlend) {
@@ -172,10 +179,10 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this.invalidatePasses();
 	}
 
-	constructor(partition: PartitionBase, pool: RendererPool) {
+	constructor(partition: PartitionBase, pool: RenderGroup) {
 		super(partition, pool);
 
-		this.node = partition.rootNode;
+		this._node = partition.rootNode;
 
 		this._onTextureInvalidate = (_event: AssetEvent) => this.invalidate();
 		this._onInvalidateProperties = (_event: StyleEvent) => this._invalidateStyle();
@@ -192,18 +199,18 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		}
 
 		// for check filters/blends changes
-		this.node.container.addEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateParentNode);
-		this.node.container.addEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
+		this._node.container.addEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateParentNode);
+		this._node.container.addEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
 
 		this.style = new Style();
 
 		this.texture = new ImageTexture2D();
 
-		this._boundsPicker = this._renderGroup.pickGroup.getBoundsPicker(this._partition);
+		this._boundsPicker = PickGroup.getInstance().getBoundsPicker(this._partition);
 
 		this._boundsDirty = true;
 
-		this._traverserClass = CacheRenderer;
+		this._traverserGroup = RenderGroup.getInstance(CacheRenderer);
 	}
 
 	public render(
@@ -241,13 +248,13 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		// we should not render itself blended, disable it
 		this._lockBlendMode = true;
 		// we should render with colorTransform to self, enable it
-		this.node.colorTransformDisabled = false;
+		this._node.colorTransformDisabled = false;
 
 		this._initRender(targetImage || sourceImage);
 		super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
 
 		// restore colorTransform state as in transform state
-		this.node.colorTransformDisabled = this.node.transformDisabled;
+		this._node.colorTransformDisabled = this._node.transformDisabled;
 
 		// end enable blend
 		this._lockBlendMode = false;
@@ -256,7 +263,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 			debugger;
 		}
 
-		const container = this.node.container;
+		const container = this._node.container;
 		//@ts-ignore
 		const filters = container.filters;
 		if (filters && filters.length > 0) {
@@ -318,10 +325,6 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this.invalidate();
 	}
 
-	public requestAbstraction(asset: IAsset): IAbstractionClass {
-		return _Render_Renderer;
-	}
-
 	/**
 	 * Marks the shader programs for all passes as invalid, so they will be recompiled before the next use.
 	 *
@@ -338,7 +341,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		const enter: boolean = super.enterNode(node);
 
 		if (enter && node.boundsVisible)
-			this.applyEntity(node.getBoundsPrimitive(this._renderGroup.pickGroup));
+			this.applyEntity(node.getBoundsPrimitive(PickGroup.getInstance()));
 
 		return enter;
 	}
@@ -374,7 +377,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this._boundsDirty = false;
 
 		const matrix3D = this._renderMatrix;
-		const container = this.node.container;
+		const container = this._node.container;
 		const pad = this._paddedBounds;
 		const view = this.rootView;
 
@@ -392,15 +395,15 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		if (scale !== 1)
 			matrix3D.appendScale(scale, scale, scale);
 
-		const bounds = this._boundsPicker.getBoxBounds(this.node, true, true);
+		const bounds = this._boundsPicker.getBoxBounds(this._node, true, true);
 
 		if (!bounds) {
-			console.error('[CachedRenderer] Bounds invalid, supress calculation', this.node);
+			console.error('[CachedRenderer] Bounds invalid, supress calculation', this._node);
 			return;
 		}
 
 		if (isNaN(bounds.width) || isNaN(bounds.height)) {
-			console.error('[CachedRenderer] Bounds invalid (NaN), supress calculation', this.node);
+			console.error('[CachedRenderer] Bounds invalid (NaN), supress calculation', this._node);
 			return;
 		}
 
@@ -466,7 +469,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	}
 
 	public static registerMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IAssetClass): void {
-		CacheRenderer.materialClassPool[materialClass.assetType] = renderMaterialClass;
+		RenderGroup.getInstance(CacheRenderer).materialClassPool[materialClass.assetType] = renderMaterialClass;
 	}
 }
 
@@ -526,7 +529,7 @@ export class _Render_Renderer extends _Render_RenderableBase {
 
 	protected _getRenderMaterial(): _Render_RendererMaterial {
 		return this._asset.getAbstraction<_Render_RendererMaterial>(
-			this.renderGroup.getRenderElements(this.stageElements.elements));
+			this.renderer.getRenderElements(this.stageElements.elements));
 	}
 
 	protected _getStyle(): Style {
@@ -536,3 +539,4 @@ export class _Render_Renderer extends _Render_RenderableBase {
 }
 
 CacheRenderer.registerMaterial(_Render_RendererMaterial, CacheRenderer);
+RenderEntity.registerRenderable(_Render_Renderer, CacheRenderer);

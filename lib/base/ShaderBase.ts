@@ -396,7 +396,7 @@ export class ShaderBase implements IShaderBase {
 		this._renderMaterial = renderMaterial;
 		this._pass = pass;
 		this._stage = stage;
-		this._view = renderElements.renderGroup.view;
+		this._view = renderElements.renderer.view;
 
 		this.profile = this._stage.profile;
 	}

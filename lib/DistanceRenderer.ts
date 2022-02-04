@@ -1,10 +1,11 @@
 import { INode, PartitionBase } from '@awayjs/view';
 
-import { RendererPool, RenderGroup } from './RenderGroup';
+import { RenderGroup } from './RenderGroup';
 
 import { RendererBase } from './RendererBase';
 import { _IRender_MaterialClass } from './base/_IRender_MaterialClass';
 import { IAssetClass } from '@awayjs/core';
+import { CacheRenderer } from './CacheRenderer';
 
 /**
  * The DistanceRenderer class renders 32-bit depth information encoded as RGBA
@@ -12,20 +13,17 @@ import { IAssetClass } from '@awayjs/core';
  * @class away.render.DistanceRenderer
  */
 export class DistanceRenderer extends RendererBase {
-
-	public static materialClassPool: Record<string, _IRender_MaterialClass> = {};
-
-	public static renderGroupPool: Record<string, RenderGroup> = {};
-
-	public static defaultBackground: number = 0x0;
+	public static assetType: string = '[renderer DistanceRenderer]';
 
 	/**
 	 * Creates a new DistanceRenderer object.
 	 * @param renderBlended Indicates whether semi-transparent objects should be rendered.
 	 * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
 	 */
-	constructor(partition: PartitionBase, pool: RendererPool) {
+	constructor(partition: PartitionBase, pool: RenderGroup) {
 		super(partition, pool);
+
+		this._traverserGroup = RenderGroup.getInstance(CacheRenderer);
 	}
 
 	/**
@@ -44,6 +42,6 @@ export class DistanceRenderer extends RendererBase {
 	}
 
 	public static registerMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IAssetClass): void {
-		DistanceRenderer.materialClassPool[materialClass.assetType] = renderMaterialClass;
+		RenderGroup.getInstance(DistanceRenderer).materialClassPool[materialClass.assetType] = renderMaterialClass;
 	}
 }
