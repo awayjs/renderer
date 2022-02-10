@@ -26,11 +26,11 @@ export class DefaultRenderer extends RendererBase {
 	public _depthRender: BitmapImage2D;
 
 	public get antiAlias(): number {
-		return this._stage.antiAlias;
+		return this.stage.antiAlias;
 	}
 
 	public set antiAlias(value: number) {
-		this._stage.antiAlias = value;
+		this.stage.antiAlias = value;
 	}
 
 	/**
@@ -82,7 +82,7 @@ export class DefaultRenderer extends RendererBase {
 		mipmapSelector: number = 0,
 		maskConfig: number = 0): void {
 
-		if (!this._stage.recoverFromDisposal()) {//if context has Disposed by the OS,don't render at this frame
+		if (!this.stage.recoverFromDisposal()) {//if context has Disposed by the OS,don't render at this frame
 			return;
 		}
 
@@ -96,7 +96,7 @@ export class DefaultRenderer extends RendererBase {
 		super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
 
 		if (!maskConfig)
-			this._view.present();
+			this.view.present();
 	}
 
 	public onClear(event: AssetEvent): void {
@@ -119,7 +119,7 @@ export class DefaultRenderer extends RendererBase {
 	private _renderDepthPrepass(): void {
 		this._depthRenderer.disableColor = true;
 
-		this._depthRenderer.view.projection = this._view.projection;
+		this._depthRenderer.view.projection = this.view.projection;
 		this._depthRenderer.view.target = null;
 		this._depthRenderer.render();
 
@@ -131,7 +131,7 @@ export class DefaultRenderer extends RendererBase {
 	 */
 	private _renderSceneDepthToTexture(): void {
 		if (this._depthTextureDirty || !this._depthRender)
-			this.initDepthTexture(<IContextGL> this._stage.context);
+			this.initDepthTexture(<IContextGL> this.stage.context);
 
 		this._depthRenderer.render();
 	}
@@ -150,7 +150,7 @@ export class DefaultRenderer extends RendererBase {
 			this._pRttBufferManager.textureHeight);
 
 		this._depthRenderer.view.target = this._depthRender;
-		this._depthRenderer.view.projection = this._view.projection;
+		this._depthRenderer.view.projection = this.view.projection;
 	}
 
 	public static registerMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IAssetClass): void {
