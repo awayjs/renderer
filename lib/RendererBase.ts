@@ -65,15 +65,12 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _activeMasksDirty: boolean;
 	private _activeMaskOwners: ContainerNode[];
 
-	protected _partition: PartitionBase;
-	protected _context: IContextGL;
-	protected _stage: Stage;
-	protected _view: View;
-
 	private _mappers: Array<IMapper> = new Array<IMapper>();
 	private _elementsPools: Record<string, _Render_ElementsBase> = {};
 	private _entityMaskId: number;
 	private _entityMaskOwners: ContainerNode[];
+
+	protected _context: IContextGL;
 
 	public _cameraTransform: Matrix3D;
 	private _cameraForward: Vector3D = new Vector3D();
@@ -103,14 +100,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _renderEntity: RenderEntity;
 	private _zIndex: number;
 	private _renderSceneTransform: Matrix3D;
-
-	public get partition(): PartitionBase {
-		return this._partition;
-	}
-
-	public get group(): RenderGroup {
-		return <RenderGroup> this._pool;
-	}
 
 	/**
 	 *
@@ -164,64 +153,51 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		return this._pNumElements;
 	}
 
-	/**
-	 *
-	 */
-	public renderableSorter: IRenderEntitySorter;
-
-	/**
-	 * Creates a new RendererBase object.
-	 */
-	constructor(partition: PartitionBase, pool: RenderGroup) {
-		super(partition, pool);
-
-		this._partition = partition;
-		this._maskId = partition.rootNode.getMaskId();
-
-		this._onSizeInvalidateDelegate = (event: ViewEvent) => this.onSizeInvalidate(event);
-		this._onContextUpdateDelegate = (event: StageEvent) => this.onContextUpdate(event);
-
-		//default sorting algorithm
-		this.renderableSorter = new RenderableMergeSort();
-
-		this._view = this._partition.rootNode.view;
-		this._stage = this._view.stage;
-
-		this._stage.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
-		this._stage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
-		this._view.addEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
-
-		if (this._stage.context)
-			this._context = <IContextGL> this._stage.context;
-	}
-
 	public get context(): IContextGL {
 		return this._context;
 	}
 
 	/**
-	 * The Stage that will provide the ContextGL used for rendering.
+	 *
 	 */
-	public get stage(): Stage {
-		return this._stage;
-	}
+	public renderableSorter: IRenderEntitySorter = new RenderableMergeSort();
 
-	public get view(): View {
-		return this._view;
+	public readonly view: View;
+
+	public readonly stage: Stage;
+
+	/**
+	 * Creates a new RendererBase object.
+	 */
+	constructor(
+		public readonly partition: PartitionBase,
+		public readonly group: RenderGroup
+	) {
+		super(partition, group);
+
+		this._onSizeInvalidateDelegate = (event: ViewEvent) => this.onSizeInvalidate(event);
+		this._onContextUpdateDelegate = (event: StageEvent) => this.onContextUpdate(event);
+
+		this.view = this.partition.rootNode.view;
+		this.stage = this.view.stage;
+
+		this.stage.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
+		this.stage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
+		this.view.addEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
+
+		if (this.stage.context)
+			this._context = <IContextGL> this.stage.context;
 	}
 
 	public onClear(event: AssetEvent): void {
 		super.onClear(event);
 
-		this._stage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
-		this._stage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
-		this._view.removeEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
+		this.stage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
+		this.stage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
+		this.view.removeEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 
 		this._onContextUpdateDelegate = null;
 		this._onSizeInvalidateDelegate = null;
-		this._view = null;
-		this._stage = null;
-		this._context = null;
 	}
 
 	public update(partition: PartitionBase): void {
@@ -280,22 +256,22 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._disableColor = true;
 		}
 
-		this.update(this._partition);
+		this.update(this.partition);
 
 		// invalidate mipmaps (if target exists) to regenerate if required
-		if (this._view.target)
-			this._view.target.invalidateMipmaps();
+		if (this.view.target)
+			this.view.target.invalidateMipmaps();
 
 		// this._pRttViewProjectionMatrix.copyFrom(projection.viewMatrix3D);
 		// this._pRttViewProjectionMatrix.appendScale(this.textureRatioX, this.textureRatioY, 1);
 
 		//TODO: allow sharedContexts for image targets
-		this._view.clear(
+		this.view.clear(
 			!this._depthPrepass && !this._disableClear,
 			enableDepthAndStencil,
 			surfaceSelector,
 			mipmapSelector,
-			(!this._view.shareContext || this._view.target)
+			(!this.view.shareContext || this.view.target)
 				? ContextGLClearMask.ALL
 				: ContextGLClearMask.DEPTH);
 
@@ -316,7 +292,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		//DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
 		//this._context.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //oopsie
 
-		if (!this._view.shareContext || this._view.target) {
+		if (!this.view.shareContext || this.view.target) {
 			if (this._snapshotRequired && this._snapshotBitmapImage2D) {
 				this._context.drawToBitmapImage2D(this._snapshotBitmapImage2D);
 				this._snapshotRequired = false;
@@ -331,14 +307,15 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._pNumElements = 0;
 		this._activeMaskOwners = null;
 
-		this._cameraTransform = this._view.projection.transform.matrix3D;
-		this._cameraForward = this._view.projection.transform.forwardVector;
-		this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : this._view.projection.viewFrustumPlanes;
+		this._cameraTransform = this.view.projection.transform.matrix3D;
+		this._cameraForward = this.view.projection.transform.forwardVector;
+		this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : this.view.projection.viewFrustumPlanes;
 		this._numCullPlanes = this._cullPlanes ? this._cullPlanes.length : 0;
+		this._maskId = this.partition.rootNode.getMaskId();
 
 		RendererBase._collectionMark++;
 
-		this._partition.traverse(this);
+		this.partition.traverse(this);
 
 		//sort the resulting renderables
 		if (this.renderableSorter) {
@@ -500,7 +477,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 * Assign the context once retrieved
 	 */
 	private onContextUpdate(event: StageEvent): void {
-		this._context = <IContextGL> this._stage.context;
+		this._context = <IContextGL> this.stage.context;
 	}
 
 	/*
@@ -543,8 +520,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 */
 	public onSizeInvalidate(event: ViewEvent): void {
 		if (this._pRttBufferManager) {
-			this._pRttBufferManager.viewWidth = this._view.width;
-			this._pRttBufferManager.viewHeight = this._view.height;
+			this._pRttBufferManager.viewWidth = this.view.width;
+			this._pRttBufferManager.viewHeight = this.view.height;
 		}
 
 		this._depthTextureDirty = true;
@@ -559,7 +536,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		const maskOrFrustrum = (
 			this._maskConfig
 			|| node.isInFrustum(
-				this._partition.rootNode,
+				this.partition.rootNode,
 				this._cullPlanes,
 				this._numCullPlanes,
 				PickGroup.getInstance()));
@@ -575,7 +552,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	}
 
 	public getTraverser(partition: PartitionBase): IPartitionTraverser {
-		//if (false) {
+
 		if (partition.rootNode.renderToImage) {
 			//new node for the container
 			const node: ContainerNode = partition.getLocalNode();
@@ -586,7 +563,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 			const traverser: CacheRenderer = <CacheRenderer> this._traverserGroup.getRenderer(node.partition);
 
-			traverser.rootView = this._view;
 			traverser.renderableSorter = null;
 
 			//if (this._invalid) {

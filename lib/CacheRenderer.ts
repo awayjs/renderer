@@ -47,7 +47,6 @@ import { RenderEntity } from './base/RenderEntity';
 export class CacheRenderer extends RendererBase implements IMaterial, IAbstractionPool {
 	public static assetType: string = '[renderer CacheRenderer]';
 
-	private _invalidDimension: boolean = false;
 	private _boundsPicker: BoundsPicker;
 	private _renderMatrix: Matrix3D = new Matrix3D();
 	private _bounds: Box = new Box();
@@ -76,8 +75,6 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	public useColorTransform: boolean = true;
 
 	public alphaThreshold: number = 0;
-
-	public rootView: View;
 
 	public get assetType(): string {
 		return CacheRenderer.assetType;
@@ -206,7 +203,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 		this.texture = new ImageTexture2D();
 
-		this._boundsPicker = PickGroup.getInstance().getBoundsPicker(this._partition);
+		this._boundsPicker = PickGroup.getInstance().getBoundsPicker(this.partition);
 
 		this._boundsDirty = true;
 
@@ -220,7 +217,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		maskConfig: number = 0
 	): void {
 
-		const stage = this._stage;
+		const stage = this.stage;
 		const sourceImage = <Image2D> this._style.image;
 
 		if (!sourceImage) {
@@ -229,7 +226,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 		// WE MUST store older render target config,
 		// because node can have cached child, that can be filtered
-		this._stage.pushRenderTargetConfig();
+		this.stage.pushRenderTargetConfig();
 
 		let targetImage: Image2D;
 
@@ -293,7 +290,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 		// pop render target after any filters,
 		// required for deep filters (when node with filter has filtered child)
-		this._stage.popRenderTarget();
+		this.stage.popRenderTarget();
 	}
 
 	// apply blend modes and swap texture if needed
@@ -379,7 +376,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		const matrix3D = this._renderMatrix;
 		const container = this._node.container;
 		const pad = this._paddedBounds;
-		const view = this.rootView;
+		const view = this.partition.parent.rootNode.view;
 
 		//should be method to evaluate real scale relative screen
 		const scale: number = view ? Math.min(3, view.projection.scale) : 1;
@@ -421,7 +418,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 		if (container.filters && container.filters.length > 0) {
 			container.filters.forEach((e) => e && (e.imageScale = scale));
-			this._stage.filterManager.computeFiltersPadding(pad, container.filters, pad);
+			this.stage.filterManager.computeFiltersPadding(pad, container.filters, pad);
 		}
 
 		pad.x = (pad.x - 2) | 0;
@@ -451,7 +448,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		const matrix3D = this._renderMatrix;
 		const ox = pad.x - this._bounds.x;
 		const oy = pad.y - this._bounds.y;
-		const view = this._view;
+		const view = this.view;
 		const proj = view.projection;
 
 		matrix3D._rawData[14] = -1000;
