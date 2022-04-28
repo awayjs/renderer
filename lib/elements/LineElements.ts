@@ -41,13 +41,13 @@ export class LineElements extends ElementsBase {
 			if (this.scaleMode == LineScaleMode.NORMAL) {
 				this._thicknessScale.x = (!strokeFlag || this.half_thickness * this._thicknessScale.x > 0.5)
 					? this.half_thickness
-					: 0.5 / this._thicknessScale.x;
+					: this._thicknessScale.x ? 0.5 / this._thicknessScale.x : 0;
 				this._thicknessScale.y = (!strokeFlag || this.half_thickness * this._thicknessScale.y > 0.5)
 					? this.half_thickness
-					: 0.5 / this._thicknessScale.y;
+					: this._thicknessScale.y ? 0.5 / this._thicknessScale.y : 0;
 			} else if (this.scaleMode == LineScaleMode.HAIRLINE) {
-				this._thicknessScale.x = 0.5 / this._thicknessScale.x;
-				this._thicknessScale.y = 0.5 / this._thicknessScale.y;
+				this._thicknessScale.x = this._thicknessScale.x ? 0.5 / this._thicknessScale.x : 0;
+				this._thicknessScale.y = this._thicknessScale.y ? 0.5 / this._thicknessScale.y : 0;
 			}
 		}
 
