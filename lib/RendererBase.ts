@@ -88,8 +88,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 	public _pNumElements: number = 0;
 
-	public _pOpaqueRenderableHead: IRenderable;
-	public _pBlendedRenderableHead: IRenderable;
+	protected _opaqueRenderables: IRenderable[];
+	protected _blendedRenderables: IRenderable[];
 	public _disableColor: boolean = false;
 	public _disableClear: boolean = false;
 	public _renderBlended: boolean = true;
@@ -302,8 +302,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 	public traverse(): void {
 		//reset head values
-		this._pBlendedRenderableHead = null;
-		this._pOpaqueRenderableHead = null;
+		this._blendedRenderables = [];
+		this._opaqueRenderables = [];
 		this._pNumElements = 0;
 		this._activeMaskOwners = null;
 
@@ -319,8 +319,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		//sort the resulting renderables
 		if (this.renderableSorter) {
-			this._pOpaqueRenderableHead = this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
-			this._pBlendedRenderableHead = this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
+			// this._pOpaqueRenderableHead = this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
+			// this._pBlendedRenderableHead = this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
 		}
 
 		this._invalid = false;
@@ -375,10 +375,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		else
 			this._context.disableStencil();
 
-		this.drawRenderables(this._pOpaqueRenderableHead);
+		this.drawRenderables(this._opaqueRenderables);
 
 		if (this._renderBlended)
-			this.drawRenderables(this._pBlendedRenderableHead);
+			this.drawRenderables(this._blendedRenderables);
 	}
 
 	/*
@@ -426,13 +426,18 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 *
 	 * @param renderables The renderables to draw.
 	 */
-	public drawRenderables(renderRenderable: IRenderable): void {
-		let i: number;
-		let r: IRenderable;
+	public drawRenderables(renderRenderables: IRenderable[]): void {
+		let index: number = 0;
+		let len: number = renderRenderables.length;
+		let renderRenderable: IRenderable = renderRenderables[index];
+
 		let renderMaterial: _Render_MaterialBase;
 		let numPasses: number;
 
-		while (renderRenderable) {
+		let i: number;
+		let r: IRenderable;
+
+		while (index < len) {
 			renderMaterial = renderRenderable.renderMaterial;
 			numPasses = renderMaterial ? renderMaterial.numPasses : 1;
 
@@ -448,9 +453,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			}
 
 			//iterate through each shader object
-			for (i = 0; i < numPasses; i++) {
-				renderMaterial && renderMaterial.activatePass(i);
+			for (let p: number = 0; p < numPasses; p++) {
+				renderMaterial && renderMaterial.activatePass(p);
 
+				i = index;
 				r = renderRenderable;
 				do {
 					///console.log("maskOwners", renderRenderable2.maskOwners);
@@ -460,15 +466,18 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 						this._mipmapSelector,
 						this._maskConfig);
 
-					r = r.next;
+					if (++i == len)
+						break;
 
-				} while (r
-						&& r.renderMaterial == renderMaterial
+					r = renderRenderables[i];
+
+				} while (r.renderMaterial == renderMaterial
 						&& !(this._activeMasksDirty = this._checkMaskOwners(r.maskOwners)));
 
 				renderMaterial && renderMaterial.deactivatePass();
 			}
 
+			index = i;
 			renderRenderable = r;
 		}
 	}
@@ -624,11 +633,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		renderRenderable.renderOrderId = renderMaterial.renderOrderId;
 
 		if (renderMaterial.requiresBlending) {
-			renderRenderable.next = this._pBlendedRenderableHead;
-			this._pBlendedRenderableHead = renderRenderable;
+			this._blendedRenderables.push(renderRenderable);
 		} else {
-			renderRenderable.next = this._pOpaqueRenderableHead;
-			this._pOpaqueRenderableHead = renderRenderable;
+			this._opaqueRenderables.push(renderRenderable);
 		}
 
 		//need to re-trigger stageElements getter in case animator has changed
