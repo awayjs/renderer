@@ -428,7 +428,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 */
 	public drawRenderables(renderRenderables: IRenderable[]): void {
 		let index: number = 0;
-		let len: number = renderRenderables.length;
+		const len: number = renderRenderables.length;
 		let renderRenderable: IRenderable = renderRenderables[index];
 
 		let renderMaterial: _Render_MaterialBase;
