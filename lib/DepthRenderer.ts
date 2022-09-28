@@ -5,6 +5,7 @@ import { RendererBase } from './RendererBase';
 import { _IRender_MaterialClass } from './base/_IRender_MaterialClass';
 import { IAssetClass } from '@awayjs/core';
 import { CacheRenderer } from './CacheRenderer';
+import { DefaultRenderer } from './DefaultRenderer';
 
 /**
  * The DepthRenderer class renders 32-bit depth information encoded as RGBA
@@ -23,6 +24,7 @@ export class DepthRenderer extends RendererBase {
 		super(partition, pool);
 
 		this._traverserGroup = RenderGroup.getInstance(CacheRenderer);
+		this._maskGroup = RenderGroup.getInstance(DefaultRenderer);
 	}
 
 	/**

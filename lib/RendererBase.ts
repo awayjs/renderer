@@ -97,6 +97,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _customCullPlanes: Array<Plane3D>;
 	private _numCullPlanes: number = 0;
 	protected _traverserGroup: RenderGroup;
+	protected _maskGroup: RenderGroup;
 	private _renderEntity: RenderEntity;
 	private _zIndex: number;
 	private _renderSceneTransform: Matrix3D;
@@ -570,7 +571,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			if (!boundsPicker.getBoxBounds(node, true, true))
 				return this;
 
-			const traverser: CacheRenderer = <CacheRenderer> this._traverserGroup.getRenderer(node.partition);
+			const traverser: CacheRenderer = this._traverserGroup.getRenderer<CacheRenderer>(node.partition);
 
 			traverser.renderableSorter = null;
 
@@ -692,7 +693,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 					mask = children[j];
 					//todo: figure out why masks can be null here
 					if (mask)
-						mask.partition.getAbstraction<RendererBase>(this._pool).render(true, 0, 0, newMaskConfig);
+						this._maskGroup.getRenderer(mask.partition).render(true, 0, 0, newMaskConfig);
 				}
 			}
 		}

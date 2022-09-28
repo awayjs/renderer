@@ -32,8 +32,8 @@ export class RenderGroup implements IAbstractionPool {
 		return this.rendererClass;
 	}
 
-	public getRenderer(partition: PartitionBase): RendererBase {
-		return partition.getAbstraction<RendererBase>(this);
+	public getRenderer <T extends RendererBase>(partition: PartitionBase): T {
+		return <T> partition.getAbstraction<RendererBase>(this);
 	}
 
 	public static getInstance(rendererClass: IRendererClass) {

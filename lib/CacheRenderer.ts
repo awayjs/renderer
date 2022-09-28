@@ -43,6 +43,7 @@ import { ImageTexture2D } from './textures/ImageTexture2D';
 import { Settings as StageSettings } from '@awayjs/stage';
 import { Settings } from './Settings';
 import { RenderEntity } from './base/RenderEntity';
+import { DefaultRenderer } from './DefaultRenderer';
 
 export class CacheRenderer extends RendererBase implements IMaterial, IAbstractionPool {
 	public static assetType: string = '[renderer CacheRenderer]';
@@ -208,6 +209,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this._boundsDirty = true;
 
 		this._traverserGroup = RenderGroup.getInstance(CacheRenderer);
+		this._maskGroup = RenderGroup.getInstance(DefaultRenderer);
 	}
 
 	public render(
@@ -218,9 +220,9 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	): void {
 
 		const stage = this.stage;
-		const sourceImage = <Image2D> this._style.image;
+		const targetImage = <Image2D> this._style.image;
 
-		if (!sourceImage) {
+		if (!targetImage) {
 			return super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
 		}
 
@@ -228,15 +230,15 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		// because node can have cached child, that can be filtered
 		this.stage.pushRenderTargetConfig();
 
-		let targetImage: Image2D;
+		let sourceImage: Image2D;
 
 		// we not require use TMP texture when not have MSAA
 		if (stage.context.glVersion === 2 &&
 			StageSettings.ENABLE_MULTISAMPLE_TEXTURE
 		) {
-			targetImage = stage.filterManager.popTemp(
-				sourceImage.width,
-				sourceImage.height,
+			sourceImage = stage.filterManager.popTemp(
+				targetImage.width,
+				targetImage.height,
 				true
 			);
 
@@ -247,7 +249,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		// we should render with colorTransform to self, enable it
 		this._node.colorTransformDisabled = false;
 
-		this._initRender(targetImage || sourceImage);
+		this._initRender(sourceImage || targetImage);
 		super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
 
 		// restore colorTransform state as in transform state
@@ -256,7 +258,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		// end enable blend
 		this._lockBlendMode = false;
 
-		if (sourceImage.width * sourceImage.height === 0) {
+		if (targetImage.width * targetImage.height === 0) {
 			debugger;
 		}
 
@@ -266,26 +268,26 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		if (filters && filters.length > 0) {
 			filters.forEach((e) => e && (e.imageScale = this._boundsScale));
 			stage.filterManager.applyFilters(
-				targetImage || sourceImage,
-				sourceImage, // because we use source as filter target - we not require copy
-				sourceImage.rect,
-				sourceImage.rect,
+				sourceImage || targetImage,
+				targetImage, // because we use source as filter target - we not require copy
+				targetImage.rect,
+				targetImage.rect,
 				filters
 			);
-		} else if (targetImage) {
+		} else if (sourceImage) {
 			// this is fast, it should only call blitFramebuffer,
 			// same as in regular MSAA
 			stage.filterManager.copyPixels(
-				targetImage,
 				sourceImage,
-				sourceImage.rect,
-				sourceImage.rect.topLeft,
+				targetImage,
+				targetImage.rect,
+				targetImage.rect.topLeft,
 				false
 			);
 		}
 
-		if (targetImage) {
-			stage.filterManager.pushTemp(targetImage);
+		if (sourceImage) {
+			stage.filterManager.pushTemp(sourceImage);
 		}
 
 		// pop render target after any filters,
@@ -534,6 +536,6 @@ export class _Render_Renderer extends _Render_RenderableBase {
 		return (<CacheRenderer> this._asset).style;
 	}
 }
-
+DefaultRenderer.registerMaterial(_Render_RendererMaterial, CacheRenderer);
 CacheRenderer.registerMaterial(_Render_RendererMaterial, CacheRenderer);
 RenderEntity.registerRenderable(_Render_Renderer, CacheRenderer);

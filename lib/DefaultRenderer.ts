@@ -62,6 +62,7 @@ export class DefaultRenderer extends RendererBase {
 			.getRenderer(partition);
 
 		this._traverserGroup = RenderGroup.getInstance(CacheRenderer);
+		this._maskGroup = RenderGroup.getInstance(DefaultRenderer);
 	}
 
 	/**
@@ -157,5 +158,3 @@ export class DefaultRenderer extends RendererBase {
 		RenderGroup.getInstance(DefaultRenderer).materialClassPool[materialClass.assetType] = renderMaterialClass;
 	}
 }
-
-DefaultRenderer.registerMaterial(_Render_RendererMaterial, CacheRenderer);
