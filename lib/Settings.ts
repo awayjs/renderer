@@ -5,6 +5,8 @@ export interface IRendererSettings {
 	CONVEX_MIN_REQUIEST_FOR_BUILD: number;
 	POINTS_COUNT_FOR_CONVEX: number;
 
+	USE_NON_NATIVE_BLEND: boolean;
+
 	USE_ALPHA_CUTOFF: boolean;
 	ALPHA_CUTOFF_VALUE: number;
 
@@ -14,6 +16,12 @@ export interface IRendererSettings {
 }
 
 export const Settings: IRendererSettings = {
+	/**
+	 * @description Enable use of blendmodes that cannot be achived natively in WebGL,
+	 * such as Overlay, Hardlight, Invert etc
+	 */
+	 USE_NON_NATIVE_BLEND: false,
+
 	/**
 	 * @description Apply alpha cutoff for masking, used for remove boxing artefacts
 	 * when used a bitmap mask

@@ -6,6 +6,7 @@ import {
 	IAsset,
 	IAssetClass,
 	Matrix3D,
+	PerspectiveProjection,
 	Rectangle,
 } from '@awayjs/core';
 import {
@@ -48,22 +49,11 @@ import { DefaultRenderer } from './DefaultRenderer';
 export class CacheRenderer extends RendererBase implements IMaterial, IAbstractionPool {
 	public static assetType: string = '[renderer CacheRenderer]';
 
-	private _boundsPicker: BoundsPicker;
-	private _renderMatrix: Matrix3D = new Matrix3D();
-	private _bounds: Box = new Box();
-	private _paddedBounds: Rectangle = new Rectangle();
-	/*internal*/ _boundsScale: number = 1;
-	private _boundsDirty: boolean;
-	private _style: Style;
-	private _parentNode: ContainerNode;
 	private _texture: ImageTexture2D;
 	private _textures: Array<ITexture> = new Array<ITexture>();
 	private _onTextureInvalidate: (event: AssetEvent) => void;
-	private _onInvalidateProperties: (event: StyleEvent) => void;
 	private _onInvalidateParentNode: (event: ContainerNodeEvent) => void;
 	private _onInvalidateColorTransform: (event: ContainerNodeEvent) => void;
-
-	private _node: ContainerNode;
 
 	public animateUVs: boolean = false;
 
@@ -87,69 +77,6 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	 */
 	public get parent(): ContainerNode {
 		return this._node;
-	}
-
-	public getPaddedBounds(): Rectangle {
-		if (this._boundsDirty)
-			this._updateBounds();
-
-		return this._paddedBounds;
-	}
-
-	public getBounds(): Box {
-		if (this._boundsDirty)
-			this._updateBounds();
-
-		return this._bounds;
-	}
-
-	private _lockBlendMode = false;
-
-	public get blendMode(): string {
-		if (this._lockBlendMode) {
-			return BlendMode.LAYER;
-		}
-
-		const containerBlend = <string> this._node.container.blendMode;
-
-		// native blends
-		switch (containerBlend) {
-			case BlendMode.LAYER:
-			case BlendMode.MULTIPLY:
-			case BlendMode.NORMAL:
-			case BlendMode.ADD:
-			case BlendMode.SCREEN:
-			case BlendMode.ALPHA:
-			case BlendMode.SUBTRACT:
-				return containerBlend;
-		}
-
-		return BlendMode.LAYER;
-	}
-
-	/**
-	 *
-	 */
-	public get style(): Style {
-		if (this._boundsDirty)
-			this._updateBounds();
-
-		return this._style;
-	}
-
-	public set style(value: Style) {
-		if (this._style == value)
-			return;
-
-		if (this._style)
-			this._style.removeEventListener(StyleEvent.INVALIDATE_PROPERTIES, this._onInvalidateProperties);
-
-		this._style = value;
-
-		if (this._style)
-			this._style.addEventListener(StyleEvent.INVALIDATE_PROPERTIES, this._onInvalidateProperties);
-
-		this._invalidateStyle();
 	}
 
 	/**
@@ -180,19 +107,14 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	constructor(partition: PartitionBase, pool: RenderGroup) {
 		super(partition, pool);
 
-		this._node = partition.rootNode;
-
 		this._onTextureInvalidate = (_event: AssetEvent) => this.invalidate();
-		this._onInvalidateProperties = (_event: StyleEvent) => this._invalidateStyle();
 		this._onInvalidateParentNode = (_event: ContainerNodeEvent) => this.onInvalidate(null);
 		this._onInvalidateColorTransform = (_event: ContainerNodeEvent) => {
 			this.onInvalidate(null);
 		};
 
-		if (partition.parent) {
-			this._parentNode = partition.parent.rootNode;
+		if (this._parentNode) {
 			this._parentNode.addEventListener(ContainerNodeEvent.INVALIDATE_MATRIX3D, this._onInvalidateParentNode);
-
 			this._parentNode.addEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
 		}
 
@@ -200,13 +122,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this._node.container.addEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateParentNode);
 		this._node.container.addEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
 
-		this.style = new Style();
-
 		this.texture = new ImageTexture2D();
-
-		this._boundsPicker = PickGroup.getInstance().getBoundsPicker(this.partition);
-
-		this._boundsDirty = true;
 
 		this._traverserGroup = RenderGroup.getInstance(CacheRenderer);
 		this._maskGroup = RenderGroup.getInstance(DefaultRenderer);
@@ -218,9 +134,11 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		mipmapSelector: number = 0,
 		maskConfig: number = 0
 	): void {
+		const container = this._node.container;
 
 		const stage = this.stage;
-		const targetImage = <Image2D> this._style.image;
+		const useNonNativeBlend = this.useNonNativeBlend;
+		const targetImage = <Image2D> (useNonNativeBlend? this.parentRenderer.style.image : this._style.image);
 
 		if (!targetImage) {
 			return super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
@@ -243,9 +161,22 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 			);
 
 		}
+ 
+		//for DefaultRenderer when child has a blendmode applied
+		if (useNonNativeBlend) {
+			const proj = this.parentRenderer.view.projection;
+			this.parentRenderer.view.projection = new PerspectiveProjection();
+			this.parentRenderer.view.target = targetImage;
+			//this.parentRenderer.disableClear = true;
+			this.parentRenderer._initRender(targetImage);
+			this.parentRenderer.executeRender();
+			this.parentRenderer.resetHead();
+			//this.parentRenderer.disableClear = false;
+			this.parentRenderer.view.target = null;
+			this.parentRenderer.view.projection = proj;
+			this._disableClear = true;
+		}
 
-		// we should not render itself blended, disable it
-		this._lockBlendMode = true;
 		// we should render with colorTransform to self, enable it
 		this._node.colorTransformDisabled = false;
 
@@ -255,14 +186,11 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		// restore colorTransform state as in transform state
 		this._node.colorTransformDisabled = this._node.transformDisabled;
 
-		// end enable blend
-		this._lockBlendMode = false;
 
 		if (targetImage.width * targetImage.height === 0) {
 			debugger;
 		}
 
-		const container = this._node.container;
 		//@ts-ignore
 		const filters = container.filters;
 		if (filters && filters.length > 0) {
@@ -282,7 +210,8 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 				targetImage,
 				targetImage.rect,
 				targetImage.rect.topLeft,
-				false
+				useNonNativeBlend,
+				useNonNativeBlend? <string> container.blendMode : ''
 			);
 		}
 
@@ -354,8 +283,6 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 		this.invalidate();
 		this.invalidatePasses();
-
-		this._boundsDirty = true;
 	}
 
 	public onClear(event: AssetEvent): void {
@@ -366,105 +293,6 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 		this.style.image.clear();
 		this.style.image = null;
-	}
-
-	private _invalidateStyle(): void {
-		this.dispatchEvent(new RenderableEvent(RenderableEvent.INVALIDATE_STYLE, this));
-	}
-
-	private _updateBounds(): void {
-		this._boundsDirty = false;
-
-		const matrix3D = this._renderMatrix;
-		const container = this._node.container;
-		const pad = this._paddedBounds;
-		const view = this.partition.parent.rootNode.view;
-
-		//should be method to evaluate real scale relative screen
-		const scale: number = view ? Math.min(3, view.projection.scale) : 1;
-		this._boundsScale = scale;
-
-		if (this._parentNode) {
-			matrix3D.copyFrom(this._parentNode.getMatrix3D());
-		} else {
-			// no parent - no transform
-			matrix3D.identity();
-		}
-
-		if (scale !== 1)
-			matrix3D.appendScale(scale, scale, scale);
-
-		const bounds = this._boundsPicker.getBoxBounds(this._node, true, true);
-
-		if (!bounds) {
-			console.error('[CachedRenderer] Bounds invalid, supress calculation', this._node);
-			return;
-		}
-
-		if (isNaN(bounds.width) || isNaN(bounds.height)) {
-			console.error('[CachedRenderer] Bounds invalid (NaN), supress calculation', this._node);
-			return;
-		}
-
-		this._bounds.copyFrom(bounds);
-
-		matrix3D.transformBox(this._bounds, this._bounds);
-		matrix3D.invert();
-
-		pad.setTo(
-			this._bounds.x,
-			this._bounds.y,
-			this._bounds.width,
-			this._bounds.height
-		);
-
-		if (container.filters && container.filters.length > 0) {
-			container.filters.forEach((e) => e && (e.imageScale = scale));
-			this.stage.filterManager.computeFiltersPadding(pad, container.filters, pad);
-		}
-
-		pad.x = (pad.x - 2) | 0;
-		pad.y = (pad.y - 2) | 0;
-		pad.width = (pad.width + 4) | 0;
-		pad.height = (pad.height + 4) | 0;
-
-		const image =  <Image2D> this._style.image;
-
-		if (pad.width * pad.height == 0) {
-			debugger;
-		}
-
-		if (image) {
-			(<Image2D> this._style.image)._setSize(pad.width, pad.height);
-		} else {
-
-			this._style.image = new Image2D(pad.width, pad.height, false);
-			this._style.sampler = new ImageSampler(false, Settings.SMOOTH_CACHED_IMAGE, false);
-			//this._view.target = this._style.image;
-		}
-	}
-
-	private _initRender(target: Image2D) {
-		const pad = this._paddedBounds;
-		const scale = this._boundsScale;
-		const matrix3D = this._renderMatrix;
-		const ox = pad.x - this._bounds.x;
-		const oy = pad.y - this._bounds.y;
-		const view = this.view;
-		const proj = view.projection;
-
-		matrix3D._rawData[14] = -1000;
-
-		// without this we will handle empty image when target is big (scale > +3)
-		proj.far = 4000;
-		proj.near = 1;
-		proj.transform.matrix3D = matrix3D;
-		proj.ratio = (target.width / target.height);
-		proj.originX = -1 - 2 * (pad.x - ox * 0.5) / target.width;
-		proj.originY = -1 - 2 * (pad.y - oy * 0.5) / target.height;
-		proj.scale = scale * 1000 / target.height;
-
-		view.target = target;
 	}
 
 	public static registerMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IAssetClass): void {
@@ -483,8 +311,8 @@ export class _Render_Renderer extends _Render_RenderableBase {
 		const asset = <CacheRenderer> this._asset;
 		const paddedBounds = asset.getPaddedBounds();
 		const bounds = asset.getBounds();
-		const offsetX = paddedBounds.x - bounds.x;
-		const offsetY = paddedBounds.y - bounds.y;
+		const offsetX = 0;//paddedBounds.x - bounds.x;
+		const offsetY = 0;//paddedBounds.y - bounds.y;
 		const matrix3D: Matrix3D = Matrix3D.CALCULATION_MATRIX;
 
 		matrix3D.copyFrom(this.renderSceneTransform);

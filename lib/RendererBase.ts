@@ -7,6 +7,8 @@ import {
 	AssetEvent,
 	IAsset,
 	IAbstractionClass,
+	Box,
+	Rectangle,
 } from '@awayjs/core';
 
 import {
@@ -20,6 +22,9 @@ import {
 	StageEvent,
 	ContextGLClearMask,
 	RTTBufferManager,
+	Image2D,
+	ImageSampler,
+	BlendMode,
 } from '@awayjs/stage';
 
 import {
@@ -36,6 +41,7 @@ import {
 	PickGroup,
 } from '@awayjs/view';
 
+import { Settings } from './Settings';
 import { _Render_MaterialBase } from './base/_Render_MaterialBase';
 import { _Render_RenderableBase } from './base/_Render_RenderableBase';
 import { RenderEntity } from './base/RenderEntity';
@@ -48,6 +54,9 @@ import { IRenderable } from './base/IRenderable';
 import { CacheRenderer } from './CacheRenderer';
 import { _Render_ElementsBase } from './base/_Render_ElementsBase';
 import { _IRender_MaterialClass } from './base/_IRender_MaterialClass';
+import { Style } from './base/Style';
+import { StyleEvent } from './events/StyleEvent';
+import { RenderableEvent } from './events/RenderableEvent';
 
 /**
  * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
@@ -57,6 +66,12 @@ import { _IRender_MaterialClass } from './base/_IRender_MaterialClass';
  */
 export class RendererBase extends AbstractionBase implements IPartitionTraverser, IEntityTraverser {
 	public static _collectionMark = 0;
+
+	protected _renderMatrix: Matrix3D = new Matrix3D();
+	protected _node: ContainerNode;
+	protected _parentNode: ContainerNode;
+	private _boundsPicker: BoundsPicker;
+	/*internal*/ _boundsScale: number = 1;
 	private _enableDepthAndStencil: boolean;
 	private _surfaceSelector: number;
 	private _mipmapSelector: number;
@@ -64,7 +79,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _maskId: number;
 	private _activeMasksDirty: boolean;
 	private _activeMaskOwners: ContainerNode[];
-
+	private _paddedBounds: Rectangle = new Rectangle();
+	private _bounds: Box = new Box();
+	protected _style: Style;
+	private _boundsDirty: boolean = true;
 	private _mappers: Array<IMapper> = new Array<IMapper>();
 	private _elementsPools: Record<string, _Render_ElementsBase> = {};
 	private _entityMaskId: number;
@@ -83,6 +101,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _snapshotBitmapImage2D: BitmapImage2D;
 	private _snapshotRequired: boolean;
 
+	private _onInvalidateProperties: (event: StyleEvent) => void;
 	private _onContextUpdateDelegate: (event: StageEvent) => void;
 	private _onSizeInvalidateDelegate: (event: ViewEvent) => void;
 
@@ -157,6 +176,48 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	public get context(): IContextGL {
 		return this._context;
 	}
+	
+	public getPaddedBounds(): Rectangle {
+		if (this._boundsDirty)
+			this._updateBounds();
+
+		return this._paddedBounds;
+	}
+
+	public getBounds(): Box {
+		if (this._boundsDirty)
+			this._updateBounds();
+
+		return this._bounds;
+	}
+
+
+	/**
+	 *
+	 */
+	 public get style(): Style {
+		if (this._boundsDirty)
+			this._updateBounds();
+
+		return this._style;
+	}
+
+	public set style(value: Style) {
+		if (this._style == value)
+			return;
+
+		if (this._style)
+			this._style.removeEventListener(StyleEvent.INVALIDATE_PROPERTIES, this._onInvalidateProperties);
+
+		this._style = value;
+
+		if (this._style)
+			this._style.addEventListener(StyleEvent.INVALIDATE_PROPERTIES, this._onInvalidateProperties);
+
+		this._invalidateStyle();
+	}
+
+	public parentRenderer: RendererBase;
 
 	/**
 	 *
@@ -166,6 +227,31 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	public readonly view: View;
 
 	public readonly stage: Stage;
+	
+	public get blendMode(): string {
+		const containerBlend = <string> this._node.container.blendMode;
+
+		// native blends
+		switch (containerBlend) {
+			case BlendMode.LAYER:
+			case BlendMode.MULTIPLY:
+			case BlendMode.NORMAL:
+			case BlendMode.ADD:
+			case BlendMode.SCREEN:
+			case BlendMode.ALPHA:
+			case BlendMode.SUBTRACT:
+				return containerBlend;
+		}
+
+		return BlendMode.LAYER;
+	}
+
+	public get useNonNativeBlend(): boolean {
+		return Settings.USE_NON_NATIVE_BLEND
+				&& this._node.container.blendMode
+				&& this._node.container.blendMode !== BlendMode.LAYER
+				&& this.blendMode == BlendMode.LAYER
+	}
 
 	/**
 	 * Creates a new RendererBase object.
@@ -176,9 +262,14 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	) {
 		super(partition, group);
 
+		this._node = partition.rootNode;
+		this._parentNode = partition.parent?.rootNode;
+
+		this._onInvalidateProperties = (_event: StyleEvent) => this._invalidateStyle();
 		this._onSizeInvalidateDelegate = (event: ViewEvent) => this.onSizeInvalidate(event);
 		this._onContextUpdateDelegate = (event: StageEvent) => this.onContextUpdate(event);
 
+		this.style = new Style();
 		this.view = this.partition.rootNode.view;
 		this.stage = this.view.stage;
 
@@ -186,6 +277,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this.stage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 		this.view.addEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 
+		this._boundsPicker = PickGroup.getInstance().getBoundsPicker(this.partition);
+	
 		if (this.stage.context)
 			this._context = <IContextGL> this.stage.context;
 	}
@@ -199,6 +292,12 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		this._onContextUpdateDelegate = null;
 		this._onSizeInvalidateDelegate = null;
+	}
+
+	public onInvalidate(event: AssetEvent): void {
+		super.onInvalidate(event);
+
+		this._boundsDirty = true;
 	}
 
 	public update(partition: PartitionBase): void {
@@ -266,26 +365,13 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		// this._pRttViewProjectionMatrix.copyFrom(projection.viewMatrix3D);
 		// this._pRttViewProjectionMatrix.appendScale(this.textureRatioX, this.textureRatioY, 1);
 
-		//TODO: allow sharedContexts for image targets
-		this.view.clear(
-			!this._depthPrepass && !this._disableClear,
-			enableDepthAndStencil,
-			surfaceSelector,
-			mipmapSelector,
-			(!this.view.shareContext || this.view.target)
-				? ContextGLClearMask.ALL
-				: ContextGLClearMask.DEPTH);
-
 		/*
 		 if (_backgroundImageRenderer)
 		 _backgroundImageRenderer.render();
 		 */
 
-		//initialise blend mode
-		this._context.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
-
-		//initialise depth test
-		this._context.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
+		if (this._invalid)
+			this.traverse();
 
 		this.executeRender(enableDepthAndStencil, surfaceSelector, mipmapSelector);
 
@@ -301,10 +387,16 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		}
 	}
 
-	public traverse(): void {
+	public resetHead(): void {
 		//reset head values
 		this._blendedRenderables = [];
 		this._opaqueRenderables = [];
+
+	}
+
+	public traverse(): void {
+		this.resetHead();
+
 		this._pNumElements = 0;
 		this._activeMaskOwners = null;
 
@@ -360,9 +452,22 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 */
 	public executeRender(
 		enableDepthAndStencil: boolean = true, surfaceSelector: number = 0, mipmapSelector: number = 0): void {
+		
+		//TODO: allow sharedContexts for image targets
+		this.view.clear(
+			!this._depthPrepass && !this._disableClear,
+			enableDepthAndStencil,
+			surfaceSelector,
+			mipmapSelector,
+			(!this.view.shareContext || this.view.target)
+				? ContextGLClearMask.ALL
+				: ContextGLClearMask.DEPTH);
 
-		//if (this._invalid)
-		this.traverse();
+		//initialise blend mode
+		this._context.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
+
+		//initialise depth test
+		this._context.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
 
 		//initialise color mask
 		if (this._disableColor)
@@ -574,7 +679,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			const traverser: CacheRenderer = this._traverserGroup.getRenderer<CacheRenderer>(node.partition);
 
 			traverser.renderableSorter = null;
-
+			traverser.parentRenderer = this;
 			//if (this._invalid) {
 			this._renderEntity = traverser.getAbstraction<RenderEntity>(this);
 
@@ -744,5 +849,124 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		}
 
 		return false;
+	}
+	
+	private _invalidateStyle(): void {
+		this.dispatchEvent(new RenderableEvent(RenderableEvent.INVALIDATE_STYLE, this));
+	}
+
+	protected _updateBounds(): void {
+		this._boundsDirty = false;
+
+		const matrix3D = this._renderMatrix;
+		const container = this._node.container;
+		const pad = this._paddedBounds;
+
+		let scale: number;
+
+		if (this._parentNode) {
+			scale = Math.min(3, this._parentNode.view.projection.scale);
+			matrix3D.copyFrom(this._parentNode.getMatrix3D());
+		} else {
+			// no parent - no transform
+			scale = Math.min(3, this._node.view.projection.scale);
+			matrix3D.identity() ;
+		}
+		//scale = 1;
+		this._boundsScale = scale;
+
+		if (scale !== 1)
+			matrix3D.appendScale(scale, scale, scale);
+
+		const bounds = this._boundsPicker.getBoxBounds(this._node, true, true);
+
+		if (!bounds) {
+			console.error('[CachedRenderer] Bounds invalid, supress calculation', this._node);
+			return;
+		}
+
+		if (isNaN(bounds.width) || isNaN(bounds.height)) {
+			console.error('[CachedRenderer] Bounds invalid (NaN), supress calculation', this._node);
+			return;
+		}
+
+		this._bounds.copyFrom(bounds);
+
+		matrix3D.transformBox(this._bounds, this._bounds);
+		matrix3D.invert();
+
+		if (this.useNonNativeBlend) {
+			//set to bounds of parent
+			const parentBounds = this.parentRenderer.getPaddedBounds();
+
+			pad.setTo(
+				parentBounds.x,
+				parentBounds.y,
+				parentBounds.width, 
+				parentBounds.height
+			);
+
+			this._style.image = <Image2D> this.parentRenderer.style.image;
+			this._style.sampler = new ImageSampler(false, Settings.SMOOTH_CACHED_IMAGE, false);
+
+			this._boundsDirty = true;
+		} else {
+			pad.setTo(
+				this._bounds.x,
+				this._bounds.y,
+				this._bounds.width,
+				this._bounds.height
+			);
+	
+			if (container.filters && container.filters.length > 0) {
+				container.filters.forEach((e) => e && (e.imageScale = scale));
+				this.stage.filterManager.computeFiltersPadding(pad, container.filters, pad);
+			}
+	
+			pad.x = (pad.x - 2) | 0;
+			pad.y = (pad.y - 2) | 0;
+			pad.width = (pad.width + 4) | 0;
+			pad.height = (pad.height + 4) | 0;
+
+			
+			const image =  <Image2D> this._style.image;
+
+			if (pad.width * pad.height == 0) {
+				debugger;
+			}
+
+			if (image) {
+				(<Image2D> this._style.image)._setSize(pad.width, pad.height);
+			} else {
+
+				this._style.image = new Image2D(pad.width, pad.height, false);
+				this._style.sampler = new ImageSampler(false, Settings.SMOOTH_CACHED_IMAGE, false);
+				//this._view.target = this._style.image;
+			}
+		}
+
+	}
+	
+	public _initRender(target: Image2D) {
+		const pad = this._paddedBounds;
+		const scale = this._boundsScale;
+		const matrix3D = this._renderMatrix;
+		const ox = 0;//pad.x - this._bounds.x;
+		const oy = 0;//pad.y - this._bounds.y;
+		const view = this.view;
+		const proj = view.projection;
+
+		matrix3D._rawData[14] = -1000;
+
+		// without this we will handle empty image when target is big (scale > +3)
+		proj.far = 4000;
+		proj.near = 1;
+		proj.transform.matrix3D = matrix3D;
+		proj.ratio = (target.width / target.height);
+		proj.originX = -1 - 2 * (pad.x - ox * 0.5) / target.width;
+		proj.originY = -1 - 2 * (pad.y - oy * 0.5) / target.height;
+		proj.scale = scale * 1000 / target.height;
+
+		view.target = target;
 	}
 }
