@@ -176,7 +176,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	public get context(): IContextGL {
 		return this._context;
 	}
-	
+
 	public getPaddedBounds(): Rectangle {
 		if (this._boundsDirty)
 			this._updateBounds();
@@ -190,7 +190,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		return this._bounds;
 	}
-
 
 	/**
 	 *
@@ -227,7 +226,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	public readonly view: View;
 
 	public readonly stage: Stage;
-	
+
 	public get blendMode(): string {
 		const containerBlend = <string> this._node.container.blendMode;
 
@@ -250,7 +249,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		return Settings.USE_NON_NATIVE_BLEND
 				&& this._node.container.blendMode
 				&& this._node.container.blendMode !== BlendMode.LAYER
-				&& this.blendMode == BlendMode.LAYER
+				&& this.blendMode == BlendMode.LAYER;
 	}
 
 	/**
@@ -278,7 +277,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this.view.addEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 
 		this._boundsPicker = PickGroup.getInstance().getBoundsPicker(this.partition);
-	
+
 		if (this.stage.context)
 			this._context = <IContextGL> this.stage.context;
 	}
@@ -452,7 +451,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 */
 	public executeRender(
 		enableDepthAndStencil: boolean = true, surfaceSelector: number = 0, mipmapSelector: number = 0): void {
-		
+
 		//TODO: allow sharedContexts for image targets
 		this.view.clear(
 			!this._depthPrepass && !this._disableClear,
@@ -850,7 +849,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		return false;
 	}
-	
+
 	private _invalidateStyle(): void {
 		this.dispatchEvent(new RenderableEvent(RenderableEvent.INVALIDATE_STYLE, this));
 	}
@@ -902,7 +901,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			pad.setTo(
 				parentBounds.x,
 				parentBounds.y,
-				parentBounds.width, 
+				parentBounds.width,
 				parentBounds.height
 			);
 
@@ -917,18 +916,17 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				this._bounds.width,
 				this._bounds.height
 			);
-	
+
 			if (container.filters && container.filters.length > 0) {
 				container.filters.forEach((e) => e && (e.imageScale = scale));
 				this.stage.filterManager.computeFiltersPadding(pad, container.filters, pad);
 			}
-	
+
 			pad.x = (pad.x - 2) | 0;
 			pad.y = (pad.y - 2) | 0;
 			pad.width = (pad.width + 4) | 0;
 			pad.height = (pad.height + 4) | 0;
 
-			
 			const image =  <Image2D> this._style.image;
 
 			if (pad.width * pad.height == 0) {
@@ -946,7 +944,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		}
 
 	}
-	
+
 	public _initRender(target: Image2D) {
 		const pad = this._paddedBounds;
 		const scale = this._boundsScale;

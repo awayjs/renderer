@@ -138,7 +138,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 		const stage = this.stage;
 		const useNonNativeBlend = this.useNonNativeBlend;
-		const targetImage = <Image2D> (useNonNativeBlend? this.parentRenderer.style.image : this._style.image);
+		const targetImage = <Image2D> (useNonNativeBlend ? this.parentRenderer.style.image : this._style.image);
 
 		if (!targetImage) {
 			return super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
@@ -161,7 +161,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 			);
 
 		}
- 
+
 		//for DefaultRenderer when child has a blendmode applied
 		if (useNonNativeBlend) {
 			const proj = this.parentRenderer.view.projection;
@@ -185,7 +185,6 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 		// restore colorTransform state as in transform state
 		this._node.colorTransformDisabled = this._node.transformDisabled;
-
 
 		if (targetImage.width * targetImage.height === 0) {
 			debugger;
@@ -211,7 +210,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 				targetImage.rect,
 				targetImage.rect.topLeft,
 				useNonNativeBlend,
-				useNonNativeBlend? <string> container.blendMode : ''
+				useNonNativeBlend ? <string> container.blendMode : ''
 			);
 		}
 
