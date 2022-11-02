@@ -369,7 +369,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		 _backgroundImageRenderer.render();
 		 */
 
-		if (this._invalid)
+		if (!Settings.USE_NON_NATIVE_BLEND || this._invalid)
 			this.traverse();
 
 		this.executeRender(enableDepthAndStencil, surfaceSelector, mipmapSelector);
@@ -907,8 +907,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 			this._style.image = <Image2D> this.parentRenderer.style.image;
 			this._style.sampler = new ImageSampler(false, Settings.SMOOTH_CACHED_IMAGE, false);
-
-			this._boundsDirty = true;
 		} else {
 			pad.setTo(
 				this._bounds.x,
