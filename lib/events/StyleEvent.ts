@@ -9,6 +9,7 @@ export class StyleEvent extends EventBase {
 	 *
 	 */
 	public static INVALIDATE_PROPERTIES: string = 'invalidateProperties';
+	public static INVALIDATE_IMAGES: string = 'invalidateImages';
 
 	public get style(): Style {
 		return this._style;

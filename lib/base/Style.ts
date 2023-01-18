@@ -9,7 +9,8 @@ import { ITexture } from '../base/ITexture';
  *
  */
 export class Style extends EventDispatcher {
-	private _onClearImage: (event: AssetEvent) => void;
+	private _onImageInvalidate: (event: AssetEvent) => void;
+	private _onImageClear: (event: AssetEvent) => void;
 	private _sampler: ImageSampler;
 	private _samplers: Object = new Object();
 	private _image: ImageBase;
@@ -38,13 +39,17 @@ export class Style extends EventDispatcher {
 		if (this._image == value)
 			return;
 
-		if (this._image)
-			this._image.removeEventListener(AssetEvent.CLEAR, this._onClearImage);
+		if (this._image) {
+			this._image.removeEventListener(AssetEvent.INVALIDATE, this._onImageInvalidate);
+			this._image.removeEventListener(AssetEvent.CLEAR, this._onImageClear);
+		}
 
 		this._image = value;
 
-		if (this._image)
-			this._image.addEventListener(AssetEvent.CLEAR, this._onClearImage);
+		if (this._image) {
+			this._image.addEventListener(AssetEvent.INVALIDATE, this._onImageInvalidate);
+			this._image.addEventListener(AssetEvent.CLEAR, this._onImageClear);
+		}
 
 		this._invalidateProperties();
 	}
@@ -81,7 +86,8 @@ export class Style extends EventDispatcher {
 	constructor() {
 		super();
 
-		this._onClearImage = (event: AssetEvent) => this._invalidateProperties();
+		this._onImageInvalidate = (event: AssetEvent) => this._invalidateImages();
+		this._onImageClear = (event: AssetEvent) => this._invalidateProperties();
 	}
 
 	public getImageAt(texture: ITexture, index: number = 0): ImageBase {
@@ -98,7 +104,8 @@ export class Style extends EventDispatcher {
 
 		this._images[texture.id][index] = image;
 
-		image.addEventListener(AssetEvent.CLEAR, this._onClearImage);
+		image.addEventListener(AssetEvent.INVALIDATE, this._onImageInvalidate);
+		image.addEventListener(AssetEvent.CLEAR, this._onImageClear);
 
 		this._invalidateProperties();
 	}
@@ -118,7 +125,8 @@ export class Style extends EventDispatcher {
 		if (!image)
 			return;
 
-		image.removeEventListener(AssetEvent.CLEAR, this._onClearImage);
+		image.removeEventListener(AssetEvent.INVALIDATE, this._onImageInvalidate);
+		image.removeEventListener(AssetEvent.CLEAR, this._onImageClear);
 		this._images[texture.id][index] = null;
 
 		this._invalidateProperties();
@@ -135,5 +143,9 @@ export class Style extends EventDispatcher {
 
 	private _invalidateProperties(): void {
 		this.dispatchEvent(new StyleEvent(StyleEvent.INVALIDATE_PROPERTIES, this));
+	}
+
+	private _invalidateImages(): void {
+		this.dispatchEvent(new StyleEvent(StyleEvent.INVALIDATE_IMAGES, this));
 	}
 }
