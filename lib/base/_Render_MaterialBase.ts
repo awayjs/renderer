@@ -22,6 +22,7 @@ import { ShaderBase } from './ShaderBase';
 import { _Render_RenderableBase } from './_Render_RenderableBase';
 import { IRenderContainer } from './IRenderContainer';
 import { RendererBase } from '../RendererBase';
+import { CacheRenderer } from '../CacheRenderer';
 
 /**
  *
@@ -82,6 +83,8 @@ export class _Render_MaterialBase extends AbstractionBase {
 	}
 
 	public get renderOrderId(): number {
+		if (this._invalidRender)
+			this._pUpdateRender();
 		if (this._invalidAnimation)
 			this._updateAnimation();
 
@@ -268,6 +271,10 @@ export class _Render_MaterialBase extends AbstractionBase {
 
 		this._invalidRender = true;
 		this._invalidAnimation = true;
+
+		//prevent infinite loop with cacheRenderer invalidation
+		if (<CacheRenderer> this._renderer != <IMaterial> this._material)
+			this._renderer.invalidate();
 	}
 
 	/**
@@ -316,8 +323,8 @@ export class _Render_MaterialBase extends AbstractionBase {
      * @param surface
      */
 	protected _updateAnimation(): void {
-		if (this._invalidRender)
-			this._pUpdateRender();
+		// if (this._invalidRender)
+		// 	this._pUpdateRender();
 
 		this._invalidAnimation = false;
 
