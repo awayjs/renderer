@@ -13,6 +13,8 @@ export interface IMaterial extends IAsset
 {
 	style: Style;
 
+	alphaBlending: boolean;
+
 	alphaThreshold: number;
 
 	bothSides: boolean;

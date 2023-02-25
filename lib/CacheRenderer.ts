@@ -65,6 +65,8 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 
 	public useColorTransform: boolean = true;
 
+	public alphaBlending: boolean = true;
+
 	public alphaThreshold: number = 0;
 
 	public get assetType(): string {
