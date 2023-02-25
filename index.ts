@@ -46,6 +46,8 @@ export { MaterialEvent } from './lib/events/MaterialEvent';
 export { StyleEvent } from './lib/events/StyleEvent';
 export { ElementsEvent } from './lib/events/ElementsEvent';
 
+export { IMaterialFactory } from './lib/factories/IMaterialFactory';
+
 export { ImageTexture2D, _Shader_ImageTexture2D } from './lib/textures/ImageTexture2D';
 export { ImageTextureCube, _Shader_ImageTexture } from './lib/textures/ImageTextureCube';
 export { Texture2D } from './lib/textures/Texture2D';
