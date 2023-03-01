@@ -4,11 +4,11 @@ import { Stage } from '@awayjs/stage';
 
 import { _IRender_RenderableClass } from './_IRender_RenderableClass';
 
-import { RenderGroup } from '../RenderGroup';
 import { ContainerNode, EntityNode } from '@awayjs/view';
 import { RenderableEvent } from '../events/RenderableEvent';
 import { RendererBase } from '../RendererBase';
 import { CacheRenderer } from '../CacheRenderer';
+import { _Render_RenderableBase } from './_Render_RenderableBase';
 
 /**
  * @class away.pool.RenderEntity
@@ -22,6 +22,7 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 
 	// private _abstractionPool: Object = new Object();
 	private _stage: Stage;
+	private _renderables: _Render_RenderableBase[] = [];
 
 	/**
 	 *
@@ -66,7 +67,18 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 		this._asset.removeEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
 		this._asset.removeEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateStyleDelegate);
 
+		for (let i: number = this._renderables.length  - 1; i >= 0; i--)
+			this._renderables[i].onClear(event);
+
 		super.onClear(event);
+	}
+
+	public addRenderable(renderable:_Render_RenderableBase): void {
+		this._renderables.push(renderable);
+	}
+
+	public removeRenderable(renderable:_Render_RenderableBase): void {
+		this._renderables.splice(this._renderables.indexOf(renderable), 1);
 	}
 
 	private _onInvalidateElements(event: RenderableEvent): void {

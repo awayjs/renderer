@@ -187,6 +187,8 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 		this.node = renderEntity.node;
 		this._stage = renderEntity.stage;
 
+		renderEntity.addRenderable(this);
+
 		this._asset.addEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
 		this._asset.addEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
 		this._asset.addEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateStyleDelegate);
@@ -234,6 +236,9 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 		this._asset.removeEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
 		this._asset.removeEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
 		this._asset.removeEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateStyleDelegate);
+
+
+		(<RenderEntity> this._pool).removeRenderable(this);
 
 		super.onClear(event);
 
