@@ -237,7 +237,6 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 		this._asset.removeEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
 		this._asset.removeEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateStyleDelegate);
 
-
 		(<RenderEntity> this._pool).removeRenderable(this);
 
 		super.onClear(event);

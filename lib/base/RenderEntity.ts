@@ -73,11 +73,11 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 		super.onClear(event);
 	}
 
-	public addRenderable(renderable:_Render_RenderableBase): void {
+	public addRenderable(renderable: _Render_RenderableBase): void {
 		this._renderables.push(renderable);
 	}
 
-	public removeRenderable(renderable:_Render_RenderableBase): void {
+	public removeRenderable(renderable: _Render_RenderableBase): void {
 		this._renderables.splice(this._renderables.indexOf(renderable), 1);
 	}
 
