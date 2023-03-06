@@ -709,7 +709,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		// project onto camera's z-axis
 		this._zIndex = this._cameraTransform.position.subtract(node.parent.getPosition())
 			.dotProduct(this._cameraForward)
-			+ node.entity.zOffset;
+			+ node.parent.container.zOffset;
 
 		//save sceneTransform
 		this._renderSceneTransform = node.parent.getRenderMatrix3D(this._cameraTransform);

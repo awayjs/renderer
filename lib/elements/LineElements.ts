@@ -452,7 +452,7 @@ export class LineElements extends ElementsBase {
 	// eslint-disable-next-line brace-style
 	{
 		//TODO: peform correct line collision calculations
-		const scale: Vector3D = this.getThicknessScale(view, collision.entityNode.parent, true);
+		const scale: Vector3D = this.getThicknessScale(view, collision.containerNode, true);
 		const thickness: number = (scale.x + scale.y) / 2;//approx hack for now
 
 		const rayEntryDistance: number = -collision.rayPosition.z / collision.rayDirection.z;
