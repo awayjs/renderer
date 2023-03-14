@@ -14,7 +14,7 @@ import {
 	ImageBase,
 } from '@awayjs/stage';
 
-import { EntityNode, ContainerNode, INode } from '@awayjs/view';
+import { ContainerNode } from '@awayjs/view';
 import { RenderableEvent } from '../events/RenderableEvent';
 import { MaterialUtils } from '../utils/MaterialUtils';
 import { _Render_MaterialBase } from './_Render_MaterialBase';
@@ -28,7 +28,6 @@ import { IRenderable } from './IRenderable';
 import { Settings } from '../Settings';
 import { IShaderBase } from './IShaderBase';
 import { RendererBase } from '../RendererBase';
-import { CacheRenderer } from '../CacheRenderer';
 
 /**
  * @class RenderableListItem
