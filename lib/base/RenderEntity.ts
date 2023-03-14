@@ -21,24 +21,19 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 	private _onInvalidateStyleDelegate: (event: RenderableEvent) => void;
 
 	// private _abstractionPool: Object = new Object();
-	private _stage: Stage;
 	private _renderables: _Render_RenderableBase[] = [];
 
 	/**
 	 *
 	 * @returns {RenderGroup}
 	 */
-	public get stage(): Stage {
-		return this._stage;
-	}
+	public readonly stage: Stage;
 
 	/**
      *
      * @returns {EntityNode}
      */
-	public get node(): ContainerNode {
-		return (<EntityNode | CacheRenderer> this._asset).parent;
-	}
+	public readonly node: ContainerNode;
 
 	public readonly id: number;
 
@@ -51,21 +46,22 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 		super(entity, renderer);
 
 		this.id = AbstractionBase.ID_COUNT++;
-		this._stage = renderer.stage;
+		this.node = entity.parent;
+		this.stage = renderer.stage;
 
 		this._onInvalidateElementsDelegate = (event: RenderableEvent) => this._onInvalidateElements(event);
 		this._onInvalidateMaterialDelegate = (event: RenderableEvent) => this._onInvalidateMaterial(event);
 		this._onInvalidateStyleDelegate = (event: RenderableEvent) => this._onInvalidateStyle(event);
 
-		this._asset.addEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
-		this._asset.addEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
-		this._asset.addEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateStyleDelegate);
+		this.node.container.addEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
+		this.node.container.addEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
+		this.node.container.addEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateStyleDelegate);
 	}
 
 	public onClear(event: AssetEvent): void {
-		this._asset.removeEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
-		this._asset.removeEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
-		this._asset.removeEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateStyleDelegate);
+		this.node.container.removeEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
+		this.node.container.removeEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
+		this.node.container.removeEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateStyleDelegate);
 
 		for (let i: number = this._renderables.length  - 1; i >= 0; i--)
 			this._renderables[i].onClear(event);
