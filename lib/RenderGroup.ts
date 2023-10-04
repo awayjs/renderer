@@ -2,7 +2,7 @@ import {
 	IAssetClass,
 	IAsset,
   	IAbstractionPool,
-	AbstractionBase,
+	UUID,
 } from '@awayjs/core';
 
 import { _IRender_ElementsClass } from './base/_IRender_ElementsClass';
@@ -24,7 +24,7 @@ export class RenderGroup implements IAbstractionPool {
 	public readonly id: number;
 
 	constructor(rendererClass: IRendererClass) {
-		this.id = AbstractionBase.ID_COUNT++;
+		this.id = UUID.Next();
 		this.rendererClass = rendererClass;
 	}
 
@@ -49,7 +49,7 @@ export class RenderGroup implements IAbstractionPool {
 		RenderGroup._renderElementsClassPool[elementsClass.assetType] = renderElementsClass;
 	}
 
-	public static getRenderElements(elementsClass: IAssetClass): _IRender_ElementsClass {
-		return RenderGroup._renderElementsClassPool[elementsClass.assetType];
+	public static getRenderElementsClass(asset: IAsset): _IRender_ElementsClass {
+		return RenderGroup._renderElementsClassPool[asset.assetType];
 	}
 }

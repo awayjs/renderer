@@ -1,5 +1,4 @@
 import {
-	AbstractionBase,
 	Matrix,
 	Matrix3D,
 	Vector3D,
@@ -8,6 +7,7 @@ import {
 	IAssetClass,
 	IAbstractionClass,
 	IAsset,
+	UUID,
 } from '@awayjs/core';
 
 import {
@@ -391,7 +391,7 @@ export class ShaderBase implements IShaderBase {
 	 * Creates a new MethodCompilerVO object.
 	 */
 	constructor(renderElements: _Render_ElementsBase, renderMaterial: _Render_MaterialBase, pass: IPass, stage: Stage) {
-		this.id = AbstractionBase.ID_COUNT++;
+		this.id = UUID.Next();
 		this._renderElements = renderElements;
 		this._renderMaterial = renderMaterial;
 		this._pass = pass;

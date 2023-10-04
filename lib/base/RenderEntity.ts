@@ -1,4 +1,4 @@
-import { IAssetClass, IAbstractionPool, AssetEvent, AbstractionBase, IAsset, IAbstractionClass } from '@awayjs/core';
+import { IAssetClass, IAbstractionPool, AssetEvent, AbstractionBase, IAsset, IAbstractionClass, UUID } from '@awayjs/core';
 
 import { Stage } from '@awayjs/stage';
 
@@ -45,7 +45,7 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 	constructor(entity: EntityNode | CacheRenderer, renderer: RendererBase) {
 		super(entity, renderer);
 
-		this.id = AbstractionBase.ID_COUNT++;
+		this.id = UUID.Next();
 		this.node = entity.parent;
 		this.stage = renderer.stage;
 
