@@ -28,7 +28,6 @@ export class _Render_RendererMaterial extends _Render_MaterialPassBase {
 	public onClear(event: AssetEvent): void {
 		super.onClear(event);
 
-		this._texture.onClear(new AssetEvent(AssetEvent.CLEAR, this._renderer.texture));
 		this._texture = null;
 
 		this._renderer = null;
