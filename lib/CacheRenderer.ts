@@ -292,8 +292,20 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this.texture.clear();
 		this.texture = null;
 
-		this.style.image.clear();
-		this.style.image = null;
+		this._style.image.clear();
+		this._style.image = null;
+
+		if (this._parentNode) {
+			this._parentNode.removeEventListener(ContainerNodeEvent.INVALIDATE_MATRIX3D, this._onInvalidateParentNode);
+			this._parentNode.removeEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
+			this._parentNode = null;
+		}
+
+		this._node.container.removeEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateParentNode);
+		this._node.container.removeEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
+		this._node = null;
+		
+		this.clear();
 	}
 
 	public static registerMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IAssetClass): void {
