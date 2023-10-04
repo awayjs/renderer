@@ -103,8 +103,10 @@ export class DefaultRenderer extends RendererBase {
 	public onClear(event: AssetEvent): void {
 		super.onClear(event);
 
-		this._pRttBufferManager.dispose();
-		this._pRttBufferManager = null;
+		if (this._pRttBufferManager) {
+			this._pRttBufferManager.dispose();
+			this._pRttBufferManager = null;
+		}
 
 		this._depthRenderer.onClear(event);
 		this._distanceRenderer.onClear(event);
