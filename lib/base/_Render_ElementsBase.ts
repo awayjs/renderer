@@ -1,7 +1,6 @@
 
 import { Stage, ShaderRegisterCache, ShaderRegisterData } from '@awayjs/stage';
-import { AbstractionBase, IAbstractionClass, IAbstractionPool, IAsset } from '@awayjs/core';
-import { RenderGroup } from '../RenderGroup';
+import { AssetBase, AssetEvent, EventDispatcher, IAbstractionClass, IAbstractionPool, IAsset, UUID } from '@awayjs/core';
 import { ShaderBase } from './ShaderBase';
 import { _IRender_MaterialClass } from './_IRender_MaterialClass';
 import { RendererBase } from '../RendererBase';
@@ -9,14 +8,12 @@ import { RendererBase } from '../RendererBase';
 /**
  * @class away.pool.MaterialPoolBase
  */
-export class _Render_ElementsBase implements IAbstractionPool {
+export class _Render_ElementsBase extends AssetBase implements IAbstractionPool {
 
 	private _materialClassPool: Record<string, _IRender_MaterialClass>;
 
 	readonly stage: Stage;
 	readonly renderer: RendererBase;
-
-	public readonly id: number;
 
 	/**
 	 * //TODO
@@ -24,10 +21,14 @@ export class _Render_ElementsBase implements IAbstractionPool {
 	 * @param materialClassGL
 	 */
 	constructor(renderer: RendererBase) {
-		this.id = AbstractionBase.ID_COUNT++;
+		super();
 		this.renderer = renderer;
 		this.stage = renderer.view.stage;
 		this._materialClassPool = renderer.group.materialClassPool;
+	}
+
+	public clear(): void {
+		this.dispatchEvent(new AssetEvent(AssetEvent.CLEAR, this));
 	}
 
 	public requestAbstraction(asset: IAsset): IAbstractionClass {

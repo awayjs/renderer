@@ -291,6 +291,11 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		this._onContextUpdateDelegate = null;
 		this._onSizeInvalidateDelegate = null;
+
+		for (let key in  this._elementsPools) {
+			this._elementsPools[key].clear();
+			delete this._elementsPools[key];
+		}
 	}
 
 	public onInvalidate(event: AssetEvent): void {
@@ -323,7 +328,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	public getRenderElements(elements: IAsset): _Render_ElementsBase {
 
 		return this._elementsPools[elements.assetType]
-			|| (this._elementsPools[elements.assetType] = new (RenderGroup.getRenderElements(elements))(this));
+			|| (this._elementsPools[elements.assetType] = new (RenderGroup.getRenderElementsClass(elements))(this));
 	}
 
 	public requestAbstraction(asset: IAsset): IAbstractionClass {

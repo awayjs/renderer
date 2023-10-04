@@ -119,6 +119,8 @@ export class _Render_MaterialBase extends AbstractionBase {
 		this._stage = renderElements.stage;
 		this._renderer = renderElements.renderer;
 
+		this.renderElements.addEventListener(AssetEvent.CLEAR, this._onClearDelegate);
+
 		this._onInvalidateTexturesDelegate = (event: MaterialEvent) => this.onInvalidateTextures(event);
 		this._onInvalidatePassesDelegate = (event: MaterialEvent) => this.onInvalidatePasses(event);
 
@@ -197,10 +199,12 @@ export class _Render_MaterialBase extends AbstractionBase {
 	 * @internal
 	 */
 	public removeOwner(owner: _Render_RenderableBase): void {
-		this._owners.splice(this._owners.indexOf(owner), 1);
+		if (this._owners) {
+			this._owners.splice(this._owners.indexOf(owner), 1);
 
-		if (!this._owners.length)
-			this.onClear(null);
+			if (!this._owners.length)
+				this.onClear(null);
+		}
 	}
 
 	public getImageIndex(texture: ITexture, index: number = 0): number {
@@ -215,6 +219,8 @@ export class _Render_MaterialBase extends AbstractionBase {
 	 */
 	public onClear(event: AssetEvent): void {
 		super.onClear(event);
+
+		this._renderElements.removeEventListener(AssetEvent.CLEAR, this._onClearDelegate);
 
 		const len: number = this._passes.length;
 		for (let i: number = 0; i < len; i++) {
