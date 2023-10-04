@@ -304,7 +304,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this._node.container.removeEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateParentNode);
 		this._node.container.removeEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
 		this._node = null;
-		
+
 		this.clear();
 	}
 

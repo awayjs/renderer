@@ -292,7 +292,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._onContextUpdateDelegate = null;
 		this._onSizeInvalidateDelegate = null;
 
-		for (let key in  this._elementsPools) {
+		for (const key in  this._elementsPools) {
 			this._elementsPools[key].clear();
 			delete this._elementsPools[key];
 		}
