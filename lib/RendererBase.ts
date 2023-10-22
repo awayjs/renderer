@@ -25,6 +25,8 @@ import {
 	Image2D,
 	ImageSampler,
 	BlendMode,
+	isNativeBlend,
+	Settings as StageSettings
 } from '@awayjs/stage';
 
 import {
@@ -231,22 +233,14 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		const containerBlend = <string> this._node.container.blendMode;
 
 		// native blends
-		switch (containerBlend) {
-			case BlendMode.LAYER:
-			case BlendMode.MULTIPLY:
-			case BlendMode.NORMAL:
-			case BlendMode.ADD:
-			case BlendMode.SCREEN:
-			case BlendMode.ALPHA:
-			case BlendMode.SUBTRACT:
-				return containerBlend;
-		}
+		if (isNativeBlend(containerBlend))
+			return containerBlend;
 
 		return BlendMode.LAYER;
 	}
 
 	public get useNonNativeBlend(): boolean {
-		return Settings.USE_NON_NATIVE_BLEND
+		return StageSettings.USE_NON_NATIVE_BLEND
 				&& this._node.container.blendMode
 				&& this._node.container.blendMode !== BlendMode.LAYER
 				&& this.blendMode == BlendMode.LAYER;
@@ -374,7 +368,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		 _backgroundImageRenderer.render();
 		 */
 
-		if (!Settings.USE_NON_NATIVE_BLEND || this._invalid)
+		if (!StageSettings.USE_NON_NATIVE_BLEND || this._invalid)
 			this.traverse();
 
 		this.executeRender(enableDepthAndStencil, surfaceSelector, mipmapSelector);
