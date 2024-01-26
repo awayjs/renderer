@@ -388,7 +388,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 
 				this.samplers[index] = texture.getSamplerAt(j)
 					|| style?.getSamplerAt(texture, j)
-					|| ImageUtils.getDefaultSampler();
+					|| ImageUtils.getDefaultImageSampler();
 
 				images[j] = index++;
 			}
