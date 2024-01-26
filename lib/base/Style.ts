@@ -155,12 +155,12 @@ export class Style extends EventDispatcher {
 		if (this._image == image) {
 			this.image = null;
 		} else {
-		
+
 			//find and remove cleared image
 			loop :
-			for (let id in this._images) {
+			for (const id in this._images) {
 				const images = this._images[id];
-				for (let index in images) {
+				for (const index in images) {
 					if (images[index] == image) {
 						delete images[index];
 						break loop;
