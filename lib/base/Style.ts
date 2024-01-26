@@ -12,9 +12,9 @@ export class Style extends EventDispatcher {
 	private _onImageInvalidate: (event: AssetEvent) => void;
 	private _onImageClear: (event: AssetEvent) => void;
 	private _sampler: ImageSampler;
-	private _samplers: Object = new Object();
+	private _samplers: Record<number, Record<number, ImageSampler>> = {};
 	private _image: ImageBase;
-	private _images: Object = new Object();
+	private _images: Record<number, Record<number, ImageBase>>  = {};
 	private _uvMatrix: Matrix;
 	private _color: number = 0xFFFFFF;
 
@@ -86,21 +86,21 @@ export class Style extends EventDispatcher {
 	constructor() {
 		super();
 
-		this._onImageInvalidate = (event: AssetEvent) => this._invalidateImages();
-		this._onImageClear = (event: AssetEvent) => this._invalidateProperties();
+		this._onImageInvalidate = (event: AssetEvent) => this._invalidateImages(event);
+		this._onImageClear = (event: AssetEvent) => this._clearImages(event);
 	}
 
 	public getImageAt(texture: ITexture, index: number = 0): ImageBase {
-		return (this._images[texture.id] ? this._images[texture.id][index] : null) || this._image;
+		return this._images[texture.id]?.[index] || this._image;
 	}
 
 	public getSamplerAt(texture: ITexture, index: number = 0): ImageSampler {
-		return (this._samplers[texture.id] ? this._samplers[texture.id][index] : null) || this._sampler;
+		return this._samplers[texture.id]?.[index] || this._sampler;
 	}
 
 	public addImageAt(image: ImageBase, texture: ITexture, index: number = 0): void {
 		if (!this._images[texture.id])
-			this._images[texture.id] = new Array<ImageBase>();
+			this._images[texture.id] = {};
 
 		this._images[texture.id][index] = image;
 
@@ -112,7 +112,7 @@ export class Style extends EventDispatcher {
 
 	public addSamplerAt(sampler: ImageSampler, texture: ITexture, index: number = 0): void {
 		if (!this._samplers[texture.id])
-			this._samplers[texture.id] = new Array<ImageSampler>();
+			this._samplers[texture.id] = {};
 
 		this._samplers[texture.id][index] = sampler;
 
@@ -145,7 +145,30 @@ export class Style extends EventDispatcher {
 		this.dispatchEvent(new StyleEvent(StyleEvent.INVALIDATE_PROPERTIES, this));
 	}
 
-	private _invalidateImages(): void {
+	private _invalidateImages(event: AssetEvent): void {
 		this.dispatchEvent(new StyleEvent(StyleEvent.INVALIDATE_IMAGES, this));
+	}
+
+	private _clearImages(event: AssetEvent): void {
+		const image: ImageBase = <ImageBase> event.asset;
+
+		if (this._image == image) {
+			this.image = null;
+		} else {
+		
+			//find and remove cleared image
+			loop :
+			for (let id in this._images) {
+				const images = this._images[id];
+				for (let index in images) {
+					if (images[index] == image) {
+						delete images[index];
+						break loop;
+					}
+				}
+			}
+		}
+
+		this._invalidateProperties();
 	}
 }
