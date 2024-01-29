@@ -1,30 +1,21 @@
 import {
 	AssetEvent,
-	Box,
-	IAbstractionClass,
 	IAbstractionPool,
-	IAsset,
 	IAssetClass,
 	Matrix3D,
 	PerspectiveProjection,
-	Rectangle,
 } from '@awayjs/core';
 import {
 	AttributesBuffer,
-	BlendMode,
 	Image2D,
-	ImageSampler,
 	ContextGLTriangleFace
 } from '@awayjs/stage';
 import {
-	BoundsPicker,
 	ContainerNode,
 	ContainerNodeEvent,
-	IEntityTraverser,
 	INode,
 	PartitionBase,
-	PickGroup,
-	View
+	PickGroup
 } from '@awayjs/view';
 
 import { IMaterial } from './base/IMaterial';
@@ -37,12 +28,10 @@ import { _Stage_ElementsBase } from './base/_Stage_ElementsBase';
 import { TriangleElements, _Stage_TriangleElements } from './elements/TriangleElements';
 import { MaterialEvent } from './events/MaterialEvent';
 import { RenderableEvent } from './events/RenderableEvent';
-import { StyleEvent } from './events/StyleEvent';
 import { RendererBase } from './RendererBase';
 import { RenderGroup } from './RenderGroup';
 import { ImageTexture2D } from './textures/ImageTexture2D';
 import { Settings as StageSettings } from '@awayjs/stage';
-import { Settings } from './Settings';
 import { RenderEntity } from './base/RenderEntity';
 import { DefaultRenderer } from './DefaultRenderer';
 
@@ -189,7 +178,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this._node.colorTransformDisabled = this._node.transformDisabled;
 
 		if (targetImage.width * targetImage.height === 0) {
-			debugger;
+			throw new Error('Cannot have image with size 0 * 0');
 		}
 
 		//@ts-ignore
@@ -323,7 +312,7 @@ export class _Render_Renderer extends _Render_RenderableBase {
 
 		const asset = <CacheRenderer> this._asset;
 		const paddedBounds = asset.getPaddedBounds();
-		const bounds = asset.getBounds();
+		//const bounds = asset.getBounds();
 		const offsetX = 0;//paddedBounds.x - bounds.x;
 		const offsetY = 0;//paddedBounds.y - bounds.y;
 		const matrix3D: Matrix3D = Matrix3D.CALCULATION_MATRIX;

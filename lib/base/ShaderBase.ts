@@ -514,6 +514,7 @@ export class ShaderBase implements IShaderBase {
 					ContextGLBlendEquation.SUBTRACT,
 					ContextGLBlendEquation.ADD
 				];
+				break;
 			}
 			case BlendMode.ALPHA: {
 				this._blendFactor = [ContextGLBlendFactor.ZERO, ContextGLBlendFactor.SOURCE_ALPHA];

@@ -1,5 +1,5 @@
 
-import { ShaderRegisterCache, ShaderRegisterData, ShaderRegisterElement } from '@awayjs/stage';
+import { ShaderRegisterCache, ShaderRegisterData } from '@awayjs/stage';
 import { PassEvent } from '../events/PassEvent';
 import { IPass } from './IPass';
 import { ShaderBase } from './ShaderBase';

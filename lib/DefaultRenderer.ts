@@ -1,13 +1,12 @@
 import { AssetEvent, IAssetClass } from '@awayjs/core';
 import { BitmapImage2D, IContextGL } from '@awayjs/stage';
-import { INode, PartitionBase, PickGroup, View } from '@awayjs/view';
+import { INode, PartitionBase, PickGroup } from '@awayjs/view';
 import { RenderGroup } from './RenderGroup';
 import { DepthRenderer } from './DepthRenderer';
 import { DistanceRenderer } from './DistanceRenderer';
 import { RendererBase } from './RendererBase';
 import { _IRender_MaterialClass } from './base/_IRender_MaterialClass';
 import { CacheRenderer } from './CacheRenderer';
-import { _Render_RendererMaterial } from './base/_Render_RendererMaterial';
 
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the

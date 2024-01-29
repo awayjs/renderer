@@ -54,20 +54,20 @@ export class LineElementsUtils {
 				by = positions[id1 + 1];
 
 				//from a to p
-				var dx: number = ax - x;
-				var dy: number = ay - y;
+				const dx: number = ax - x;
+				const dy: number = ay - y;
 
 				//edge normal (a-b)
-				var nx: number = by - ay;
-				var ny: number = -(bx - ax);
-				var D: number = Math.sqrt(nx * nx + ny * ny);
+				const nx: number = by - ay;
+				const ny: number = -(bx - ax);
+				const D: number = Math.sqrt(nx * nx + ny * ny);
 
 				//TODO: should strictly speaking be an elliptical calculation, use circle to approx temp
 				if (Math.abs((dx * nx) + (dy * ny)) > thickness * D)
 					break precheck;
 
 				//edge vector
-				var dot: number = (dx * ny) - (dy * nx);
+				const dot: number = (dx * ny) - (dy * nx);
 
 				if (dot > D * D || dot < 0)
 					break precheck;
@@ -90,7 +90,7 @@ export class LineElementsUtils {
 				//now we have bounds start creating grid cells and filling
 				cells.length = divisions * divisions;
 
-				for (var k: number = 0; k < len; k += 3) {
+				for (let k: number = 0; k < len; k += 3) {
 					if (indices) {
 						id0 = indices[k] * posStride;
 						id1 = indices[k + 1] * posStride;
@@ -114,7 +114,7 @@ export class LineElementsUtils {
 					for (let i: number = min_index_x; i <= max_index_x; i++) {
 						for (let j: number = min_index_y; j <= max_index_y; j++) {
 							const c: number = i + j * divisions;
-							var nodes: Array<number> = cells[c] || (cells[c] = new Array<number>());
+							const nodes: Array<number> = cells[c] || (cells[c] = new Array<number>());
 
 							//push in the triangle ids
 							nodes.push(k);
@@ -125,7 +125,7 @@ export class LineElementsUtils {
 
 			const index_x: number = Math.floor((x - minx) * conversionX);
 			const index_y: number = Math.floor((y - miny) * conversionY);
-			var nodes: Array<number> = cells[index_x + index_y * divisions];
+			const nodes: Array<number> = cells[index_x + index_y * divisions];
 
 			if (nodes == null) {
 				hitTestCache.lastCollisionIndex = -1;
@@ -134,7 +134,7 @@ export class LineElementsUtils {
 
 			const nodeCount: number = nodes.length;
 			for (let n: number = 0; n < nodeCount; n++) {
-				var k: number = nodes[n];
+				const k: number = nodes[n];
 
 				if (indices) {
 					id0 = indices[k] * posStride;
@@ -150,20 +150,20 @@ export class LineElementsUtils {
 				by = positions[id1 + 1];
 
 				//from a to p
-				var dx: number = ax - x;
-				var dy: number = ay - y;
+				const dx: number = ax - x;
+				const dy: number = ay - y;
 
 				//edge normal (a-b)
-				var nx: number = by - ay;
-				var ny: number = -(bx - ax);
-				var D: number = Math.sqrt(nx * nx + ny * ny);
+				const nx: number = by - ay;
+				const ny: number = -(bx - ax);
+				const D: number = Math.sqrt(nx * nx + ny * ny);
 
 				//TODO: should strictly speaking be an elliptical calculation, use circle to approx temp
 				if (Math.abs((dx * nx) + (dy * ny)) > thickness * D)
 					continue;
 
 				//edge vector
-				var dot: number = (dx * ny) - (dy * nx);
+				const dot: number = (dx * ny) - (dy * nx);
 
 				if (dot > D * D || dot < 0)
 					continue;
@@ -176,7 +176,7 @@ export class LineElementsUtils {
 		}
 
 		//brute force
-		for (var k: number = 0; k < len; k += 6) {
+		for (let k: number = 0; k < len; k += 6) {
 			if (indices) {
 				id0 = indices[k] * posStride;
 				id1 = indices[k + 1] * posStride;
@@ -191,20 +191,20 @@ export class LineElementsUtils {
 			by = positions[id1 + 1];
 
 			//from a to p
-			var dx: number = ax - x;
-			var dy: number = ay - y;
+			const dx: number = ax - x;
+			const dy: number = ay - y;
 
 			//edge normal (a-b)
-			var nx: number = by - ay;
-			var ny: number = -(bx - ax);
-			var D: number = Math.sqrt(nx * nx + ny * ny);
+			const nx: number = by - ay;
+			const ny: number = -(bx - ax);
+			const D: number = Math.sqrt(nx * nx + ny * ny);
 
 			//TODO: should strictly speaking be an elliptical calculation, use circle to approx temp
 			if (Math.abs((dx * nx) + (dy * ny)) > thickness * D)
 				continue;
 
 			//edge vector
-			var dot: number = (dx * ny) - (dy * nx);
+			const dot: number = (dx * ny) - (dy * nx);
 
 			if (dot > D * D || dot < 0)
 				continue;
@@ -238,14 +238,13 @@ export class LineElementsUtils {
 		if (len == 0)
 			return target;
 
-		var i: number = 0;
 		let index: number;
 		let pos1: number, pos2: number, pos3: number, rawData: Float32Array;
 
 		if (matrix3D)
 			rawData = matrix3D._rawData;
 
-		for (var i: number = 0; i < len; i += 3) {
+		for (let i: number = 0; i < len; i += 3) {
 			index = (indices) ? indices[i] * posStride : i * posStride;
 
 			if (matrix3D) {

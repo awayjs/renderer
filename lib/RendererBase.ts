@@ -2,7 +2,6 @@ import {
 	Matrix3D,
 	Plane3D,
 	Vector3D,
-	ProjectionBase,
 	AbstractionBase,
 	AssetEvent,
 	IAsset,
@@ -55,7 +54,6 @@ import { RenderableMergeSort } from './sort/RenderableMergeSort';
 import { IRenderable } from './base/IRenderable';
 import { CacheRenderer } from './CacheRenderer';
 import { _Render_ElementsBase } from './base/_Render_ElementsBase';
-import { _IRender_MaterialClass } from './base/_IRender_MaterialClass';
 import { Style } from './base/Style';
 import { StyleEvent } from './events/StyleEvent';
 import { RenderableEvent } from './events/RenderableEvent';
@@ -196,7 +194,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	/**
 	 *
 	 */
-	 public get style(): Style {
+	public get style(): Style {
 		if (this._boundsDirty)
 			this._updateBounds();
 
@@ -927,7 +925,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			const image =  <Image2D> this._style.image;
 
 			if (pad.width * pad.height == 0) {
-				debugger;
+				throw new Error('Cannot have image with size 0 * 0');
 			}
 
 			if (image) {

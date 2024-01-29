@@ -1,12 +1,11 @@
 import {
 	IAssetClass,
 	IAsset,
-  	IAbstractionPool,
+	IAbstractionPool,
 	UUID,
 } from '@awayjs/core';
 
 import { _IRender_ElementsClass } from './base/_IRender_ElementsClass';
-import { _Render_ElementsBase } from './base/_Render_ElementsBase';
 import { RendererBase } from './RendererBase';
 import { PartitionBase } from '@awayjs/view';
 import { _IRender_MaterialClass } from './base/_IRender_MaterialClass';

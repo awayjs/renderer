@@ -15,7 +15,6 @@ import { IAnimator } from './IAnimator';
 import { ITexture } from '../base/ITexture';
 import { PassEvent } from '../events/PassEvent';
 import { MaterialEvent } from '../events/MaterialEvent';
-import { RenderGroup } from '../RenderGroup';
 import { IAnimationSet } from './IAnimationSet';
 import { _Render_ElementsBase } from './_Render_ElementsBase';
 import { ShaderBase } from './ShaderBase';

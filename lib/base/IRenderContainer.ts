@@ -1,7 +1,7 @@
 import { IAnimator } from './IAnimator';
 import { IMaterial } from './IMaterial';
 import { Style } from './Style';
-import { IPartitionContainer, IPartitionEntity } from '@awayjs/view';
+import { IPartitionContainer } from '@awayjs/view';
 
 export interface IRenderContainer extends IPartitionContainer
 {
