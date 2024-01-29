@@ -152,18 +152,21 @@ export class Style extends EventDispatcher {
 	private _clearImages(event: AssetEvent): void {
 		const image: ImageBase = <ImageBase> event.asset;
 
-		if (this._image == image) {
-			this.image = null;
-		} else {
+		//remove image if it has been disposed
+		if (image.isDisposed) {
+			if (this._image == image) {
+				this.image = null;
+			} else {
 
-			//find and remove cleared image
-			loop :
-			for (const id in this._images) {
-				const images = this._images[id];
-				for (const index in images) {
-					if (images[index] == image) {
-						delete images[index];
-						break loop;
+				//find and remove diposed image
+				loop :
+				for (const id in this._images) {
+					const images = this._images[id];
+					for (const index in images) {
+						if (images[index] == image) {
+							delete images[index];
+							break loop;
+						}
 					}
 				}
 			}
