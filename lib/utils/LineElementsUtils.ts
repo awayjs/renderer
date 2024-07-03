@@ -307,8 +307,8 @@ export class LineElementsUtils {
 
 		target.x -= thicknessX;
 		target.y -= thicknessY;
-		target.right += thicknessX;
-		target.bottom += thicknessY;
+		target.width += thicknessX * 2;
+		target.height += thicknessY * 2;
 
 		return target;
 	}
