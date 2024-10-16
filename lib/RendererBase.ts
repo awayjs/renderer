@@ -393,6 +393,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	public traverse(): void {
 		this.resetHead();
 
+		this._invalid = false;
 		this._pNumElements = 0;
 		this._activeMaskOwners = null;
 
@@ -411,8 +412,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			// this._pOpaqueRenderableHead = this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
 			// this._pBlendedRenderableHead = this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
 		}
-
-		this._invalid = false;
 	}
 
 	public _iRenderCascades(
