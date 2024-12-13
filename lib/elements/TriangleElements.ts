@@ -18,7 +18,7 @@ import { ConvexHullUtils } from '../utils/ConvexHullUtils';
 
 import { ElementsBase, THullImplId } from './ElementsBase';
 
-const MIN_COEFF: number = 1/10000000;
+const MIN_COEFF: number = 1 / 10000000;
 /**
  * @class away.base.TriangleElements
  */
