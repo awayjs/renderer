@@ -18,6 +18,7 @@ import { ConvexHullUtils } from '../utils/ConvexHullUtils';
 
 import { ElementsBase, THullImplId } from './ElementsBase';
 
+const MIN_COEFF: number = 1/10000000;
 /**
  * @class away.base.TriangleElements
  */
@@ -748,9 +749,10 @@ export class TriangleElements extends ElementsBase {
 				rz = cz - p0z;
 				RQ1 = rx * s0x + ry * s0y + rz * s0z;
 				RQ2 = rx * s1x + ry * s1y + rz * s1z;
-				coeff = 1 / (Q1Q1 * Q2Q2 - Q1Q2 * Q1Q2);
-				if (!isFinite(coeff))
+				coeff = (Q1Q1 * Q2Q2 - Q1Q2 * Q1Q2);
+				if (Math.abs(coeff) < MIN_COEFF) // points are in a line (should be zero but rounding errors)
 					continue;
+				coeff = 1 / coeff;
 				v = coeff * (Q2Q2 * RQ1 - Q1Q2 * RQ2);
 				w = coeff * (-Q1Q2 * RQ1 + Q1Q1 * RQ2);
 				if (v < 0)
