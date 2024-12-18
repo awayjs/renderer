@@ -20,7 +20,7 @@ export class DepthRenderer extends RendererBase {
 	 * @param renderBlended Indicates whether semi-transparent objects should be rendered.
 	 * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
 	 */
-	public init(partition: PartitionBase, pool: RenderGroup):void {
+	public init(partition: PartitionBase, pool: RenderGroup): void {
 		super.init(partition, pool);
 
 		this._traverserGroup = RenderGroup.getInstance(CacheRenderer);

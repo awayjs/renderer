@@ -141,7 +141,7 @@ export class _Stage_ElementsBase extends AbstractionBase {
 			this._overflow.onClear(event);
 			this._overflow = null;
 		}
-		
+
 		this._indices = null;
 		this._indicesUpdated = false;
 		this._vertices = {};

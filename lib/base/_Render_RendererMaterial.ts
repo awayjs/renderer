@@ -13,7 +13,7 @@ export class _Render_RendererMaterial extends _Render_MaterialPassBase {
 	public _renderer: CacheRenderer;
 	public _texture: _Shader_TextureBase;
 
-	public init(renderer: CacheRenderer, renderElements: _Render_ElementsBase): void{
+	public init(renderer: CacheRenderer, renderElements: _Render_ElementsBase): void {
 		super.init(renderer, renderElements);
 
 		this._renderer = renderer;

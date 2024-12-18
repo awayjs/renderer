@@ -509,7 +509,7 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
 	private _lineElements: LineElements;
 	private _vaoIsInvalid: boolean = true;
 
-	public init(lineElements: LineElements, stage: Stage):void {
+	public init(lineElements: LineElements, stage: Stage): void {
 		super.init(lineElements, stage);
 
 		this._lineElements = lineElements;

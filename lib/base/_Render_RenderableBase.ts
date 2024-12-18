@@ -175,6 +175,7 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 		this._onInvalidateMaterialDelegate = (event: RenderableEvent) => this._onInvalidateMaterial(event);
 		this._onInvalidateStyleDelegate = (event: RenderableEvent) => this._onInvalidateStyle(event);
 	}
+
 	/**
 	 *
 	 * @param renderable
