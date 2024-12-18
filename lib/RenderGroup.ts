@@ -3,6 +3,7 @@ import {
 	IAsset,
 	IAbstractionPool,
 	UUID,
+	IAbstraction,
 } from '@awayjs/core';
 
 import { _IRender_ElementsClass } from './base/_IRender_ElementsClass';
@@ -18,6 +19,10 @@ export class RenderGroup implements IAbstractionPool {
 
 	public readonly rendererClass: IRendererClass;
 
+	public readonly store: IAbstraction[] = [];
+
+	public readonly materialStore: Record<string,  IAbstraction[]> = {};
+
 	public readonly materialClassPool: Record<string, _IRender_MaterialClass> = {};
 
 	public readonly id: number;
@@ -27,8 +32,12 @@ export class RenderGroup implements IAbstractionPool {
 		this.rendererClass = rendererClass;
 	}
 
-	public requestAbstraction(asset: IAsset): IRendererClass {
-		return this.rendererClass;
+	public requestAbstraction(asset: IAsset): IAbstraction {
+		return this.store.length ? this.store.pop() : new this.rendererClass();
+	}
+
+	public storeAbstraction(abstraction: IAbstraction): void {
+		this.store.push(abstraction);
 	}
 
 	public getRenderer <T extends RendererBase>(partition: PartitionBase): T {
@@ -38,6 +47,11 @@ export class RenderGroup implements IAbstractionPool {
 	public static getInstance(rendererClass: IRendererClass) {
 		return RenderGroup._renderGroupPool[rendererClass.assetType]
 				|| (RenderGroup._renderGroupPool[rendererClass.assetType] = new RenderGroup(rendererClass));
+	}
+
+	public registerMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IAssetClass): void {
+		this.materialClassPool[materialClass.assetType] = renderMaterialClass;
+		this.materialStore[materialClass.assetType] = [];
 	}
 
 	/**

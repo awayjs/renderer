@@ -5,9 +5,9 @@ import {
 	AbstractionBase,
 	AssetEvent,
 	IAsset,
-	IAbstractionClass,
 	Box,
 	Rectangle,
+	IAbstraction,
 } from '@awayjs/core';
 
 import {
@@ -65,6 +65,7 @@ import { RenderableEvent } from './events/RenderableEvent';
  * @class away.render.RendererBase
  */
 export class RendererBase extends AbstractionBase implements IPartitionTraverser, IEntityTraverser {
+	private static _store: IAbstraction[] = [];
 	public static _collectionMark = 0;
 
 	protected _renderMatrix: Matrix3D = new Matrix3D();
@@ -223,9 +224,13 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 */
 	public renderableSorter: IRenderEntitySorter = new RenderableMergeSort();
 
-	public readonly view: View;
+	public partition: PartitionBase;
 
-	public readonly stage: Stage;
+	public group: RenderGroup;
+
+	public view: View;
+
+	public stage: Stage;
 
 	public get blendMode(): string {
 		const containerBlend = <string> this._node.container.blendMode;
@@ -244,21 +249,25 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				&& this.blendMode == BlendMode.LAYER;
 	}
 
-	/**
-	 * Creates a new RendererBase object.
-	 */
-	constructor(
-		public readonly partition: PartitionBase,
-		public readonly group: RenderGroup
-	) {
-		super(partition, group);
-
-		this._node = partition.rootNode;
-		this._parentNode = partition.parent?.rootNode;
+	constructor() {
+		super();
 
 		this._onInvalidateProperties = (_event: StyleEvent) => this._invalidateStyle();
 		this._onSizeInvalidateDelegate = (event: ViewEvent) => this.onSizeInvalidate(event);
 		this._onContextUpdateDelegate = (event: StageEvent) => this.onContextUpdate(event);
+	}
+
+	/**
+	 * Creates a new RendererBase object.
+	 */
+	public init(partition: PartitionBase, group: RenderGroup): void {
+		super.init(partition, group);
+
+		this.partition = partition;
+		this.group = group;
+
+		this._node = partition.rootNode;
+		this._parentNode = partition.parent?.rootNode;
 
 		this.style = new Style();
 		this.view = this.partition.rootNode.view;
@@ -281,13 +290,26 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this.stage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 		this.view.removeEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 
-		this._onContextUpdateDelegate = null;
-		this._onSizeInvalidateDelegate = null;
+		this.partition = null;
+		this.group = null;
+		this._node = null;
+		this._parentNode = null;
+		this._boundsPicker = null;
+		this._activeMasksDirty = false;
+		this._activeMaskOwners = null;
+
+		if (this._style) {
+			this._style.removeEventListener(StyleEvent.INVALIDATE_PROPERTIES, this._onInvalidateProperties);
+			this._style = null;
+		}
 
 		for (const key in  this._elementsPools) {
 			this._elementsPools[key].clear();
 			delete this._elementsPools[key];
 		}
+
+		this._boundsDirty = true;
+		this._entityMaskOwners = null;
 	}
 
 	public onInvalidate(event: AssetEvent): void {
@@ -323,8 +345,12 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			|| (this._elementsPools[elements.assetType] = new (RenderGroup.getRenderElementsClass(elements))(this));
 	}
 
-	public requestAbstraction(asset: IAsset): IAbstractionClass {
-		return RenderEntity;
+	public requestAbstraction(asset: IAsset): IAbstraction {
+		return RendererBase._store.length ? RendererBase._store.pop() : new RenderEntity();
+	}
+
+	public storeAbstraction(abstraction: IAbstraction): void {
+		RendererBase._store.push(abstraction);
 	}
 
 	/**

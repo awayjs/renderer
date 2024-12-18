@@ -509,8 +509,8 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
 	private _lineElements: LineElements;
 	private _vaoIsInvalid: boolean = true;
 
-	constructor(lineElements: LineElements, stage: Stage) {
-		super(lineElements, stage);
+	public init(lineElements: LineElements, stage: Stage):void {
+		super.init(lineElements, stage);
 
 		this._lineElements = lineElements;
 		this._vao = (stage.context.hasVao && Settings.ALLOW_VAO && !this._lineElements.isDynamic)
@@ -629,7 +629,7 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
      * @protected
      */
 	public _pGetOverflowElements(): _Stage_ElementsBase {
-		return new _Stage_LineElements(this._lineElements, this._stage);
+		return <_Stage_ElementsBase> this._lineElements.getNewAbstraction(this._stage);
 	}
 }
 

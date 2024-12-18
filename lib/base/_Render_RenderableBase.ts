@@ -87,7 +87,7 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 	/**
 	 *
 	 */
-	readonly node: ContainerNode;
+	public node: ContainerNode;
 
 	/**
 	 *
@@ -168,6 +168,13 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 		return this._renderMaterial;
 	}
 
+	constructor() {
+		super();
+
+		this._onInvalidateElementsDelegate = (event: RenderableEvent) => this._onInvalidateElements(event);
+		this._onInvalidateMaterialDelegate = (event: RenderableEvent) => this._onInvalidateMaterial(event);
+		this._onInvalidateStyleDelegate = (event: RenderableEvent) => this._onInvalidateStyle(event);
+	}
 	/**
 	 *
 	 * @param renderable
@@ -175,12 +182,8 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 	 * @param surface
 	 * @param renderer
 	 */
-	constructor(renderable: IAsset, renderEntity: RenderEntity) {
-		super(renderable, renderEntity);
-
-		this._onInvalidateElementsDelegate = (event: RenderableEvent) => this._onInvalidateElements(event);
-		this._onInvalidateMaterialDelegate = (event: RenderableEvent) => this._onInvalidateMaterial(event);
-		this._onInvalidateStyleDelegate = (event: RenderableEvent) => this._onInvalidateStyle(event);
+	public init(renderable: IAsset, renderEntity: RenderEntity): void {
+		super.init(renderable, renderEntity);
 
 		//store references
 		this.node = renderEntity.node;
@@ -242,7 +245,6 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 
 		this.renderSceneTransform = null;
 
-		//this.sourceEntity = null;
 		this._stage = null;
 
 		this.next = null;
@@ -252,6 +254,10 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 
 		this._renderMaterial = null;
 		this._stageElements = null;
+
+		this._materialDirty = true;
+		this._elementsDirty = true;
+		this._styleDirty = true;
 	}
 
 	public _onInvalidateElements(event: RenderableEvent = null): void {

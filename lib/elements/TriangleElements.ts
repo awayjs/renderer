@@ -828,8 +828,8 @@ export class _Stage_TriangleElements extends _Stage_ElementsBase {
 	private _vao: IVao;
 	private _vaoIsInvalid: boolean = true;
 
-	constructor(triangleElements: TriangleElements, stage: Stage) {
-		super(triangleElements, stage);
+	public init(triangleElements: TriangleElements, stage: Stage): void {
+		super.init(triangleElements, stage);
 
 		this._triangleElements = triangleElements;
 		if (!this._triangleElements.isDynamic
@@ -983,7 +983,7 @@ export class _Stage_TriangleElements extends _Stage_ElementsBase {
      * @protected
      */
 	public _pGetOverflowElements(): _Stage_ElementsBase {
-		return new _Stage_TriangleElements(this._triangleElements, this._stage);
+		return <_Stage_ElementsBase> this._triangleElements.getNewAbstraction(this._stage);
 	}
 }
 

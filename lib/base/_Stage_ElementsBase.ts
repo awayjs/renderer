@@ -22,8 +22,8 @@ export class _Stage_ElementsBase extends AbstractionBase {
 	private _overflow: _Stage_ElementsBase;
 	public _indices: _Stage_AttributesBuffer;
 	private _indicesUpdated: boolean;
-	private _vertices: Object = new Object();
-	private _verticesUpdated: Object = new Object();
+	private _vertices: Record<number, _Stage_AttributesBuffer> = {};
+	private _verticesUpdated: Record<number, boolean> = {};
 
 	public _indexMappings: Array<number> = Array<number>();
 
@@ -49,16 +49,20 @@ export class _Stage_ElementsBase extends AbstractionBase {
 		return this._numVertices;
 	}
 
-	constructor(elements: IElements, stage: Stage) {
-		super(elements, stage);
-
-		this._elements = elements;
-		this._stage = stage;
+	constructor() {
+		super();
 
 		this._onInvalidateIndicesDelegate = (event: ElementsEvent) => this._onInvalidateIndices(event);
 		this._onClearIndicesDelegate = (event: ElementsEvent) => this._onClearIndices(event);
 		this._onInvalidateVerticesDelegate = (event: ElementsEvent) => this._onInvalidateVertices(event);
 		this._onClearVerticesDelegate = (event: ElementsEvent) => this._onClearVertices(event);
+	}
+
+	public init(elements: IElements, stage: Stage): void {
+		super.init(elements, stage);
+
+		this._elements = elements;
+		this._stage = stage;
 
 		this._elements.addEventListener(ElementsEvent.CLEAR_INDICES, this._onClearIndicesDelegate);
 		this._elements.addEventListener(ElementsEvent.INVALIDATE_INDICES, this._onInvalidateIndicesDelegate);
@@ -137,6 +141,11 @@ export class _Stage_ElementsBase extends AbstractionBase {
 			this._overflow.onClear(event);
 			this._overflow = null;
 		}
+		
+		this._indices = null;
+		this._indicesUpdated = false;
+		this._vertices = {};
+		this._verticesUpdated = {};
 	}
 
 	public _setRenderState(renderable: IRenderable, shader: IShaderBase): void {

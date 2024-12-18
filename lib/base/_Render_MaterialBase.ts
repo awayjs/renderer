@@ -35,10 +35,10 @@ export class _Render_MaterialBase extends AbstractionBase {
 	/**
 	 * A list of material owners, renderables or custom Entities.
 	 */
-	private _owners: Array<_Render_RenderableBase> = new Array<_Render_RenderableBase>();
+	private _owners: _Render_RenderableBase[] = [];
 
 	protected _renderOrderId: number;
-	protected _passes: Array<IPass> = new Array<IPass>();
+	protected _passes: IPass[] = [];
 	protected _material: IMaterial;
 	private _animationSet: IAnimationSet;
 	protected _renderElements: _Render_ElementsBase;
@@ -49,15 +49,15 @@ export class _Render_MaterialBase extends AbstractionBase {
 	protected _invalidRender: boolean = true;
 	private _invalidImages: boolean = true;
 
-	private _imageIndices: Object = new Object();
+	private _imageIndices: Record<number, number[]> = {};
 	private _numImages: number;
 	private _usesAnimation: boolean = false;
 
 	public _activePass: IPass;
 
-	public images: Array<_Stage_ImageBase> = new Array<_Stage_ImageBase>();
+	public images: _Stage_ImageBase[] = [];
 
-	public samplers: Array<ImageSampler> = new Array<ImageSampler>();
+	public samplers: ImageSampler[] = [];
 
 	/**
      * Indicates whether or not the renderable requires alpha blending during rendering.
@@ -109,8 +109,16 @@ export class _Render_MaterialBase extends AbstractionBase {
 		return this._renderElements;
 	}
 
-	constructor(material: IMaterial, renderElements: _Render_ElementsBase) {
-		super(material, renderElements);
+	constructor() {
+		super();
+
+		this._onInvalidateTexturesDelegate = (event: MaterialEvent) => this.onInvalidateTextures(event);
+		this._onInvalidatePassesDelegate = (event: MaterialEvent) => this.onInvalidatePasses(event);
+		this._onPassInvalidateDelegate = (event: PassEvent) => this.onPassInvalidate(event);
+	}
+
+	public init(material: IMaterial, renderElements: _Render_ElementsBase): void {
+		super.init(material, renderElements);
 
 		this.materialID = material.id;
 		this._material = material;
@@ -120,14 +128,8 @@ export class _Render_MaterialBase extends AbstractionBase {
 
 		this.renderElements.addEventListener(AssetEvent.CLEAR, this._onClearDelegate);
 
-		this._onInvalidateTexturesDelegate = (event: MaterialEvent) => this.onInvalidateTextures(event);
-		this._onInvalidatePassesDelegate = (event: MaterialEvent) => this.onInvalidatePasses(event);
-
 		this._material.addEventListener(MaterialEvent.INVALIDATE_TEXTURES, this._onInvalidateTexturesDelegate);
 		this._material.addEventListener(MaterialEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
-
-		this._onPassInvalidateDelegate = (event: PassEvent) => this.onPassInvalidate(event);
-
 	}
 
 	public activatePass(index: number): void {
@@ -198,7 +200,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 	 * @internal
 	 */
 	public removeOwner(owner: _Render_RenderableBase): void {
-		if (this._owners) {
+		if (this._owners.length) {
 			this._owners.splice(this._owners.indexOf(owner), 1);
 
 			if (!this._owners.length)
@@ -227,7 +229,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 			this._passes[i].dispose();
 		}
 
-		this._passes = null;
+		this._passes.length = 0;
 
 		this._material.removeEventListener(MaterialEvent.INVALIDATE_TEXTURES, this._onInvalidateTexturesDelegate);
 		this._material.removeEventListener(MaterialEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
@@ -236,7 +238,18 @@ export class _Render_MaterialBase extends AbstractionBase {
 		this._material = null;
 		this._renderElements = null;
 		this._stage = null;
-		this._owners = null;
+		this._owners.length = 0;
+
+		this._invalidAnimation = true;
+		this._invalidRender = true;
+		this._invalidImages = true;
+
+		this._imageIndices = {};
+		this._usesAnimation = false;
+
+		this._activePass = null;
+		this.images = [];
+		this.samplers = [];
 	}
 
 	/**

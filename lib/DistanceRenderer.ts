@@ -21,8 +21,8 @@ export class DistanceRenderer extends RendererBase {
 	 * @param renderBlended Indicates whether semi-transparent objects should be rendered.
 	 * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
 	 */
-	constructor(partition: PartitionBase, pool: RenderGroup) {
-		super(partition, pool);
+	public init(partition: PartitionBase, pool: RenderGroup): void {
+		super.init(partition, pool);
 
 		this._traverserGroup = RenderGroup.getInstance(CacheRenderer);
 		this._maskGroup = RenderGroup.getInstance(DefaultRenderer);
@@ -44,6 +44,6 @@ export class DistanceRenderer extends RendererBase {
 	}
 
 	public static registerMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IAssetClass): void {
-		RenderGroup.getInstance(DistanceRenderer).materialClassPool[materialClass.assetType] = renderMaterialClass;
+		RenderGroup.getInstance(DistanceRenderer).registerMaterial(renderMaterialClass, materialClass);
 	}
 }

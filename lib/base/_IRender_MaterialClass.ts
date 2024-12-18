@@ -13,5 +13,5 @@ export interface _IRender_MaterialClass
 	/**
 	 *
 	 */
-	new(material: IMaterial, renderElements: _Render_ElementsBase): _Render_MaterialBase;
+	new(): _Render_MaterialBase;
 }

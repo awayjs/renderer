@@ -39,7 +39,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	public static assetType: string = '[renderer CacheRenderer]';
 
 	private _texture: ImageTexture2D;
-	private _textures: Array<ITexture> = new Array<ITexture>();
+	private _textures: ITexture[] = [];
 	private _onTextureInvalidate: (event: AssetEvent) => void;
 	private _onInvalidateParentNode: (event: ContainerNodeEvent) => void;
 	private _onInvalidateColorTransform: (event: ContainerNodeEvent) => void;
@@ -95,14 +95,16 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this.invalidatePasses();
 	}
 
-	constructor(partition: PartitionBase, pool: RenderGroup) {
-		super(partition, pool);
+	constructor() {
+		super();
 
-		this._onTextureInvalidate = (_event: AssetEvent) => this.invalidate();
-		this._onInvalidateParentNode = (_event: ContainerNodeEvent) => this.onInvalidate(null);
-		this._onInvalidateColorTransform = (_event: ContainerNodeEvent) => {
-			this.onInvalidate(null);
-		};
+		this._onTextureInvalidate = (event: AssetEvent) => this.invalidate();
+		this._onInvalidateParentNode = (event: ContainerNodeEvent) => this.onInvalidate(null);
+		this._onInvalidateColorTransform = (event: ContainerNodeEvent) => this.onInvalidate(null);
+	}
+
+	public init(partition: PartitionBase, pool: RenderGroup): void {
+		super.init(partition, pool);
 
 		if (this._parentNode) {
 			this._parentNode.addEventListener(ContainerNodeEvent.INVALIDATE_MATRIX3D, this._onInvalidateParentNode);
@@ -276,29 +278,28 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 	}
 
 	public onClear(event: AssetEvent): void {
-		super.onClear(event);
 
-		this.texture.clear();
-		this.texture = null;
-
+		this.removeTexture(this._texture);
+		this._texture.clear();
+		this._texture = null;
 		this._style.image.clear();
 		this._style.image = null;
 
 		if (this._parentNode) {
 			this._parentNode.removeEventListener(ContainerNodeEvent.INVALIDATE_MATRIX3D, this._onInvalidateParentNode);
 			this._parentNode.removeEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
-			this._parentNode = null;
 		}
 
 		this._node.container.removeEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateParentNode);
 		this._node.container.removeEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
-		this._node = null;
+
+		super.onClear(event);
 
 		this.clear();
 	}
 
 	public static registerMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IAssetClass): void {
-		RenderGroup.getInstance(CacheRenderer).materialClassPool[materialClass.assetType] = renderMaterialClass;
+		RenderGroup.getInstance(CacheRenderer).registerMaterial(renderMaterialClass, materialClass);
 	}
 }
 

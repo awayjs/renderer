@@ -8,6 +8,7 @@ import {
 	IAbstractionClass,
 	IAsset,
 	UUID,
+	IAbstraction,
 } from '@awayjs/core';
 
 import {
@@ -52,6 +53,7 @@ type IBlendEquationType = [ContextGLBlendEquation] | [ContextGLBlendEquation, Co
  * @see RegisterPool.addUsage
  */
 export class ShaderBase implements IShaderBase {
+	private static _store: Record<string,  IAbstraction[]> = {};
 	private static _abstractionClassPool: Object = new Object();
 
 	private _renderElements: _Render_ElementsBase;
@@ -401,8 +403,13 @@ export class ShaderBase implements IShaderBase {
 		this.profile = this._stage.profile;
 	}
 
-	public requestAbstraction(asset: IAsset): IAbstractionClass {
-		return ShaderBase._abstractionClassPool[asset.assetType];
+	public requestAbstraction(asset: IAsset): IAbstraction {
+		const store = ShaderBase._store[asset.assetType];
+		return store.length ? store.pop() : new ShaderBase._abstractionClassPool[asset.assetType];
+	}
+
+	public storeAbstraction(abstraction: IAbstraction): void {
+		ShaderBase._store[abstraction.asset.assetType].push(abstraction);
 	}
 
 	/**
@@ -411,6 +418,7 @@ export class ShaderBase implements IShaderBase {
 	 */
 	public static registerAbstraction(abstractionClass: IAbstractionClass, assetClass: IAssetClass): void {
 		ShaderBase._abstractionClassPool[assetClass.assetType] = abstractionClass;
+		ShaderBase._store[assetClass.assetType] = [];
 	}
 
 	public _includeDependencies(): void {

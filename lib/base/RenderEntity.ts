@@ -1,4 +1,4 @@
-import { IAssetClass, IAbstractionPool, AssetEvent, AbstractionBase, IAsset, IAbstractionClass, UUID } from '@awayjs/core';
+import { IAssetClass, IAbstractionPool, AssetEvent, AbstractionBase, IAsset, IAbstraction } from '@awayjs/core';
 
 import { Stage } from '@awayjs/stage';
 
@@ -14,6 +14,7 @@ import { _Render_RenderableBase } from './_Render_RenderableBase';
  * @class away.pool.RenderEntity
  */
 export class RenderEntity extends AbstractionBase implements IAbstractionPool {
+	private static _store: Record<string,  IAbstraction[]> = {};
 	private static _renderRenderableClassPool: Object = new Object();
 
 	private _onInvalidateElementsDelegate: (event: RenderableEvent) => void;
@@ -27,31 +28,32 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 	 *
 	 * @returns {RenderGroup}
 	 */
-	public readonly stage: Stage;
+	public stage: Stage;
 
 	/**
      *
      * @returns {EntityNode}
      */
-	public readonly node: ContainerNode;
+	public node: ContainerNode;
 
-	public readonly id: number;
+	constructor() {
+		super();
+
+		this._onInvalidateElementsDelegate = (event: RenderableEvent) => this._onInvalidateElements(event);
+		this._onInvalidateMaterialDelegate = (event: RenderableEvent) => this._onInvalidateMaterial(event);
+		this._onInvalidateStyleDelegate = (event: RenderableEvent) => this._onInvalidateStyle(event);
+	}
 
 	/**
 	 * //TODO
 	 *
 	 * @param materialClassGL
 	 */
-	constructor(entity: EntityNode | CacheRenderer, renderer: RendererBase) {
-		super(entity, renderer);
+	public init(entity: EntityNode | CacheRenderer, renderer: RendererBase): void {
+		super.init(entity, renderer);
 
-		this.id = UUID.Next();
 		this.node = entity.parent;
 		this.stage = renderer.stage;
-
-		this._onInvalidateElementsDelegate = (event: RenderableEvent) => this._onInvalidateElements(event);
-		this._onInvalidateMaterialDelegate = (event: RenderableEvent) => this._onInvalidateMaterial(event);
-		this._onInvalidateStyleDelegate = (event: RenderableEvent) => this._onInvalidateStyle(event);
 
 		this.node.container.addEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
 		this.node.container.addEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
@@ -92,8 +94,13 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 		// 	(this._abstractionPool[key] as _Render_RenderableBase)._onInvalidateStyle();
 	}
 
-	public requestAbstraction(asset: IAsset): IAbstractionClass {
-		return RenderEntity._renderRenderableClassPool[asset.assetType];
+	public requestAbstraction(asset: IAsset): IAbstraction {
+		const store = RenderEntity._store[asset.assetType];
+		return store.length ? store.pop() : new RenderEntity._renderRenderableClassPool[asset.assetType]();
+	}
+
+	public storeAbstraction(abstraction: IAbstraction): void {
+		RenderEntity._store[abstraction.asset.assetType].push(abstraction);
 	}
 
 	/**
@@ -102,5 +109,6 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 	 */
 	public static registerRenderable(renderStateClass: _IRender_RenderableClass, assetClass: IAssetClass): void {
 		RenderEntity._renderRenderableClassPool[assetClass.assetType] = renderStateClass;
+		RenderEntity._store[assetClass.assetType] = [];
 	}
 }

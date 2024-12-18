@@ -49,8 +49,8 @@ export class DefaultRenderer extends RendererBase {
 	 * @param antiAlias The amount of anti-aliasing to use.
 	 * @param renderMode The render mode to use.
 	 */
-	constructor(partition: PartitionBase, pool: RenderGroup) {
-		super(partition, pool);
+	public init(partition: PartitionBase, pool: RenderGroup): void {
+		super.init(partition, pool);
 
 		this._depthRenderer = RenderGroup
 			.getInstance(DepthRenderer)
@@ -156,6 +156,6 @@ export class DefaultRenderer extends RendererBase {
 	}
 
 	public static registerMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IAssetClass): void {
-		RenderGroup.getInstance(DefaultRenderer).materialClassPool[materialClass.assetType] = renderMaterialClass;
+		RenderGroup.getInstance(DefaultRenderer).registerMaterial(renderMaterialClass, materialClass);
 	}
 }
