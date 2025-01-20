@@ -18,11 +18,9 @@ export class DistanceRenderer extends RendererBase {
 
 	/**
 	 * Creates a new DistanceRenderer object.
-	 * @param renderBlended Indicates whether semi-transparent objects should be rendered.
-	 * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
 	 */
-	public init(partition: PartitionBase, pool: RenderGroup): void {
-		super.init(partition, pool);
+	constructor() {
+		super();
 
 		this._traverserGroup = RenderGroup.getInstance(CacheRenderer);
 		this._maskGroup = RenderGroup.getInstance(DefaultRenderer);

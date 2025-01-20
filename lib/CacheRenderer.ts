@@ -35,7 +35,7 @@ import { Settings as StageSettings } from '@awayjs/stage';
 import { RenderEntity } from './base/RenderEntity';
 import { DefaultRenderer } from './DefaultRenderer';
 
-export class CacheRenderer extends RendererBase implements IMaterial, IAbstractionPool {
+export class CacheRenderer extends RendererBase implements IMaterial {
 	public static assetType: string = '[renderer CacheRenderer]';
 
 	private _texture: ImageTexture2D;
@@ -101,6 +101,9 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this._onTextureInvalidate = (event: AssetEvent) => this.invalidate();
 		this._onInvalidateParentNode = (event: ContainerNodeEvent) => this.onInvalidate(null);
 		this._onInvalidateColorTransform = (event: ContainerNodeEvent) => this.onInvalidate(null);
+
+		this._traverserGroup = RenderGroup.getInstance(CacheRenderer);
+		this._maskGroup = RenderGroup.getInstance(DefaultRenderer);
 	}
 
 	public init(partition: PartitionBase, pool: RenderGroup): void {
@@ -116,9 +119,6 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this._node.container.addEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
 
 		this.texture = new ImageTexture2D();
-
-		this._traverserGroup = RenderGroup.getInstance(CacheRenderer);
-		this._maskGroup = RenderGroup.getInstance(DefaultRenderer);
 	}
 
 	public render(
@@ -294,8 +294,6 @@ export class CacheRenderer extends RendererBase implements IMaterial, IAbstracti
 		this._node.container.removeEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
 
 		super.onClear(event);
-
-		this.clear();
 	}
 
 	public static registerMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IAssetClass): void {

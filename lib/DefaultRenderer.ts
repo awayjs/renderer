@@ -45,10 +45,14 @@ export class DefaultRenderer extends RendererBase {
 
 	/**
 	 * Creates a new DefaultRenderer object.
-	 *
-	 * @param antiAlias The amount of anti-aliasing to use.
-	 * @param renderMode The render mode to use.
 	 */
+	constructor() {
+		super();
+
+		this._traverserGroup = RenderGroup.getInstance(CacheRenderer);
+		this._maskGroup = RenderGroup.getInstance(DefaultRenderer);
+	}
+
 	public init(partition: PartitionBase, pool: RenderGroup): void {
 		super.init(partition, pool);
 
@@ -59,9 +63,6 @@ export class DefaultRenderer extends RendererBase {
 		this._distanceRenderer = RenderGroup
 			.getInstance(DistanceRenderer)
 			.getRenderer(partition);
-
-		this._traverserGroup = RenderGroup.getInstance(CacheRenderer);
-		this._maskGroup = RenderGroup.getInstance(DefaultRenderer);
 	}
 
 	/**
