@@ -17,9 +17,9 @@ export class RenderGroup implements IAbstractionPool {
 
 	private static _renderElementsClassPool: Record<string, _IRender_ElementsClass> = {};
 
-	public readonly rendererClass: IRendererClass;
+	private _rendererClass: IRendererClass;
 
-	public readonly store: IAbstraction[] = [];
+	private _store: IAbstraction[] = [];
 
 	public readonly materialStore: Record<string,  IAbstraction[]> = {};
 
@@ -29,15 +29,15 @@ export class RenderGroup implements IAbstractionPool {
 
 	constructor(rendererClass: IRendererClass) {
 		this.id = UUID.Next();
-		this.rendererClass = rendererClass;
+		this._rendererClass = rendererClass;
 	}
 
 	public requestAbstraction(asset: IAsset): IAbstraction {
-		return this.store.length ? this.store.pop() : new this.rendererClass();
+		return this._store.length ? this._store.pop() : new this._rendererClass();
 	}
 
 	public storeAbstraction(abstraction: IAbstraction): void {
-		this.store.push(abstraction);
+			this._store.push(abstraction);
 	}
 
 	public getRenderer <T extends RendererBase>(partition: PartitionBase): T {
