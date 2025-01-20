@@ -8,6 +8,7 @@ import {
 	Box,
 	Rectangle,
 	IAbstraction,
+	IAbstractionPool,
 } from '@awayjs/core';
 
 import {
@@ -64,7 +65,7 @@ import { RenderableEvent } from './events/RenderableEvent';
  *
  * @class away.render.RendererBase
  */
-export class RendererBase extends AbstractionBase implements IPartitionTraverser, IEntityTraverser {
+export class RendererBase extends AbstractionBase implements IPartitionTraverser, IEntityTraverser, IAbstractionPool {
 	private static _store: IAbstraction[] = [];
 	public static _collectionMark = 0;
 
@@ -108,8 +109,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 	public _pNumElements: number = 0;
 
-	protected _opaqueRenderables: IRenderable[];
-	protected _blendedRenderables: IRenderable[];
+	private _renderEntities: RenderEntity[] = [];
+	protected _opaqueRenderables: IRenderable[] = [];
+	protected _blendedRenderables: IRenderable[] = [];
 	public _disableColor: boolean = false;
 	public _disableClear: boolean = false;
 	public _renderBlended: boolean = true;
@@ -286,9 +288,13 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	public onClear(event: AssetEvent): void {
 		super.onClear(event);
 
+		this.clear();
+
 		this.stage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 		this.stage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 		this.view.removeEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
+
+		this.parentRenderer = null;
 
 		this.partition = null;
 		this.group = null;
@@ -303,6 +309,11 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._style = null;
 		}
 
+		for (let i: number = this._renderEntities.length  - 1; i >= 0; i--)
+			this._renderEntities[i].onClear(event);
+
+		this.resetHead();
+
 		for (const key in  this._elementsPools) {
 			this._elementsPools[key].clear();
 			delete this._elementsPools[key];
@@ -310,12 +321,24 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		this._boundsDirty = true;
 		this._entityMaskOwners = null;
+
+		this._disableColor = false;
+		this._disableClear = false;
+		this._renderBlended = true;
 	}
 
 	public onInvalidate(event: AssetEvent): void {
 		super.onInvalidate(event);
 
 		this._boundsDirty = true;
+	}
+
+	public addRenderEntity(renderEntity: RenderEntity): void {
+		this._renderEntities.push(renderEntity);
+	}
+
+	public removeRenderEntity(renderEntity: RenderEntity): void {
+		this._renderEntities.splice(this._renderEntities.indexOf(renderEntity), 1);
 	}
 
 	public update(partition: PartitionBase): void {
@@ -788,7 +811,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		const numLayers: number = maskOwners.length;
 		let children: INode[];
 		let numChildren: number;
-		let mask: INode;
 		let first: boolean = true;
 
 		for (let i: number = 0; i < numLayers; ++i) {
@@ -815,12 +837,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				//clears write mask to zero
 				this._context.clear(0, 0, 0, 0, 0, 0, ContextGLClearMask.STENCIL);
 
-				for (let j: number = 0; j < numChildren; ++j) {
-					mask = children[j];
-					//todo: figure out why masks can be null here
-					if (mask)
-						this._maskGroup.getRenderer(mask.partition).render(true, 0, 0, newMaskConfig);
-				}
+				for (let j: number = 0; j < numChildren; ++j)
+					this._maskGroup.getRenderer(children[j].partition).render(true, 0, 0, newMaskConfig);
+
 			}
 		}
 

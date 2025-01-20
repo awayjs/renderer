@@ -1,10 +1,10 @@
-import { IEventDispatcher, Matrix3D } from '@awayjs/core';
+import { IAbstraction, Matrix3D } from '@awayjs/core';
 import { ContainerNode, INode } from '@awayjs/view';
 import { _Stage_ElementsBase } from './_Stage_ElementsBase';
 import { _Render_MaterialBase } from './_Render_MaterialBase';
 import { RendererBase } from '../RendererBase';
 
-export interface IRenderable extends IEventDispatcher
+export interface IRenderable extends IAbstraction
 {
 	cascaded: boolean;
 
