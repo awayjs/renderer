@@ -37,7 +37,7 @@ export class RenderGroup implements IAbstractionPool {
 	}
 
 	public storeAbstraction(abstraction: IAbstraction): void {
-			this._store.push(abstraction);
+		this._store.push(abstraction);
 	}
 
 	public getRenderer <T extends RendererBase>(partition: PartitionBase): T {
