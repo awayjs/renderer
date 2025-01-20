@@ -29,10 +29,6 @@ export class _Render_ElementsBase extends AssetBase implements IAbstractionPool 
 		this._materialClassPool = renderer.group.materialClassPool;
 	}
 
-	public clear(): void {
-		this.dispatchEvent(new AssetEvent(AssetEvent.CLEAR, this));
-	}
-
 	public requestAbstraction(asset: IAsset): IAbstraction {
 		const store = this._materialStore[asset.assetType];
 		return store.length ? store.pop() : new this._materialClassPool[asset.assetType]();
