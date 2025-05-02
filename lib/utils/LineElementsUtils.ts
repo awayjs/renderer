@@ -5,6 +5,8 @@ import { AttributesView, Short2Attributes } from '@awayjs/stage';
 import { HitTestCache } from './HitTestCache';
 import { LineElements } from '../elements/LineElements';
 
+const MAX_INT =  268435456 - 1; // 2^28 - 1
+const MIN_INT = -268435456; // -2^28
 export class LineElementsUtils {
 	//TODO - generate this dyanamically based on num tris
 
@@ -366,17 +368,17 @@ export class LineElementsUtils {
 		);
 
 		const sliceX = [
-			-Infinity,
+			MIN_INT,
 			grid.x,
 			grid.right,
-			Infinity
+			MAX_INT
 		];
 
 		const sliceY = [
-			-Infinity,
+			MIN_INT,
 			grid.y,
 			grid.bottom,
-			Infinity
+			MAX_INT
 		];
 
 		const chunkX = {
@@ -434,7 +436,7 @@ export class LineElementsUtils {
 		const posByChunks: number[][] = [];
 		let count = 0;
 
-		while (stack.length) {
+		while (stack.length && count < 10000) {
 			const b = stack.pop();
 			const a = stack.pop();
 
@@ -444,8 +446,8 @@ export class LineElementsUtils {
 			let breakAll = false;
 
 			for (let y = chunkY.from; y <= chunkY.to; y++) {
-				const day = sliceY[y + 1] - a.y;
-				const dby = sliceY[y + 1] - b.y;
+				const day = ~~((sliceY[y + 1] - a.y) * 10000)/10000;
+				const dby = ~~((sliceY[y + 1] - b.y) * 10000)/10000;
 
 				// slicer is crossed, emit point
 				if (day * dby < 0) {
@@ -464,8 +466,8 @@ export class LineElementsUtils {
 				}
 
 				for (let x = chunkX.from; x <= chunkX.to; x++) {
-					const dax = sliceX[x + 1] - a.x;
-					const dbx = sliceX[x + 1] - b.x;
+					const dax = ~~((sliceX[x + 1] - a.x) * 10000)/10000;
+					const dbx = ~~((sliceX[x + 1] - b.x) * 10000)/10000;
 
 					// slicer is crossed, emit point
 					if (dax * dbx < 0) {
