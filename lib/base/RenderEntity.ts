@@ -66,6 +66,7 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 		this.node.container.removeEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
 		this.node.container.removeEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
 		this.node.container.removeEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateStyleDelegate);
+		this.node = null;
 
 		for (let i: number = this._renderables.length  - 1; i >= 0; i--)
 			this._renderables[i].onClear(event);
