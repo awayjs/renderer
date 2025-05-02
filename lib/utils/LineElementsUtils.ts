@@ -446,8 +446,8 @@ export class LineElementsUtils {
 			let breakAll = false;
 
 			for (let y = chunkY.from; y <= chunkY.to; y++) {
-				const day = ~~((sliceY[y + 1] - a.y) * 10000)/10000;
-				const dby = ~~((sliceY[y + 1] - b.y) * 10000)/10000;
+				const day = ~~((sliceY[y + 1] - a.y) * 10000) / 10000;
+				const dby = ~~((sliceY[y + 1] - b.y) * 10000) / 10000;
 
 				// slicer is crossed, emit point
 				if (day * dby < 0) {
@@ -466,8 +466,8 @@ export class LineElementsUtils {
 				}
 
 				for (let x = chunkX.from; x <= chunkX.to; x++) {
-					const dax = ~~((sliceX[x + 1] - a.x) * 10000)/10000;
-					const dbx = ~~((sliceX[x + 1] - b.x) * 10000)/10000;
+					const dax = ~~((sliceX[x + 1] - a.x) * 10000) / 10000;
+					const dbx = ~~((sliceX[x + 1] - b.x) * 10000) / 10000;
 
 					// slicer is crossed, emit point
 					if (dax * dbx < 0) {
