@@ -193,7 +193,7 @@ export class _Stage_ElementsBase extends AbstractionBase {
 
 			this._overflow._updateIndices(indexOffset);
 		} else if (this._overflow) {
-			this._overflow.onClear(new AssetEvent(AssetEvent.CLEAR, this._elements));
+			this._overflow.onClear(null);
 			this._overflow = null;
 		}
 
@@ -244,7 +244,7 @@ export class _Stage_ElementsBase extends AbstractionBase {
 		if (!event.attributesView)
 			return;
 
-		this._indices.onClear(new AssetEvent(AssetEvent.CLEAR, event.attributesView));
+		this._indices.onClear(null);
 		this._indices = null;
 	}
 
@@ -276,7 +276,7 @@ export class _Stage_ElementsBase extends AbstractionBase {
 		const bufferId: number = event.attributesView.attributesBuffer.id;
 
 		if (this._vertices[bufferId]) {
-			this._vertices[bufferId].onClear(new AssetEvent(AssetEvent.CLEAR, event.attributesView));
+			this._vertices[bufferId].onClear(null);
 			delete this._vertices[bufferId];
 			delete this._verticesUpdated[bufferId];
 		}

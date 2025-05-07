@@ -126,7 +126,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 		this._stage = renderElements.stage;
 		this._renderer = renderElements.renderer;
 
-		this.renderElements.addEventListener(AssetEvent.CLEAR, this._onClearDelegate);
+		this.renderElements.addMaterial(this);
 
 		this._material.addEventListener(MaterialEvent.INVALIDATE_TEXTURES, this._onInvalidateTexturesDelegate);
 		this._material.addEventListener(MaterialEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
@@ -221,7 +221,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 	public onClear(event: AssetEvent): void {
 		super.onClear(event);
 
-		this._renderElements.removeEventListener(AssetEvent.CLEAR, this._onClearDelegate);
+		this._renderElements.removeMaterial(this);
 
 		const len: number = this._passes.length;
 		for (let i: number = 0; i < len; i++) {

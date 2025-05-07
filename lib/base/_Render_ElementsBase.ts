@@ -1,10 +1,10 @@
 
 import { Stage, ShaderRegisterCache, ShaderRegisterData } from '@awayjs/stage';
-import { AssetBase, AssetEvent, IAbstraction, IAbstractionPool, IAsset } from '@awayjs/core';
+import { AssetBase, IAbstraction, IAbstractionPool, IAsset, WeakAssetSet } from '@awayjs/core';
 import { ShaderBase } from './ShaderBase';
 import { _IRender_MaterialClass } from './_IRender_MaterialClass';
 import { RendererBase } from '../RendererBase';
-import { RenderGroup } from '../RenderGroup';
+import { _Render_MaterialBase } from './_Render_MaterialBase';
 
 /**
  * @class away.pool.MaterialPoolBase
@@ -12,6 +12,8 @@ import { RenderGroup } from '../RenderGroup';
 export class _Render_ElementsBase extends AssetBase implements IAbstractionPool {
 	private _materialStore: Record<string,  IAbstraction[]>;
 	private _materialClassPool: Record<string, _IRender_MaterialClass>;
+
+	private _materials: WeakAssetSet = new WeakAssetSet();
 
 	readonly stage: Stage;
 	readonly renderer: RendererBase;
@@ -36,6 +38,18 @@ export class _Render_ElementsBase extends AssetBase implements IAbstractionPool 
 
 	public storeAbstraction(abstraction: IAbstraction): void {
 		this._materialStore[abstraction.asset.assetType].push(abstraction);
+	}
+
+	public addMaterial(material: _Render_MaterialBase): void {
+		this._materials.add(material);
+	}
+
+	public removeMaterial(material: _Render_MaterialBase): void {
+		this._materials.remove(material);
+	}
+
+	public clear(): void {
+		this._materials.forEach((asset) => asset.onClear(null));
 	}
 
 	public _includeDependencies(shader: ShaderBase): void {
