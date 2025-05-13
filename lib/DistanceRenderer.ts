@@ -1,4 +1,4 @@
-import { INode, PartitionBase } from '@awayjs/view';
+import { INode } from '@awayjs/view';
 
 import { RenderGroup } from './RenderGroup';
 

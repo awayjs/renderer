@@ -8,7 +8,7 @@ import {
 
 import { _IRender_ElementsClass } from './base/_IRender_ElementsClass';
 import { RendererBase } from './RendererBase';
-import { PartitionBase } from '@awayjs/view';
+import { INode } from '@awayjs/view';
 import { _IRender_MaterialClass } from './base/_IRender_MaterialClass';
 import { IRendererClass } from './base/IRendererClass';
 
@@ -40,8 +40,8 @@ export class RenderGroup implements IAbstractionPool {
 		this._store.push(abstraction);
 	}
 
-	public getRenderer <T extends RendererBase>(partition: PartitionBase): T {
-		return <T> partition.getAbstraction<RendererBase>(this);
+	public getRenderer <T extends RendererBase>(node: INode): T {
+		return <T> node.getAbstraction<RendererBase>(this);
 	}
 
 	public static getInstance(rendererClass: IRendererClass) {

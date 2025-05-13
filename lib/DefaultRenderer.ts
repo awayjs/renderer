@@ -1,6 +1,6 @@
 import { AssetEvent, IAssetClass } from '@awayjs/core';
 import { BitmapImage2D, IContextGL } from '@awayjs/stage';
-import { INode, PartitionBase, PickGroup } from '@awayjs/view';
+import { INode, PickGroup } from '@awayjs/view';
 import { RenderGroup } from './RenderGroup';
 import { DepthRenderer } from './DepthRenderer';
 import { DistanceRenderer } from './DistanceRenderer';
@@ -53,16 +53,16 @@ export class DefaultRenderer extends RendererBase {
 		this._maskGroup = RenderGroup.getInstance(DefaultRenderer);
 	}
 
-	public init(partition: PartitionBase, pool: RenderGroup): void {
-		super.init(partition, pool);
+	public init(node: INode, pool: RenderGroup): void {
+		super.init(node, pool);
 
 		this._depthRenderer = RenderGroup
 			.getInstance(DepthRenderer)
-			.getRenderer(partition);
+			.getRenderer(node);
 
 		this._distanceRenderer = RenderGroup
 			.getInstance(DistanceRenderer)
-			.getRenderer(partition);
+			.getRenderer(node);
 	}
 
 	/**

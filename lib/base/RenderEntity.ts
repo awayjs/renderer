@@ -4,7 +4,7 @@ import { Stage } from '@awayjs/stage';
 
 import { _IRender_RenderableClass } from './_IRender_RenderableClass';
 
-import { ContainerNode, EntityNode } from '@awayjs/view';
+import { ContainerNode } from '@awayjs/view';
 import { RenderableEvent } from '../events/RenderableEvent';
 import { RendererBase } from '../RendererBase';
 import { CacheRenderer } from '../CacheRenderer';
@@ -32,9 +32,11 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 
 	/**
      *
-     * @returns {EntityNode}
+     * @returns {ContainerNode}
      */
-	public node: ContainerNode;
+	public get node(): ContainerNode {
+		return <ContainerNode> this._asset;
+	}
 
 	constructor() {
 		super();
@@ -49,24 +51,22 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 	 *
 	 * @param materialClassGL
 	 */
-	public init(entity: EntityNode | CacheRenderer, renderer: RendererBase): void {
-		super.init(entity, renderer);
+	public init(node: ContainerNode | CacheRenderer, renderer: RendererBase): void {
+		super.init(node, renderer);
 
-		this.node = entity.parent;
 		this.stage = renderer.stage;
 
 		(<RendererBase> this._pool).addRenderEntity(this);
 
-		this.node.container.addEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
-		this.node.container.addEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
-		this.node.container.addEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateStyleDelegate);
+		(<ContainerNode> this._asset).container.addEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
+		(<ContainerNode> this._asset).container.addEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
+		(<ContainerNode> this._asset).container.addEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateStyleDelegate);
 	}
 
 	public onClear(event: AssetEvent): void {
-		this.node.container.removeEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
-		this.node.container.removeEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
-		this.node.container.removeEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateStyleDelegate);
-		this.node = null;
+		(<ContainerNode> this._asset).container.removeEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
+		(<ContainerNode> this._asset).container.removeEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
+		(<ContainerNode> this._asset).container.removeEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateStyleDelegate);
 
 		for (let i: number = this._renderables.length  - 1; i >= 0; i--)
 			this._renderables[i].onClear(event);
@@ -74,6 +74,9 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 		(<RendererBase> this._pool).removeRenderEntity(this);
 
 		super.onClear(event);
+	}
+	public onInvalidate(event: AssetEvent): void {
+		super.onInvalidate(event);
 	}
 
 	public addRenderable(renderable: _Render_RenderableBase): void {

@@ -1,6 +1,5 @@
 import {
 	AssetEvent,
-	IAbstractionPool,
 	IAssetClass,
 	Matrix3D,
 	PerspectiveProjection,
@@ -14,7 +13,6 @@ import {
 	ContainerNode,
 	ContainerNodeEvent,
 	INode,
-	PartitionBase,
 	PickGroup
 } from '@awayjs/view';
 
@@ -63,14 +61,6 @@ export class CacheRenderer extends RendererBase implements IMaterial {
 	}
 
 	/**
-	 *
-	 * @returns {EntityNode}
-	 */
-	public get parent(): ContainerNode {
-		return this._node;
-	}
-
-	/**
 	* The 2d texture to use as a bitmap cache.
 	*/
 	public get texture(): ImageTexture2D {
@@ -106,8 +96,8 @@ export class CacheRenderer extends RendererBase implements IMaterial {
 		this._maskGroup = RenderGroup.getInstance(DefaultRenderer);
 	}
 
-	public init(partition: PartitionBase, pool: RenderGroup): void {
-		super.init(partition, pool);
+	public init(node: INode, pool: RenderGroup): void {
+		super.init(node, pool);
 
 		if (this._parentNode) {
 			this._parentNode.addEventListener(ContainerNodeEvent.INVALIDATE_MATRIX3D, this._onInvalidateParentNode);
@@ -115,8 +105,8 @@ export class CacheRenderer extends RendererBase implements IMaterial {
 		}
 
 		// for check filters/blends changes
-		this._node.container.addEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateParentNode);
-		this._node.container.addEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
+		this.node.container.addEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateParentNode);
+		this.node.container.addEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
 
 		this.texture = new ImageTexture2D();
 	}
@@ -127,7 +117,7 @@ export class CacheRenderer extends RendererBase implements IMaterial {
 		mipmapSelector: number = 0,
 		maskConfig: number = 0
 	): void {
-		const container = this._node.container;
+		const container = this.node.container;
 
 		const stage = this.stage;
 		const useNonNativeBlend = this.useNonNativeBlend;
@@ -171,13 +161,12 @@ export class CacheRenderer extends RendererBase implements IMaterial {
 		}
 
 		// we should render with colorTransform to self, enable it
-		this._node.colorTransformDisabled = false;
-
+		this.node.colorTransformDisabled = false;
 		this._initRender(sourceImage || targetImage);
 		super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
 
 		// restore colorTransform state as in transform state
-		this._node.colorTransformDisabled = this._node.transformDisabled;
+		this.node.colorTransformDisabled = this.node.transformDisabled;
 
 		if (targetImage.width * targetImage.height === 0) {
 			throw new Error('Cannot have image with size 0 * 0');
@@ -257,7 +246,7 @@ export class CacheRenderer extends RendererBase implements IMaterial {
 	/**
 	 *
 	 */
-	public enterNode(node: INode): boolean {
+	public enterNode(node: ContainerNode): boolean {
 		const enter: boolean = super.enterNode(node);
 
 		if (enter && node.boundsVisible)
@@ -290,8 +279,8 @@ export class CacheRenderer extends RendererBase implements IMaterial {
 			this._parentNode.removeEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
 		}
 
-		this._node.container.removeEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateParentNode);
-		this._node.container.removeEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
+		this.node.container.removeEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateParentNode);
+		this.node.container.removeEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
 
 		super.onClear(event);
 	}

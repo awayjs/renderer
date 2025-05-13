@@ -247,6 +247,7 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 		this.renderSceneTransform = null;
 
 		this._stage = null;
+		this.node = null;
 
 		this.next = null;
 		this.maskOwners = null;

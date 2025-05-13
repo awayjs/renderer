@@ -49,7 +49,7 @@ export class _Render_ElementsBase extends AssetBase implements IAbstractionPool 
 	}
 
 	public clear(): void {
-		this._materials.forEach((asset) => asset.onClear(null));
+		this._materials.forEach((asset: _Render_MaterialBase) => asset.onClear(null));
 	}
 
 	public _includeDependencies(shader: ShaderBase): void {

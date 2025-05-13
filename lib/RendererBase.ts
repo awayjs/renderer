@@ -35,9 +35,7 @@ import {
 	IPartitionTraverser,
 	IEntityTraverser,
 	INode,
-	PartitionBase,
 	ITraversable,
-	EntityNode,
 	ContainerNode,
 	BoundsPicker,
 	PickGroup,
@@ -70,7 +68,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	public static _collectionMark = 0;
 
 	protected _renderMatrix: Matrix3D = new Matrix3D();
-	protected _node: ContainerNode;
 	protected _parentNode: ContainerNode;
 	private _boundsPicker: BoundsPicker;
 	/*internal*/ _boundsScale: number = 1;
@@ -226,16 +223,20 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 */
 	public renderableSorter: IRenderEntitySorter = new RenderableMergeSort();
 
-	public partition: PartitionBase;
+	public get node(): ContainerNode {
+		return <ContainerNode> this._asset;
+	};
 
-	public group: RenderGroup;
+	public get group(): RenderGroup {
+		return <RenderGroup> this._pool;
+	};
 
 	public view: View;
 
 	public stage: Stage;
 
 	public get blendMode(): string {
-		const containerBlend = <string> this._node.container.blendMode;
+		const containerBlend = <string> this.node.container.blendMode;
 
 		// native blends
 		if (isNativeBlend(containerBlend))
@@ -246,8 +247,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 	public get useNonNativeBlend(): boolean {
 		return StageSettings.USE_NON_NATIVE_BLEND
-				&& this._node.container.blendMode
-				&& this._node.container.blendMode !== BlendMode.LAYER
+				&& (<ContainerNode> this._asset).container.blendMode
+				&& (<ContainerNode> this._asset).container.blendMode !== BlendMode.LAYER
 				&& this.blendMode == BlendMode.LAYER;
 	}
 
@@ -262,33 +263,29 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	/**
 	 * Creates a new RendererBase object.
 	 */
-	public init(partition: PartitionBase, group: RenderGroup): void {
-		super.init(partition, group);
+	public init(node: INode, group: RenderGroup): void {
+		super.init(node, group);
 
-		this.partition = partition;
-		this.group = group;
-
-		this._node = partition.rootNode;
-		this._parentNode = partition.parent?.rootNode;
+		this._parentNode = node.parent;
 
 		this.style = new Style();
-		this.view = this.partition.rootNode.view;
+		this.view = node.view;
 		this.stage = this.view.stage;
 
 		this.stage.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 		this.stage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 		this.view.addEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 
-		this._boundsPicker = PickGroup.getInstance().getBoundsPicker(this.partition);
+		this._boundsPicker = PickGroup.getInstance().getBoundsPicker(this.node);
 
 		if (this.stage.context)
 			this._context = <IContextGL> this.stage.context;
 	}
 
 	public onClear(event: AssetEvent): void {
-		super.onClear(event);
-
 		this.clear();
+
+		super.onClear(event);
 
 		this.stage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 		this.stage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
@@ -296,9 +293,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		this.parentRenderer = null;
 
-		this.partition = null;
-		this.group = null;
-		this._node = null;
 		this._parentNode = null;
 		this._boundsPicker = null;
 		this._activeMasksDirty = false;
@@ -341,11 +335,11 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._renderEntities.splice(this._renderEntities.indexOf(renderEntity), 1);
 	}
 
-	public update(partition: PartitionBase): void {
+	public update(node: INode): void {
 		//update mappers
 		const len: number = this._mappers.length;
 		for (let i: number = 0; i < len; i++)
-			this._mappers[i].update(partition);
+			this._mappers[i].update(node);
 	}
 
 	public _addMapper(mapper: IMapper) {
@@ -401,7 +395,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._disableColor = true;
 		}
 
-		this.update(this.partition);
+		this.update(<ContainerNode> this._asset);
 
 		// invalidate mipmaps (if target exists) to regenerate if required
 		if (this.view.target)
@@ -450,11 +444,11 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._cameraForward = this.view.projection.transform.forwardVector;
 		this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : this.view.projection.viewFrustumPlanes;
 		this._numCullPlanes = this._cullPlanes ? this._cullPlanes.length : 0;
-		this._maskId = this.partition.rootNode.getMaskId();
+		this._maskId = (<ContainerNode> this._asset).getMaskId();
 
 		RendererBase._collectionMark++;
 
-		this.partition.traverse(this);
+		(<ContainerNode> this._asset).acceptTraverser(this);
 
 		//sort the resulting renderables
 		if (this.renderableSorter) {
@@ -695,7 +689,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		const maskOrFrustrum = (
 			this._maskConfig
 			|| node.isInFrustum(
-				this.partition.rootNode,
+				<ContainerNode> this._asset,
 				this._cullPlanes,
 				this._numCullPlanes,
 				PickGroup.getInstance()));
@@ -710,34 +704,38 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		return enter;
 	}
 
-	public getTraverser(partition: PartitionBase): IPartitionTraverser {
+	public getTraverser(rootNode: ContainerNode): IPartitionTraverser {
 
-		if (partition.rootNode.renderToImage) {
+		if (rootNode.renderToImage) {
+			//clear existing abstractions on renderer
+			for (let i: number = 0; i < this._renderEntities.length; i++) {
+				
+			}
 			//new node for the container
-			const node: ContainerNode = partition.getLocalNode();
-			const boundsPicker: BoundsPicker = PickGroup.getInstance().getBoundsPicker(node.partition);
+			const node: ContainerNode = rootNode.getLocalNode();
+			const boundsPicker: BoundsPicker = PickGroup.getInstance().getBoundsPicker(node);
 
 			if (!boundsPicker.getBoxBounds(node, true, true))
 				return this;
 
-			const traverser: CacheRenderer = this._traverserGroup.getRenderer<CacheRenderer>(node.partition);
+			const traverser: CacheRenderer = this._traverserGroup.getRenderer<CacheRenderer>(node);
 
 			traverser.renderableSorter = null;
 			traverser.parentRenderer = this;
 			//if (this._invalid) {
-			this._renderEntity = traverser.getAbstraction<RenderEntity>(this);
+			this._renderEntity = node.getAbstraction<RenderEntity>(this);
 
 			// project onto camera's z-axis
-			this._zIndex = this._cameraTransform.position.subtract(partition.rootNode.getPosition())
+			this._zIndex = this._cameraTransform.position.subtract(rootNode.getPosition())
 				.dotProduct(this._cameraForward)
-					+ partition.rootNode.container.zOffset;
+					+ rootNode.container.zOffset;
 
 			//save sceneTransform
-			this._renderSceneTransform = partition.rootNode.getRenderMatrix3D(this._cameraTransform);
+			this._renderSceneTransform = rootNode.getRenderMatrix3D(this._cameraTransform);
 
 			//save mask id
-			this._entityMaskId = partition.rootNode.getMaskId();
-			this._entityMaskOwners = partition.rootNode.getMaskOwners();
+			this._entityMaskId = rootNode.getMaskId();
+			this._entityMaskOwners = rootNode.getMaskOwners();
 
 			this.applyTraversable(traverser);
 			//}
@@ -748,23 +746,29 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		return this;
 	}
 
-	public applyEntity(node: EntityNode): void {
-		this._renderEntity = node.getAbstraction<RenderEntity>(this);
+	public applyEntity(node: ContainerNode): void {
+		const entity = node.container.getEntity();
 
-		// project onto camera's z-axis
-		this._zIndex = this._cameraTransform.position.subtract(node.parent.getPosition())
-			.dotProduct(this._cameraForward)
-			+ node.parent.container.zOffset;
+		if (entity) {
+			this._renderEntity = node.getAbstraction<RenderEntity>(this);
 
-		//save sceneTransform
-		this._renderSceneTransform = node.parent.getRenderMatrix3D(this._cameraTransform);
-
-		//save mask id
-		this._entityMaskId = node.parent.getMaskId();
-		this._entityMaskOwners = node.parent.getMaskOwners();
-
-		//collect renderables
-		node.entity._acceptTraverser(this);
+			// project onto camera's z-axis
+			this._zIndex = this._cameraTransform.position.subtract(node.getPosition())
+				.dotProduct(this._cameraForward)
+				+ node.container.zOffset;
+	
+			//save sceneTransform
+			this._renderSceneTransform = node.getRenderMatrix3D(this._cameraTransform);
+	
+			//save mask id
+			this._entityMaskId = node.getMaskId();
+			this._entityMaskOwners = node.getMaskOwners();
+	
+			//collect renderables
+			entity._acceptTraverser(this);
+		} else {
+			node.clearAbstraction(this);
+		}
 	}
 
 	public applyTraversable(traversable: ITraversable): void {
@@ -838,7 +842,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				this._context.clear(0, 0, 0, 0, 0, 0, ContextGLClearMask.STENCIL);
 
 				for (let j: number = 0; j < numChildren; ++j)
-					this._maskGroup.getRenderer(children[j].partition).render(true, 0, 0, newMaskConfig);
+					this._maskGroup.getRenderer(children[j]).render(true, 0, 0, newMaskConfig);
 
 			}
 		}
@@ -899,7 +903,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._boundsDirty = false;
 
 		const matrix3D = this._renderMatrix;
-		const container = this._node.container;
+		const container = (<ContainerNode> this._asset).container;
 		const pad = this._paddedBounds;
 
 		let scale: number;
@@ -909,7 +913,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			matrix3D.copyFrom(this._parentNode.getMatrix3D());
 		} else {
 			// no parent - no transform
-			scale = Math.min(3, this._node.view.projection.scale);
+			scale = Math.min(3, this.view.projection.scale);
 			matrix3D.identity() ;
 		}
 		//scale = 1;
@@ -918,15 +922,15 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		if (scale !== 1)
 			matrix3D.appendScale(scale, scale, scale);
 
-		const bounds = this._boundsPicker.getBoxBounds(this._node, true, true);
+		const bounds = this._boundsPicker.getBoxBounds(<ContainerNode> this._asset, true, true);
 
 		if (!bounds) {
-			console.error('[CachedRenderer] Bounds invalid, supress calculation', this._node);
+			console.error('[CachedRenderer] Bounds invalid, supress calculation', <ContainerNode> this._asset);
 			return;
 		}
 
 		if (isNaN(bounds.width) || isNaN(bounds.height)) {
-			console.error('[CachedRenderer] Bounds invalid (NaN), supress calculation', this._node);
+			console.error('[CachedRenderer] Bounds invalid (NaN), supress calculation', <ContainerNode> this._asset);
 			return;
 		}
 
