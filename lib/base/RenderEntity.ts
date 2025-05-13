@@ -75,6 +75,7 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 
 		super.onClear(event);
 	}
+
 	public onInvalidate(event: AssetEvent): void {
 		super.onInvalidate(event);
 	}

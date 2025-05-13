@@ -225,11 +225,11 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 	public get node(): ContainerNode {
 		return <ContainerNode> this._asset;
-	};
+	}
 
 	public get group(): RenderGroup {
 		return <RenderGroup> this._pool;
-	};
+	}
 
 	public view: View;
 
@@ -709,7 +709,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		if (rootNode.renderToImage) {
 			//clear existing abstractions on renderer
 			for (let i: number = 0; i < this._renderEntities.length; i++) {
-				
+
 			}
 			//new node for the container
 			const node: ContainerNode = rootNode.getLocalNode();
@@ -756,14 +756,14 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._zIndex = this._cameraTransform.position.subtract(node.getPosition())
 				.dotProduct(this._cameraForward)
 				+ node.container.zOffset;
-	
+
 			//save sceneTransform
 			this._renderSceneTransform = node.getRenderMatrix3D(this._cameraTransform);
-	
+
 			//save mask id
 			this._entityMaskId = node.getMaskId();
 			this._entityMaskOwners = node.getMaskOwners();
-	
+
 			//collect renderables
 			entity._acceptTraverser(this);
 		} else {
