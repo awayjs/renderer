@@ -537,7 +537,7 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
 
 		const asset = <LineElements> this._asset;
 		const view: View = shader.view;
-		const renderElements = <_Render_LineElements> renderRenderable
+		const renderElements = <_Render_LineElements> renderRenderable.entity
 			.renderer.getRenderElements(renderRenderable.stageElements.elements);
 
 		this._vao && this._vao.bind();
@@ -568,7 +568,7 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
 
 		const data: Float32Array = shader.vertexConstantData;
 
-		this._scale.copyFrom(renderRenderable.node.getMatrix3D().decompose()[3]);
+		this._scale.copyFrom(renderRenderable.entity.node.getMatrix3D().decompose()[3]);
 
 		const scaleMode: LineScaleMode = this._lineElements.scaleMode;
 		const half_thickness: number = this._lineElements.half_thickness;
@@ -599,7 +599,7 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
 		shader.viewMatrix.copyFrom(shader.view.frustumMatrix3D, true);
 
 		const matrix3D: Matrix3D = Matrix3D.CALCULATION_MATRIX;
-		matrix3D.copyFrom(renderRenderable.node.getMatrix3D());
+		matrix3D.copyFrom(renderRenderable.entity.node.getMatrix3D());
 		matrix3D.append(shader.view.projection.transform.inverseMatrix3D);
 		shader.sceneMatrix.copyFrom(matrix3D, true);
 

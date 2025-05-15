@@ -16,8 +16,6 @@ export interface IRenderable extends IAbstraction
 
 	next: IRenderable;
 
-	readonly node: INode;
-
 	renderMaterial: _Render_MaterialBase;
 
 	stageElements: _Stage_ElementsBase;
@@ -27,8 +25,6 @@ export interface IRenderable extends IAbstraction
 	maskOwners: ContainerNode[];
 
 	renderSceneTransform: Matrix3D;
-
-	renderer: RendererBase;
 
 	executeRender(
 		enableDepthAndStencil?: boolean, surfaceSelector?: number, mipmapSelector?: number, maskConfig?: number): void;

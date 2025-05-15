@@ -346,7 +346,7 @@ export class _Render_Renderer extends _Render_RenderableBase {
 
 	protected _getRenderMaterial(): _Render_RendererMaterial {
 		return this._asset.getAbstraction<_Render_RendererMaterial>(
-			this.renderer.getRenderElements(this.stageElements.elements));
+			this.entity.renderer.getRenderElements(this.stageElements.elements));
 	}
 
 	protected _getStyle(): Style {

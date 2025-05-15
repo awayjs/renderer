@@ -5,6 +5,7 @@ import { IPass } from './IPass';
 import { ShaderBase } from './ShaderBase';
 import { _Render_MaterialBase } from './_Render_MaterialBase';
 import { _Render_RenderableBase } from './_Render_RenderableBase';
+import { IMaterial } from './IMaterial';
 
 /**
  * _Render_MaterialPassBase provides an abstract base class for material shader passes. A material pass constitutes at least
@@ -26,12 +27,12 @@ export class _Render_MaterialPassBase extends _Render_MaterialBase implements IP
 	}
 
 	public _includeDependencies(shader: ShaderBase): void {
-		shader.alphaThreshold = this._material.alphaThreshold;
-		shader.useImageRect = this._material.imageRect;
-		shader.usesCurves =  this._material.curves;
-		shader.useBothSides =  this._material.bothSides;
-		shader.usesUVTransform =  this._material.animateUVs;
-		shader.usesColorTransform = this._material.useColorTransform;
+		shader.alphaThreshold = (<IMaterial> this._asset).alphaThreshold;
+		shader.useImageRect = (<IMaterial> this._asset).imageRect;
+		shader.usesCurves =  (<IMaterial> this._asset).curves;
+		shader.useBothSides =  (<IMaterial> this._asset).bothSides;
+		shader.usesUVTransform =  (<IMaterial> this._asset).animateUVs;
+		shader.usesColorTransform = (<IMaterial> this._asset).useColorTransform;
 	}
 
 	/**
