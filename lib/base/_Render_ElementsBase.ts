@@ -13,7 +13,7 @@ export class _Render_ElementsBase extends AssetBase implements IAbstractionPool 
 	private _materialStore: Record<string,  IAbstraction[]>;
 	private _materialClassPool: Record<string, _IRender_MaterialClass>;
 
-	private _materials: WeakAssetSet = new WeakAssetSet("_Render_MaterialBase");
+	private _materials: WeakAssetSet = new WeakAssetSet('_Render_MaterialBase');
 
 	readonly stage: Stage;
 	readonly renderer: RendererBase;

@@ -62,7 +62,7 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 
 		this.stage = renderer.stage;
 
-		this._renderables = new WeakAssetSet("_Render_RenderableBase");
+		this._renderables = new WeakAssetSet('_Render_RenderableBase');
 
 		(<RendererBase> this._pool).addRenderEntity(this);
 

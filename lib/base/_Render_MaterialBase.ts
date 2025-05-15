@@ -117,7 +117,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 		this._stage = renderElements.stage;
 		renderElements.addMaterial(this);
 
-		this._owners = new WeakAssetSet("_Render_RenderableBase");
+		this._owners = new WeakAssetSet('_Render_RenderableBase');
 
 		(<IMaterial> this._asset).addEventListener(MaterialEvent.INVALIDATE_TEXTURES, this._onInvalidateTexturesDelegate);
 		(<IMaterial> this._asset).addEventListener(MaterialEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);

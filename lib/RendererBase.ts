@@ -107,7 +107,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 	public _pNumElements: number = 0;
 
-	private _renderEntities: WeakAssetSet = new WeakAssetSet("RenderEntity");
+	private _renderEntities: WeakAssetSet = new WeakAssetSet('RenderEntity');
 	protected _opaqueRenderables: IRenderable[] = [];
 	protected _blendedRenderables: IRenderable[] = [];
 	public _disableColor: boolean = false;
