@@ -1,4 +1,4 @@
-import { AssetEvent, AbstractionBase } from '@awayjs/core';
+import { AssetEvent, AbstractionBase, WeakAssetSet } from '@awayjs/core';
 
 import {
 	Stage,
@@ -20,8 +20,8 @@ import { _Render_ElementsBase } from './_Render_ElementsBase';
 import { ShaderBase } from './ShaderBase';
 import { _Render_RenderableBase } from './_Render_RenderableBase';
 import { IRenderContainer } from './IRenderContainer';
-import { RendererBase } from '../RendererBase';
 import { CacheRenderer } from '../CacheRenderer';
+import { RenderEntity } from './RenderEntity';
 
 /**
  *
@@ -35,15 +35,12 @@ export class _Render_MaterialBase extends AbstractionBase {
 	/**
 	 * A list of material owners, renderables or custom Entities.
 	 */
-	private _owners: _Render_RenderableBase[] = [];
+	public _owners: WeakAssetSet;
 
 	protected _renderOrderId: number;
 	protected _passes: IPass[] = [];
-	protected _material: IMaterial;
 	private _animationSet: IAnimationSet;
-	protected _renderElements: _Render_ElementsBase;
 	protected _stage: Stage;
-	protected _renderer: RendererBase;
 
 	private _invalidAnimation: boolean = true;
 	protected _invalidRender: boolean = true;
@@ -71,7 +68,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 	}
 
 	public get material(): IMaterial {
-		return this._material;
+		return <IMaterial> this._asset;
 	}
 
 	public get numImages(): number {
@@ -98,15 +95,11 @@ export class _Render_MaterialBase extends AbstractionBase {
 	}
 
 	public get style(): Style {
-		return this._material.style;
-	}
-
-	public get renderer(): RendererBase {
-		return this._renderer;
+		return (<IMaterial> this._asset).style;
 	}
 
 	public get renderElements(): _Render_ElementsBase {
-		return this._renderElements;
+		return this._useWeak ? (<WeakRef<_Render_ElementsBase>> this._pool).deref() : <_Render_ElementsBase> this._pool;
 	}
 
 	constructor() {
@@ -118,18 +111,16 @@ export class _Render_MaterialBase extends AbstractionBase {
 	}
 
 	public init(material: IMaterial, renderElements: _Render_ElementsBase): void {
-		super.init(material, renderElements);
+		super.init(material, renderElements, true);
 
 		this.materialID = material.id;
-		this._material = material;
-		this._renderElements = renderElements;
 		this._stage = renderElements.stage;
-		this._renderer = renderElements.renderer;
+		renderElements.addMaterial(this);
 
-		this.renderElements.addMaterial(this);
+		this._owners = new WeakAssetSet("_Render_RenderableBase");
 
-		this._material.addEventListener(MaterialEvent.INVALIDATE_TEXTURES, this._onInvalidateTexturesDelegate);
-		this._material.addEventListener(MaterialEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
+		(<IMaterial> this._asset).addEventListener(MaterialEvent.INVALIDATE_TEXTURES, this._onInvalidateTexturesDelegate);
+		(<IMaterial> this._asset).addEventListener(MaterialEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
 	}
 
 	public activatePass(index: number): void {
@@ -145,7 +136,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 			this._stage.context.setTextureAt(i, null);
 
 		//activate shader object through pass
-		this._activePass._activate(this._renderer.view);
+		this._activePass._activate(this.renderElements.renderer.view);
 	}
 
 	public deactivatePass(): void {
@@ -169,15 +160,15 @@ export class _Render_MaterialBase extends AbstractionBase {
 	 * @internal
 	 */
 	public addOwner(owner: _Render_RenderableBase): void {
-		this._owners.push(owner);
+		this._owners.add(owner);
 
 		let animationSet: IAnimationSet;
-		const animator: IAnimator = (<IRenderContainer> owner.node.container).animator;
+		const animator: IAnimator = (<IRenderContainer> owner.entity.node.container).animator;
 
 		if (animator)
 			animationSet = <IAnimationSet> animator.animationSet;
 
-		if ((<IRenderContainer> owner.node.container).animator) {
+		if ((<IRenderContainer> (<RenderEntity> owner.entity).node.container).animator) {
 			if (this._animationSet && animationSet != this._animationSet) {
 				throw new Error(
 					'A Material instance cannot be shared across ' +
@@ -200,12 +191,13 @@ export class _Render_MaterialBase extends AbstractionBase {
 	 * @internal
 	 */
 	public removeOwner(owner: _Render_RenderableBase): void {
-		if (this._owners.length) {
-			this._owners.splice(this._owners.indexOf(owner), 1);
+		if (!this._owners) //check if material is already disposed
+			return;
 
-			if (!this._owners.length)
-				this.onClear(null);
-		}
+		this._owners.remove(owner);
+
+		if (!this._owners.numAssets)
+			this.onClear(null);
 	}
 
 	public getImageIndex(texture: ITexture, index: number = 0): number {
@@ -219,9 +211,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 	 *
 	 */
 	public onClear(event: AssetEvent): void {
-		super.onClear(event);
-
-		this._renderElements.removeMaterial(this);
+		this.renderElements?.removeMaterial(this);
 
 		const len: number = this._passes.length;
 		for (let i: number = 0; i < len; i++) {
@@ -231,14 +221,12 @@ export class _Render_MaterialBase extends AbstractionBase {
 
 		this._passes.length = 0;
 
-		this._material.removeEventListener(MaterialEvent.INVALIDATE_TEXTURES, this._onInvalidateTexturesDelegate);
-		this._material.removeEventListener(MaterialEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
+		(<IMaterial> this._asset).removeEventListener(MaterialEvent.INVALIDATE_TEXTURES, this._onInvalidateTexturesDelegate);
+		(<IMaterial> this._asset).removeEventListener(MaterialEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
 
 		this._animationSet = null;
-		this._material = null;
-		this._renderElements = null;
 		this._stage = null;
-		this._owners.length = 0;
+		this._owners = null;
 
 		this._invalidAnimation = true;
 		this._invalidRender = true;
@@ -250,6 +238,8 @@ export class _Render_MaterialBase extends AbstractionBase {
 		this._activePass = null;
 		this.images = [];
 		this.samplers = [];
+
+		super.onClear(event);
 	}
 
 	/**
@@ -275,10 +265,7 @@ export class _Render_MaterialBase extends AbstractionBase {
      *
      */
 	public onInvalidateTextures(event: MaterialEvent): void {
-		const renderables: Array<_Render_RenderableBase> = this._owners;
-		const numOwners: number = renderables.length;
-		for (let j: number = 0; j < numOwners; j++)
-			renderables[j]._onInvalidateStyle();
+		this._owners.forEach((asset: _Render_RenderableBase) => asset._onInvalidateStyle());
 	}
 
 	/**
@@ -291,8 +278,8 @@ export class _Render_MaterialBase extends AbstractionBase {
 		this._invalidAnimation = true;
 
 		//prevent infinite loop with cacheRenderer invalidation
-		if (<CacheRenderer> this._renderer != <IMaterial> this._material)
-			this._renderer.invalidate();
+		if (<CacheRenderer> this.renderElements.renderer != <IMaterial> this._asset)
+			(<CacheRenderer> this.renderElements.renderer).invalidate();
 	}
 
 	/**
@@ -370,10 +357,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 		if (this._usesAnimation != usesAnimation) {
 			this._usesAnimation = usesAnimation;
 
-			const renderables: Array<_Render_RenderableBase> = this._owners;
-			const numOwners: number = renderables.length;
-			for (let j: number = 0; j < numOwners; j++)
-				renderables[j]._onInvalidateElements();
+			this._owners.forEach((asset: _Render_RenderableBase) => asset._onInvalidateElements());
 		}
 
 		this._renderOrderId = renderOrderId;
@@ -382,8 +366,8 @@ export class _Render_MaterialBase extends AbstractionBase {
 	private _updateImages(): void {
 		this._invalidImages = false;
 
-		const style: Style = this._material.style;
-		const numTextures: number = this._material.getNumTextures();
+		const style: Style = (<IMaterial> this._asset).style;
+		const numTextures: number = (<IMaterial> this._asset).getNumTextures();
 		let texture: ITexture;
 		let numImages: number;
 		let images: Array<number>;
@@ -391,7 +375,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 		let index: number = 0;
 
 		for (let i: number = 0; i < numTextures; i++) {
-			texture = this._material.getTextureAt(i);
+			texture = (<IMaterial> this._asset).getTextureAt(i);
 			numImages = texture.getNumImages();
 			images = this._imageIndices[texture.id] = new Array<number>();
 			for (let j: number = 0; j < numImages; j++) {
@@ -419,17 +403,15 @@ export class _Render_MaterialBase extends AbstractionBase {
 		if (this._animationSet) {
 			this._animationSet.resetGPUCompatibility();
 
-			const entities: Array<_Render_RenderableBase> = this._owners;
-			const numOwners: number = entities.length;
-
 			const len: number = this._passes.length;
 			let shader: ShaderBase;
 			for (let i: number = 0; i < len; i++) {
 				shader = <ShaderBase> this._passes[i].shader;
 				shader.usesAnimation = false;
-				for (let j: number = 0; j < numOwners; j++)
-					if ((<IRenderContainer> entities[j].node.container).animator)
-						(<IRenderContainer> entities[j].node.container).animator.testGPUCompatibility(shader);
+				this._owners.forEach((asset: _Render_RenderableBase) => {
+					if ((<IRenderContainer> (<RenderEntity> asset.entity).node.container).animator)
+						(<IRenderContainer> (<RenderEntity> asset.entity).node.container).animator.testGPUCompatibility(shader);
+				});
 			}
 
 			return !this._animationSet.usesCPU;
