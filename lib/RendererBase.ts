@@ -9,6 +9,7 @@ import {
 	Rectangle,
 	IAbstraction,
 	IAbstractionPool,
+	WeakAssetSet,
 } from '@awayjs/core';
 
 import {
@@ -106,7 +107,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 	public _pNumElements: number = 0;
 
-	private _renderEntities: RenderEntity[] = [];
+	private _renderEntities: WeakAssetSet = new WeakAssetSet("RenderEntity");
 	protected _opaqueRenderables: IRenderable[] = [];
 	protected _blendedRenderables: IRenderable[] = [];
 	public _disableColor: boolean = false;
@@ -303,8 +304,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._style = null;
 		}
 
-		for (let i: number = this._renderEntities.length  - 1; i >= 0; i--)
-			this._renderEntities[i].onClear(event);
+		this._renderEntities.forEach((entity: RenderEntity) => entity.onClear(event));
 
 		this.resetHead();
 
@@ -328,11 +328,11 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	}
 
 	public addRenderEntity(renderEntity: RenderEntity): void {
-		this._renderEntities.push(renderEntity);
+		this._renderEntities.add(renderEntity);
 	}
 
 	public removeRenderEntity(renderEntity: RenderEntity): void {
-		this._renderEntities.splice(this._renderEntities.indexOf(renderEntity), 1);
+		this._renderEntities.remove(renderEntity);
 	}
 
 	public update(node: INode): void {
@@ -707,10 +707,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	public getTraverser(rootNode: ContainerNode): IPartitionTraverser {
 
 		if (rootNode.renderToImage) {
-			//clear existing abstractions on renderer
-			for (let i: number = 0; i < this._renderEntities.length; i++) {
-
-			}
 			//new node for the container
 			const node: ContainerNode = rootNode.getLocalNode();
 			const boundsPicker: BoundsPicker = PickGroup.getInstance().getBoundsPicker(node);
@@ -775,7 +771,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		const renderRenderable: IRenderable = traversable.getAbstraction<_Render_RenderableBase>(this._renderEntity);
 
 		//store renderable properties
-		renderRenderable.renderer = this;
 		renderRenderable.cascaded = false;
 		renderRenderable.zIndex = this._zIndex;
 		renderRenderable.maskId = this._entityMaskId;
