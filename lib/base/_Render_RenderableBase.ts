@@ -27,7 +27,6 @@ import { Style } from './Style';
 import { IRenderable } from './IRenderable';
 import { Settings } from '../Settings';
 import { IShaderBase } from './IShaderBase';
-import { RendererBase } from '../RendererBase';
 
 /**
  * @class RenderableListItem
@@ -78,16 +77,6 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 	 *
 	 */
 	public renderSceneTransform: Matrix3D;
-
-	/**
-	 *
-	 */
-	public renderer: RendererBase;
-
-	/**
-	 *
-	 */
-	public node: ContainerNode;
 
 	/**
 	 *
@@ -168,6 +157,10 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 		return this._renderMaterial;
 	}
 
+	public get entity(): RenderEntity {
+		return this._useWeak ? (<WeakRef<RenderEntity>> this._pool).deref() : <RenderEntity> this._pool;
+	}
+
 	constructor() {
 		super();
 
@@ -183,14 +176,13 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 	 * @param surface
 	 * @param renderer
 	 */
-	public init(renderable: IAsset, renderEntity: RenderEntity): void {
-		super.init(renderable, renderEntity);
+	public init(renderable: IAsset, entity: RenderEntity): void {
+		super.init(renderable, entity, true);
 
 		//store references
-		this.node = renderEntity.node;
-		this._stage = renderEntity.stage;
+		this._stage = entity.stage;
 
-		renderEntity.addRenderable(this);
+		entity.addRenderable(this);
 
 		this._asset.addEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
 		this._asset.addEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
@@ -240,14 +232,11 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 		this._asset.removeEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
 		this._asset.removeEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateStyleDelegate);
 
-		(<RenderEntity> this._pool).removeRenderable(this);
-
-		super.onClear(event);
+		this.entity?.removeRenderable(this);
 
 		this.renderSceneTransform = null;
 
 		this._stage = null;
-		this.node = null;
 
 		this.next = null;
 		this.maskOwners = null;
@@ -260,6 +249,8 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 		this._materialDirty = true;
 		this._elementsDirty = true;
 		this._styleDirty = true;
+
+		super.onClear(event);
 	}
 
 	public _onInvalidateElements(event: RenderableEvent = null): void {
