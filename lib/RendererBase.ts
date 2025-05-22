@@ -763,7 +763,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			//collect renderables
 			entity._acceptTraverser(this);
 		} else {
-			node.clearAbstraction(this);
+			//check if we have a RenderEntity abstraction and if so, clear it!
+			node.checkAbstraction(this)?.onClear(null);
 		}
 	}
 
