@@ -298,6 +298,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._boundsPicker = null;
 		this._activeMasksDirty = false;
 		this._activeMaskOwners = null;
+		this._renderEntity = null;
 
 		if (this._style) {
 			this._style.removeEventListener(StyleEvent.INVALIDATE_PROPERTIES, this._onInvalidateProperties);
