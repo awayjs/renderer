@@ -31,7 +31,7 @@ export class LineElements extends ElementsBase {
 			this._thicknessScale.identity();
 		} else {
 			if (node)
-				this._thicknessScale.copyFrom(node.getMatrix3D().decompose()[3]);
+				this._thicknessScale.copyFrom(node.getMatrix3D().decompose()[2]);
 			else
 				this._thicknessScale.identity();
 
@@ -568,7 +568,7 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
 
 		const data: Float32Array = shader.vertexConstantData;
 
-		this._scale.copyFrom(renderRenderable.entity.node.getMatrix3D().decompose()[3]);
+		this._scale.copyFrom(renderRenderable.entity.node.getMatrix3D().decompose()[2]);
 
 		const scaleMode: LineScaleMode = this._lineElements.scaleMode;
 		const half_thickness: number = this._lineElements.half_thickness;
