@@ -65,7 +65,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private static _store: IAbstraction[] = [];
 	public static _collectionMark = 0;
 
-	public _renderObjects : Record<number, _Render_Renderer> = {};
+	public _renderObjects: Record<number, _Render_Renderer> = {};
 
 	protected _renderMatrix: Matrix3D = new Matrix3D();
 	protected _parentNode: ContainerNode;

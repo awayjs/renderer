@@ -271,7 +271,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 
 		for (const key in this._renderObjects)
 			this._renderObjects[key]._onInvalidateElements();
-	
+
 		for (const key in this._renderObjects)
 			this._renderObjects[key]._onInvalidateStyle();
 
