@@ -1,4 +1,4 @@
-import { AssetEvent, AbstractionBase, WeakAssetSet } from '@awayjs/core';
+import { AbstractionBase, WeakAssetSet } from '@awayjs/core';
 
 import {
 	Stage,
@@ -197,7 +197,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 		this._owners.remove(owner);
 
 		if (!this._owners.numAssets)
-			this.onClear(null);
+			this.onClear();
 	}
 
 	public getImageIndex(texture: ITexture, index: number = 0): number {
@@ -210,7 +210,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 	/**
 	 *
 	 */
-	public onClear(event: AssetEvent): void {
+	public onClear(): void {
 		this.renderElements?.removeMaterial(this);
 
 		const len: number = this._passes.length;
@@ -239,7 +239,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 		this.images = [];
 		this.samplers = [];
 
-		super.onClear(event);
+		super.onClear();
 	}
 
 	/**
@@ -271,8 +271,8 @@ export class _Render_MaterialBase extends AbstractionBase {
 	/**
 	 *
 	 */
-	public onInvalidate(event: AssetEvent): void {
-		super.onInvalidate(event);
+	public onInvalidate(): void {
+		super.onInvalidate();
 
 		this._invalidRender = true;
 		this._invalidAnimation = true;

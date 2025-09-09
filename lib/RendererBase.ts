@@ -3,7 +3,6 @@ import {
 	Plane3D,
 	Vector3D,
 	AbstractionBase,
-	AssetEvent,
 	IAsset,
 	Box,
 	Rectangle,
@@ -36,7 +35,6 @@ import {
 	IPartitionTraverser,
 	IEntityTraverser,
 	INode,
-	ITraversable,
 	ContainerNode,
 	BoundsPicker,
 	PickGroup,
@@ -51,12 +49,11 @@ import { RenderGroup } from './RenderGroup';
 
 import { IRenderEntitySorter } from './sort/IRenderEntitySorter';
 import { RenderableMergeSort } from './sort/RenderableMergeSort';
-import { IRenderable } from './base/IRenderable';
-import { CacheRenderer } from './CacheRenderer';
+import { _Render_Renderer, CacheRenderer } from './CacheRenderer';
 import { _Render_ElementsBase } from './base/_Render_ElementsBase';
 import { Style } from './base/Style';
 import { StyleEvent } from './events/StyleEvent';
-import { RenderableEvent } from './events/RenderableEvent';
+import { IRenderable } from './base/IRenderable';
 
 /**
  * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
@@ -67,6 +64,8 @@ import { RenderableEvent } from './events/RenderableEvent';
 export class RendererBase extends AbstractionBase implements IPartitionTraverser, IEntityTraverser, IAbstractionPool {
 	private static _store: IAbstraction[] = [];
 	public static _collectionMark = 0;
+
+	public _renderObjects : Record<number, _Render_Renderer> = {};
 
 	protected _renderMatrix: Matrix3D = new Matrix3D();
 	protected _parentNode: ContainerNode;
@@ -108,8 +107,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	public _pNumElements: number = 0;
 
 	private _renderEntities: WeakAssetSet = new WeakAssetSet('RenderEntity');
-	protected _opaqueRenderables: IRenderable[] = [];
-	protected _blendedRenderables: IRenderable[] = [];
+	protected _opaqueRenderables: _Render_RenderableBase[] = [];
+	protected _blendedRenderables: _Render_RenderableBase[] = [];
 	public _disableColor: boolean = false;
 	public _disableClear: boolean = false;
 	public _renderBlended: boolean = true;
@@ -214,7 +213,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		if (this._style)
 			this._style.addEventListener(StyleEvent.INVALIDATE_PROPERTIES, this._onInvalidateProperties);
 
-		this._invalidateStyle();
+		this._onInvalidateStyle();
 	}
 
 	public parentRenderer: RendererBase;
@@ -256,7 +255,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	constructor() {
 		super();
 
-		this._onInvalidateProperties = (_event: StyleEvent) => this._invalidateStyle();
+		this._onInvalidateProperties = (_event: StyleEvent) => this._onInvalidateStyle();
 		this._onSizeInvalidateDelegate = (event: ViewEvent) => this.onSizeInvalidate(event);
 		this._onContextUpdateDelegate = (event: StageEvent) => this.onContextUpdate(event);
 	}
@@ -283,10 +282,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._context = <IContextGL> this.stage.context;
 	}
 
-	public onClear(event: AssetEvent): void {
+	public onClear(): void {
 		this.clear();
 
-		super.onClear(event);
+		super.onClear();
 
 		this.stage.removeEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 		this.stage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
@@ -305,7 +304,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._style = null;
 		}
 
-		this._renderEntities.forEach((entity: RenderEntity) => entity.onClear(event));
+		this._renderEntities.forEach((entity: RenderEntity) => entity.onClear());
 
 		this.resetHead();
 
@@ -322,8 +321,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._renderBlended = true;
 	}
 
-	public onInvalidate(event: AssetEvent): void {
-		super.onInvalidate(event);
+	public onInvalidate(): void {
+		super.onInvalidate();
 
 		this._boundsDirty = true;
 	}
@@ -571,16 +570,16 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 *
 	 * @param renderables The renderables to draw.
 	 */
-	public drawRenderables(renderRenderables: IRenderable[]): void {
+	public drawRenderables(renderRenderables: _Render_RenderableBase[]): void {
 		let index: number = 0;
 		const len: number = renderRenderables.length;
-		let renderRenderable: IRenderable = renderRenderables[index];
+		let renderRenderable: _Render_RenderableBase = renderRenderables[index];
 
 		let renderMaterial: _Render_MaterialBase;
 		let numPasses: number;
 
 		let i: number;
-		let r: IRenderable;
+		let r: _Render_RenderableBase;
 
 		while (index < len) {
 			renderMaterial = renderRenderable.renderMaterial;
@@ -765,12 +764,12 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			entity._acceptTraverser(this);
 		} else {
 			//check if we have a RenderEntity abstraction and if so, clear it!
-			node.checkAbstraction(this)?.onClear(null);
+			node.checkAbstraction(this)?.onClear();
 		}
 	}
 
-	public applyTraversable(traversable: ITraversable): void {
-		const renderRenderable: IRenderable = traversable.getAbstraction<_Render_RenderableBase>(this._renderEntity);
+	public applyTraversable(renderable: IRenderable): void {
+		const renderRenderable: _Render_RenderableBase = renderable.getAbstraction<_Render_RenderableBase>(this._renderEntity);
 
 		//store renderable properties
 		renderRenderable.cascaded = false;
@@ -892,8 +891,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		return false;
 	}
 
-	private _invalidateStyle(): void {
-		this.dispatchEvent(new RenderableEvent(RenderableEvent.INVALIDATE_STYLE, this));
+	public _onInvalidateStyle(): void {
+		for (const key in this._renderObjects)
+			this._renderObjects[key]._onInvalidateStyle();
 	}
 
 	protected _updateBounds(): void {

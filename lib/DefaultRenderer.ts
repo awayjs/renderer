@@ -1,4 +1,4 @@
-import { AssetEvent, IAssetClass } from '@awayjs/core';
+import { IAssetClass } from '@awayjs/core';
 import { BitmapImage2D, IContextGL } from '@awayjs/stage';
 import { INode, PickGroup } from '@awayjs/view';
 import { RenderGroup } from './RenderGroup';
@@ -100,16 +100,16 @@ export class DefaultRenderer extends RendererBase {
 			this.view.present();
 	}
 
-	public onClear(event: AssetEvent): void {
-		super.onClear(event);
+	public onClear(): void {
+		super.onClear();
 
 		if (this._pRttBufferManager) {
 			this._pRttBufferManager.dispose();
 			this._pRttBufferManager = null;
 		}
 
-		this._depthRenderer.onClear(event);
-		this._distanceRenderer.onClear(event);
+		this._depthRenderer.onClear();
+		this._distanceRenderer.onClear();
 		this._depthRenderer = null;
 		this._distanceRenderer = null;
 

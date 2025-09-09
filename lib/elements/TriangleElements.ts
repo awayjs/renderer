@@ -798,8 +798,6 @@ export class TriangleElements extends ElementsBase {
 	}
 }
 
-import { AssetEvent } from '@awayjs/core';
-
 import {
 	Stage,
 	ContextGLDrawMode,
@@ -863,8 +861,8 @@ export class _Stage_TriangleElements extends _Stage_ElementsBase {
 		//		}
 	}
 
-	onInvalidate(event: AssetEvent) {
-		super.onInvalidate(event);
+	public onInvalidate() {
+		super.onInvalidate();
 
 		this._vaoIsInvalid = true;
 		// drop vao every invalidation because buffers can be rebound
@@ -874,8 +872,8 @@ export class _Stage_TriangleElements extends _Stage_ElementsBase {
 		//		}
 	}
 
-	public onClear(event: AssetEvent): void {
-		super.onClear(event);
+	public onClear(): void {
+		super.onClear();
 
 		this._triangleElements = null;
 

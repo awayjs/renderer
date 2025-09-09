@@ -25,15 +25,16 @@ import { _Render_RendererMaterial } from './base/_Render_RendererMaterial';
 import { _Stage_ElementsBase } from './base/_Stage_ElementsBase';
 import { TriangleElements, _Stage_TriangleElements } from './elements/TriangleElements';
 import { MaterialEvent } from './events/MaterialEvent';
-import { RenderableEvent } from './events/RenderableEvent';
 import { RendererBase } from './RendererBase';
 import { RenderGroup } from './RenderGroup';
 import { ImageTexture2D } from './textures/ImageTexture2D';
 import { Settings as StageSettings } from '@awayjs/stage';
 import { RenderEntity } from './base/RenderEntity';
 import { DefaultRenderer } from './DefaultRenderer';
+import { IRenderable } from './base/IRenderable';
+import { IRenderContainer } from './base/IRenderContainer';
 
-export class CacheRenderer extends RendererBase implements IMaterial {
+export class CacheRenderer extends RendererBase implements IMaterial, IRenderable {
 	public static assetType: string = '[renderer CacheRenderer]';
 
 	private _texture: ImageTexture2D;
@@ -89,15 +90,25 @@ export class CacheRenderer extends RendererBase implements IMaterial {
 		super();
 
 		this._onTextureInvalidate = (event: AssetEvent) => this.invalidate();
-		this._onInvalidateParentNode = (event: ContainerNodeEvent) => this.onInvalidate(null);
-		this._onInvalidateColorTransform = (event: ContainerNodeEvent) => this.onInvalidate(null);
+		this._onInvalidateParentNode = (event: ContainerNodeEvent) => this.onInvalidate();
+		this._onInvalidateColorTransform = (event: ContainerNodeEvent) => this.onInvalidate();
 
 		this._traverserGroup = RenderGroup.getInstance(CacheRenderer);
 		this._maskGroup = RenderGroup.getInstance(DefaultRenderer);
 	}
 
-	public init(node: INode, pool: RenderGroup): void {
-		super.init(node, pool);
+	public _onInvalidateElements(): void {
+		// for (const key in this._abstractionPool)
+		// 	(this._abstractionPool[key] as _Render_RenderableBase)._onInvalidateElements();
+	}
+
+	public _onInvalidateMaterial(): void {
+		// for (const key in this._abstractionPool)
+		// 	(this._abstractionPool[key] as _Render_RenderableBase)._onInvalidateMaterial();
+	}
+
+	public init(node: INode, group: RenderGroup): void {
+		super.init(node, group);
 
 		if (this._parentNode) {
 			this._parentNode.addEventListener(ContainerNodeEvent.INVALIDATE_MATRIX3D, this._onInvalidateParentNode);
@@ -105,7 +116,7 @@ export class CacheRenderer extends RendererBase implements IMaterial {
 		}
 
 		// for check filters/blends changes
-		this.node.container.addEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateParentNode);
+		(<IRenderContainer> this.node.container)._renderObjects[group.id] = this;
 		this.node.container.addEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
 
 		this.texture = new ImageTexture2D();
@@ -255,18 +266,20 @@ export class CacheRenderer extends RendererBase implements IMaterial {
 		return enter;
 	}
 
-	public onInvalidate(event: AssetEvent): void {
-		super.onInvalidate(event);
+	public onInvalidate(): void {
+		super.onInvalidate();
 
-		this.dispatchEvent(new RenderableEvent(RenderableEvent.INVALIDATE_ELEMENTS, this));
-
-		this.dispatchEvent(new RenderableEvent(RenderableEvent.INVALIDATE_STYLE, this));
+		for (const key in this._renderObjects)
+			this._renderObjects[key]._onInvalidateElements();
+	
+		for (const key in this._renderObjects)
+			this._renderObjects[key]._onInvalidateStyle();
 
 		this.invalidate();
 		this.invalidatePasses();
 	}
 
-	public onClear(event: AssetEvent): void {
+	public onClear(): void {
 
 		this.removeTexture(this._texture);
 		this._texture.clear();
@@ -279,10 +292,10 @@ export class CacheRenderer extends RendererBase implements IMaterial {
 			this._parentNode.removeEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
 		}
 
-		this.node.container.removeEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateParentNode);
+		delete (<IRenderContainer> this.node.container)._renderObjects[this.group.id];
 		this.node.container.removeEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
 
-		super.onClear(event);
+		super.onClear();
 	}
 
 	public static registerMaterial(renderMaterialClass: _IRender_MaterialClass, materialClass: IAssetClass): void {

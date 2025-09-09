@@ -469,7 +469,7 @@ export class LineElements extends ElementsBase {
 	}
 }
 
-import { AssetEvent, Matrix3D } from '@awayjs/core';
+import { Matrix3D } from '@awayjs/core';
 
 import {
 	ContextGLDrawMode,
@@ -514,14 +514,14 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
 			: null;
 	}
 
-	public onInvalidate(event: AssetEvent) {
-		super.onInvalidate(event);
+	public onInvalidate() {
+		super.onInvalidate();
 
 		this._vaoIsInvalid = true;
 	}
 
-	public onClear(event: AssetEvent): void {
-		super.onClear(event);
+	public onClear(): void {
+		super.onClear();
 
 		this._lineElements = null;
 

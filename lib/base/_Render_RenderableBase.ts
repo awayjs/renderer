@@ -1,10 +1,8 @@
 import {
 	AbstractMethodError,
-	AssetEvent,
 	Matrix,
 	Matrix3D,
 	AbstractionBase,
-	IAsset,
 } from '@awayjs/core';
 
 import {
@@ -15,7 +13,6 @@ import {
 } from '@awayjs/stage';
 
 import { ContainerNode } from '@awayjs/view';
-import { RenderableEvent } from '../events/RenderableEvent';
 import { MaterialUtils } from '../utils/MaterialUtils';
 import { _Render_MaterialBase } from './_Render_MaterialBase';
 import { _Stage_ElementsBase } from './_Stage_ElementsBase';
@@ -24,17 +21,14 @@ import { IMaterial } from './IMaterial';
 import { RenderEntity } from './RenderEntity';
 import { ITexture } from './ITexture';
 import { Style } from './Style';
-import { IRenderable } from './IRenderable';
 import { Settings } from '../Settings';
 import { IShaderBase } from './IShaderBase';
+import { IRenderable } from './IRenderable';
 
 /**
  * @class RenderableListItem
  */
-export class _Render_RenderableBase extends AbstractionBase implements IRenderable {
-	private _onInvalidateElementsDelegate: (event: RenderableEvent) => void;
-	private _onInvalidateMaterialDelegate: (event: RenderableEvent) => void;
-	private _onInvalidateStyleDelegate: (event: RenderableEvent) => void;
+export class _Render_RenderableBase extends AbstractionBase {
 	private _materialDirty: boolean = true;
 	private _stageElements: _Stage_ElementsBase;
 	private _elementsDirty: boolean = true;
@@ -91,7 +85,7 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 	/**
      *
      */
-	public next: IRenderable;
+	public next: _Render_RenderableBase;
 
 	public id: number;
 
@@ -163,10 +157,6 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 
 	constructor() {
 		super();
-
-		this._onInvalidateElementsDelegate = (event: RenderableEvent) => this._onInvalidateElements(event);
-		this._onInvalidateMaterialDelegate = (event: RenderableEvent) => this._onInvalidateMaterial(event);
-		this._onInvalidateStyleDelegate = (event: RenderableEvent) => this._onInvalidateStyle(event);
 	}
 
 	/**
@@ -176,7 +166,7 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 	 * @param surface
 	 * @param renderer
 	 */
-	public init(renderable: IAsset, entity: RenderEntity): void {
+	public init(renderable: IRenderable, entity: RenderEntity): void {
 		super.init(renderable, entity, true);
 
 		//store references
@@ -184,9 +174,7 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 
 		entity.addRenderable(this);
 
-		this._asset.addEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
-		this._asset.addEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
-		this._asset.addEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateStyleDelegate);
+		renderable._renderObjects[entity.id] = this;
 	}
 
 	private _updateMaskHack(enable: boolean) {
@@ -227,12 +215,14 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 		this._stageElements.draw(this, shader, this._count, this._offset);
 	}
 
-	public onClear(event: AssetEvent): void {
-		this._asset.removeEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
-		this._asset.removeEventListener(RenderableEvent.INVALIDATE_MATERIAL, this._onInvalidateMaterialDelegate);
-		this._asset.removeEventListener(RenderableEvent.INVALIDATE_STYLE, this._onInvalidateStyleDelegate);
-
-		this.entity?.removeRenderable(this);
+	public onClear(): void {
+		const entity = this.entity;
+		if (entity) {
+			entity.removeRenderable(this);
+			delete (<IRenderable> this.asset)._renderObjects[entity.id];
+		} else {
+			delete (<IRenderable> this.asset)._renderObjects[this._poolId];
+		}
 
 		this.renderSceneTransform = null;
 
@@ -250,19 +240,19 @@ export class _Render_RenderableBase extends AbstractionBase implements IRenderab
 		this._elementsDirty = true;
 		this._styleDirty = true;
 
-		super.onClear(event);
+		super.onClear();
 	}
 
-	public _onInvalidateElements(event: RenderableEvent = null): void {
+	public _onInvalidateElements(): void {
 		this._elementsDirty = true;
 	}
 
-	public _onInvalidateMaterial(event: RenderableEvent = null): void {
+	public _onInvalidateMaterial(): void {
 		this._materialDirty = true;
 		this._styleDirty = true;
 	}
 
-	public _onInvalidateStyle(event: RenderableEvent = null): void {
+	public _onInvalidateStyle(): void {
 		this._styleDirty = true;
 	}
 

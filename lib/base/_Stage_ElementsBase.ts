@@ -1,10 +1,10 @@
 
 import { Stage, Short3Attributes, AttributesView, _Stage_AttributesBuffer } from '@awayjs/stage';
-import { AbstractionBase, AbstractMethodError, AssetEvent } from '@awayjs/core';
+import { AbstractionBase, AbstractMethodError } from '@awayjs/core';
 import { ElementsEvent } from '../events/ElementsEvent';
 import { ElementsUtils } from '../utils/ElementsUtils';
 import { IElements } from './IElements';
-import { IRenderable } from './IRenderable';
+import { _Render_RenderableBase } from './_Render_RenderableBase';
 import { IShaderBase } from './IShaderBase';
 
 /**
@@ -126,8 +126,8 @@ export class _Stage_ElementsBase extends AbstractionBase {
 	/**
 	 *
 	 */
-	public onClear(event: AssetEvent): void {
-		super.onClear(event);
+	public onClear(): void {
+		super.onClear();
 
 		this._elements.removeEventListener(ElementsEvent.CLEAR_INDICES, this._onClearIndicesDelegate);
 		this._elements.removeEventListener(ElementsEvent.INVALIDATE_INDICES, this._onInvalidateIndicesDelegate);
@@ -138,7 +138,7 @@ export class _Stage_ElementsBase extends AbstractionBase {
 		this._elements = null;
 
 		if (this._overflow) {
-			this._overflow.onClear(event);
+			this._overflow.onClear();
 			this._overflow = null;
 		}
 
@@ -148,7 +148,7 @@ export class _Stage_ElementsBase extends AbstractionBase {
 		this._verticesUpdated = {};
 	}
 
-	public _setRenderState(renderable: IRenderable, shader: IShaderBase): void {
+	public _setRenderState(renderable: _Render_RenderableBase, shader: IShaderBase): void {
 		if (!this._verticesUpdated)
 			this._updateIndices();
 
@@ -159,7 +159,7 @@ export class _Stage_ElementsBase extends AbstractionBase {
 		// 	this._overflow._iRender(renderable, camera, viewProjection);
 	}
 
-	public draw(renderable: IRenderable, shader: IShaderBase, count: number, offset: number): void {
+	public draw(renderable: _Render_RenderableBase, shader: IShaderBase, count: number, offset: number): void {
 		throw new AbstractMethodError();
 	}
 
@@ -193,7 +193,7 @@ export class _Stage_ElementsBase extends AbstractionBase {
 
 			this._overflow._updateIndices(indexOffset);
 		} else if (this._overflow) {
-			this._overflow.onClear(null);
+			this._overflow.onClear();
 			this._overflow = null;
 		}
 
@@ -244,7 +244,7 @@ export class _Stage_ElementsBase extends AbstractionBase {
 		if (!event.attributesView)
 			return;
 
-		this._indices.onClear(null);
+		this._indices.onClear();
 		this._indices = null;
 	}
 
@@ -276,7 +276,7 @@ export class _Stage_ElementsBase extends AbstractionBase {
 		const bufferId: number = event.attributesView.attributesBuffer.id;
 
 		if (this._vertices[bufferId]) {
-			this._vertices[bufferId].onClear(null);
+			this._vertices[bufferId].onClear();
 			delete this._vertices[bufferId];
 			delete this._verticesUpdated[bufferId];
 		}

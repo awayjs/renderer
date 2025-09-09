@@ -1,5 +1,3 @@
-import { AssetEvent } from '@awayjs/core';
-
 import { BlendMode, ContextGLCompareMode, ShaderRegisterCache, ShaderRegisterData } from '@awayjs/stage';
 
 import { CacheRenderer } from '../CacheRenderer';
@@ -25,8 +23,8 @@ export class _Render_RendererMaterial extends _Render_MaterialPassBase {
 		this._pAddPass(this);
 	}
 
-	public onClear(event: AssetEvent): void {
-		super.onClear(event);
+	public onClear(): void {
+		super.onClear();
 
 		this._texture = null;
 

@@ -1,11 +1,11 @@
-import { IRenderable } from '../base/IRenderable';
+import { _Render_RenderableBase } from '../base/_Render_RenderableBase';
 
 /**
  * @interface away.sort.IRenderEntitySorter
  */
 export interface IRenderEntitySorter
 {
-	sortBlendedRenderables(head: IRenderable): IRenderable;
+	sortBlendedRenderables(head: _Render_RenderableBase): _Render_RenderableBase;
 
-	sortOpaqueRenderables(head: IRenderable): IRenderable;
+	sortOpaqueRenderables(head: _Render_RenderableBase): _Render_RenderableBase;
 }

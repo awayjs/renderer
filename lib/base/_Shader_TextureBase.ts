@@ -1,4 +1,4 @@
-import { AbstractMethodError, AssetEvent, AbstractionBase } from '@awayjs/core';
+import { AbstractMethodError, AbstractionBase } from '@awayjs/core';
 
 import {
 	Stage,
@@ -33,8 +33,8 @@ export class _Shader_TextureBase extends AbstractionBase {
 	/**
 	 *
 	 */
-	public onClear(event: AssetEvent): void {
-		super.onClear(event);
+	public onClear(): void {
+		super.onClear();
 
 		this._texture = null;
 		this._shader = null;

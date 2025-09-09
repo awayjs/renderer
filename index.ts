@@ -14,6 +14,7 @@ export { _Render_MaterialBase } from './lib/base/_Render_MaterialBase';
 export { _Render_MaterialPassBase } from './lib/base/_Render_MaterialPassBase';
 export { _Render_ElementsBase } from './lib/base/_Render_ElementsBase';
 export { _Render_RenderableBase } from './lib/base/_Render_RenderableBase';
+export { IRenderable } from './lib/base/IRenderable';
 export { RenderEntity } from './lib/base/RenderEntity';
 export { IAnimationSet } from './lib/base/IAnimationSet';
 export { IAnimator } from './lib/base/IAnimator';
@@ -40,7 +41,6 @@ export { LineElements, _Render_LineElements, _Stage_LineElements } from './lib/e
 export { TriangleElements, _Render_TriangleElements, _Stage_TriangleElements } from './lib/elements/TriangleElements';
 export { LineScaleMode } from './lib/elements/LineScaleMode';
 
-export { RenderableEvent } from './lib/events/RenderableEvent';
 export { PassEvent } from './lib/events/PassEvent';
 export { MaterialEvent } from './lib/events/MaterialEvent';
 export { StyleEvent } from './lib/events/StyleEvent';

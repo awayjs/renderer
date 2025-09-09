@@ -4,7 +4,7 @@ import { ShaderRegisterCache, ShaderRegisterData } from '@awayjs/stage';
 
 import { View } from '@awayjs/view';
 
-import { IRenderable } from './IRenderable';
+import { _Render_RenderableBase } from './_Render_RenderableBase';
 import { IShaderBase } from './IShaderBase';
 
 export interface ISimplePass extends IEventDispatcher {
@@ -24,7 +24,7 @@ export interface ISimplePass extends IEventDispatcher {
 	 */
 	_activate(view: View): void;
 
-	_setRenderState(renderState: IRenderable): void;
+	_setRenderState(renderState: _Render_RenderableBase): void;
 
 	/**
 	 * Clears the surface state for the pass. This needs to be called before activating another pass.
