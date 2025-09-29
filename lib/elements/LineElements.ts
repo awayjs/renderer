@@ -500,7 +500,6 @@ import { LineScaleMode } from './LineScaleMode';
  */
 export class _Stage_LineElements extends _Stage_ElementsBase {
 	private _scale: Vector3D = new Vector3D();
-	private _thickness: number = 1;
 	private _vao: IVao;
 	private _lineElements: LineElements;
 	private _vaoIsInvalid: boolean = true;
@@ -575,19 +574,19 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
 		if (scaleMode == LineScaleMode.NORMAL) {
 			data[oMisc + 0] = (
 				// eslint-disable-next-line max-len
-				(half_thickness * this._scale.x * this._thickness / 1000 > 0.5 / (view.focalLength * view.pixelRatio))
-					? this._scale.x * this._thickness / 1000
+				(half_thickness * this._scale.x / 1000 > 0.5 / (view.focalLength * view.pixelRatio))
+					? this._scale.x / 1000
 					: 0.5 / (half_thickness * view.focalLength * view.pixelRatio));
-			data[oMisc + 1] = (half_thickness * this._scale.y * this._thickness / 1000 > 0.5 / view.focalLength)
-				? this._scale.y * this._thickness / 1000
+			data[oMisc + 1] = (half_thickness * this._scale.y / 1000 > 0.5 / view.focalLength)
+				? this._scale.y / 1000
 				: 0.5 / (half_thickness * view.focalLength);
 
 		} else if (scaleMode == LineScaleMode.HAIRLINE) {
-			data[oMisc + 0] = this._thickness / (view.focalLength * view.pixelRatio);
-			data[oMisc + 1] = this._thickness / view.focalLength;
+			data[oMisc + 0] = 1 / (view.focalLength * view.pixelRatio);
+			data[oMisc + 1] = 1 / view.focalLength;
 		} else {
-			data[oMisc + 0] = this._thickness / Math.min(view.width, view.height);
-			data[oMisc + 1] = this._thickness / Math.min(view.width, view.height);
+			data[oMisc + 0] = 1 / Math.min(view.width, view.height);
+			data[oMisc + 1] = 1 / Math.min(view.width, view.height);
 		}
 		data[oMisc + 2] = view.projection.near;
 	}
