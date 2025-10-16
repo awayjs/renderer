@@ -318,7 +318,7 @@ export class _Render_Renderer extends _Render_RenderableBase {
 		const offsetY = 0;//paddedBounds.y - bounds.y;
 		const matrix3D: Matrix3D = Matrix3D.CALCULATION_MATRIX;
 
-		matrix3D.copyFrom(this.renderSceneTransform);
+		matrix3D.copyFrom(this.entity.renderSceneTransform);
 		matrix3D.appendScale(asset._boundsScale, asset._boundsScale, asset._boundsScale);
 		matrix3D.appendTranslation(offsetX * 0.5, offsetY * 0.5, 0);
 		matrix3D.invert();

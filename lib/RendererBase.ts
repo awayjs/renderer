@@ -84,8 +84,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _boundsDirty: boolean = true;
 	private _mappers: Array<IMapper> = new Array<IMapper>();
 	private _elementsPools: Record<string, _Render_ElementsBase> = {};
-	private _entityMaskId: number;
-	private _entityMaskOwners: ContainerNode[];
 
 	protected _context: IContextGL;
 
@@ -119,7 +117,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	protected _maskGroup: RenderGroup;
 	private _renderEntity: RenderEntity;
 	private _zIndex: number;
-	private _renderSceneTransform: Matrix3D;
 
 	/**
 	 *
@@ -314,7 +311,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		}
 
 		this._boundsDirty = true;
-		this._entityMaskOwners = null;
 
 		this._disableColor = false;
 		this._disableClear = false;
@@ -585,8 +581,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			renderMaterial = renderRenderable.renderMaterial;
 			numPasses = renderMaterial ? renderMaterial.numPasses : 1;
 
-			if (this._activeMasksDirty || this._checkMaskOwners(renderRenderable.maskOwners)) {
-				if (!(this._activeMaskOwners = renderRenderable.maskOwners)) {
+			if (this._activeMasksDirty || this._checkMaskOwners(renderRenderable.entity.maskOwners)) {
+				if (!(this._activeMaskOwners = renderRenderable.entity.maskOwners)) {
 					//re-establish stencil settings (if not inside another mask)
 					if (!this._maskConfig)
 						this._context.disableStencil();
@@ -616,7 +612,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 					r = renderRenderables[i];
 
 				} while (r.renderMaterial == renderMaterial
-						&& !(this._activeMasksDirty = this._checkMaskOwners(r.maskOwners)));
+						&& !(this._activeMasksDirty = this._checkMaskOwners(r.entity.node.getMaskOwners())));
 
 				renderMaterial && renderMaterial.deactivatePass();
 			}
@@ -722,19 +718,18 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._renderEntity = node.getAbstraction<RenderEntity>(this);
 
 			// project onto camera's z-axis
-			this._zIndex = this._cameraTransform.position.subtract(rootNode.getPosition())
-				.dotProduct(this._cameraForward)
-					+ rootNode.container.zOffset;
+			this._renderEntity.zIndex = this._cameraTransform.position
+				.subtract(rootNode.getPosition())
+				.dotProduct(this._cameraForward) + rootNode.container.zOffset;
 
 			//save sceneTransform
-			this._renderSceneTransform = rootNode.getRenderMatrix3D(this._cameraTransform);
+			this._renderEntity.renderSceneTransform = rootNode.getRenderMatrix3D(this._cameraTransform);
 
-			//save mask id
-			this._entityMaskId = rootNode.getMaskId();
-			this._entityMaskOwners = rootNode.getMaskOwners();
+			//save mask owners
+			this._renderEntity.maskOwners = rootNode.getMaskOwners();
 
+			//apply CacheRenderer as renderable
 			this.applyTraversable(traverser);
-			//}
 
 			return traverser;
 		}
@@ -749,16 +744,15 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._renderEntity = node.getAbstraction<RenderEntity>(this);
 
 			// project onto camera's z-axis
-			this._zIndex = this._cameraTransform.position.subtract(node.getPosition())
-				.dotProduct(this._cameraForward)
-				+ node.container.zOffset;
+			this._renderEntity.zIndex = this._cameraTransform.position
+				.subtract(node.getPosition())
+				.dotProduct(this._cameraForward) + node.container.zOffset;
 
 			//save sceneTransform
-			this._renderSceneTransform = node.getRenderMatrix3D(this._cameraTransform);
+			this._renderEntity.renderSceneTransform = node.getRenderMatrix3D(this._cameraTransform);
 
-			//save mask id
-			this._entityMaskId = node.getMaskId();
-			this._entityMaskOwners = node.getMaskOwners();
+			//save mask owners
+			this._renderEntity.maskOwners = node.getMaskOwners();
 
 			//collect renderables
 			entity._acceptTraverser(this);
@@ -773,10 +767,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		//store renderable properties
 		renderRenderable.cascaded = false;
-		renderRenderable.zIndex = this._zIndex;
-		renderRenderable.maskId = this._entityMaskId;
-		renderRenderable.maskOwners = this._entityMaskOwners;
-		renderRenderable.renderSceneTransform = this._renderSceneTransform;
 
 		const renderMaterial: _Render_MaterialBase = renderRenderable.renderMaterial;
 		renderRenderable.materialID = renderMaterial.materialID;

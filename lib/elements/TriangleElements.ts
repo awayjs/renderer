@@ -944,11 +944,11 @@ export class _Stage_TriangleElements extends _Stage_ElementsBase {
 
 		//set constants
 		if (shader.sceneMatrixIndex >= 0) {
-			shader.sceneMatrix.copyFrom(renderRenderable.renderSceneTransform, true);
+			shader.sceneMatrix.copyFrom(renderRenderable.entity.renderSceneTransform, true);
 			shader.viewMatrix.copyFrom(shader.view.viewMatrix3D, true);
 		} else {
 			const matrix3D: Matrix3D = Matrix3D.CALCULATION_MATRIX;
-			matrix3D.copyFrom(renderRenderable.renderSceneTransform);
+			matrix3D.copyFrom(renderRenderable.entity.renderSceneTransform);
 			matrix3D.append(shader.view.viewMatrix3D);
 			shader.viewMatrix.copyFrom(matrix3D, true);
 		}

@@ -1,4 +1,4 @@
-import { IAssetClass, IAbstractionPool, AbstractionBase, IAsset, WeakAssetSet } from '@awayjs/core';
+import { IAssetClass, IAbstractionPool, AbstractionBase, IAsset, WeakAssetSet, Matrix3D } from '@awayjs/core';
 
 import { Stage } from '@awayjs/stage';
 
@@ -17,7 +17,6 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 	private static _renderRenderableClassPool: Record<string,  _IRender_RenderableClass> = {};
 
 	private _renderables: WeakAssetSet;
-
 	/**
 	 *
 	 * @returns {RenderGroup}
@@ -39,6 +38,21 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 	public get renderer(): RendererBase {
 		return <RendererBase> this._pool;
 	}
+
+	/**
+     *
+     */
+	public zIndex: number;
+
+	/**
+     *
+     */
+	public renderSceneTransform: Matrix3D;
+
+	/**
+     *
+     */
+	public maskOwners: ContainerNode[];
 
 	constructor() {
 		super();
@@ -70,6 +84,10 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 		delete (<IRenderContainer> (<ContainerNode> this._asset).container)._renderObjects[this.renderer.id];
 
 		this._renderables = null;
+
+		this.renderSceneTransform = null;
+
+		this.maskOwners = null;
 
 		super.onClear();
 	}

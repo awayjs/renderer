@@ -44,7 +44,7 @@ export class RenderableMergeSort implements IRenderEntitySorter {
 			return head;
 
 		while (head && headB) {
-			if (head.zIndex < headB.zIndex) {
+			if (head.entity.zIndex < headB.entity.zIndex) {
 				l = head;
 				head = head.next;
 			} else {
@@ -117,7 +117,7 @@ export class RenderableMergeSort implements IRenderEntitySorter {
 				const mb: number = headB.materialID;
 
 				if (ma == mb) {
-					if (head.zIndex < headB.zIndex)
+					if (head.entity.zIndex < headB.entity.zIndex)
 						cmp = 1; else
 						cmp = -1;
 				} else if (ma > mb) {

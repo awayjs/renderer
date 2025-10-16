@@ -12,7 +12,6 @@ import {
 	ImageBase,
 } from '@awayjs/stage';
 
-import { ContainerNode } from '@awayjs/view';
 import { MaterialUtils } from '../utils/MaterialUtils';
 import { _Render_MaterialBase } from './_Render_MaterialBase';
 import { _Stage_ElementsBase } from './_Stage_ElementsBase';
@@ -21,7 +20,6 @@ import { IMaterial } from './IMaterial';
 import { RenderEntity } from './RenderEntity';
 import { ITexture } from './ITexture';
 import { Style } from './Style';
-import { Settings } from '../Settings';
 import { IShaderBase } from './IShaderBase';
 import { IRenderable } from './IRenderable';
 
@@ -29,13 +27,14 @@ import { IRenderable } from './IRenderable';
  * @class RenderableListItem
  */
 export class _Render_RenderableBase extends AbstractionBase {
+	private _renderMaterial: _Render_MaterialBase;
 	private _materialDirty: boolean = true;
 	private _stageElements: _Stage_ElementsBase;
 	private _elementsDirty: boolean = true;
 	private _styleDirty: boolean = true;
 
-	private _images: Array<_Stage_ImageBase> = new Array<_Stage_ImageBase>();
-	private _samplers: Array<ImageSampler> = new Array<ImageSampler>();
+	private _images: _Stage_ImageBase[] = [];
+	private _samplers: ImageSampler[] = [];
 	private _uvMatrix: Matrix;
 
 	public JOINT_INDEX_FORMAT: string;
@@ -45,7 +44,6 @@ export class _Render_RenderableBase extends AbstractionBase {
 	public _offset: number = 0;
 
 	protected _stage: Stage;
-	protected _renderMaterial: _Render_MaterialBase;
 
 	/**
      *
@@ -70,11 +68,6 @@ export class _Render_RenderableBase extends AbstractionBase {
 	/**
 	 *
 	 */
-	public renderSceneTransform: Matrix3D;
-
-	/**
-	 *
-	 */
 	public get uvMatrix(): Matrix {
 		if (this._styleDirty)
 			this._updateStyle();
@@ -87,8 +80,6 @@ export class _Render_RenderableBase extends AbstractionBase {
      */
 	public next: _Render_RenderableBase;
 
-	public id: number;
-
 	/**
      *
      */
@@ -98,31 +89,6 @@ export class _Render_RenderableBase extends AbstractionBase {
      *
      */
 	public renderOrderId: number;
-
-	/**
-     *
-     */
-	public zIndex: number;
-
-	/**
-     *
-     */
-	private _maskId: number = -1;
-	public set maskId(v: number) {
-		if (v !== this._maskId) {
-			this._updateMaskHack(v >= 0);
-		}
-		this._maskId = v;
-	}
-
-	public get maskId() {
-		return this._maskId;
-	}
-
-	/**
-     *
-     */
-	public maskOwners: ContainerNode[];
 
 	/**
      *
@@ -177,21 +143,6 @@ export class _Render_RenderableBase extends AbstractionBase {
 		renderable._renderObjects[entity.id] = this;
 	}
 
-	private _updateMaskHack(enable: boolean) {
-		if (!Settings.USE_ALPHA_CUTOFF
-			|| Settings.ALPHA_CUTOFF_VALUE < 0
-			|| Settings.ALPHA_CUTOFF_VALUE > 1) {
-			return;
-		}
-
-		const mat = this.renderMaterial?.material as IMaterial & {alphaThreshold: number};
-		if (!mat) {
-			return;
-		}
-
-		mat.alphaThreshold = enable ? Settings.ALPHA_CUTOFF_VALUE : 0;
-	}
-
 	/**
      * Renders an object to the current render target.
      *
@@ -212,7 +163,7 @@ export class _Render_RenderableBase extends AbstractionBase {
 			elements._setRenderState(this, shader);
 		}
 
-		this._stageElements.draw(this, shader, this._count, this._offset);
+		elements.draw(this, shader, this._count, this._offset);
 	}
 
 	public onClear(): void {
@@ -224,12 +175,9 @@ export class _Render_RenderableBase extends AbstractionBase {
 			delete (<IRenderable> this.asset)._renderObjects[this._poolId];
 		}
 
-		this.renderSceneTransform = null;
-
 		this._stage = null;
 
 		this.next = null;
-		this.maskOwners = null;
 
 		this._renderMaterial.removeOwner(this);
 
