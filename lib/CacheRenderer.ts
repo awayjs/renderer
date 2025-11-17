@@ -348,13 +348,13 @@ export class _Render_Renderer extends _Render_RenderableBase {
 		return elements.getAbstraction<_Stage_TriangleElements>(this._stage);
 	}
 
-	public executeRender(
+	public draw(
 		enableDepthAndStencil: boolean = true,
 		surfaceSelector: number = 0, mipmapSelector: number = 0, maskConfig: number = 0): void {
 
 		// disable cull, because for render to texture it is bugged
 		this._stage.context.setCulling(ContextGLTriangleFace.NONE);
-		super.executeRender(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
+		super.draw();
 	}
 
 	protected _getRenderMaterial(): _Render_RendererMaterial {

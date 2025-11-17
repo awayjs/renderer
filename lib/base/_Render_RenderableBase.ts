@@ -148,9 +148,7 @@ export class _Render_RenderableBase extends AbstractionBase {
      *
      * @private
      */
-	public executeRender(
-		enableDepthAndStencil: boolean = true, surfaceSelector: number = 0,
-		mipmapSelector: number = 0, maskConfig: number = 0): void {
+	public draw(): void {
 
 		const pass: IPass = this._renderMaterial._activePass;
 		pass._setRenderState(this);

@@ -600,11 +600,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				r = renderRenderable;
 				do {
 					///console.log("maskOwners", renderRenderable2.maskOwners);
-					r.executeRender(
-						this._enableDepthAndStencil,
-						this._surfaceSelector,
-						this._mipmapSelector,
-						this._maskConfig);
+					r.draw();
 
 					if (++i == len)
 						break;
