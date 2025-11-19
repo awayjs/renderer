@@ -1,4 +1,4 @@
-﻿import { ImageSampler, ImageCube } from '@awayjs/stage';
+﻿import { ImageSampler, ImageCube, ImageUtils } from '@awayjs/stage';
 
 import { TextureCube } from './TextureCube';
 
@@ -99,8 +99,8 @@ export class _Shader_ImageTexture extends _Shader_TextureBase {
 		const sampler: ImageSampler = renderState.samplers[this._imageIndex];
 		const stageImage: _Stage_ImageBase = <_Stage_ImageBase> renderState.images[this._imageIndex];
 
-		if (stageImage && sampler)
-			stageImage.activate(this._textureIndex, sampler);
+		if (stageImage)
+			stageImage.activate(this._textureIndex, sampler || ImageUtils.getDefaultImageSampler());
 	}
 }
 
