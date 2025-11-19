@@ -5,7 +5,6 @@ import { IMaterial } from '../base/IMaterial';
 
 export interface IMaterialFactory extends IImageFactory
 {
-	readonly mapMatsForBitmaps: NumberMap<IMaterial>;
 	readonly awaySymbols: NumberMap<IAsset>;
 
 	createMaterial(image?: Image2D, alpha?: number, symbol?: any): IMaterial;

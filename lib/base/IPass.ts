@@ -2,8 +2,6 @@ import { IEventDispatcher } from '@awayjs/core';
 
 import { ShaderRegisterCache, ShaderRegisterData } from '@awayjs/stage';
 
-import { View } from '@awayjs/view';
-
 import { _Render_RenderableBase } from './_Render_RenderableBase';
 import { IShaderBase } from './IShaderBase';
 
@@ -22,7 +20,7 @@ export interface ISimplePass extends IEventDispatcher {
 	 * @param camera The camera from which the scene is viewed.
 	 * @private
 	 */
-	_activate(view: View): void;
+	_activate(): void;
 
 	_setRenderState(renderState: _Render_RenderableBase): void;
 

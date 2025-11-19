@@ -136,7 +136,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 			this._stage.context.setTextureAt(i, null);
 
 		//activate shader object through pass
-		this._activePass._activate(this.renderElements.renderer.view);
+		this._activePass._activate();
 	}
 
 	public deactivatePass(): void {
@@ -236,8 +236,8 @@ export class _Render_MaterialBase extends AbstractionBase {
 		this._usesAnimation = false;
 
 		this._activePass = null;
-		this.images = [];
-		this.samplers = [];
+		this.images.length = 0;
+		this.samplers.length = 0;
 
 		super.onClear();
 	}

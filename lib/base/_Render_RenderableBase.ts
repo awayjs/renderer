@@ -1,7 +1,6 @@
 import {
 	AbstractMethodError,
 	Matrix,
-	Matrix3D,
 	AbstractionBase,
 } from '@awayjs/core';
 
@@ -186,6 +185,9 @@ export class _Render_RenderableBase extends AbstractionBase {
 		this._elementsDirty = true;
 		this._styleDirty = true;
 
+		this._images.length = 0;
+		this._samplers.length = 0;
+
 		super.onClear();
 	}
 
@@ -265,8 +267,8 @@ export class _Render_RenderableBase extends AbstractionBase {
 			numImages = texture.getNumImages();
 			for (let j: number = 0; j < numImages; j++) {
 				index = this._renderMaterial.getImageIndex(texture, j);
-				image =  style ? style.getImageAt(texture, j) : null;
-				this._images[index] = image ? image.getAbstraction<_Stage_ImageBase>(this._stage) : null;
+				image =  style?.getImageAt(texture, j);
+				this._images[index] = image?.getAbstraction<_Stage_ImageBase>(this._stage);
 				this._samplers[index] = style ? style.getSamplerAt(texture, j) : null;
 			}
 		}
