@@ -71,9 +71,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	protected _parentNode: ContainerNode;
 	private _boundsPicker: BoundsPicker;
 	/*internal*/ _boundsScale: number = 1;
-	private _enableDepthAndStencil: boolean;
-	private _surfaceSelector: number;
-	private _mipmapSelector: number;
 	private _maskConfig: number;
 	private _maskId: number;
 	private _activeMasksDirty: boolean;
@@ -291,15 +288,14 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this.parentRenderer = null;
 
 		this._parentNode = null;
+		this.view = null;
+		this.stage = null;
+		this.style = null;
+
 		this._boundsPicker = null;
 		this._activeMasksDirty = false;
 		this._activeMaskOwners = null;
 		this._renderEntity = null;
-
-		if (this._style) {
-			this._style.removeEventListener(StyleEvent.INVALIDATE_PROPERTIES, this._onInvalidateProperties);
-			this._style = null;
-		}
 
 		this._renderEntities.forEach((entity: RenderEntity) => entity.onClear());
 
@@ -379,10 +375,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		//TODO refactor setTarget so that rendertextures are created before this check
 		// if (!this._stage || !this._context)
 		// 	return;
-
-		this._enableDepthAndStencil = enableDepthAndStencil;
-		this._surfaceSelector = surfaceSelector;
-		this._mipmapSelector = mipmapSelector;
 		this._maskConfig = maskConfig;
 
 		//check for mask rendering
