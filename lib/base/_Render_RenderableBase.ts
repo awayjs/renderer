@@ -8,7 +8,6 @@ import {
 	Stage,
 	_Stage_ImageBase,
 	ImageSampler,
-	ImageBase,
 } from '@awayjs/stage';
 
 import { MaterialUtils } from '../utils/MaterialUtils';
@@ -259,7 +258,6 @@ export class _Render_RenderableBase extends AbstractionBase {
 
 		const numTextures: number = this._renderMaterial.material.getNumTextures();
 		let texture: ITexture;
-		let image: ImageBase;
 		let index: number;
 
 		for (let i: number = 0; i < numTextures; i++) {
@@ -267,9 +265,13 @@ export class _Render_RenderableBase extends AbstractionBase {
 			numImages = texture.getNumImages();
 			for (let j: number = 0; j < numImages; j++) {
 				index = this._renderMaterial.getImageIndex(texture, j);
-				image =  style?.getImageAt(texture, j);
-				this._images[index] = image?.getAbstraction<_Stage_ImageBase>(this._stage);
-				this._samplers[index] = style ? style.getSamplerAt(texture, j) : null;
+
+				this._images[index] = (style?.getImageAt(texture, j)
+					|| this._renderMaterial.images[index])
+					.getAbstraction<_Stage_ImageBase>(this._stage);
+
+				this._samplers[index] = style?.getSamplerAt(texture, j)
+					|| this._renderMaterial.samplers[index];
 			}
 		}
 

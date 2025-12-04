@@ -1,4 +1,3 @@
-import { IAbstraction } from '@awayjs/core';
 import { IAnimator } from './IAnimator';
 import { IMaterial } from './IMaterial';
 import { Style } from './Style';

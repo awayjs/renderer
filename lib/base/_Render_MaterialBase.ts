@@ -52,9 +52,9 @@ export class _Render_MaterialBase extends AbstractionBase {
 
 	public _activePass: IPass;
 
-	public images: _Stage_ImageBase[] = [];
+	public readonly images: ImageBase[] = [];
 
-	public samplers: ImageSampler[] = [];
+	public readonly samplers: ImageSampler[] = [];
 
 	/**
      * Indicates whether or not the renderable requires alpha blending during rendering.
@@ -370,20 +370,20 @@ export class _Render_MaterialBase extends AbstractionBase {
 		const numTextures: number = (<IMaterial> this._asset).getNumTextures();
 		let texture: ITexture;
 		let numImages: number;
-		let images: Array<number>;
-		let asset: ImageBase;
+		let images: number[];
 		let index: number = 0;
 
 		for (let i: number = 0; i < numTextures; i++) {
 			texture = (<IMaterial> this._asset).getTextureAt(i);
 			numImages = texture.getNumImages();
-			images = this._imageIndices[texture.id] = new Array<number>();
+			images = this._imageIndices[texture.id] = [];
 			for (let j: number = 0; j < numImages; j++) {
-				asset = texture.getImageAt(j) || style?.getImageAt(texture, j) || ImageUtils.getDefaultImage2D();
-				this.images[index] = asset.getAbstraction<_Stage_ImageBase>(this._stage);
+				this.images[index] = style?.getImageAt(texture, j)
+					|| texture.getImageAt(j)
+					|| ImageUtils.getDefaultImage2D();
 
-				this.samplers[index] = texture.getSamplerAt(j)
-					|| style?.getSamplerAt(texture, j)
+				this.samplers[index] = style?.getSamplerAt(texture, j)
+					|| texture.getSamplerAt(j)
 					|| ImageUtils.getDefaultImageSampler();
 
 				images[j] = index++;

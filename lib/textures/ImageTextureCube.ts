@@ -85,22 +85,11 @@ export class _Shader_ImageTexture extends _Shader_TextureBase {
 		const textureReg: ShaderRegisterElement = this.getTextureReg(this._imageIndex, regCache, sharedReg);
 		this._textureIndex = textureReg.index;
 
-		return 'tex ' + targetReg + ', ' + inputReg + ', ' + textureReg + ' <' + this._shader.renderMaterial.images[this._imageIndex].getType() + ',' + filter + ',' + format + wrap + '>\n';
-	}
-
-	public activate(): void {
-		const sampler: ImageSampler = <ImageSampler> this._shader.renderMaterial.samplers[this._imageIndex];
-		const stageImage: _Stage_ImageBase = <_Stage_ImageBase> this._shader.renderMaterial.images[this._imageIndex];
-
-		stageImage.activate(this._textureIndex, sampler);
+		return 'tex ' + targetReg + ', ' + inputReg + ', ' + textureReg + ' <' + this._shader.renderMaterial.images[this._imageIndex].getImageType() + ',' + filter + ',' + format + wrap + '>\n';
 	}
 
 	public _setRenderState(renderState: _Render_RenderableBase): void {
-		const sampler: ImageSampler = renderState.samplers[this._imageIndex];
-		const stageImage: _Stage_ImageBase = <_Stage_ImageBase> renderState.images[this._imageIndex];
-
-		if (stageImage)
-			stageImage.activate(this._textureIndex, sampler || ImageUtils.getDefaultImageSampler());
+		renderState.images[this._imageIndex].activate(this._textureIndex, renderState.samplers[this._imageIndex]);
 	}
 }
 
