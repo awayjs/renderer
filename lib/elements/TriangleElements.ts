@@ -954,7 +954,7 @@ export class _Stage_TriangleElements extends _Stage_ElementsBase {
 		}
 
 		if (!modern) {
-			const context: IContextGL = this._stage.context;
+			const context: IContextGL = (<Stage> this._pool).context;
 			context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, shader.vertexConstantData);
 			context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, shader.fragmentConstantData);
 		} else {
@@ -964,7 +964,7 @@ export class _Stage_TriangleElements extends _Stage_ElementsBase {
 		if (this._indices) {
 			this.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, offset * 3, count * 3 || this.numIndices);
 		} else {
-			this._stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, offset, count || this.numVertices);
+			(<Stage> this._pool).context.drawVertices(ContextGLDrawMode.TRIANGLES, offset, count || this.numVertices);
 		}
 
 		this._vao && this._vao.unbind();
@@ -981,7 +981,7 @@ export class _Stage_TriangleElements extends _Stage_ElementsBase {
      * @protected
      */
 	public _pGetOverflowElements(): _Stage_ElementsBase {
-		return <_Stage_ElementsBase> this._triangleElements.getNewAbstraction(this._stage);
+		return <_Stage_ElementsBase> (<Stage> this._pool).abstractions.getNewAbstraction(this._triangleElements);
 	}
 }
 

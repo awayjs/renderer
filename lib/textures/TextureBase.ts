@@ -11,8 +11,8 @@ import { MappingMode } from '../base/MappingMode';
  */
 export class TextureBase extends AssetBase implements ITexture {
 	public _numImages: number = 0;
-	public _images: Array<ImageBase> = new Array<ImageBase>();
-	public _samplers: Array<ImageSampler> = new Array<ImageSampler>();
+	public _images: ImageBase[] = [];
+	public _samplers: ImageSampler[] = [];
 
 	protected _mappingMode: MappingMode;
 

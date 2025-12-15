@@ -27,12 +27,14 @@ export class _Render_MaterialPassBase extends _Render_MaterialBase implements IP
 	}
 
 	public _includeDependencies(shader: ShaderBase): void {
-		shader.alphaThreshold = (<IMaterial> this._asset).alphaThreshold;
-		shader.useImageRect = (<IMaterial> this._asset).imageRect;
-		shader.usesCurves =  (<IMaterial> this._asset).curves;
-		shader.useBothSides =  (<IMaterial> this._asset).bothSides;
-		shader.usesUVTransform =  (<IMaterial> this._asset).animateUVs;
-		shader.usesColorTransform = (<IMaterial> this._asset).useColorTransform;
+		const material: IMaterial = this.material;
+
+		shader.alphaThreshold = material.alphaThreshold;
+		shader.useImageRect = material.imageRect;
+		shader.usesCurves =  material.curves;
+		shader.useBothSides =  material.bothSides;
+		shader.usesUVTransform =  material.animateUVs;
+		shader.usesColorTransform = material.useColorTransform;
 	}
 
 	/**

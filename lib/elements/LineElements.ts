@@ -534,7 +534,7 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
 	public _setRenderState(renderRenderable: _Render_RenderableBase, shader: ShaderBase): void {
 		super._setRenderState(renderRenderable, shader);
 
-		const asset = <LineElements> this._asset;
+		const elements = <LineElements> this.elements;
 		const view: View = shader.view;
 		const renderElements = <_Render_LineElements> renderRenderable.entity
 			.renderer.getRenderElements(renderRenderable.stageElements.elements);
@@ -545,12 +545,12 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
 			if (shader.colorBufferIndex >= 0)
 				this.activateVertexBufferVO(shader.colorBufferIndex, this._lineElements.colors);
 
-			this.activateVertexBufferVO(0, this._lineElements.positions, asset.dimension);
+			this.activateVertexBufferVO(0, this._lineElements.positions, elements.dimension);
 			this.activateVertexBufferVO(
 				renderElements.secondaryPositionIndex,
 				this._lineElements.positions,
-				asset.dimension,
-				asset.dimension * 2 * 2
+				elements.dimension,
+				elements.dimension * 2 * 2
 			);
 			this.activateVertexBufferVO(renderElements.thicknessIndex, this._lineElements.thickness);
 
@@ -592,7 +592,7 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
 	}
 
 	public draw(renderRenderable: _Render_RenderableBase, shader: ShaderBase, count: number, offset: number): void {
-		const context: IContextGL = this._stage.context;
+		const context: IContextGL = (<Stage> this._pool).context;
 
 		// projection matrix
 		shader.viewMatrix.copyFrom(shader.view.frustumMatrix3D, true);
@@ -608,7 +608,7 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
 		if (this._indices)
 			this.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, offset * 3, count * 3 || this.numIndices);
 		else
-			this._stage.context.drawVertices(ContextGLDrawMode.TRIANGLES, offset, count || this.numVertices);
+			(<Stage> this._pool).context.drawVertices(ContextGLDrawMode.TRIANGLES, offset, count || this.numVertices);
 
 		this._vao && this._vao.unbind();
 	}
@@ -624,7 +624,7 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
      * @protected
      */
 	public _pGetOverflowElements(): _Stage_ElementsBase {
-		return <_Stage_ElementsBase> this._lineElements.getNewAbstraction(this._stage);
+		return <_Stage_ElementsBase> (<Stage> this._pool).abstractions.getNewAbstraction(this._lineElements);
 	}
 }
 

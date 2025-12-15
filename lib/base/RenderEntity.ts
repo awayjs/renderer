@@ -1,13 +1,14 @@
-import { IAssetClass, IAbstractionPool, AbstractionBase, IAsset, WeakAssetSet, Matrix3D } from '@awayjs/core';
+import { IAssetClass, IAbstractionPool, AbstractionBase, IAsset, Matrix3D } from '@awayjs/core';
 
 import { Stage } from '@awayjs/stage';
 
 import { _IRender_RenderableClass } from './_IRender_RenderableClass';
 
-import { ContainerNode } from '@awayjs/view';
+import { ContainerNode, IContainer } from '@awayjs/view';
 import { RendererBase } from '../RendererBase';
 import { _Render_RenderableBase } from './_Render_RenderableBase';
 import { IRenderContainer } from './IRenderContainer';
+import { AbstractionSet } from '@awayjs/core/dist/lib/base/AbstractionSet';
 
 /**
  * @class away.pool.RenderEntity
@@ -16,12 +17,7 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 	private static _store: Record<string,  _Render_RenderableBase[]> = {};
 	private static _renderRenderableClassPool: Record<string,  _IRender_RenderableClass> = {};
 
-	private _renderables: WeakAssetSet;
-	/**
-	 *
-	 * @returns {RenderGroup}
-	 */
-	public stage: Stage;
+	public readonly abstractions: AbstractionSet;
 
 	/**
      *
@@ -56,6 +52,8 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 
 	constructor() {
 		super();
+
+		this.abstractions = new AbstractionSet(this);
 	}
 
 	/**
@@ -66,24 +64,17 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 	public init(node: ContainerNode, renderer: RendererBase): void {
 		super.init(node, renderer);
 
-		this.stage = renderer.stage;
-
-		this._renderables = new WeakAssetSet('_Render_RenderableBase');
-
-		(<RendererBase> this._pool).addRenderEntity(this);
-
 		(<IRenderContainer> (<ContainerNode> this._asset).container)._renderObjects[renderer.id] = this;
 	}
 
 	public onClear(): void {
 
-		this._renderables.forEach((renderable: _Render_RenderableBase) => renderable.onClear());
+		this.abstractions.forEach((renderable: _Render_RenderableBase) => renderable.onClear());
 
-		(<RendererBase> this._pool).removeRenderEntity(this);
+		const container: IRenderContainer = <IRenderContainer> (<ContainerNode> this._asset).container;
 
-		delete (<IRenderContainer> (<ContainerNode> this._asset).container)._renderObjects[this.renderer.id];
-
-		this._renderables = null;
+		if (container)
+			delete container._renderObjects[this.renderer.id];
 
 		this.renderSceneTransform = null;
 
@@ -94,14 +85,6 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 
 	public onInvalidate(): void {
 		super.onInvalidate();
-	}
-
-	public addRenderable(renderable: _Render_RenderableBase): void {
-		this._renderables.add(renderable);
-	}
-
-	public removeRenderable(renderable: _Render_RenderableBase): void {
-		this._renderables.remove(renderable);
 	}
 
 	public _onInvalidateElements(): void {
@@ -124,8 +107,8 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 		return store.length ? store.pop() : new RenderEntity._renderRenderableClassPool[asset.assetType]();
 	}
 
-	public storeAbstraction(abstraction: _Render_RenderableBase): void {
-		RenderEntity._store[abstraction.asset.assetType].push(abstraction);
+	public storeAbstraction(abstraction: _Render_RenderableBase, assetType: string): void {
+		RenderEntity._store[assetType].push(abstraction);
 	}
 
 	/**

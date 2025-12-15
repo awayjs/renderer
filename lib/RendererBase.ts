@@ -54,6 +54,7 @@ import { _Render_ElementsBase } from './base/_Render_ElementsBase';
 import { Style } from './base/Style';
 import { StyleEvent } from './events/StyleEvent';
 import { IRenderable } from './base/IRenderable';
+import { AbstractionSet } from '@awayjs/core/dist/lib/base/AbstractionSet';
 
 /**
  * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
@@ -64,6 +65,8 @@ import { IRenderable } from './base/IRenderable';
 export class RendererBase extends AbstractionBase implements IPartitionTraverser, IEntityTraverser, IAbstractionPool {
 	private static _store: IAbstraction[] = [];
 	public static _collectionMark = 0;
+
+	public readonly abstractions: AbstractionSet;
 
 	public _renderObjects: Record<number, _Render_Renderer> = {};
 
@@ -101,7 +104,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 	public _pNumElements: number = 0;
 
-	private _renderEntities: WeakAssetSet = new WeakAssetSet('RenderEntity');
 	protected _opaqueRenderables: _Render_RenderableBase[] = [];
 	protected _blendedRenderables: _Render_RenderableBase[] = [];
 	public _disableColor: boolean = false;
@@ -249,6 +251,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	constructor() {
 		super();
 
+		this.abstractions = new AbstractionSet(this);
 		this._onInvalidateProperties = (_event: StyleEvent) => this._onInvalidateStyle();
 		this._onSizeInvalidateDelegate = (event: ViewEvent) => this.onSizeInvalidate(event);
 		this._onContextUpdateDelegate = (event: StageEvent) => this.onContextUpdate(event);
@@ -297,7 +300,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._activeMaskOwners = null;
 		this._renderEntity = null;
 
-		this._renderEntities.forEach((entity: RenderEntity) => entity.onClear());
+		this.abstractions.forEach((entity: RenderEntity) => entity.onClear());
 
 		this.resetHead();
 
@@ -317,14 +320,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		super.onInvalidate();
 
 		this._boundsDirty = true;
-	}
-
-	public addRenderEntity(renderEntity: RenderEntity): void {
-		this._renderEntities.add(renderEntity);
-	}
-
-	public removeRenderEntity(renderEntity: RenderEntity): void {
-		this._renderEntities.remove(renderEntity);
 	}
 
 	public update(node: INode): void {
@@ -703,7 +698,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			traverser.renderableSorter = null;
 			traverser.parentRenderer = this;
 			//if (this._invalid) {
-			this._renderEntity = node.getAbstraction<RenderEntity>(this);
+			this._renderEntity = this.abstractions.getAbstraction<RenderEntity>(node);
 
 			// project onto camera's z-axis
 			this._renderEntity.zIndex = this._cameraTransform.position
@@ -729,7 +724,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		const entity = node.container.getEntity();
 
 		if (entity) {
-			this._renderEntity = node.getAbstraction<RenderEntity>(this);
+			this._renderEntity = this.abstractions.getAbstraction<RenderEntity>(node);
 
 			// project onto camera's z-axis
 			this._renderEntity.zIndex = this._cameraTransform.position
@@ -746,12 +741,12 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			entity._acceptTraverser(this);
 		} else {
 			//check if we have a RenderEntity abstraction and if so, clear it!
-			node.checkAbstraction(this)?.onClear();
+			this.abstractions.checkAbstraction(node)?.onClear();
 		}
 	}
 
 	public applyTraversable(renderable: IRenderable): void {
-		const renderRenderable: _Render_RenderableBase = renderable.getAbstraction<_Render_RenderableBase>(this._renderEntity);
+		const renderRenderable: _Render_RenderableBase = this._renderEntity.abstractions.getAbstraction<_Render_RenderableBase>(renderable);
 
 		//store renderable properties
 		renderRenderable.cascaded = false;

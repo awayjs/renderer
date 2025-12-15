@@ -1,6 +1,6 @@
 
 import { Stage, ShaderRegisterCache, ShaderRegisterData } from '@awayjs/stage';
-import { AssetBase, IAbstraction, IAbstractionPool, IAsset, WeakAssetSet } from '@awayjs/core';
+import { AbstractionSet, AssetBase, IAbstractionPool, IAsset } from '@awayjs/core';
 import { ShaderBase } from './ShaderBase';
 import { _IRender_MaterialClass } from './_IRender_MaterialClass';
 import { RendererBase } from '../RendererBase';
@@ -10,13 +10,12 @@ import { _Render_MaterialBase } from './_Render_MaterialBase';
  * @class away.pool.MaterialPoolBase
  */
 export class _Render_ElementsBase extends AssetBase implements IAbstractionPool {
-	private _materialStore: Record<string,  IAbstraction[]>;
+	private _materialStore: Record<string,  _Render_MaterialBase[]>;
 	private _materialClassPool: Record<string, _IRender_MaterialClass>;
 
-	private _materials: WeakAssetSet = new WeakAssetSet('_Render_MaterialBase');
-
-	readonly stage: Stage;
+	readonly abstractions: AbstractionSet;
 	readonly renderer: RendererBase;
+	readonly stage: Stage;
 
 	/**
 	 * //TODO
@@ -25,31 +24,24 @@ export class _Render_ElementsBase extends AssetBase implements IAbstractionPool 
 	 */
 	constructor(renderer: RendererBase) {
 		super();
+		this.abstractions = new AbstractionSet(this);
 		this.renderer = renderer;
 		this.stage = renderer.view.stage;
 		this._materialStore = renderer.group.materialStore;
 		this._materialClassPool = renderer.group.materialClassPool;
 	}
 
-	public requestAbstraction(asset: IAsset): IAbstraction {
+	public requestAbstraction(asset: IAsset): _Render_MaterialBase {
 		const store = this._materialStore[asset.assetType];
 		return store.length ? store.pop() : new this._materialClassPool[asset.assetType]();
 	}
 
-	public storeAbstraction(abstraction: IAbstraction): void {
-		this._materialStore[abstraction.asset.assetType].push(abstraction);
-	}
-
-	public addMaterial(material: _Render_MaterialBase): void {
-		this._materials.add(material);
-	}
-
-	public removeMaterial(material: _Render_MaterialBase): void {
-		this._materials.remove(material);
+	public storeAbstraction(abstraction: _Render_MaterialBase, assetType: string): void {
+		this._materialStore[assetType].push(abstraction);
 	}
 
 	public clear(): void {
-		this._materials.forEach((asset: _Render_MaterialBase) => asset.onClear());
+		this.abstractions.forEach((pickable: _Render_MaterialBase) => pickable.onClear());
 	}
 
 	public _includeDependencies(shader: ShaderBase): void {

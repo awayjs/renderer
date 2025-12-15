@@ -116,8 +116,13 @@ export class _Render_RenderableBase extends AbstractionBase {
 	}
 
 	public get entity(): RenderEntity {
-		return this._useWeak ? (<WeakRef<RenderEntity>> this._pool).deref() : <RenderEntity> this._pool;
+		return <RenderEntity> this._pool;
 	}
+
+	public get renderable(): IRenderable {
+		return this._useWeak ? (<WeakRef<IRenderable>> this._asset).deref() : <IRenderable> this._asset;
+	}
+
 
 	constructor() {
 		super();
@@ -134,9 +139,7 @@ export class _Render_RenderableBase extends AbstractionBase {
 		super.init(renderable, entity, true);
 
 		//store references
-		this._stage = entity.stage;
-
-		entity.addRenderable(this);
+		this._stage = entity.renderer.stage;
 
 		renderable._renderObjects[entity.id] = this;
 	}
@@ -163,13 +166,10 @@ export class _Render_RenderableBase extends AbstractionBase {
 	}
 
 	public onClear(): void {
-		const entity = this.entity;
-		if (entity) {
-			entity.removeRenderable(this);
-			delete (<IRenderable> this.asset)._renderObjects[entity.id];
-		} else {
-			delete (<IRenderable> this.asset)._renderObjects[this._poolId];
-		}
+		const renderable: IRenderable = this.renderable;
+
+		if (renderable)
+			delete renderable._renderObjects[(<RenderEntity> this._pool).id];
 
 		this._stage = null;
 
@@ -266,9 +266,11 @@ export class _Render_RenderableBase extends AbstractionBase {
 			for (let j: number = 0; j < numImages; j++) {
 				index = this._renderMaterial.getImageIndex(texture, j);
 
-				this._images[index] = (style?.getImageAt(texture, j)
-					|| this._renderMaterial.images[index])
-					.getAbstraction<_Stage_ImageBase>(this._stage);
+				this._images[index] = this._stage.abstractions
+					.getAbstraction<_Stage_ImageBase>(
+						style?.getImageAt(texture, j)
+						|| this._renderMaterial.images[index]
+					);
 
 				this._samplers[index] = style?.getSamplerAt(texture, j)
 					|| this._renderMaterial.samplers[index];

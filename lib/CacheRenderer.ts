@@ -292,8 +292,12 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 			this._parentNode.removeEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
 		}
 
-		delete (<IRenderContainer> this.node.container)._renderObjects[this.group.id];
-		this.node.container.removeEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
+		const container: IRenderContainer = <IRenderContainer> this.node.container;
+
+		if (container) {
+			delete container._renderObjects[this.group.id];
+			container.removeEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
+		}
 
 		super.onClear();
 	}
@@ -311,7 +315,7 @@ export class _Render_Renderer extends _Render_RenderableBase {
 
 	protected _getStageElements(): _Stage_ElementsBase {
 
-		const asset = <CacheRenderer> this._asset;
+		const asset = <CacheRenderer> this.renderable;
 		const paddedBounds = asset.getPaddedBounds();
 		//const bounds = asset.getBounds();
 		const offsetX = 0;//paddedBounds.x - bounds.x;
@@ -345,7 +349,7 @@ export class _Render_Renderer extends _Render_RenderableBase {
 			elements.setPositions(vectors);
 		}
 
-		return elements.getAbstraction<_Stage_TriangleElements>(this._stage);
+		return this._stage.abstractions.getAbstraction<_Stage_TriangleElements>(elements);
 	}
 
 	public draw(
@@ -358,13 +362,14 @@ export class _Render_Renderer extends _Render_RenderableBase {
 	}
 
 	protected _getRenderMaterial(): _Render_RendererMaterial {
-		return this._asset.getAbstraction<_Render_RendererMaterial>(
-			this.entity.renderer.getRenderElements(this.stageElements.elements));
+		return this.entity.renderer
+			.getRenderElements(this.stageElements.elements).abstractions
+			.getAbstraction<_Render_RendererMaterial>((<CacheRenderer> this.renderable));
 	}
 
 	protected _getStyle(): Style {
 
-		return (<CacheRenderer> this._asset).style;
+		return this.renderable.style;
 	}
 }
 DefaultRenderer.registerMaterial(_Render_RendererMaterial, CacheRenderer);

@@ -23,7 +23,7 @@ export class _Shader_TextureBase extends AbstractionBase {
 	protected _stage: Stage;
 
 	public init(texture: ITexture, shader: ShaderBase): void {
-		super.init(texture, shader);
+		super.init(texture, shader, true);
 
 		this._texture = texture;
 		this._shader = shader;

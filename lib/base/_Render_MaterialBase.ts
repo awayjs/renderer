@@ -35,7 +35,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 	/**
 	 * A list of material owners, renderables or custom Entities.
 	 */
-	public _owners: WeakAssetSet;
+	public _owners: WeakAssetSet<_Render_RenderableBase> = new WeakAssetSet<_Render_RenderableBase>();
 
 	protected _renderOrderId: number;
 	protected _passes: IPass[] = [];
@@ -68,7 +68,11 @@ export class _Render_MaterialBase extends AbstractionBase {
 	}
 
 	public get material(): IMaterial {
-		return <IMaterial> this._asset;
+		return this._useWeak ? (<WeakRef<IMaterial>> this._asset).deref() : <IMaterial> this._asset;
+	}
+
+	public get renderElements(): _Render_ElementsBase {
+		return <_Render_ElementsBase> this._pool;
 	}
 
 	public get numImages(): number {
@@ -94,14 +98,6 @@ export class _Render_MaterialBase extends AbstractionBase {
 		return this._passes.length;
 	}
 
-	public get style(): Style {
-		return (<IMaterial> this._asset).style;
-	}
-
-	public get renderElements(): _Render_ElementsBase {
-		return this._useWeak ? (<WeakRef<_Render_ElementsBase>> this._pool).deref() : <_Render_ElementsBase> this._pool;
-	}
-
 	constructor() {
 		super();
 
@@ -115,12 +111,9 @@ export class _Render_MaterialBase extends AbstractionBase {
 
 		this.materialID = material.id;
 		this._stage = renderElements.stage;
-		renderElements.addMaterial(this);
 
-		this._owners = new WeakAssetSet('_Render_RenderableBase');
-
-		(<IMaterial> this._asset).addEventListener(MaterialEvent.INVALIDATE_TEXTURES, this._onInvalidateTexturesDelegate);
-		(<IMaterial> this._asset).addEventListener(MaterialEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
+		material.addEventListener(MaterialEvent.INVALIDATE_TEXTURES, this._onInvalidateTexturesDelegate);
+		material.addEventListener(MaterialEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
 	}
 
 	public activatePass(index: number): void {
@@ -211,8 +204,6 @@ export class _Render_MaterialBase extends AbstractionBase {
 	 *
 	 */
 	public onClear(): void {
-		this.renderElements?.removeMaterial(this);
-
 		const len: number = this._passes.length;
 		for (let i: number = 0; i < len; i++) {
 			this._passes[i].removeEventListener(PassEvent.INVALIDATE, this._onPassInvalidateDelegate);
@@ -220,13 +211,17 @@ export class _Render_MaterialBase extends AbstractionBase {
 		}
 
 		this._passes.length = 0;
+		this._owners.clear();
 
-		(<IMaterial> this._asset).removeEventListener(MaterialEvent.INVALIDATE_TEXTURES, this._onInvalidateTexturesDelegate);
-		(<IMaterial> this._asset).removeEventListener(MaterialEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
+		const material = this.material;
+
+		if (material) {
+			material.removeEventListener(MaterialEvent.INVALIDATE_TEXTURES, this._onInvalidateTexturesDelegate);
+			material.removeEventListener(MaterialEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
+		}
 
 		this._animationSet = null;
 		this._stage = null;
-		this._owners = null;
 
 		this._invalidAnimation = true;
 		this._invalidRender = true;
@@ -278,7 +273,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 		this._invalidAnimation = true;
 
 		//prevent infinite loop with cacheRenderer invalidation
-		if (<CacheRenderer> this.renderElements.renderer != <IMaterial> this._asset)
+		if (<CacheRenderer> this.renderElements.renderer != this.material)
 			(<CacheRenderer> this.renderElements.renderer).invalidate();
 	}
 
@@ -364,17 +359,18 @@ export class _Render_MaterialBase extends AbstractionBase {
 	}
 
 	private _updateImages(): void {
+		const material: IMaterial = this.material;
 		this._invalidImages = false;
 
-		const style: Style = (<IMaterial> this._asset).style;
-		const numTextures: number = (<IMaterial> this._asset).getNumTextures();
+		const style: Style = material.style;
+		const numTextures: number = material.getNumTextures();
 		let texture: ITexture;
 		let numImages: number;
 		let images: number[];
 		let index: number = 0;
 
 		for (let i: number = 0; i < numTextures; i++) {
-			texture = (<IMaterial> this._asset).getTextureAt(i);
+			texture = material.getTextureAt(i);
 			numImages = texture.getNumImages();
 			images = this._imageIndices[texture.id] = [];
 			for (let j: number = 0; j < numImages; j++) {

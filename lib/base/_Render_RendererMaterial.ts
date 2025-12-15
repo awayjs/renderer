@@ -18,7 +18,7 @@ export class _Render_RendererMaterial extends _Render_MaterialPassBase {
 
 		this._shader = new ShaderBase(renderElements, this, this, this._stage);
 
-		this._texture = this._renderer.texture.getAbstraction<_Shader_TextureBase>(this._shader);
+		this._texture = this._shader.abstractions.getAbstraction<_Shader_TextureBase>(this._renderer.texture);
 
 		this._pAddPass(this);
 	}
@@ -37,18 +37,18 @@ export class _Render_RendererMaterial extends _Render_MaterialPassBase {
 	public _pUpdateRender(): void {
 		super._pUpdateRender();
 
-		const asset = <CacheRenderer> this._asset;
+		const material = <CacheRenderer> this.material;
 
 		this.shader.setBlendMode(BlendMode.LAYER);
 
-		asset.render();
+		material.render();
 
 		// LOL, this will broke state
 		// this.shader._stage.setRenderTarget(null);
 
 		this.requiresBlending = true;
 
-		this.shader.setBlendMode(asset.blendMode || BlendMode.LAYER);
+		this.shader.setBlendMode(material.blendMode || BlendMode.LAYER);
 	}
 
 	public _includeDependencies(shader: ShaderBase): void {
@@ -74,8 +74,6 @@ export class _Render_RendererMaterial extends _Render_MaterialPassBase {
      * @inheritDoc
      */
 	public _activate(): void {
-		// (<CacheRenderer> this._asset).render();
-		// this.shader._stage.setRenderTarget(null);
 		super._activate();
 
 		this._stage.context.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL);

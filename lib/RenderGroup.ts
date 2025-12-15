@@ -11,6 +11,8 @@ import { RendererBase } from './RendererBase';
 import { INode } from '@awayjs/view';
 import { _IRender_MaterialClass } from './base/_IRender_MaterialClass';
 import { IRendererClass } from './base/IRendererClass';
+import { AbstractionSet } from '@awayjs/core/dist/lib/base/AbstractionSet';
+import { _Render_MaterialBase } from './base/_Render_MaterialBase';
 
 export class RenderGroup implements IAbstractionPool {
 	public static _renderGroupPool: Record<string, RenderGroup> = {};
@@ -21,7 +23,9 @@ export class RenderGroup implements IAbstractionPool {
 
 	private _store: IAbstraction[] = [];
 
-	public readonly materialStore: Record<string,  IAbstraction[]> = {};
+	public readonly abstractions: AbstractionSet;
+
+	public readonly materialStore: Record<string,  _Render_MaterialBase[]> = {};
 
 	public readonly materialClassPool: Record<string, _IRender_MaterialClass> = {};
 
@@ -29,6 +33,7 @@ export class RenderGroup implements IAbstractionPool {
 
 	constructor(rendererClass: IRendererClass) {
 		this.id = UUID.Next();
+		this.abstractions = new AbstractionSet(this);
 		this._rendererClass = rendererClass;
 	}
 
@@ -41,7 +46,7 @@ export class RenderGroup implements IAbstractionPool {
 	}
 
 	public getRenderer <T extends RendererBase>(node: INode): T {
-		return <T> node.getAbstraction<RendererBase>(this);
+		return <T> this.abstractions.getAbstraction<RendererBase>(node);
 	}
 
 	public static getInstance(rendererClass: IRendererClass) {

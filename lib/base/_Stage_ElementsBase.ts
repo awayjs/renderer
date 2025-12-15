@@ -13,8 +13,6 @@ import { IShaderBase } from './IShaderBase';
  */
 export class _Stage_ElementsBase extends AbstractionBase {
 	public usages: number = 0;
-	private _elements: IElements;
-	public _stage: Stage;
 	private _onInvalidateIndicesDelegate: (event: ElementsEvent) => void;
 	private _onClearIndicesDelegate: (event: ElementsEvent) => void;
 	private _onInvalidateVerticesDelegate: (event: ElementsEvent) => void;
@@ -25,14 +23,14 @@ export class _Stage_ElementsBase extends AbstractionBase {
 	private _vertices: Record<number, _Stage_AttributesBuffer> = {};
 	private _verticesUpdated: Record<number, boolean> = {};
 
-	public _indexMappings: Array<number> = Array<number>();
+	public _indexMappings: number[] = [];
 
 	private _numIndices: number = 0;
 
 	private _numVertices: number;
 
 	public get elements(): IElements {
-		return this._elements;
+		return this._useWeak ? (<WeakRef<IElements>> this._asset).deref() : <IElements> this._asset;
 	}
 
 	/**
@@ -59,22 +57,19 @@ export class _Stage_ElementsBase extends AbstractionBase {
 	}
 
 	public init(elements: IElements, stage: Stage): void {
-		super.init(elements, stage);
+		super.init(elements, stage, true);
 
-		this._elements = elements;
-		this._stage = stage;
+		elements.addEventListener(ElementsEvent.CLEAR_INDICES, this._onClearIndicesDelegate);
+		elements.addEventListener(ElementsEvent.INVALIDATE_INDICES, this._onInvalidateIndicesDelegate);
 
-		this._elements.addEventListener(ElementsEvent.CLEAR_INDICES, this._onClearIndicesDelegate);
-		this._elements.addEventListener(ElementsEvent.INVALIDATE_INDICES, this._onInvalidateIndicesDelegate);
-
-		this._elements.addEventListener(ElementsEvent.CLEAR_VERTICES, this._onClearVerticesDelegate);
-		this._elements.addEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
+		elements.addEventListener(ElementsEvent.CLEAR_VERTICES, this._onClearVerticesDelegate);
+		elements.addEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
 	}
 
 	/**
 	 *
 	 */
-	public getIndexMappings(): Array<number> {
+	public getIndexMappings(): number[] {
 		if (!this._indicesUpdated)
 			this._updateIndices();
 
@@ -127,15 +122,15 @@ export class _Stage_ElementsBase extends AbstractionBase {
 	 *
 	 */
 	public onClear(): void {
-		super.onClear();
+		const elements: IElements = this.elements;
 
-		this._elements.removeEventListener(ElementsEvent.CLEAR_INDICES, this._onClearIndicesDelegate);
-		this._elements.removeEventListener(ElementsEvent.INVALIDATE_INDICES, this._onInvalidateIndicesDelegate);
+		if (elements) {
+			elements.removeEventListener(ElementsEvent.CLEAR_INDICES, this._onClearIndicesDelegate);
+			elements.removeEventListener(ElementsEvent.INVALIDATE_INDICES, this._onInvalidateIndicesDelegate);
 
-		this._elements.removeEventListener(ElementsEvent.CLEAR_VERTICES, this._onClearVerticesDelegate);
-		this._elements.removeEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
-
-		this._elements = null;
+			elements.removeEventListener(ElementsEvent.CLEAR_VERTICES, this._onClearVerticesDelegate);
+			elements.removeEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
+		}
 
 		if (this._overflow) {
 			this._overflow.onClear();
@@ -146,6 +141,8 @@ export class _Stage_ElementsBase extends AbstractionBase {
 		this._indicesUpdated = false;
 		this._vertices = {};
 		this._verticesUpdated = {};
+
+		super.onClear();
 	}
 
 	public _setRenderState(renderable: _Render_RenderableBase, shader: IShaderBase): void {
@@ -169,25 +166,27 @@ export class _Stage_ElementsBase extends AbstractionBase {
 	 * @private
 	 */
 	public _updateIndices(indexOffset: number = 0): void {
-		const indices: Short3Attributes = this._elements.indices;
+		const elements: IElements = this.elements;
+
+		const indices: Short3Attributes = elements.indices;
 		if (indices) {
 			const sub = ElementsUtils.getSubIndices(
 				indices,
-				this._elements.numVertices,
+				elements.numVertices,
 				this._indexMappings, indexOffset);
 
-			this._indices = sub.getAbstraction<_Stage_AttributesBuffer>(this._stage);
-			this._numIndices = this._indices._attributesBuffer.count * indices.dimensions;
+			this._indices = (<Stage> this._pool).abstractions.getAbstraction<_Stage_AttributesBuffer>(sub);
+			this._numIndices = this._indices.attributesBuffer.count * indices.dimensions;
 		} else {
 			this._indices = null;
 			this._numIndices = 0;
-			this._indexMappings  = Array<number>();
+			this._indexMappings.length = 0;
 		}
 
 		indexOffset += this._numIndices;
 
 		//check if there is more to split
-		if (indices && indexOffset < indices.count * this._elements.indices.dimensions) {
+		if (indices && indexOffset < indices.count * elements.indices.dimensions) {
 			if (!this._overflow)
 				this._overflow = this._pGetOverflowElements();
 
@@ -212,12 +211,12 @@ export class _Stage_ElementsBase extends AbstractionBase {
 	 * @private
 	 */
 	private _updateVertices(attributesView: AttributesView): void {
-		this._numVertices = this._elements.numVertices;
+		this._numVertices = this.elements.numVertices;
 
 		const bufferId: number = attributesView.attributesBuffer.id;
 		const sub = ElementsUtils.getSubVertices(attributesView.attributesBuffer, this._indexMappings);
 
-		this._vertices[bufferId] = sub.getAbstraction<_Stage_AttributesBuffer>(this._stage);
+		this._vertices[bufferId] = (<Stage> this._pool).abstractions.getAbstraction<_Stage_AttributesBuffer>(sub);
 		this._verticesUpdated[bufferId] = true;
 	}
 

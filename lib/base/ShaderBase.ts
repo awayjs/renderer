@@ -9,6 +9,7 @@ import {
 	IAsset,
 	UUID,
 	IAbstraction,
+	AbstractionSet,
 } from '@awayjs/core';
 
 import {
@@ -389,11 +390,14 @@ export class ShaderBase implements IShaderBase {
 
 	public readonly id: number;
 
+	public readonly abstractions: AbstractionSet;
+
 	/**
 	 * Creates a new MethodCompilerVO object.
 	 */
 	constructor(renderElements: _Render_ElementsBase, renderMaterial: _Render_MaterialBase, pass: IPass, stage: Stage) {
 		this.id = UUID.Next();
+		this.abstractions = new AbstractionSet(this);
 		this._renderElements = renderElements;
 		this._renderMaterial = renderMaterial;
 		this._pass = pass;
@@ -408,8 +412,8 @@ export class ShaderBase implements IShaderBase {
 		return store.length ? store.pop() : new ShaderBase._abstractionClassPool[asset.assetType];
 	}
 
-	public storeAbstraction(abstraction: IAbstraction): void {
-		ShaderBase._store[abstraction.asset.assetType].push(abstraction);
+	public storeAbstraction(abstraction: IAbstraction, assetType: string): void {
+		ShaderBase._store[assetType].push(abstraction);
 	}
 
 	/**
