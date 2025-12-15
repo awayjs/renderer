@@ -123,7 +123,6 @@ export class _Render_RenderableBase extends AbstractionBase {
 		return this._useWeak ? (<WeakRef<IRenderable>> this._asset).deref() : <IRenderable> this._asset;
 	}
 
-
 	constructor() {
 		super();
 	}
@@ -268,9 +267,9 @@ export class _Render_RenderableBase extends AbstractionBase {
 
 				this._images[index] = this._stage.abstractions
 					.getAbstraction<_Stage_ImageBase>(
-						style?.getImageAt(texture, j)
+					style?.getImageAt(texture, j)
 						|| this._renderMaterial.images[index]
-					);
+				);
 
 				this._samplers[index] = style?.getSamplerAt(texture, j)
 					|| this._renderMaterial.samplers[index];
