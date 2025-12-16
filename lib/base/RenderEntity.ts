@@ -64,7 +64,7 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 	public init(node: ContainerNode, renderer: RendererBase): void {
 		super.init(node, renderer);
 
-		(<IRenderContainer> (<ContainerNode> this._asset).container)._renderObjects[renderer.id] = this;
+		(<IRenderContainer> node.container)._renderObjects[renderer.id] = this;
 	}
 
 	public onClear(): void {
