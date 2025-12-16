@@ -8,17 +8,14 @@ import { _Render_RenderableBase } from './_Render_RenderableBase';
 import { _Shader_TextureBase } from './_Shader_TextureBase';
 
 export class _Render_RendererMaterial extends _Render_MaterialPassBase {
-	public _renderer: CacheRenderer;
 	public _texture: _Shader_TextureBase;
 
-	public init(renderer: CacheRenderer, renderElements: _Render_ElementsBase): void {
-		super.init(renderer, renderElements);
-
-		this._renderer = renderer;
+	public init(material: CacheRenderer, renderElements: _Render_ElementsBase): void {
+		super.init(material, renderElements);
 
 		this._shader = new ShaderBase(renderElements, this, this, this._stage);
 
-		this._texture = this._shader.abstractions.getAbstraction<_Shader_TextureBase>(this._renderer.texture);
+		this._texture = this._shader.abstractions.getAbstraction<_Shader_TextureBase>(material.texture);
 
 		this._pAddPass(this);
 	}
@@ -27,8 +24,6 @@ export class _Render_RendererMaterial extends _Render_MaterialPassBase {
 		super.onClear();
 
 		this._texture = null;
-
-		this._renderer = null;
 	}
 
 	/**

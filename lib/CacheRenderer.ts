@@ -116,8 +116,8 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		}
 
 		// for check filters/blends changes
-		(<IRenderContainer> this.node.container)._renderObjects[group.id] = this;
-		this.node.container.addEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
+		(<IRenderContainer> node.container)._renderObjects[group.id] = this;
+		node.container.addEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
 
 		this.texture = new ImageTexture2D();
 	}
