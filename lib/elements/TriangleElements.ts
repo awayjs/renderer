@@ -822,15 +822,17 @@ import { _Render_ElementsBase } from '../base/_Render_ElementsBase';
  * @class away.pool._Stage_TriangleElements
  */
 export class _Stage_TriangleElements extends _Stage_ElementsBase {
-	private _triangleElements: TriangleElements;
 	private _vao: IVao;
 	private _vaoIsInvalid: boolean = true;
+
+	public get triangleElements(): TriangleElements {
+		return this._useWeak ? (<WeakRef<TriangleElements>> this._asset).deref() : <TriangleElements> this._asset;
+	}
 
 	public init(triangleElements: TriangleElements, stage: Stage): void {
 		super.init(triangleElements, stage);
 
-		this._triangleElements = triangleElements;
-		if (!this._triangleElements.isDynamic
+		if (!triangleElements.isDynamic
 				&& Settings.ALLOW_VAO
 				&& stage.context.hasVao) {
 
@@ -875,8 +877,6 @@ export class _Stage_TriangleElements extends _Stage_ElementsBase {
 	public onClear(): void {
 		super.onClear();
 
-		this._triangleElements = null;
-
 		this._vaoIsInvalid = true;
 
 		if (this._vao) {
@@ -892,42 +892,43 @@ export class _Stage_TriangleElements extends _Stage_ElementsBase {
 		super._setRenderState(renderRenderable, shader);
 
 		if (!this._vao || this._vaoIsInvalid) {
+			const triangleElements: TriangleElements = this.triangleElements;
 			//set buffers
 			//TODO: find a better way to update a concatenated buffer when autoderiving
-			if (shader.normalIndex >= 0 && this._triangleElements.autoDeriveNormals)
-				this._triangleElements.normals;
+			if (shader.normalIndex >= 0 && triangleElements.autoDeriveNormals)
+				triangleElements.normals;
 
-			if (shader.tangentIndex >= 0 && this._triangleElements.autoDeriveTangents)
-				this._triangleElements.tangents;
+			if (shader.tangentIndex >= 0 && triangleElements.autoDeriveTangents)
+				triangleElements.tangents;
 
 			if (shader.curvesIndex >= 0)
-				this.activateVertexBufferVO(shader.curvesIndex, this._triangleElements.getCustomAtributes('curves'));
+				this.activateVertexBufferVO(shader.curvesIndex, triangleElements.getCustomAtributes('curves'));
 
 			if (shader.uvIndex >= 0)
 				this.activateVertexBufferVO(
-					shader.uvIndex, this._triangleElements.uvs || this._triangleElements.positions);
+					shader.uvIndex, triangleElements.uvs || triangleElements.positions);
 
 			if (shader.secondaryUVIndex >= 0) {
 				this.activateVertexBufferVO(
 					shader.secondaryUVIndex,
-					this._triangleElements.getCustomAtributes('secondaryUVs')
-							|| this._triangleElements.uvs
-							|| this._triangleElements.positions);
+					triangleElements.getCustomAtributes('secondaryUVs')
+							|| triangleElements.uvs
+							|| triangleElements.positions);
 			}
 
 			if (shader.normalIndex >= 0)
-				this.activateVertexBufferVO(shader.normalIndex, this._triangleElements.normals);
+				this.activateVertexBufferVO(shader.normalIndex, triangleElements.normals);
 
 			if (shader.tangentIndex >= 0)
-				this.activateVertexBufferVO(shader.tangentIndex, this._triangleElements.tangents);
+				this.activateVertexBufferVO(shader.tangentIndex, triangleElements.tangents);
 
 			if (shader.jointIndexIndex >= 0)
-				this.activateVertexBufferVO(shader.jointIndexIndex, this._triangleElements.jointIndices);
+				this.activateVertexBufferVO(shader.jointIndexIndex, triangleElements.jointIndices);
 
 			if (shader.jointWeightIndex >= 0)
-				this.activateVertexBufferVO(shader.jointIndexIndex, this._triangleElements.jointWeights);
+				this.activateVertexBufferVO(shader.jointIndexIndex, triangleElements.jointWeights);
 
-			this.activateVertexBufferVO(0, this._triangleElements.positions);
+			this.activateVertexBufferVO(0, triangleElements.positions);
 
 			this._vaoIsInvalid = false;
 		}
@@ -981,7 +982,7 @@ export class _Stage_TriangleElements extends _Stage_ElementsBase {
      * @protected
      */
 	public _pGetOverflowElements(): _Stage_ElementsBase {
-		return <_Stage_ElementsBase> (<Stage> this._pool).abstractions.getNewAbstraction(this._triangleElements);
+		return <_Stage_ElementsBase> (<Stage> this._pool).abstractions.getNewAbstraction(this.triangleElements);
 	}
 }
 
