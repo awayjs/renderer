@@ -503,7 +503,6 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
 	private _vao: IVao;
 	private _vaoIsInvalid: boolean = true;
 
-
 	public get lineElements(): LineElements {
 		return this._useWeak ? (<WeakRef<LineElements>> this._asset).deref() : <LineElements> this._asset;
 	}
