@@ -80,7 +80,7 @@ export class _Shader_ImageTexture extends _Shader_TextureBase {
 		const format: string = '';
 		const filter: string = 'linear,miplinear';
 
-		this._imageIndex = this._shader.renderMaterial.getImageIndex(this._texture, 0);
+		this._imageIndex = this._shader.renderMaterial.getImageIndex(this.texture, 0);
 
 		const textureReg: ShaderRegisterElement = this.getTextureReg(this._imageIndex, regCache, sharedReg);
 		this._textureIndex = textureReg.index;

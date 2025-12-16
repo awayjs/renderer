@@ -89,7 +89,7 @@ export class _Shader_ImageTexture2D extends _Shader_ImageTexture {
 		let temp: ShaderRegisterElement;
 
 		//modify depending on mapping mode
-		if ((<Texture2D> this._texture).mappingMode == MappingMode.RADIAL) {
+		if ((<Texture2D> this.texture).mappingMode == MappingMode.RADIAL) {
 			temp = regCache.getFreeFragmentVectorTemp();
 			code += 'mul ' + temp + '.xy, ' + inputReg + ', ' + inputReg + '\n';
 			code += 'add ' + temp + '.x, ' + temp + '.x, ' + temp + '.y\n';

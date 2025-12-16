@@ -18,14 +18,16 @@ import { ChunkVO } from '../base/ChunkVO';
  * @class away.pool._Shader_TextureBaseBase
  */
 export class _Shader_TextureBase extends AbstractionBase {
-	protected _texture: ITexture;
 	protected _shader: ShaderBase;
 	protected _stage: Stage;
+
+	public get texture(): ITexture {
+		return this._useWeak ? (<WeakRef<ITexture>> this._asset).deref() : <ITexture> this._asset;
+	}
 
 	public init(texture: ITexture, shader: ShaderBase): void {
 		super.init(texture, shader, true);
 
-		this._texture = texture;
 		this._shader = shader;
 		this._stage = shader._stage;
 	}
@@ -36,7 +38,6 @@ export class _Shader_TextureBase extends AbstractionBase {
 	public onClear(): void {
 		super.onClear();
 
-		this._texture = null;
 		this._shader = null;
 		this._stage = null;
 	}
