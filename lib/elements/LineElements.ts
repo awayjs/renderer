@@ -501,14 +501,17 @@ import { LineScaleMode } from './LineScaleMode';
 export class _Stage_LineElements extends _Stage_ElementsBase {
 	private _scale: Vector3D = new Vector3D();
 	private _vao: IVao;
-	private _lineElements: LineElements;
 	private _vaoIsInvalid: boolean = true;
+
+
+	public get lineElements(): LineElements {
+		return this._useWeak ? (<WeakRef<LineElements>> this._asset).deref() : <LineElements> this._asset;
+	}
 
 	public init(lineElements: LineElements, stage: Stage): void {
 		super.init(lineElements, stage);
 
-		this._lineElements = lineElements;
-		this._vao = (stage.context.hasVao && Settings.ALLOW_VAO && !this._lineElements.isDynamic)
+		this._vao = (stage.context.hasVao && Settings.ALLOW_VAO && !lineElements.isDynamic)
 			? stage.context.createVao()
 			: null;
 	}
@@ -521,8 +524,6 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
 
 	public onClear(): void {
 		super.onClear();
-
-		this._lineElements = null;
 
 		this._vaoIsInvalid = true;
 		if (this._vao) {
@@ -541,21 +542,23 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
 
 		this._vao && this._vao.bind();
 
+		const lineElements: LineElements = this.lineElements;
+
 		if (!this._vao || this._vaoIsInvalid) {
 			if (shader.colorBufferIndex >= 0)
-				this.activateVertexBufferVO(shader.colorBufferIndex, this._lineElements.colors);
+				this.activateVertexBufferVO(shader.colorBufferIndex, lineElements.colors);
 
-			this.activateVertexBufferVO(0, this._lineElements.positions, elements.dimension);
+			this.activateVertexBufferVO(0, lineElements.positions, elements.dimension);
 			this.activateVertexBufferVO(
 				renderElements.secondaryPositionIndex,
-				this._lineElements.positions,
+				lineElements.positions,
 				elements.dimension,
 				elements.dimension * 2 * 2
 			);
-			this.activateVertexBufferVO(renderElements.thicknessIndex, this._lineElements.thickness);
+			this.activateVertexBufferVO(renderElements.thicknessIndex, lineElements.thickness);
 
 			if (shader.uvIndex >= 0) {
-				this.activateVertexBufferVO(shader.uvIndex, this._lineElements.positions, 2);
+				this.activateVertexBufferVO(shader.uvIndex, lineElements.positions, 2);
 			}
 
 			this._vaoIsInvalid = false;
@@ -569,8 +572,8 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
 
 		this._scale.copyFrom(renderRenderable.entity.node.getMatrix3D().decompose()[2]);
 
-		const scaleMode: LineScaleMode = this._lineElements.scaleMode;
-		const half_thickness: number = this._lineElements.half_thickness;
+		const scaleMode: LineScaleMode = lineElements.scaleMode;
+		const half_thickness: number = lineElements.half_thickness;
 		if (scaleMode == LineScaleMode.NORMAL) {
 			data[oMisc + 0] = (
 				// eslint-disable-next-line max-len
@@ -624,7 +627,7 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
      * @protected
      */
 	public _pGetOverflowElements(): _Stage_ElementsBase {
-		return <_Stage_ElementsBase> (<Stage> this._pool).abstractions.getNewAbstraction(this._lineElements);
+		return <_Stage_ElementsBase> (<Stage> this._pool).abstractions.getNewAbstraction(this.lineElements);
 	}
 }
 
