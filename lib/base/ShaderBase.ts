@@ -533,6 +533,11 @@ export class ShaderBase implements IShaderBase {
 				this.usesPremultipliedAlpha = false;
 				break;
 			}
+			case BlendMode.ERASE: {
+				this._blendFactor = [ContextGLBlendFactor.ZERO, ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA];
+				this.usesPremultipliedAlpha = false;
+				break;
+			}
 			default: {
 				throw new ArgumentError(`Unsupported blend mode: ${value}`);
 			}
