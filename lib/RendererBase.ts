@@ -244,7 +244,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	public get useNonNativeBlend(): boolean {
 		return StageSettings.USE_NON_NATIVE_BLEND
 				&& (<ContainerNode> this._asset).container.blendMode
-				&& (<ContainerNode> this._asset).container.blendMode !== BlendMode.LAYER
+				&& (<ContainerNode> this._asset).container.blendMode !== BlendMode.NORMAL
 				&& this.blendMode == BlendMode.LAYER;
 	}
 
