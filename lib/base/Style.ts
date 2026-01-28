@@ -1,6 +1,6 @@
-import { Matrix, EventDispatcher, AssetEvent } from '@awayjs/core';
+import { Matrix, AssetBase } from '@awayjs/core';
 
-import { ImageBase, ImageSampler } from '@awayjs/stage';
+import { IImageOwner, ImageBase, ImageSampler } from '@awayjs/stage';
 
 import { StyleEvent } from '../events/StyleEvent';
 import { ITexture } from '../base/ITexture';
@@ -8,9 +8,7 @@ import { ITexture } from '../base/ITexture';
 /**
  *
  */
-export class Style extends EventDispatcher {
-	private _onImageInvalidate: (event: AssetEvent) => void;
-	private _onImageClear: (event: AssetEvent) => void;
+export class Style extends AssetBase implements IImageOwner {
 	private _sampler: ImageSampler;
 	private _samplers: Record<number, Record<number, ImageSampler>> = {};
 	private _image: ImageBase;
@@ -39,17 +37,13 @@ export class Style extends EventDispatcher {
 		if (this._image == value)
 			return;
 
-		if (this._image) {
-			this._image.removeEventListener(AssetEvent.INVALIDATE, this._onImageInvalidate);
-			this._image.removeEventListener(AssetEvent.CLEAR, this._onImageClear);
-		}
+		if (this._image)
+			this._image.removeOwner(this);
 
 		this._image = value;
 
-		if (this._image) {
-			this._image.addEventListener(AssetEvent.INVALIDATE, this._onImageInvalidate);
-			this._image.addEventListener(AssetEvent.CLEAR, this._onImageClear);
-		}
+		if (this._image)
+			this._image.addOwner(this);
 
 		this._invalidateProperties();
 	}
@@ -83,13 +77,6 @@ export class Style extends EventDispatcher {
 		this._invalidateProperties();
 	}
 
-	constructor() {
-		super();
-
-		this._onImageInvalidate = (event: AssetEvent) => this._invalidateImages(event);
-		this._onImageClear = (event: AssetEvent) => this._clearImages(event);
-	}
-
 	public getImageAt(texture: ITexture, index: number = 0): ImageBase {
 		return this._images[texture.id]?.[index] || this._image;
 	}
@@ -104,8 +91,7 @@ export class Style extends EventDispatcher {
 
 		this._images[texture.id][index] = image;
 
-		image.addEventListener(AssetEvent.INVALIDATE, this._onImageInvalidate);
-		image.addEventListener(AssetEvent.CLEAR, this._onImageClear);
+		this._image.addOwner(this);
 
 		this._invalidateProperties();
 	}
@@ -125,8 +111,8 @@ export class Style extends EventDispatcher {
 		if (!image)
 			return;
 
-		image.removeEventListener(AssetEvent.INVALIDATE, this._onImageInvalidate);
-		image.removeEventListener(AssetEvent.CLEAR, this._onImageClear);
+		this._image.removeOwner(this);
+
 		this._images[texture.id][index] = null;
 
 		this._invalidateProperties();
@@ -145,13 +131,11 @@ export class Style extends EventDispatcher {
 		this.dispatchEvent(new StyleEvent(StyleEvent.INVALIDATE_PROPERTIES, this));
 	}
 
-	private _invalidateImages(event: AssetEvent): void {
+	public onImageInvalidate(image: ImageBase): void {
 		this.dispatchEvent(new StyleEvent(StyleEvent.INVALIDATE_IMAGES, this));
 	}
 
-	private _clearImages(event: AssetEvent): void {
-		const image: ImageBase = <ImageBase> event.asset;
-
+	public onImageClear(image: ImageBase): void {
 		//remove image if it has been disposed
 		if (image.isDisposed) {
 			if (this._image == image) {
