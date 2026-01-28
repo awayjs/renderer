@@ -184,7 +184,7 @@ export class _Render_MaterialBase extends AbstractionBase {
 	 * @internal
 	 */
 	public removeOwner(owner: _Render_RenderableBase): void {
-		if (!this._owners) //check if material is already disposed
+		if (!this._owners.numAssets) //check if material is already disposed
 			return;
 
 		this._owners.remove(owner);
