@@ -34,16 +34,11 @@ export class _Render_RendererMaterial extends _Render_MaterialPassBase {
 
 		const material = <CacheRenderer> this.material;
 
-		this.shader.setBlendMode(BlendMode.LAYER);
-
 		material.render();
-
-		// LOL, this will broke state
-		// this.shader._stage.setRenderTarget(null);
 
 		this.requiresBlending = true;
 
-		this.shader.setBlendMode(material.blendMode || BlendMode.LAYER);
+		this.shader.setBlendMode((material.blendMode == BlendMode.NORMAL) ? BlendMode.LAYER : material.blendMode);
 	}
 
 	public _includeDependencies(shader: ShaderBase): void {
