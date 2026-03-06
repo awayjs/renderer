@@ -531,16 +531,16 @@ export class _Stage_LineElements extends _Stage_ElementsBase {
 		}
 	}
 
-	public transformMatrix(renderRenderable: _Render_RenderableBase, matrix:Matrix): Matrix {
+	public transformMatrix(renderRenderable: _Render_RenderableBase, matrix: Matrix): Matrix {
 		const matrix3D: Matrix3D = new Matrix3D();
 		matrix3D.copyFrom(renderRenderable.entity.node.getMatrix3D());
 		matrix3D.append(renderRenderable.entity.renderer.view.projection.transform.inverseMatrix3D);
 		const offset: Vector3D = matrix3D.position.clone();
 		matrix3D.invert();
 		matrix3D.transpose();
-		let out: number[] = [];
+		const out: number[] = [];
 		matrix3D.deltaTransformVectors([matrix.a, matrix.c, 0, matrix.b, matrix.d, 0], out);
-		return new Matrix(out[0], out[3], out[1], out[4], matrix.tx - offset.x*out[0] - offset.y*out[1], matrix.ty - offset.x*out[3] - offset.y*out[4]);
+		return new Matrix(out[0], out[3], out[1], out[4], matrix.tx - offset.x * out[0] - offset.y * out[1], matrix.ty - offset.x * out[3] - offset.y * out[4]);
 
 	}
 
@@ -711,10 +711,10 @@ export class _Render_LineElements extends _Render_ElementsBase {
 			'slt ' + behind + '.x, ' + q0 + '.z, ' + misc + '.z\n' + // behind = ( 0 - Q0.z < -Camera.near ) ? 1 : 0
 			'sub ' + behind + '.y, #native( 1.0 )native#, ' + behind + '.x\n' + // !behind = 1 - behind
 
-			// p = point on the plane (0,0,-near)
-			// n = plane normal (0,0,-1)
-			// D = Q1 - Q0
-			// t = ( dot( n, ( p - Q0 ) ) / ( dot( n, d )
+		// p = point on the plane (0,0,-near)
+		// n = plane normal (0,0,-1)
+		// D = Q1 - Q0
+		// t = ( dot( n, ( p - Q0 ) ) / ( dot( n, d )
 
 			// solve for t where line crosses Camera.near
 			'add ' + offset + '.x, ' + q0 + '.z, ' + misc + '.z\n' + // Q0.z + ( -Camera.near )

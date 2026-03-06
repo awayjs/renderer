@@ -66,7 +66,7 @@ export class _Stage_ElementsBase extends AbstractionBase {
 		elements.addEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
 	}
 
-	public transformMatrix(renderRenderable: _Render_RenderableBase, matrix:Matrix): Matrix {
+	public transformMatrix(renderRenderable: _Render_RenderableBase, matrix: Matrix): Matrix {
 		return matrix;
 	}
 
