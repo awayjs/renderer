@@ -186,6 +186,8 @@ export class _Render_RenderableBase extends AbstractionBase {
 		this._images.length = 0;
 		this._samplers.length = 0;
 
+		this._uvMatrix = null;
+
 		super.onClear();
 	}
 
@@ -253,7 +255,10 @@ export class _Render_RenderableBase extends AbstractionBase {
 
 		this._images.length = numImages;
 		this._samplers.length = numImages;
-		this._uvMatrix = style ? style.uvMatrix : material.style ? material.style.uvMatrix : null;
+		const uvMatrix = style ? style.uvMatrix : material.style ? material.style.uvMatrix : null;
+
+		if (uvMatrix)
+			this._uvMatrix = this.stageElements.transformMatrix(this, uvMatrix);
 
 		const numTextures: number = this._renderMaterial.material.getNumTextures();
 		let texture: ITexture;

@@ -864,10 +864,6 @@ export class ShaderBase implements IShaderBase {
 		if (this.usesColorTransform)
 			this._compileColorTransformCode();
 
-		//Calculate the (possibly animated) UV coordinates.
-		if (this.uvDependencies > 0)
-			this._compileUVCode();
-
 		if (this.secondaryUVDependencies > 0)
 			this._compileSecondaryUVCode();
 
@@ -1052,29 +1048,6 @@ export class ShaderBase implements IShaderBase {
 		this.colorTransformIndex = ct1.index * 4;
 		this._postAnimationFragmentCode += 'mul ' + target + ', ' + target + ', ' + ct1 + '\n';
 		this._postAnimationFragmentCode += 'add ' + target + ', ' + target + ', ' + ct2 + '\n';
-	}
-
-	/**
-     * Calculate the (possibly animated) UV coordinates.
-     */
-	private _compileUVCode(): void {
-		const r = this._sharedRegisters;
-
-		r.uvVarying = this._registerCache.getFreeVarying();
-
-		if (this.usesUVTransform) {
-			// a, b, 0, tx
-			// c, d, 0, ty
-			const uvTransform1: ShaderRegisterElement = this._registerCache.getFreeVertexConstant();
-			const uvTransform2: ShaderRegisterElement = this._registerCache.getFreeVertexConstant();
-			this.uvMatrixIndex = uvTransform1.index * 4;
-
-			this._vertexCode += 'dp4 ' + r.uvVarying + '.x, ' +  r.uvInput + ', ' + uvTransform1 + '\n' +
-                'dp4 ' + r.uvVarying + '.y, ' +  r.uvInput + ', ' + uvTransform2 + '\n' +
-                'mov ' + r.uvVarying + '.zw, ' +  r.uvInput + '.zw \n';
-		} else {
-			this._vertexCode += 'mov ' + r.uvVarying + ', ' + r.animatedUV + '\n';
-		}
 	}
 
 	/**

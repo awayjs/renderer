@@ -1023,6 +1023,26 @@ export class _Render_TriangleElements extends _Render_ElementsBase {
 			code += 'm44 op, ' + position + ', ' + viewMatrixReg + '\n';
 		}
 
+		//Calculate the (possibly animated) UV coordinates.
+		if (shader.uvDependencies > 0) {
+
+			sharedRegisters.uvVarying = registerCache.getFreeVarying();
+
+			if (shader.usesUVTransform) {
+				// a, b, 0, tx
+				// c, d, 0, ty
+				const uvTransform1: ShaderRegisterElement = registerCache.getFreeVertexConstant();
+				const uvTransform2: ShaderRegisterElement = registerCache.getFreeVertexConstant();
+				shader.uvMatrixIndex = uvTransform1.index * 4;
+
+				code += 'dp4 ' + sharedRegisters.uvVarying + '.x, ' +  sharedRegisters.uvInput + ', ' + uvTransform1 + '\n' +
+					'dp4 ' + sharedRegisters.uvVarying + '.y, ' +  sharedRegisters.uvInput + ', ' + uvTransform2 + '\n' +
+					'mov ' + sharedRegisters.uvVarying + '.zw, ' +  sharedRegisters.uvInput + '.zw \n';
+			} else {
+				code += 'mov ' + sharedRegisters.uvVarying + ', ' + sharedRegisters.animatedUV + '\n';
+			}
+		}
+
 		return code;
 	}
 

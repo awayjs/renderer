@@ -1,6 +1,6 @@
 
 import { Stage, Short3Attributes, AttributesView, _Stage_AttributesBuffer } from '@awayjs/stage';
-import { AbstractionBase, AbstractMethodError } from '@awayjs/core';
+import { AbstractionBase, AbstractMethodError, Matrix } from '@awayjs/core';
 import { ElementsEvent } from '../events/ElementsEvent';
 import { ElementsUtils } from '../utils/ElementsUtils';
 import { IElements } from './IElements';
@@ -64,6 +64,10 @@ export class _Stage_ElementsBase extends AbstractionBase {
 
 		elements.addEventListener(ElementsEvent.CLEAR_VERTICES, this._onClearVerticesDelegate);
 		elements.addEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
+	}
+
+	public transformMatrix(renderRenderable: _Render_RenderableBase, matrix:Matrix): Matrix {
+		return matrix;
 	}
 
 	/**
