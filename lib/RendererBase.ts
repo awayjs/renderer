@@ -73,7 +73,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	protected _renderMatrix: Matrix3D = new Matrix3D();
 	protected _parentNode: ContainerNode;
 	private _boundsPicker: BoundsPicker;
-	/*internal*/ _boundsScale: number = 1;
+	private _boundsScale: number = 1;
 	private _maskConfig: number;
 	private _maskId: number;
 	private _activeMasksDirty: boolean;
@@ -185,6 +185,13 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._updateBounds();
 
 		return this._bounds;
+	}
+
+	public getBoundsScale(): number {
+		if (this._boundsDirty)
+			this._updateBounds();
+
+		return this._boundsScale;
 	}
 
 	/**
@@ -879,7 +886,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		let scale: number;
 
 		if (this._parentNode) {
-			scale = Math.min(3, this._parentNode.view.projection.scale);
+			scale = Math.min(3, this.parentRenderer.getBoundsScale());
 			matrix3D.copyFrom(this._parentNode.getMatrix3D());
 		} else {
 			// no parent - no transform

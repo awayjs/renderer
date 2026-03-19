@@ -185,8 +185,9 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 
 		//@ts-ignore
 		const filters = container.filters;
+		const scale = this.getBoundsScale();
 		if (filters && filters.length > 0) {
-			filters.forEach((e) => e && (e.imageScale = this._boundsScale));
+			filters.forEach((e) => e && (e.imageScale = scale));
 			stage.filterManager.applyFilters(
 				sourceImage || targetImage,
 				targetImage, // because we use source as filter target - we not require copy
@@ -321,9 +322,10 @@ export class _Render_Renderer extends _Render_RenderableBase {
 		const offsetX = 0;//paddedBounds.x - bounds.x;
 		const offsetY = 0;//paddedBounds.y - bounds.y;
 		const matrix3D: Matrix3D = Matrix3D.CALCULATION_MATRIX;
+		const scale: number = asset.getBoundsScale();
 
 		matrix3D.copyFrom(this.entity.renderSceneTransform);
-		matrix3D.appendScale(asset._boundsScale, asset._boundsScale, asset._boundsScale);
+		matrix3D.appendScale(scale, scale, scale);
 		matrix3D.appendTranslation(offsetX * 0.5, offsetY * 0.5, 0);
 		matrix3D.invert();
 
