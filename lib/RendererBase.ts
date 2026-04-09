@@ -100,7 +100,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 	private _onInvalidateProperties: (event: StyleEvent) => void;
 	private _onContextUpdateDelegate: (event: StageEvent) => void;
-	private _onSizeInvalidateDelegate: (event: ViewEvent) => void;
+	protected _onSizeInvalidateDelegate: (event: ViewEvent | StageEvent) => void;
 
 	public _pNumElements: number = 0;
 
@@ -260,7 +260,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		this.abstractions = new AbstractionSet(this);
 		this._onInvalidateProperties = (_event: StyleEvent) => this._onInvalidateStyle();
-		this._onSizeInvalidateDelegate = (event: ViewEvent) => this.onSizeInvalidate(event);
+		this._onSizeInvalidateDelegate = (event: ViewEvent | StageEvent) => this.onSizeInvalidate(event);
 		this._onContextUpdateDelegate = (event: StageEvent) => this.onContextUpdate(event);
 	}
 
@@ -657,13 +657,15 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	/**
 	 *
 	 */
-	public onSizeInvalidate(event: ViewEvent): void {
+	public onSizeInvalidate(event: ViewEvent | StageEvent): void {
 		if (this._pRttBufferManager) {
 			this._pRttBufferManager.viewWidth = this.view.width;
 			this._pRttBufferManager.viewHeight = this.view.height;
 		}
 
 		this._depthTextureDirty = true;
+
+		this.onInvalidate();
 	}
 
 	/**

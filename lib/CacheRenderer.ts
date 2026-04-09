@@ -7,7 +7,8 @@ import {
 import {
 	AttributesBuffer,
 	Image2D,
-	ContextGLTriangleFace
+	ContextGLTriangleFace,
+	StageEvent
 } from '@awayjs/stage';
 import {
 	ContainerNode,
@@ -109,6 +110,8 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 
 	public init(node: INode, group: RenderGroup): void {
 		super.init(node, group);
+
+		node.view.stage.addEventListener(StageEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 
 		if (this._parentNode) {
 			this._parentNode.addEventListener(ContainerNodeEvent.INVALIDATE_MATRIX3D, this._onInvalidateParentNode);
@@ -288,12 +291,14 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		this._style.image.clear();
 		this._style.image = null;
 
+		(<ContainerNode> this._asset).view.stage.removeEventListener(StageEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
+
 		if (this._parentNode) {
 			this._parentNode.removeEventListener(ContainerNodeEvent.INVALIDATE_MATRIX3D, this._onInvalidateParentNode);
 			this._parentNode.removeEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
 		}
 
-		const container: IRenderContainer = <IRenderContainer> this.node.container;
+		const container: IRenderContainer = <IRenderContainer> (<ContainerNode> this._asset).container;
 
 		if (container) {
 			delete container._renderObjects[this.group.id];
