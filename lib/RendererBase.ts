@@ -890,7 +890,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			matrix3D.copyFrom(this._parentNode.getMatrix3D());
 		} else {
 			// no parent - no transform
-			scale = Math.min(3, this.view.height*this.view.stage.pixelRatio*this.view.projection.scale/1000);
+			scale = Math.min(3, this.view.height * this.view.stage.pixelRatio * this.view.projection.scale / 1000);
 			matrix3D.identity() ;
 		}
 		//scale = 1;
