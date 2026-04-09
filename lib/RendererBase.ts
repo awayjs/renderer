@@ -481,16 +481,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	public executeRender(
 		enableDepthAndStencil: boolean = true, surfaceSelector: number = 0, mipmapSelector: number = 0): void {
 
-		//TODO: allow sharedContexts for image targets
-		this.view.clear(
-			!this._depthPrepass && !this._disableClear,
-			enableDepthAndStencil,
-			surfaceSelector,
-			mipmapSelector,
-			(!this.view.shareContext || this.view.target)
-				? ContextGLClearMask.ALL
-				: ContextGLClearMask.DEPTH);
-
 		//initialise blend mode
 		this._context.setBlendFactors(ContextGLBlendFactor.ONE, ContextGLBlendFactor.ZERO);
 
@@ -502,6 +492,16 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._context.setColorMask(false, false, false, false);
 		else
 			this._context.setColorMask(true, true, true, true);
+
+		//TODO: allow sharedContexts for image targets
+		this.view.clear(
+			!this._depthPrepass && !this._disableClear,
+			enableDepthAndStencil,
+			surfaceSelector,
+			mipmapSelector,
+			(!this.view.shareContext || this.view.target)
+				? ContextGLClearMask.ALL
+				: ContextGLClearMask.DEPTH);
 
 		//initialise stencil
 		if (this._maskConfig)
