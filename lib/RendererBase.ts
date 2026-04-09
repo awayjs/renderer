@@ -928,7 +928,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			);
 
 			this._style.image = <Image2D> this.parentRenderer.style.image;
-			this._style.sampler = new ImageSampler(false, Settings.SMOOTH_CACHED_IMAGE, false);
+			this._style.sampler = new ImageSampler(false, false, false);
 		} else {
 			pad.setTo(
 				this._bounds.x,
@@ -958,7 +958,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			} else {
 
 				this._style.image = new Image2D(pad.width, pad.height, false);
-				this._style.sampler = new ImageSampler(false, Settings.SMOOTH_CACHED_IMAGE, false);
+				this._style.sampler = new ImageSampler(false, false, false);
 				//this._view.target = this._style.image;
 			}
 		}
