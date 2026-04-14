@@ -145,19 +145,12 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		// because node can have cached child, that can be filtered
 		this.stage.pushRenderTargetConfig();
 
-		let sourceImage: Image2D;
+		const msaa = stage.context.glVersion === 2 && StageSettings.ENABLE_MULTISAMPLE_TEXTURE;
 
 		// we not require use TMP texture when not have MSAA
-		if (stage.context.glVersion === 2 &&
-			StageSettings.ENABLE_MULTISAMPLE_TEXTURE
-		) {
-			sourceImage = stage.filterManager.popTemp(
-				targetImage.width,
-				targetImage.height,
-				true
-			);
-
-		}
+		const sourceImage: Image2D = (msaa)
+			? stage.filterManager.popTemp(targetImage.width, targetImage.height, true)
+			: targetImage;
 
 		//for DefaultRenderer when child has a blendmode applied
 		if (useNonNativeBlend) {
@@ -176,7 +169,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 
 		// we should render with colorTransform to self, enable it
 		this.node.colorTransformDisabled = false;
-		this._initRender(sourceImage || targetImage);
+		this._initRender(sourceImage);
 		super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
 
 		// restore colorTransform state as in transform state
@@ -192,13 +185,13 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		if (filters && filters.length > 0) {
 			filters.forEach((e) => e && (e.imageScale = scale));
 			stage.filterManager.applyFilters(
-				sourceImage || targetImage,
+				sourceImage,
 				targetImage, // because we use source as filter target - we not require copy
 				targetImage.rect,
 				targetImage.rect,
 				filters
 			);
-		} else if (sourceImage) {
+		} else if (msaa) {
 			// this is fast, it should only call blitFramebuffer,
 			// same as in regular MSAA
 			stage.filterManager.copyPixels(
@@ -211,7 +204,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 			);
 		}
 
-		if (sourceImage) {
+		if (msaa) {
 			stage.filterManager.pushTemp(sourceImage);
 		}
 
