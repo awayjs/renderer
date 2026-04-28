@@ -229,6 +229,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 			//this._view.target = this._style.image;
 		}
 	}
+
 	// apply blend modes and swap texture if needed
 	public preActivateRenderPass() {
 

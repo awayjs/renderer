@@ -893,7 +893,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		const pad = this._paddedBounds;
 
 		const scale = this._boundsScale = Math.min(3, rootView.height * this.stage.pixelRatio * rootView.projection.scale / 1000);
-		
+
 		if (this._parentNode) {
 			matrix3D.copyFrom(this._parentNode.getMatrix3D());
 		} else {
