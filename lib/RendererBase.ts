@@ -8,7 +8,6 @@ import {
 	Rectangle,
 	IAbstraction,
 	IAbstractionPool,
-	WeakAssetSet,
 } from '@awayjs/core';
 
 import {
@@ -40,7 +39,6 @@ import {
 	PickGroup,
 } from '@awayjs/view';
 
-import { Settings } from './Settings';
 import { _Render_MaterialBase } from './base/_Render_MaterialBase';
 import { _Render_RenderableBase } from './base/_Render_RenderableBase';
 import { RenderEntity } from './base/RenderEntity';
@@ -78,7 +76,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _maskId: number;
 	private _activeMasksDirty: boolean;
 	private _activeMaskOwners: ContainerNode[];
-	private _paddedBounds: Rectangle = new Rectangle();
+	protected _paddedBounds: Rectangle = new Rectangle();
 	private _bounds: Box = new Box();
 	protected _style: Style;
 	private _boundsDirty: boolean = true;
@@ -115,7 +113,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	protected _traverserGroup: RenderGroup;
 	protected _maskGroup: RenderGroup;
 	private _renderEntity: RenderEntity;
-	private _zIndex: number;
 
 	/**
 	 *
@@ -949,22 +946,11 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			pad.width = (pad.width + 4) | 0;
 			pad.height = (pad.height + 4) | 0;
 
-			const image =  <Image2D> this._style.image;
-
 			if (pad.width * pad.height == 0) {
 				throw new Error('Cannot have image with size 0 * 0');
 			}
 
-			if (image) {
-				(<Image2D> this._style.image)._setSize(pad.width, pad.height);
-			} else {
-
-				this._style.image = new Image2D(pad.width, pad.height, false);
-				this._style.sampler = new ImageSampler(false, false, false);
-				//this._view.target = this._style.image;
-			}
 		}
-
 	}
 
 	public _initRender(target: Image2D) {

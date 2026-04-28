@@ -8,7 +8,8 @@ import {
 	AttributesBuffer,
 	Image2D,
 	ContextGLTriangleFace,
-	StageEvent
+	StageEvent,
+	ImageSampler
 } from '@awayjs/stage';
 import {
 	ContainerNode,
@@ -213,6 +214,21 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		this.stage.popRenderTarget();
 	}
 
+	public _updateBounds(): void {
+		super._updateBounds();
+
+		const image =  <Image2D> this._style.image;
+		const pad = this._paddedBounds;
+
+		if (image) {
+			(<Image2D> this._style.image)._setSize(pad.width, pad.height);
+		} else {
+
+			this._style.image = new Image2D(pad.width, pad.height, false);
+			this._style.sampler = new ImageSampler(false, false, false);
+			//this._view.target = this._style.image;
+		}
+	}
 	// apply blend modes and swap texture if needed
 	public preActivateRenderPass() {
 
@@ -316,15 +332,11 @@ export class _Render_Renderer extends _Render_RenderableBase {
 
 		const asset = <CacheRenderer> this.renderable;
 		const paddedBounds = asset.getPaddedBounds();
-		//const bounds = asset.getBounds();
-		const offsetX = 0;//paddedBounds.x - bounds.x;
-		const offsetY = 0;//paddedBounds.y - bounds.y;
 		const matrix3D: Matrix3D = Matrix3D.CALCULATION_MATRIX;
 		const scale: number = asset.getBoundsScale();
 
 		matrix3D.copyFrom(this.entity.renderSceneTransform);
 		matrix3D.appendScale(scale, scale, scale);
-		matrix3D.appendTranslation(offsetX * 0.5, offsetY * 0.5, 0);
 		matrix3D.invert();
 
 		const vectors: number[] = [
