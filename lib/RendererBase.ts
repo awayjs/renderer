@@ -957,8 +957,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		const pad = this._paddedBounds;
 		const scale = this._boundsScale;
 		const matrix3D = this._renderMatrix;
-		const ox = 0;//pad.x - this._bounds.x;
-		const oy = 0;//pad.y - this._bounds.y;
 		const view = this.view;
 		const proj = view.projection;
 
@@ -969,8 +967,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		proj.near = 1;
 		proj.transform.matrix3D = matrix3D;
 		proj.ratio = (target.width / target.height);
-		proj.originX = -1 - 2 * (pad.x - ox * 0.5) / target.width;
-		proj.originY = -1 - 2 * (pad.y - oy * 0.5) / target.height;
+		proj.originX = -1 - 2 * pad.x / target.width;
+		proj.originY = -1 - 2 * pad.y / target.height;
 		proj.scale = scale * 1000 / target.height;
 
 		view.target = target;
