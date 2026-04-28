@@ -37,6 +37,7 @@ import {
 	ContainerNode,
 	BoundsPicker,
 	PickGroup,
+	PickEntity,
 } from '@awayjs/view';
 
 import { _Render_MaterialBase } from './base/_Render_MaterialBase';
@@ -112,6 +113,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _numCullPlanes: number = 0;
 	protected _traverserGroup: RenderGroup;
 	protected _maskGroup: RenderGroup;
+	private _pickEntity: PickEntity;
 	private _renderEntity: RenderEntity;
 
 	/**
@@ -429,7 +431,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		this._cameraTransform = this.view.projection.transform.matrix3D;
 		this._cameraForward = this.view.projection.transform.forwardVector;
-		this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : this.view.projection.viewFrustumPlanes;
+		this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : this.node.getRoot(true).view.projection.viewFrustumPlanes;
 		this._numCullPlanes = this._cullPlanes ? this._cullPlanes.length : 0;
 		this._maskId = (<ContainerNode> this._asset).getMaskId();
 
@@ -689,15 +691,15 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		return enter;
 	}
 
-	public getTraverser(rootNode: ContainerNode): IPartitionTraverser {
+	public getTraverser(rootNode: ContainerNode): IPartitionTraverser | void {
 
 		if (rootNode.renderToImage) {
 			//new node for the container
 			const node: ContainerNode = rootNode.getLocalNode();
 			const boundsPicker: BoundsPicker = PickGroup.getInstance().getBoundsPicker(node);
 
-			if (!boundsPicker.getBoxBounds(node, true, true))
-				return this;
+			if (!boundsPicker._isInFrustumInternal((<ContainerNode> this._asset).getRoot(true), this._cullPlanes, this._numCullPlanes))
+				return;
 
 			const traverser: CacheRenderer = this._traverserGroup.getRenderer<CacheRenderer>(node);
 
@@ -730,6 +732,11 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		const entity = node.container.getEntity();
 
 		if (entity) {
+			this._pickEntity = PickGroup.getInstance().abstractions.getAbstraction<PickEntity>(node);
+
+			if (!this._pickEntity._isInFrustumInternal((<ContainerNode> this._asset).getRoot(true), this._cullPlanes, this._numCullPlanes))
+				return;
+
 			this._renderEntity = this.abstractions.getAbstraction<RenderEntity>(node);
 
 			// project onto camera's z-axis
@@ -748,6 +755,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		} else {
 			//check if we have a RenderEntity abstraction and if so, clear it!
 			this.abstractions.checkAbstraction(node)?.onClear();
+			PickGroup.getInstance().abstractions.checkAbstraction(node)?.onClear();
 		}
 	}
 
