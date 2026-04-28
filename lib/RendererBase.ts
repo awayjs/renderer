@@ -886,35 +886,32 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	protected _updateBounds(): void {
 		this._boundsDirty = false;
 
+		const node: ContainerNode = <ContainerNode> this._asset;
 		const matrix3D = this._renderMatrix;
-		const container = (<ContainerNode> this._asset).container;
+		const container = node.container;
+		const rootView = node.getRoot().view;
 		const pad = this._paddedBounds;
 
-		let scale: number;
-
+		const scale = this._boundsScale = Math.min(3, rootView.height * this.stage.pixelRatio * rootView.projection.scale / 1000);
+		
 		if (this._parentNode) {
-			scale = Math.min(3, this.parentRenderer.getBoundsScale());
 			matrix3D.copyFrom(this._parentNode.getMatrix3D());
 		} else {
-			// no parent - no transform
-			scale = Math.min(3, this.view.height * this.view.stage.pixelRatio * this.view.projection.scale / 1000);
 			matrix3D.identity() ;
 		}
-		//scale = 1;
-		this._boundsScale = scale;
 
 		if (scale !== 1)
 			matrix3D.appendScale(scale, scale, scale);
 
-		const bounds = this._boundsPicker.getBoxBounds(<ContainerNode> this._asset, true, true);
+		const bounds = this._boundsPicker.getBoxBounds(node, true, true);
 
 		if (!bounds) {
-			console.error('[CachedRenderer] Bounds invalid, supress calculation', <ContainerNode> this._asset);
+			console.error('[CachedRenderer] Bounds invalid, supress calculation', node);
 			return;
 		}
 
 		if (isNaN(bounds.width) || isNaN(bounds.height)) {
-			console.error('[CachedRenderer] Bounds invalid (NaN), supress calculation', <ContainerNode> this._asset);
+			console.error('[CachedRenderer] Bounds invalid (NaN), supress calculation', node);
 			return;
 		}
 
@@ -957,7 +954,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			if (pad.width * pad.height == 0) {
 				throw new Error('Cannot have image with size 0 * 0');
 			}
-
 		}
 	}
 
