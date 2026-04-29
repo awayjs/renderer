@@ -967,7 +967,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				this._parentPosition = this._parentNode.getMatrix3D().position.clone();
 				this._parentPosition.scaleBy(scale);
 			} else {
-				parentBounds = new Rectangle(0, 0, this.view.width*this.stage.pixelRatio, this.view.height*this.stage.pixelRatio);
+				parentBounds = new Rectangle(0, 0, this.view.width * this.stage.pixelRatio, this.view.height * this.stage.pixelRatio);
 				parentPosition = new Vector3D();
 				this._parentPosition = new Vector3D();
 			}
