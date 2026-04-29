@@ -704,7 +704,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		if (rootNode.renderToImage) {
 			//new node for the container
 			const node: ContainerNode = rootNode.getLocalNode();
-			const boundsPicker: BoundsPicker = PickGroup.getInstance().getBoundsPicker(node);
+			const boundsPicker: BoundsPicker = PickGroup.getInstance().getBoundsPicker(rootNode);
 
 			if (!boundsPicker._isInFrustumInternal((<ContainerNode> this._asset).getRoot(true), this._cullPlanes, this._numCullPlanes))
 				return;
