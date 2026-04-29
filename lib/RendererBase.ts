@@ -73,6 +73,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	protected _parentNode: ContainerNode;
 	private _boundsPicker: BoundsPicker;
 	private _boundsScale: number = 1;
+	private _parentPosition: Vector3D;
 	private _maskConfig: number;
 	private _maskId: number;
 	private _activeMasksDirty: boolean;
@@ -191,6 +192,13 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._updateBounds();
 
 		return this._boundsScale;
+	}
+
+	public getParentPosition(): Vector3D {
+		if (this._boundsDirty)
+			this._updateBounds();
+
+		return this._parentPosition;
 	}
 
 	/**
@@ -950,6 +958,31 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			pad.y = (pad.y - 2) | 0;
 			pad.width = (pad.width + 4) | 0;
 			pad.height = (pad.height + 4) | 0;
+
+			let parentBounds;
+			let parentPosition;
+			if (this._parentNode) {
+				parentBounds = this.parentRenderer.getPaddedBounds();
+				parentPosition = this.parentRenderer.getParentPosition();
+				this._parentPosition = this._parentNode.getMatrix3D().position.clone();
+				this._parentPosition.scaleBy(scale);
+			} else {
+				parentBounds = new Rectangle(0, 0, this.view.width*this.stage.pixelRatio, this.view.height*this.stage.pixelRatio);
+				parentPosition = new Vector3D();
+				this._parentPosition = new Vector3D();
+			}
+
+			if (pad.left < -parentPosition.x)
+				pad.left = -parentPosition.x;
+
+			if (pad.top < -parentPosition.y)
+				pad.top = -parentPosition.y;
+
+			if (pad.right > parentBounds.right - parentPosition.x)
+				pad.right = parentBounds.right - parentPosition.x;
+
+			if (pad.bottom > parentBounds.bottom - parentPosition.y)
+				pad.bottom = parentBounds.bottom - parentPosition.y;
 
 			if (pad.width * pad.height == 0) {
 				throw new Error('Cannot have image with size 0 * 0');
