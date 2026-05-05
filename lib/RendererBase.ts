@@ -724,6 +724,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			//save sceneTransform
 			this._renderEntity.renderSceneTransform = rootNode.getRenderMatrix3D(this._cameraTransform);
 
+			//save colorTransform (null for CacheRenderer)
+			this._renderEntity.colorTransform = ContainerNode.nullColorTransform;
+
 			//save mask owners
 			this._renderEntity.maskOwners = rootNode.getMaskOwners();
 
@@ -754,6 +757,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 			//save sceneTransform
 			this._renderEntity.renderSceneTransform = node.getRenderMatrix3D(this._cameraTransform);
+
+			//save colorTransform
+			this._renderEntity.colorTransform = node.getColorTransform();
 
 			//save mask owners
 			this._renderEntity.maskOwners = node.getMaskOwners();

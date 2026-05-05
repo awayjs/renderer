@@ -641,7 +641,7 @@ export class ShaderBase implements IShaderBase {
 		}
 		if (this.usesColorTransform) {
 
-			const colorTransform: ColorTransform = node.getColorTransform();
+			const colorTransform: ColorTransform = renderState.entity.colorTransform;
 
 			if (colorTransform) {
 				//TODO: AWDParser to write normalised color offsets

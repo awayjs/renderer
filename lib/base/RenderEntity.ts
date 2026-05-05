@@ -1,4 +1,4 @@
-import { IAssetClass, IAbstractionPool, AbstractionBase, IAsset, Matrix3D } from '@awayjs/core';
+import { IAssetClass, IAbstractionPool, AbstractionBase, IAsset, Matrix3D, ColorTransform } from '@awayjs/core';
 
 import { Stage } from '@awayjs/stage';
 
@@ -48,6 +48,11 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 	/**
      *
      */
+	public colorTransform: ColorTransform;
+
+	/**
+     *
+     */
 	public maskOwners: ContainerNode[];
 
 	constructor() {
@@ -77,6 +82,8 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 			delete container._renderObjects[this.renderer.id];
 
 		this.renderSceneTransform = null;
+
+		this.colorTransform = null;
 
 		this.maskOwners = null;
 
