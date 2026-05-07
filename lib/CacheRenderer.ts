@@ -93,7 +93,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		super();
 
 		this._onTextureInvalidate = (event: AssetEvent) => this.invalidate();
-		this._onInvalidateSceneTransform = (event: ContainerNodeEvent) => this.onInvalidate();
+		this._onInvalidateSceneTransform = (event: ContainerNodeEvent) => this.onInvalidateSceneTransform();
 		this._onInvalidateColorTransform = (event: ContainerNodeEvent) => this.onInvalidateColorTransform();
 
 		this._traverserGroup = RenderGroup.getInstance(CacheRenderer);
@@ -286,6 +286,11 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 
 		this.invalidate();
 		this.invalidatePasses();
+	}
+
+	public onInvalidateSceneTransform(): void {
+		(<ContainerNode> this._asset).invalidateHierarchicalProperty(HierarchicalProperty.SCENE_TRANSFORM);
+		this.onInvalidate();
 	}
 
 	public onInvalidateColorTransform(): void {
