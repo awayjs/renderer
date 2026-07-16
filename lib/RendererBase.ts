@@ -248,6 +248,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	public get blendMode(): string {
 		const containerBlend = <string> this.node.container.blendMode;
 
+		// if (this._parentNode.bitmapMaskNode)
+		// 	return BlendMode.ALPHA;
+
 		// native blends
 		if (isNativeBlend(containerBlend))
 			return containerBlend;
@@ -911,7 +914,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		if (this._parentNode) {
 			matrix3D.copyFrom(this._parentNode.getMatrix3D());
 		} else {
-			matrix3D.identity() ;
+			matrix3D.copyFrom(rootView.projection.transform.inverseMatrix3D);
 		}
 
 		if (scale !== 1)
@@ -976,6 +979,14 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				parentBounds = new Rectangle(0, 0, this.view.width * this.stage.pixelRatio, this.view.height * this.stage.pixelRatio);
 				parentPosition = new Vector3D();
 				this._parentPosition = new Vector3D();
+
+				//for SceneImage2D renders, strip out the 2d matrix transform
+				if (this.view.target) {
+					this.view.projection.transform.inverseMatrix3D.transformVector(this._parentPosition, this._parentPosition);
+					this._parentPosition.y = this.view.height - this._parentPosition.y;
+					this._parentPosition.scaleBy(scale);
+
+				}
 			}
 
 			if (pad.left < -parentPosition.x)
