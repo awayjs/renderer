@@ -784,6 +784,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				hostIndex: (batch as any)._recordHostIndex | 0,
 				elements: submitted.elements,
 				idxCount: submitted.idxCount,
+				vertCount: submitted.elements ? (submitted.elements.numVertices | 0) : submitted.idxCount,
 				view: submitted.view,
 				merged: submitted.merged,
 			});
@@ -973,11 +974,53 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	}
 
 	/**
+	 * E18: recorded merged VBs must still match current source vert counts.
+	 * Fingerprint refreshes every frame (ref/image churn) while ops are kept across
+	 * partial skips — Diggy tessellation can change numVertices under the same
+	 * elems.id/transform, leaving stale oversized/undersized VBs in replay.
+	 */
+	private _opaqueStaticOpsMatchSource(list: _Render_RenderableBase[]): boolean {
+		const ops = this._opaqueStaticOps;
+		const listLen = list.length;
+		for (let i = 0; i < ops.length; i++) {
+			const op = ops[i];
+			if (op.kind !== 'batch')
+				continue;
+			const host = op.hostIndex | 0;
+			const merged = op.merged | 0;
+			if (host < 0 || merged <= 0 || host + merged > listLen)
+				return false;
+			let srcVerts = 0;
+			for (let t = host; t < host + merged; t++) {
+				try {
+					const se: any = list[t].stageElements;
+					const el = se && se.triangleElements;
+					srcVerts += el ? (el.numVertices | 0) : 0;
+				} catch (_e) {
+					return false;
+				}
+			}
+			const baked = op.vertCount != null
+				? (op.vertCount | 0)
+				: (op.elements ? (op.elements.numVertices | 0) : (op.idxCount | 0));
+			if (srcVerts !== baked)
+				return false;
+		}
+		return true;
+	}
+
+	/**
 	 * Replay recorded batch/single ops wholly inside [rangeStart, rangeEnd).
 	 * Material runs that span the dirty boundary still replay their clean prefix batches.
 	 * Returns { draws, nextIndex } via DrawCallBatcher.staticPrefixEnd (= nextIndex to resume).
 	 */
 	private _replayOpaqueStatic(list: _Render_RenderableBase[], rangeStart: number, rangeEnd: number): number {
+		if (!this._opaqueStaticOpsMatchSource(list)) {
+			DrawCallBatcher.staticMissReason = 33; // stale batch vertCount vs source
+			this._opaqueStaticValid = false;
+			DrawCallBatcher.staticPrefixEnd = 0;
+			return 0;
+		}
 		const ops = this._opaqueStaticOps;
 		const batch = this._drawBatcher;
 		const n = ops.length;
