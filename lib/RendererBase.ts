@@ -424,10 +424,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	}
 
 	public resetHead(): void {
-		//reset head values
-		this._blendedRenderables = [];
-		this._opaqueRenderables = [];
-
+		// Reuse arrays to avoid per-frame GC (owned only by this renderer)
+		this._blendedRenderables.length = 0;
+		this._opaqueRenderables.length = 0;
 	}
 
 	public traverse(): void {
@@ -609,7 +608,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 					r = renderRenderables[i];
 
 				} while (r.renderMaterial == renderMaterial
-						&& !(this._activeMasksDirty = this._checkMaskOwners(r.entity.node.getMaskOwners())));
+						&& !(this._activeMasksDirty = this._checkMaskOwners(r.entity.maskOwners)));
 
 				renderMaterial && renderMaterial.deactivatePass();
 			}
@@ -716,10 +715,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			//if (this._invalid) {
 			this._renderEntity = this.abstractions.getAbstraction<RenderEntity>(node);
 
-			// project onto camera's z-axis
-			this._renderEntity.zIndex = this._cameraTransform.position
-				.subtract(rootNode.getPosition())
-				.dotProduct(this._cameraForward) + rootNode.container.zOffset;
+			// project onto camera's z-axis without Vector3D alloc
+			this._renderEntity.zIndex = this._projectZIndex(rootNode.getPosition(), rootNode.container.zOffset);
 
 			//save sceneTransform
 			this._renderEntity.renderSceneTransform = rootNode.getRenderMatrix3D(this._cameraTransform);
@@ -739,6 +736,19 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		return this;
 	}
 
+	/**
+	 * Project node position onto camera forward without allocating Vector3D
+	 * (Vector3D.subtract() returns a new vector every call).
+	 */
+	private _projectZIndex(nodePos: Vector3D, zOffset: number): number {
+		const cam = this._cameraTransform.position;
+		const fwd = this._cameraForward;
+		return (cam.x - nodePos.x) * fwd.x
+			+ (cam.y - nodePos.y) * fwd.y
+			+ (cam.z - nodePos.z) * fwd.z
+			+ zOffset;
+	}
+
 	public applyEntity(node: ContainerNode): void {
 		const entity = node.container.getEntity();
 
@@ -750,10 +760,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 			this._renderEntity = this.abstractions.getAbstraction<RenderEntity>(node);
 
-			// project onto camera's z-axis
-			this._renderEntity.zIndex = this._cameraTransform.position
-				.subtract(node.getPosition())
-				.dotProduct(this._cameraForward) + node.container.zOffset;
+			// project onto camera's z-axis without Vector3D alloc
+			this._renderEntity.zIndex = this._projectZIndex(node.getPosition(), node.container.zOffset);
 
 			//save sceneTransform
 			this._renderEntity.renderSceneTransform = node.getRenderMatrix3D(this._cameraTransform);
