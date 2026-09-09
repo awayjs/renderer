@@ -94,16 +94,33 @@ export class DefaultRenderer extends RendererBase {
 			this._renderDepthPrepass();
 
 		//this._view.target = null;
+		const _rt0 = (typeof performance !== 'undefined') ? performance.now() : 0;
 		super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
+		const _rt1 = (typeof performance !== 'undefined') ? performance.now() : 0;
 
 		if (!maskConfig) {
 			this.view.present();
+			let _finishMs = 0;
+			const gProbe: any = <any> (typeof self !== 'undefined' ? self : globalThis);
+			if (gProbe.__AWAY_PERF_FINISH__) {
+				const _ft0 = performance.now();
+				try { (<any> this.stage).context._gl.finish(); } catch (e) { /* ignore */ }
+				_finishMs = performance.now() - _ft0;
+			}
+			const _rt2 = (typeof performance !== 'undefined') ? performance.now() : 0;
 			// Expose renderer composition counters for the perf harness.
 			const g: any = <any> (typeof self !== 'undefined' ? self : globalThis);
 			const s = RendererBase._perfStats;
+			const prev = g.__AWAY_PERF__ || {};
 			g.__AWAY_PERF__ = { opaque: s.opaque, blended: s.blended, materialRuns: s.materialRuns,
-				maskSwitches: s.maskSwitches, cacheRenders: s.cacheRenders, draws: s.draws };
+				maskSwitches: s.maskSwitches, cacheRenders: s.cacheRenders, draws: s.draws,
+				msTraverse: +s.msTraverse.toFixed(3), msDraw: +s.msDraw.toFixed(3),
+				msPresent: +(_rt2 - _rt1).toFixed(3),
+				msGpuFinish: +_finishMs.toFixed(3),
+				msRender: +(_rt2 - _rt0).toFixed(3),
+				msAvm: prev.msAvm, msMouse: prev.msMouse, msFrame: prev.msFrame };
 			s.opaque = s.blended = s.materialRuns = s.maskSwitches = s.cacheRenders = s.draws = 0;
+			s.msTraverse = s.msDraw = 0;
 		}
 	}
 

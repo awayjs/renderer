@@ -72,6 +72,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		maskSwitches: 0,
 		cacheRenders: 0,
 		draws: 0,
+		/** Last-frame wall ms for scene-graph traverse (JS). */
+		msTraverse: 0,
+		/** Last-frame wall ms for executeRender / GL submit path. */
+		msDraw: 0,
 	};
 
 	public readonly abstractions: AbstractionSet;
@@ -415,10 +419,18 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		 _backgroundImageRenderer.render();
 		 */
 
+		const _t0 = (typeof performance !== 'undefined') ? performance.now() : 0;
 		if (!StageSettings.USE_NON_NATIVE_BLEND || this._invalid)
 			this.traverse();
+		const _t1 = (typeof performance !== 'undefined') ? performance.now() : 0;
 
 		this.executeRender(enableDepthAndStencil, surfaceSelector, mipmapSelector);
+		const _t2 = (typeof performance !== 'undefined') ? performance.now() : 0;
+		// Accumulate only for the root (non-mask) path; DefaultRenderer resets/exports.
+		if (!this._maskConfig) {
+			RendererBase._perfStats.msTraverse += (_t1 - _t0);
+			RendererBase._perfStats.msDraw += (_t2 - _t1);
+		}
 
 		//line required for correct rendering when using away3d with starling.
 		//DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
