@@ -120,6 +120,8 @@ export class DefaultRenderer extends RendererBase {
 				batchDraws: DrawCallBatcher.batchDraws, batchMerged: DrawCallBatcher.mergedDrawables,
 				batchCacheHits: DrawCallBatcher.cacheHits, batchCacheMisses: DrawCallBatcher.cacheMisses,
 				batchStaticSkips: DrawCallBatcher.staticSkips, batchStaticMissReason: DrawCallBatcher.staticMissReason, batchStaticPrefixEnd: DrawCallBatcher.staticPrefixEnd,
+				batchVerts: DrawCallBatcher.vertsSubmitted, batchIdx: DrawCallBatcher.idxSubmitted,
+				batchUploadBytes: DrawCallBatcher.uploadBytes, batchMaxVerts: DrawCallBatcher.maxBatchVerts,
 				msTraverse: +s.msTraverse.toFixed(3), msDraw: +s.msDraw.toFixed(3),
 				msPresent: +(_rt2 - _rt1).toFixed(3),
 				msGpuFinish: +_finishMs.toFixed(3),
@@ -134,6 +136,10 @@ export class DefaultRenderer extends RendererBase {
 			DrawCallBatcher.cacheHits = 0;
 			DrawCallBatcher.cacheMisses = 0;
 			DrawCallBatcher.staticSkips = 0;
+			DrawCallBatcher.vertsSubmitted = 0;
+			DrawCallBatcher.idxSubmitted = 0;
+			DrawCallBatcher.uploadBytes = 0;
+			DrawCallBatcher.maxBatchVerts = 0;
 		}
 	}
 

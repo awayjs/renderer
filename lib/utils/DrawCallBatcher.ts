@@ -80,6 +80,13 @@ export class DrawCallBatcher {
 	public static staticSkips: number = 0;
 	public static staticMissReason: number = 0; // 0 ok,1 len,2 view,3 ref,4 scene,5 extra,6 images,7 novalid
 	public static staticPrefixEnd: number = 0;
+	/** E17: verts/indices submitted via merged draws this frame. */
+	public static vertsSubmitted: number = 0;
+	public static idxSubmitted: number = 0;
+	/** Bytes written on cache-miss bake/upload this frame. */
+	public static uploadBytes: number = 0;
+	/** Largest merged VB (verts) submitted this frame. */
+	public static maxBatchVerts: number = 0;
 
 	public canAccept(r: _Render_RenderableBase): boolean {
 		if (!Settings.ALLOW_DRAWCALL_BATCHING)
@@ -161,6 +168,9 @@ export class DrawCallBatcher {
 		this._pendingIdx = 0;
 		this._sig = 2166136261;
 		this._sig2 = 2166136261;
+		this._mix(Settings.DRAWCALL_BATCH_FRONT_TO_BACK ? 1 : 0);
+		this._mix(Settings.DRAWCALL_BATCH_MAX_VERTS | 0);
+		this._mix(Settings.DRAWCALL_BATCH_MAX_MERGE | 0);
 		this._frameStamp++;
 	}
 
@@ -214,6 +224,14 @@ export class DrawCallBatcher {
 		const nIdx = indices ? elems.numElements * 3 : nVerts;
 
 		if (this._pendingVert + nVerts > 65535)
+			return false;
+
+		const maxVerts = Settings.DRAWCALL_BATCH_MAX_VERTS | 0;
+		if (maxVerts > 0 && this._pendingVert > 0 && this._pendingVert + nVerts > maxVerts)
+			return false;
+
+		const maxMerge = Settings.DRAWCALL_BATCH_MAX_MERGE | 0;
+		if (maxMerge > 0 && this._mergedDrawables >= maxMerge)
 			return false;
 
 		const sceneRaw = r.entity.renderSceneTransform._rawData;
@@ -329,6 +347,18 @@ export class DrawCallBatcher {
 
 			this._vertCount += nVerts;
 		}
+
+		// Front-to-back: reverse triangle order so closest depthOrder shades first.
+		if (Settings.DRAWCALL_BATCH_FRONT_TO_BACK && this._idxCount >= 6) {
+			const idx = this._idx;
+			const nTri = (this._idxCount / 3) | 0;
+			for (let a = 0, b = nTri - 1; a < b; a++, b--) {
+				const ao = a * 3, bo = b * 3;
+				let t = idx[ao]; idx[ao] = idx[bo]; idx[bo] = t;
+				t = idx[ao + 1]; idx[ao + 1] = idx[bo + 1]; idx[bo + 1] = t;
+				t = idx[ao + 2]; idx[ao + 2] = idx[bo + 2]; idx[bo + 2] = t;
+			}
+		}
 	}
 
 	private _cacheKey(): string {
@@ -399,6 +429,7 @@ export class DrawCallBatcher {
 				this._cache.set(key, cached);
 				elements = cached.elements;
 				drawIdxCount = cached.idxCount;
+				DrawCallBatcher.uploadBytes += pos.byteLength + uv.byteLength + idx.byteLength;
 			} else {
 				// Scratch path: one reusable dynamic elements (no Map growth).
 				if (!this._scratch)
@@ -408,6 +439,7 @@ export class DrawCallBatcher {
 				this._scratch.setIndices(this._idx.subarray(0, this._idxCount));
 				elements = this._scratch;
 				drawIdxCount = this._idxCount;
+				DrawCallBatcher.uploadBytes += this._vertCount * 12 + this._vertCount * 8 + this._idxCount * 2;
 			}
 			DrawCallBatcher.cacheMisses++;
 		}
@@ -477,10 +509,20 @@ export class DrawCallBatcher {
 
 		const ctx = stage.context;
 		let restoredDepth = false;
-		if (Settings.DRAWCALL_BATCH_DISABLE_DEPTH) {
+		// Front-to-back needs depth ON; otherwise honor DISABLE_DEPTH (painter order).
+		if (Settings.DRAWCALL_BATCH_FRONT_TO_BACK) {
+			ctx.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
+			restoredDepth = false;
+		} else if (Settings.DRAWCALL_BATCH_DISABLE_DEPTH) {
 			ctx.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL);
 			restoredDepth = true;
 		}
+
+		const nVertsApprox = elements.numVertices | 0;
+		DrawCallBatcher.vertsSubmitted += nVertsApprox;
+		DrawCallBatcher.idxSubmitted += drawIdxCount;
+		if (nVertsApprox > DrawCallBatcher.maxBatchVerts)
+			DrawCallBatcher.maxBatchVerts = nVertsApprox;
 
 		stageElems.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, 0, drawIdxCount);
 

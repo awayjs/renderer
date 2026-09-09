@@ -49,6 +49,26 @@ export interface IRendererSettings {
 	 * merge rebuild and replay recorded batch draws (weak-device msDraw).
 	 */
 	DRAWCALL_BATCH_STATIC_SKIP: boolean;
+
+	/**
+	 * Cap vertices per merged VB (0 = uncapped). tryAdd refuses when the next
+	 * drawable would exceed the cap so flush splits the material run. Weak-device
+	 * experiment: large merged VBs can cost more to rasterize under SwiftShader.
+	 */
+	DRAWCALL_BATCH_MAX_VERTS: number;
+
+	/**
+	 * Cap drawables merged into one VB (0 = uncapped). Pairs with MAX_VERTS.
+	 */
+	DRAWCALL_BATCH_MAX_MERGE: number;
+
+	/**
+	 * Opaque-only: reverse triangle order in the merged IB and keep depth ON so
+	 * closest depthOrder fragments shade first (front-to-back). Tests whether
+	 * SwiftShader overdraw of painter-order merged VBs explains weak msDraw.
+	 * Requires correct depthOrder Z bake; kill-switch if visual breaks.
+	 */
+	DRAWCALL_BATCH_FRONT_TO_BACK: boolean;
 }
 
 export const Settings: IRendererSettings = {
@@ -102,4 +122,10 @@ export const Settings: IRendererSettings = {
 	DRAWCALL_BATCH_CACHE: true,
 
 	DRAWCALL_BATCH_STATIC_SKIP: true,
+
+	DRAWCALL_BATCH_MAX_VERTS: 0,
+
+	DRAWCALL_BATCH_MAX_MERGE: 0,
+
+	DRAWCALL_BATCH_FRONT_TO_BACK: false,
 };
