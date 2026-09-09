@@ -56,12 +56,28 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 
 	public useColorTransform: boolean = true;
 
+	/** When false, blit uses existing RTT without re-traversing children. */
+	private _contentDirty: boolean = true;
+
 	public alphaBlending: boolean = true;
 
 	public alphaThreshold: number = 0;
 
 	public get assetType(): string {
 		return CacheRenderer.assetType;
+	}
+
+	public get contentDirty(): boolean {
+		return this._contentDirty;
+	}
+
+	/**
+	 * Mark cached bitmap contents dirty (child/material/filter change).
+	 * Does not itself traverse; next blit pass will rebuild the RTT.
+	 */
+	public markContentDirty(): void {
+		this._contentDirty = true;
+		this.invalidate();
 	}
 
 	/**
@@ -208,6 +224,8 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		// pop render target after any filters,
 		// required for deep filters (when node with filter has filtered child)
 		this.stage.popRenderTarget();
+
+		this._contentDirty = false;
 	}
 
 	public _updateBounds(): void {
@@ -279,6 +297,10 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 	public onInvalidate(): void {
 		super.onInvalidate();
 
+		// Content + blit dirty. Hold-frame timeline no-op (scene Timeline E8) stops
+		// spurious SCENE_TRANSFORM bubbles that previously rebuilt RTTs every frame.
+		this._contentDirty = true;
+
 		for (const key in this._renderObjects)
 			this._renderObjects[key]._onInvalidateElements();
 
@@ -303,7 +325,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 
 	public onInvalidateColorTransform(): void {
 		(<ContainerNode> this._asset).invalidateHierarchicalProperty(HierarchicalProperty.COLOR_TRANSFORM);
-		this.invalidate();
+		this.markContentDirty();
 	}
 
 	public onClear(): void {
