@@ -272,9 +272,11 @@ export class _Render_MaterialBase extends AbstractionBase {
 		this._invalidRender = true;
 		this._invalidAnimation = true;
 
-		//prevent infinite loop with cacheRenderer invalidation
-		if (<CacheRenderer> this.renderElements.renderer != this.material)
-			(<CacheRenderer> this.renderElements.renderer).invalidate();
+		// Child drawn into a CacheRenderer: mark bitmap contents dirty without
+		// calling onInvalidate() (would loop via invalidatePasses).
+		const cacheRenderer = <CacheRenderer> this.renderElements.renderer;
+		if (cacheRenderer != this.material && cacheRenderer.markContentDirty)
+			cacheRenderer.markContentDirty();
 	}
 
 	/**

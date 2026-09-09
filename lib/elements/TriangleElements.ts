@@ -946,10 +946,16 @@ export class _Stage_TriangleElements extends _Stage_ElementsBase {
 		//set constants
 		if (shader.sceneMatrixIndex >= 0) {
 			shader.sceneMatrix.copyFrom(renderRenderable.entity.renderSceneTransform, true);
+			if (Settings.ENCODE_DEPTH_ORDER && (renderRenderable as any).depthOrder != null) {
+				shader.sceneMatrix._rawData[14] -= (renderRenderable as any).depthOrder * Settings.DEPTH_ORDER_EPS;
+			}
 			shader.viewMatrix.copyFrom(shader.view.viewMatrix3D, true);
 		} else {
 			const matrix3D: Matrix3D = Matrix3D.CALCULATION_MATRIX;
 			matrix3D.copyFrom(renderRenderable.entity.renderSceneTransform);
+			if (Settings.ENCODE_DEPTH_ORDER && (renderRenderable as any).depthOrder != null) {
+				matrix3D._rawData[14] -= (renderRenderable as any).depthOrder * Settings.DEPTH_ORDER_EPS;
+			}
 			matrix3D.append(shader.view.viewMatrix3D);
 			shader.viewMatrix.copyFrom(matrix3D, true);
 		}

@@ -9,6 +9,66 @@ export interface IRendererSettings {
 	ALPHA_CUTOFF_VALUE: number;
 
 	LINE_BUFFER_DIM: number;
+
+	/**
+	 * Merge consecutive TriangleElements that share a material pass into one
+	 * draw by baking scene transforms + uvMatrix into a dynamic VB.
+	 * Order-preserving within a material run (SWF-safe for blended).
+	 */
+	ALLOW_DRAWCALL_BATCHING: boolean;
+
+	/**
+	 * Minimum drawables in a merge segment before issuing a batched draw.
+	 * Segments of 1 always fall back to the original draw.
+	 */
+	DRAWCALL_BATCH_MIN: number;
+
+	/**
+	 * Sort opaque renderables by material (then depthOrder) so depth-tested
+	 * opaques form longer merge runs. Blended list is never reordered.
+	 */
+	ALLOW_OPAQUE_MATERIAL_SORT: boolean;
+
+	/**
+	 * Encode display-list depthOrder into position.z so opaque material-sort
+	 * + depth test stays SWF-correct for 2D (same geometric Z).
+	 */
+	ENCODE_DEPTH_ORDER: boolean;
+
+	/** Z bias per depthOrder step (world/view units). */
+	DEPTH_ORDER_EPS: number;
+
+	/** Disable depth test for batched draws (painter order within VB). Required for Diggy SWF-safe coverage; pair with no opaque-sort while batching. */
+	DRAWCALL_BATCH_DISABLE_DEPTH: boolean;
+
+	/** Signature-keyed merged VB cache. */
+	DRAWCALL_BATCH_CACHE: boolean;
+
+	/**
+	 * When the opaque list fingerprint matches the previous frame, skip tryAdd /
+	 * merge rebuild and replay recorded batch draws (weak-device msDraw).
+	 */
+	DRAWCALL_BATCH_STATIC_SKIP: boolean;
+
+	/**
+	 * Cap vertices per merged VB (0 = uncapped). tryAdd refuses when the next
+	 * drawable would exceed the cap so flush splits the material run. Weak-device
+	 * experiment: large merged VBs can cost more to rasterize under SwiftShader.
+	 */
+	DRAWCALL_BATCH_MAX_VERTS: number;
+
+	/**
+	 * Cap drawables merged into one VB (0 = uncapped). Pairs with MAX_VERTS.
+	 */
+	DRAWCALL_BATCH_MAX_MERGE: number;
+
+	/**
+	 * Opaque-only: reverse triangle order in the merged IB and keep depth ON so
+	 * closest depthOrder fragments shade first (front-to-back). Tests whether
+	 * SwiftShader overdraw of painter-order merged VBs explains weak msDraw.
+	 * Requires correct depthOrder Z bake; kill-switch if visual breaks.
+	 */
+	DRAWCALL_BATCH_FRONT_TO_BACK: boolean;
 }
 
 export const Settings: IRendererSettings = {
@@ -46,4 +106,26 @@ export const Settings: IRendererSettings = {
 	 * @description Dimensions for LineElements buffer, 2 or 3, 3 is standart, but more memory-expensive, we can use 2
 	 */
 	LINE_BUFFER_DIM: 2,
+
+	ALLOW_DRAWCALL_BATCHING: false,
+
+	DRAWCALL_BATCH_MIN: 2,
+
+	ALLOW_OPAQUE_MATERIAL_SORT: true,
+
+	ENCODE_DEPTH_ORDER: true,
+
+	DEPTH_ORDER_EPS: 1e-4,
+
+	DRAWCALL_BATCH_DISABLE_DEPTH: true,
+
+	DRAWCALL_BATCH_CACHE: true,
+
+	DRAWCALL_BATCH_STATIC_SKIP: true,
+
+	DRAWCALL_BATCH_MAX_VERTS: 0,
+
+	DRAWCALL_BATCH_MAX_MERGE: 0,
+
+	DRAWCALL_BATCH_FRONT_TO_BACK: false,
 };
