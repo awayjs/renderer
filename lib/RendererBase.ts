@@ -64,6 +64,15 @@ import { AbstractionSet } from '@awayjs/core/dist/lib/base/AbstractionSet';
 export class RendererBase extends AbstractionBase implements IPartitionTraverser, IEntityTraverser, IAbstractionPool {
 	private static _store: IAbstraction[] = [];
 	public static _collectionMark = 0;
+	/** Lightweight per-frame counters (reset each DefaultRenderer present). */
+	public static _perfStats = {
+		opaque: 0,
+		blended: 0,
+		materialRuns: 0,
+		maskSwitches: 0,
+		cacheRenders: 0,
+		draws: 0,
+	};
 
 	public readonly abstractions: AbstractionSet;
 
@@ -81,7 +90,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	protected _paddedBounds: Rectangle = new Rectangle();
 	private _bounds: Box = new Box();
 	protected _style: Style;
-	private _boundsDirty: boolean = true;
+	protected _boundsDirty: boolean = true;
 	private _mappers: Array<IMapper> = new Array<IMapper>();
 	private _elementsPools: Record<string, _Render_ElementsBase> = {};
 
@@ -580,6 +589,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		while (index < len) {
 			renderMaterial = renderRenderable.renderMaterial;
 			numPasses = renderMaterial ? renderMaterial.numPasses : 1;
+			RendererBase._perfStats.materialRuns++;
 
 			if (this._activeMasksDirty || this._checkMaskOwners(renderRenderable.entity.maskOwners)) {
 				if (!(this._activeMaskOwners = renderRenderable.entity.maskOwners)) {
@@ -587,6 +597,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 					if (!this._maskConfig)
 						this._context.disableStencil();
 				} else {
+					RendererBase._perfStats.maskSwitches++;
 					this._renderMasks(this._activeMaskOwners);
 				}
 				this._activeMasksDirty = false;
@@ -601,6 +612,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				do {
 					///console.log("maskOwners", renderRenderable2.maskOwners);
 					r.draw();
+					RendererBase._perfStats.draws++;
 
 					if (++i == len)
 						break;
@@ -793,8 +805,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		if (renderMaterial.requiresBlending) {
 			this._blendedRenderables.push(renderRenderable);
+			RendererBase._perfStats.blended++;
 		} else {
 			this._opaqueRenderables.push(renderRenderable);
+			RendererBase._perfStats.opaque++;
 		}
 
 		//need to re-trigger stageElements getter in case animator has changed

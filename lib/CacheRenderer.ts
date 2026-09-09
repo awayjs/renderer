@@ -132,6 +132,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		mipmapSelector: number = 0,
 		maskConfig: number = 0
 	): void {
+		RendererBase._perfStats.cacheRenders++;
 		const container = this.node.container;
 
 		const stage = this.stage;
@@ -290,7 +291,14 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 
 	public onInvalidateSceneTransform(): void {
 		(<ContainerNode> this._asset).invalidateHierarchicalProperty(HierarchicalProperty.SCENE_TRANSFORM);
-		this.onInvalidate();
+		// Parent/scene transform only moves the blit quad. Local-node content is
+		// transformDisabled, so rebuilding the RTT here wastes draws every frame
+		// a filtered/cached clip moves. Child content still invalidates via materials.
+		this._boundsDirty = true;
+		for (const key in this._renderObjects) {
+			this._renderObjects[key]._onInvalidateElements();
+			this._renderObjects[key]._onInvalidateStyle();
+		}
 	}
 
 	public onInvalidateColorTransform(): void {

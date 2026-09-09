@@ -96,8 +96,15 @@ export class DefaultRenderer extends RendererBase {
 		//this._view.target = null;
 		super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
 
-		if (!maskConfig)
+		if (!maskConfig) {
 			this.view.present();
+			// Expose renderer composition counters for the perf harness.
+			const g: any = <any> (typeof self !== 'undefined' ? self : globalThis);
+			const s = RendererBase._perfStats;
+			g.__AWAY_PERF__ = { opaque: s.opaque, blended: s.blended, materialRuns: s.materialRuns,
+				maskSwitches: s.maskSwitches, cacheRenders: s.cacheRenders, draws: s.draws };
+			s.opaque = s.blended = s.materialRuns = s.maskSwitches = s.cacheRenders = s.draws = 0;
+		}
 	}
 
 	public onClear(): void {
