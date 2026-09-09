@@ -5,6 +5,8 @@ import { RenderGroup } from './RenderGroup';
 import { DepthRenderer } from './DepthRenderer';
 import { DistanceRenderer } from './DistanceRenderer';
 import { RendererBase } from './RendererBase';
+import { DrawCallBatcher } from './utils/DrawCallBatcher';
+import { Settings } from './Settings';
 import { _IRender_MaterialClass } from './base/_IRender_MaterialClass';
 import { CacheRenderer } from './CacheRenderer';
 
@@ -110,17 +112,23 @@ export class DefaultRenderer extends RendererBase {
 			const _rt2 = (typeof performance !== 'undefined') ? performance.now() : 0;
 			// Expose renderer composition counters for the perf harness.
 			const g: any = <any> (typeof self !== 'undefined' ? self : globalThis);
+			g.__AWAY_RENDER_SETTINGS__ = Settings;
 			const s = RendererBase._perfStats;
 			const prev = g.__AWAY_PERF__ || {};
 			g.__AWAY_PERF__ = { opaque: s.opaque, blended: s.blended, materialRuns: s.materialRuns,
 				maskSwitches: s.maskSwitches, cacheRenders: s.cacheRenders, draws: s.draws,
+				batchDraws: DrawCallBatcher.batchDraws, batchMerged: DrawCallBatcher.mergedDrawables,
 				msTraverse: +s.msTraverse.toFixed(3), msDraw: +s.msDraw.toFixed(3),
 				msPresent: +(_rt2 - _rt1).toFixed(3),
 				msGpuFinish: +_finishMs.toFixed(3),
 				msRender: +(_rt2 - _rt0).toFixed(3),
 				msAvm: prev.msAvm, msMouse: prev.msMouse, msFrame: prev.msFrame };
 			s.opaque = s.blended = s.materialRuns = s.maskSwitches = s.cacheRenders = s.draws = 0;
+			s.batchDraws = s.batchMerged = 0;
 			s.msTraverse = s.msDraw = 0;
+			DrawCallBatcher.batchDraws = 0;
+			DrawCallBatcher.mergedDrawables = 0;
+			DrawCallBatcher.skippedSingles = 0;
 		}
 	}
 

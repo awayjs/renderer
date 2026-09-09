@@ -54,6 +54,9 @@ import { Style } from './base/Style';
 import { StyleEvent } from './events/StyleEvent';
 import { IRenderable } from './base/IRenderable';
 import { AbstractionSet } from '@awayjs/core/dist/lib/base/AbstractionSet';
+import { Settings } from './Settings';
+import { DrawCallBatcher } from './utils/DrawCallBatcher';
+import { ShaderBase } from './base/ShaderBase';
 
 /**
  * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
@@ -72,6 +75,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		maskSwitches: 0,
 		cacheRenders: 0,
 		draws: 0,
+		batchDraws: 0,
+		batchMerged: 0,
 		/** Last-frame wall ms for scene-graph traverse (JS). */
 		msTraverse: 0,
 		/** Last-frame wall ms for executeRender / GL submit path. */
@@ -129,6 +134,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	protected _maskGroup: RenderGroup;
 	private _pickEntity: PickEntity;
 	private _renderEntity: RenderEntity;
+	private _nextDepthOrder: number = 0;
+	private _drawBatcher: DrawCallBatcher = new DrawCallBatcher();
 
 	/**
 	 *
@@ -465,13 +472,13 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		RendererBase._collectionMark++;
 
+		this._nextDepthOrder = 0;
 		(<ContainerNode> this._asset).acceptTraverser(this);
 
-		//sort the resulting renderables
-		if (this.renderableSorter) {
-			// this._pOpaqueRenderableHead = this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
-			// this._pBlendedRenderableHead = this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
-		}
+		// Opaque only: material sort for longer batch runs. Depth buffer + depthOrder
+		// encoding keep Flash coverage correct. Blended stays in display-list order.
+		if (Settings.ALLOW_OPAQUE_MATERIAL_SORT && this._opaqueRenderables.length > 1)
+			this._sortOpaqueRenderablesArray(this._opaqueRenderables);
 	}
 
 	public _iRenderCascades(
@@ -590,6 +597,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	public drawRenderables(renderRenderables: _Render_RenderableBase[]): void {
 		let index: number = 0;
 		const len: number = renderRenderables.length;
+		if (!len)
+			return;
+
 		let renderRenderable: _Render_RenderableBase = renderRenderables[index];
 
 		let renderMaterial: _Render_MaterialBase;
@@ -597,6 +607,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		let i: number;
 		let r: _Render_RenderableBase;
+		const batch = this._drawBatcher;
+		const allowBatch = Settings.ALLOW_DRAWCALL_BATCHING;
+		const viewMatrix = this.view.viewMatrix3D;
 
 		while (index < len) {
 			renderMaterial = renderRenderable.renderMaterial;
@@ -618,13 +631,31 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			//iterate through each shader object
 			for (let p: number = 0; p < numPasses; p++) {
 				renderMaterial && renderMaterial.activatePass(p);
+				const shader: ShaderBase = renderMaterial
+					? <ShaderBase> renderMaterial._activePass.shader
+					: null;
 
 				i = index;
 				r = renderRenderable;
 				do {
-					///console.log("maskOwners", renderRenderable2.maskOwners);
-					r.draw();
-					RendererBase._perfStats.draws++;
+					if (allowBatch && shader && batch.canAccept(r)) {
+						if (!batch.active) {
+							batch.begin(r, viewMatrix);
+							batch.tryAdd(r);
+						} else if (!batch.tryAdd(r)) {
+							batch.flush(this.stage, shader);
+							RendererBase._perfStats.draws++;
+							batch.begin(r, viewMatrix);
+							batch.tryAdd(r);
+						}
+					} else {
+						if (batch.active) {
+							batch.flush(this.stage, shader);
+							RendererBase._perfStats.draws++;
+						}
+						r.draw();
+						RendererBase._perfStats.draws++;
+					}
 
 					if (++i == len)
 						break;
@@ -634,12 +665,31 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				} while (r.renderMaterial == renderMaterial
 						&& !(this._activeMasksDirty = this._checkMaskOwners(r.entity.maskOwners)));
 
+				if (batch.active && shader) {
+					batch.flush(this.stage, shader);
+					RendererBase._perfStats.draws++;
+				}
+
 				renderMaterial && renderMaterial.deactivatePass();
 			}
 
 			index = i;
 			renderRenderable = r;
 		}
+	}
+
+	/**
+	 * Sort opaque list by program/material then depthOrder (stable relative order within a material).
+	 * Blended must never use this — Flash painter order is required for alpha.
+	 */
+	private _sortOpaqueRenderablesArray(arr: _Render_RenderableBase[]): void {
+		arr.sort((a, b) => {
+			if (a.renderOrderId !== b.renderOrderId)
+				return a.renderOrderId - b.renderOrderId;
+			if (a.materialID !== b.materialID)
+				return a.materialID - b.materialID;
+			return a.depthOrder - b.depthOrder;
+		});
 	}
 
 	/**
@@ -810,12 +860,17 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		//store renderable properties
 		renderRenderable.cascaded = false;
+		renderRenderable.depthOrder = this._nextDepthOrder++;
 
 		const renderMaterial: _Render_MaterialBase = renderRenderable.renderMaterial;
 		renderRenderable.materialID = renderMaterial.materialID;
 		renderRenderable.renderOrderId = renderMaterial.renderOrderId;
 
-		if (renderMaterial.requiresBlending) {
+		// Entity colorTransform alpha < 1 must stay blended even if material is opaque-atlas.
+		const ct = this._renderEntity.colorTransform;
+		const forceBlend = !!(ct && ct.alphaMultiplier < 1);
+
+		if (renderMaterial.requiresBlending || forceBlend) {
 			this._blendedRenderables.push(renderRenderable);
 			RendererBase._perfStats.blended++;
 		} else {
