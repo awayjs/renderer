@@ -475,9 +475,12 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._nextDepthOrder = 0;
 		(<ContainerNode> this._asset).acceptTraverser(this);
 
-		// Opaque only: material sort for longer batch runs. Depth buffer + depthOrder
-		// encoding keep Flash coverage correct. Blended stays in display-list order.
-		if (Settings.ALLOW_OPAQUE_MATERIAL_SORT && this._opaqueRenderables.length > 1)
+		// Opaque material sort needs depth to stay Flash-correct. VB-merge batches
+		// draw with depth test off (painter order inside the VB), so keep display-list
+		// order whenever batching is on. Blended is never sorted.
+		if (Settings.ALLOW_OPAQUE_MATERIAL_SORT
+			&& !Settings.ALLOW_DRAWCALL_BATCHING
+			&& this._opaqueRenderables.length > 1)
 			this._sortOpaqueRenderablesArray(this._opaqueRenderables);
 	}
 
@@ -543,10 +546,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		else
 			this._context.disableStencil();
 
-		this.drawRenderables(this._opaqueRenderables);
+		this.drawRenderables(this._opaqueRenderables, true);
 
 		if (this._renderBlended)
-			this.drawRenderables(this._blendedRenderables);
+			this.drawRenderables(this._blendedRenderables, false);
 	}
 
 	/*
@@ -594,7 +597,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 *
 	 * @param renderables The renderables to draw.
 	 */
-	public drawRenderables(renderRenderables: _Render_RenderableBase[]): void {
+	public drawRenderables(renderRenderables: _Render_RenderableBase[], allowBatchList: boolean = true): void {
 		let index: number = 0;
 		const len: number = renderRenderables.length;
 		if (!len)
@@ -608,7 +611,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		let i: number;
 		let r: _Render_RenderableBase;
 		const batch = this._drawBatcher;
-		const allowBatch = Settings.ALLOW_DRAWCALL_BATCHING;
+		// Blended must stay 1:1 draws for SWF painter correctness (Diggy logo/PLAY).
+		const allowBatch = Settings.ALLOW_DRAWCALL_BATCHING && allowBatchList;
 		const viewMatrix = this.view.viewMatrix3D;
 
 		while (index < len) {

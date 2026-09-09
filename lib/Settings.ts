@@ -37,6 +37,12 @@ export interface IRendererSettings {
 
 	/** Z bias per depthOrder step (world/view units). */
 	DEPTH_ORDER_EPS: number;
+
+	/** Disable depth test for batched draws (painter order within VB). Required for Diggy SWF-safe coverage; pair with no opaque-sort while batching. */
+	DRAWCALL_BATCH_DISABLE_DEPTH: boolean;
+
+	/** Signature-keyed merged VB cache. */
+	DRAWCALL_BATCH_CACHE: boolean;
 }
 
 export const Settings: IRendererSettings = {
@@ -84,4 +90,8 @@ export const Settings: IRendererSettings = {
 	ENCODE_DEPTH_ORDER: true,
 
 	DEPTH_ORDER_EPS: 1e-4,
+
+	DRAWCALL_BATCH_DISABLE_DEPTH: true,
+
+	DRAWCALL_BATCH_CACHE: true,
 };

@@ -118,6 +118,7 @@ export class DefaultRenderer extends RendererBase {
 			g.__AWAY_PERF__ = { opaque: s.opaque, blended: s.blended, materialRuns: s.materialRuns,
 				maskSwitches: s.maskSwitches, cacheRenders: s.cacheRenders, draws: s.draws,
 				batchDraws: DrawCallBatcher.batchDraws, batchMerged: DrawCallBatcher.mergedDrawables,
+				batchCacheHits: DrawCallBatcher.cacheHits, batchCacheMisses: DrawCallBatcher.cacheMisses,
 				msTraverse: +s.msTraverse.toFixed(3), msDraw: +s.msDraw.toFixed(3),
 				msPresent: +(_rt2 - _rt1).toFixed(3),
 				msGpuFinish: +_finishMs.toFixed(3),
@@ -129,6 +130,8 @@ export class DefaultRenderer extends RendererBase {
 			DrawCallBatcher.batchDraws = 0;
 			DrawCallBatcher.mergedDrawables = 0;
 			DrawCallBatcher.skippedSingles = 0;
+			DrawCallBatcher.cacheHits = 0;
+			DrawCallBatcher.cacheMisses = 0;
 		}
 	}
 
