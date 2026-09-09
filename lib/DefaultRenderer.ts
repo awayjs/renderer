@@ -119,6 +119,7 @@ export class DefaultRenderer extends RendererBase {
 				maskSwitches: s.maskSwitches, cacheRenders: s.cacheRenders, draws: s.draws,
 				batchDraws: DrawCallBatcher.batchDraws, batchMerged: DrawCallBatcher.mergedDrawables,
 				batchCacheHits: DrawCallBatcher.cacheHits, batchCacheMisses: DrawCallBatcher.cacheMisses,
+				batchStaticSkips: DrawCallBatcher.staticSkips, batchStaticMissReason: DrawCallBatcher.staticMissReason, batchStaticPrefixEnd: DrawCallBatcher.staticPrefixEnd,
 				msTraverse: +s.msTraverse.toFixed(3), msDraw: +s.msDraw.toFixed(3),
 				msPresent: +(_rt2 - _rt1).toFixed(3),
 				msGpuFinish: +_finishMs.toFixed(3),
@@ -132,6 +133,7 @@ export class DefaultRenderer extends RendererBase {
 			DrawCallBatcher.skippedSingles = 0;
 			DrawCallBatcher.cacheHits = 0;
 			DrawCallBatcher.cacheMisses = 0;
+			DrawCallBatcher.staticSkips = 0;
 		}
 	}
 

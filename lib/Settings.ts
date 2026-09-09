@@ -43,6 +43,12 @@ export interface IRendererSettings {
 
 	/** Signature-keyed merged VB cache. */
 	DRAWCALL_BATCH_CACHE: boolean;
+
+	/**
+	 * When the opaque list fingerprint matches the previous frame, skip tryAdd /
+	 * merge rebuild and replay recorded batch draws (weak-device msDraw).
+	 */
+	DRAWCALL_BATCH_STATIC_SKIP: boolean;
 }
 
 export const Settings: IRendererSettings = {
@@ -94,4 +100,6 @@ export const Settings: IRendererSettings = {
 	DRAWCALL_BATCH_DISABLE_DEPTH: true,
 
 	DRAWCALL_BATCH_CACHE: true,
+
+	DRAWCALL_BATCH_STATIC_SKIP: true,
 };

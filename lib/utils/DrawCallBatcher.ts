@@ -77,6 +77,9 @@ export class DrawCallBatcher {
 	public static skippedSingles: number = 0;
 	public static cacheHits: number = 0;
 	public static cacheMisses: number = 0;
+	public static staticSkips: number = 0;
+	public static staticMissReason: number = 0; // 0 ok,1 len,2 view,3 ref,4 scene,5 extra,6 images,7 novalid
+	public static staticPrefixEnd: number = 0;
 
 	public canAccept(r: _Render_RenderableBase): boolean {
 		if (!Settings.ALLOW_DRAWCALL_BATCHING)
@@ -355,6 +358,8 @@ export class DrawCallBatcher {
 
 		if (this._mergedDrawables < Settings.DRAWCALL_BATCH_MIN) {
 			DrawCallBatcher.skippedSingles += this._mergedDrawables;
+			this.lastSubmitted = null;
+			this.lastSingle = this._host;
 			this._host.draw();
 			this._clear();
 			return;
@@ -407,31 +412,58 @@ export class DrawCallBatcher {
 			DrawCallBatcher.cacheMisses++;
 		}
 
+		const merged = this._mergedDrawables;
+		const host = this._host;
+		const view = this._view;
+		this.submitMergedDraw(stage, shader, host, elements, drawIdxCount, view);
+		this.lastSubmitted = {
+			host: host,
+			elements: elements,
+			idxCount: drawIdxCount,
+			view: view,
+			merged: merged,
+		};
+		this.lastSingle = null;
+		DrawCallBatcher.mergedDrawables += merged;
+		DrawCallBatcher.batchDraws++;
+
+		this._clear();
+	}
+
+	/**
+	 * Issue a previously-merged (or static-replay) TriangleElements draw with
+	 * identity scene + baked UVs. Used by flush and opaque-list static replay.
+	 */
+	public submitMergedDraw(
+		stage: Stage,
+		shader: ShaderBase,
+		host: _Render_RenderableBase,
+		elements: TriangleElements,
+		drawIdxCount: number,
+		view: Matrix3D
+	): void {
 		const stageElems = <_Stage_TriangleElements> stage.abstractions.getAbstraction(elements);
 
-		const entity = this._host.entity;
+		const entity = host.entity;
 		const savedXform = entity.renderSceneTransform;
 		entity.renderSceneTransform = DrawCallBatcher._identityScene;
 
-		const savedUv = (this._host as any)._uvMatrix;
-		const savedStyleDirty = (this._host as any)._styleDirty;
-		(this._host as any)._uvMatrix = null;
-		(this._host as any)._styleDirty = false;
+		const savedUv = (host as any)._uvMatrix;
+		const savedStyleDirty = (host as any)._styleDirty;
+		(host as any)._uvMatrix = null;
+		(host as any)._styleDirty = false;
 
-		const pass = this._host.renderMaterial._activePass;
-		pass._setRenderState(this._host);
+		const pass = host.renderMaterial._activePass;
+		pass._setRenderState(host);
 
-		// Always rebind — different cached elements across flushes, and misses rewrite VB.
 		shader.activeElements = stageElems;
-		stageElems._setRenderState(this._host, shader);
+		stageElems._setRenderState(host, shader);
 
-		// World-baked positions + identity scene; view uploaded with AGAL transpose.
-		// Combined = View * Scene_baked ≡ Scene.append(View) under Flash Matrix3D convention.
 		if (shader.sceneMatrixIndex >= 0) {
 			shader.sceneMatrix.copyFrom(DrawCallBatcher._identityScene, true);
-			shader.viewMatrix.copyFrom(this._view, true);
+			shader.viewMatrix.copyFrom(view, true);
 		} else {
-			shader.viewMatrix.copyFrom(this._view, true);
+			shader.viewMatrix.copyFrom(view, true);
 		}
 
 		const modern = (shader as any).supportModernAPI;
@@ -459,14 +491,21 @@ export class DrawCallBatcher {
 			(stageElems as any)._vao.unbind();
 
 		entity.renderSceneTransform = savedXform;
-		(this._host as any)._uvMatrix = savedUv;
-		(this._host as any)._styleDirty = savedStyleDirty;
-
-		DrawCallBatcher.mergedDrawables += this._mergedDrawables;
-		DrawCallBatcher.batchDraws++;
-
-		this._clear();
+		(host as any)._uvMatrix = savedUv;
+		(host as any)._styleDirty = savedStyleDirty;
 	}
+
+	/** Last flush's merged payload — for static opaque replay recording. */
+	public lastSubmitted: {
+		host: _Render_RenderableBase;
+		elements: TriangleElements;
+		idxCount: number;
+		view: Matrix3D;
+		merged: number;
+	} = null;
+
+	/** When flush fell back to a single draw (below DRAWCALL_BATCH_MIN). */
+	public lastSingle: _Render_RenderableBase = null;
 
 	private _clear(): void {
 		this._host = null;
