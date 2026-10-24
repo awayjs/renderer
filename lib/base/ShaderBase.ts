@@ -430,6 +430,11 @@ export class ShaderBase implements IShaderBase {
 
 		this._pass._includeDependencies(this);
 
+		// Mask passes write stencil only, so fully transparent texels (e.g. the clear
+		// areas of a bitmap fill) must be discarded or they would mask as opaque.
+		if (this._renderMaterial.renderElements.renderer.isMaskRenderer && !(this.alphaThreshold > 0))
+			this.alphaThreshold = 1 / 512;
+
 		//this.usesCommonData = this.usesCurves || this.usesCommonData;
 	}
 
