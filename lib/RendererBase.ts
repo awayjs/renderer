@@ -377,6 +377,13 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
 	 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 	 */
+	/**
+	 * True while this renderer is drawing mask geometry into the stencil buffer.
+	 */
+	public get isMaskRenderer(): boolean {
+		return !!this._maskConfig;
+	}
+
 	public render(
 		enableDepthAndStencil: boolean = true, surfaceSelector: number = 0,
 		mipmapSelector: number = 0, maskConfig: number = 0): void {
