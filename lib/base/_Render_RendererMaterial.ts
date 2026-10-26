@@ -1,4 +1,4 @@
-import { BlendMode, ContextGLCompareMode, ShaderRegisterCache, ShaderRegisterData } from '@awayjs/stage';
+import { BlendMode, ContextGLCompareMode, ShaderRegisterCache, ShaderRegisterData, ShaderRegisterElement } from '@awayjs/stage';
 
 import { CacheRenderer } from '../CacheRenderer';
 import { ShaderBase } from './ShaderBase';
@@ -9,6 +9,7 @@ import { _Shader_TextureBase } from './_Shader_TextureBase';
 
 export class _Render_RendererMaterial extends _Render_MaterialPassBase {
 	public _texture: _Shader_TextureBase;
+	private _fragmentConstantsIndex: number = -1;
 
 	public init(material: CacheRenderer, renderElements: _Render_ElementsBase): void {
 		super.init(material, renderElements);
@@ -51,7 +52,22 @@ export class _Render_RendererMaterial extends _Render_MaterialPassBase {
 	 * @inheritDoc
 	 */
 	public _getFragmentCode(regCache: ShaderRegisterCache, sharedReg: ShaderRegisterData): string {
-		return this._texture._getFragmentCode(sharedReg.shadedTarget, regCache, sharedReg, sharedReg.uvVarying);
+		const targetReg: ShaderRegisterElement = sharedReg.shadedTarget;
+		let code: string = this._texture._getFragmentCode(targetReg, regCache, sharedReg, sharedReg.uvVarying);
+
+		// a cached image drawn into an alpha-channel mask clips by its alpha, like any other textured fill
+		if (this._shader.alphaThreshold > 0) {
+			const cutOffReg: ShaderRegisterElement = regCache.getFreeFragmentConstant();
+			this._fragmentConstantsIndex = cutOffReg.index * 4;
+
+			code += 'sub ' + targetReg + '.w, ' + targetReg + '.w, ' + cutOffReg + '.x\n'
+				+ 'kil ' + targetReg + '.w\n'
+				+ 'add ' + targetReg + '.w, ' + targetReg + '.w, ' + cutOffReg + '.x\n';
+		} else {
+			this._fragmentConstantsIndex = -1;
+		}
+
+		return code;
 	}
 
 	public _setRenderState(renderable: _Render_RenderableBase): void {
@@ -69,5 +85,8 @@ export class _Render_RendererMaterial extends _Render_MaterialPassBase {
 		this._stage.context.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL);
 
 		this._texture.activate();
+
+		if (this._fragmentConstantsIndex >= 0)
+			this._shader.fragmentConstantData[this._fragmentConstantsIndex] = this._shader.alphaThreshold;
 	}
 }
