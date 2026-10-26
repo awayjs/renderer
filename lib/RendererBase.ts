@@ -38,6 +38,7 @@ import {
 	BoundsPicker,
 	PickGroup,
 	PickEntity,
+	IContainer,
 } from '@awayjs/view';
 
 import { _Render_MaterialBase } from './base/_Render_MaterialBase';
@@ -75,6 +76,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _boundsScale: number = 1;
 	private _parentPosition: Vector3D;
 	private _maskConfig: number;
+	private _alphaMaskActive: boolean = false;
 	private _maskId: number;
 	private _activeMasksDirty: boolean;
 	private _activeMaskOwners: ContainerNode[];
@@ -372,6 +374,29 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	}
 
 	/**
+	 * Reports the mode of the last (or current) call to render(): true if it drew
+	 * mask geometry into the stencil buffer, false if it drew normally.
+	 */
+	public get isMaskRenderer(): boolean {
+		return !!this._maskConfig;
+	}
+
+	/**
+	 * Requests alpha-channel masking for the next mask render: texels of the mask
+	 * that are fully transparent are discarded instead of clipping as opaque.
+	 * Set by the parent renderer before each mask render; ignored for normal renders.
+	 */
+	public alphaMask: boolean = false;
+
+	/**
+	 * Reports whether the last (or current) call to render() drew mask geometry with
+	 * alpha-channel masking. Shaders read this when they are compiled.
+	 */
+	public get isAlphaMaskRenderer(): boolean {
+		return this._alphaMaskActive;
+	}
+
+	/**
 	 * Renders the potentially visible geometry to the back buffer or texture.
 	 * @param target An option target texture to render to.
 	 * @param surfaceSelector The index of a CubeTexture's face to render to.
@@ -385,6 +410,13 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		// if (!this._stage || !this._context)
 		// 	return;
 		this._maskConfig = maskConfig;
+
+		// shaders bake the alpha-mask state in when compiled, so rebuild them if it changed
+		const alphaMaskActive: boolean = !!maskConfig && this.alphaMask;
+		if (alphaMaskActive !== this._alphaMaskActive) {
+			this._alphaMaskActive = alphaMaskActive;
+			this._invalidateShaders();
+		}
 
 		//check for mask rendering
 		if (this._maskConfig) {
@@ -793,6 +825,21 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._pNumElements += renderRenderable.stageElements.elements.numElements;
 	}
 
+	private _invalidateShaders(): void {
+		for (const key in this._elementsPools)
+			this._elementsPools[key].abstractions.forEach(
+				(renderMaterial: _Render_MaterialBase) => renderMaterial.onInvalidatePasses(null));
+	}
+
+	/**
+	 * Alpha-channel masking only applies when both the mask and the masked object
+	 * are bitmap cached; otherwise a mask clips to the full area of its fills.
+	 */
+	private static _isBitmapCached(node: ContainerNode): boolean {
+		const container = <IContainer & { cacheAsBitmapRequested?: boolean }> node.container;
+		return !!(container.cacheAsBitmap || container.cacheAsBitmapRequested);
+	}
+
 	protected _renderMasks(maskOwners: ContainerNode[]): void {
 		//calculate the bit index of maskConfig devided by two
 		const halfBitIndex: number = Math.log2(this._maskConfig) >> 1;
@@ -838,8 +885,13 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				//clears write mask to zero
 				this._context.clear(0, 0, 0, 0, 0, 0, ContextGLClearMask.STENCIL);
 
-				for (let j: number = 0; j < numChildren; ++j)
-					this._maskGroup.getRenderer(children[j]).render(true, 0, 0, newMaskConfig);
+				const ownerCached: boolean = RendererBase._isBitmapCached(maskOwners[i]);
+
+				for (let j: number = 0; j < numChildren; ++j) {
+					const maskRenderer: RendererBase = this._maskGroup.getRenderer(children[j]);
+					maskRenderer.alphaMask = ownerCached && RendererBase._isBitmapCached(<ContainerNode> children[j]);
+					maskRenderer.render(true, 0, 0, newMaskConfig);
+				}
 
 			}
 		}

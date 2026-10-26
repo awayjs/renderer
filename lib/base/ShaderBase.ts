@@ -54,6 +54,12 @@ type IBlendEquationType = [ContextGLBlendEquation] | [ContextGLBlendEquation, Co
  * @see RegisterPool.addUsage
  */
 export class ShaderBase implements IShaderBase {
+	/**
+	 * Alpha cut-off used when drawing alpha-channel masks: below half of one 8-bit step,
+	 * so only fully transparent texels are discarded.
+	 */
+	public static readonly MASK_ALPHA_THRESHOLD: number = 1 / 512;
+
 	private static _store: Record<string,  IAbstraction[]> = {};
 	private static _abstractionClassPool: Object = new Object();
 
@@ -429,6 +435,12 @@ export class ShaderBase implements IShaderBase {
 		this._renderMaterial.renderElements._includeDependencies(this);
 
 		this._pass._includeDependencies(this);
+
+		// Alpha-channel mask passes write stencil only, so fully transparent texels (e.g. the
+		// clear areas of a bitmap fill) must be discarded or they would mask as opaque.
+		// RendererBase rebuilds its shaders whenever this mode changes.
+		if (this._renderMaterial.renderElements.renderer.isAlphaMaskRenderer && !(this.alphaThreshold > 0))
+			this.alphaThreshold = ShaderBase.MASK_ALPHA_THRESHOLD;
 
 		//this.usesCommonData = this.usesCurves || this.usesCommonData;
 	}
