@@ -29,7 +29,7 @@ import { _Stage_ElementsBase } from './base/_Stage_ElementsBase';
 import { TriangleElements, _Stage_TriangleElements } from './elements/TriangleElements';
 import { MaterialEvent } from './events/MaterialEvent';
 import { RendererBase } from './RendererBase';
-import { RenderGroup } from './RenderGroup';
+import { RenderGroup, RenderPool } from './RenderGroup';
 import { ImageTexture2D } from './textures/ImageTexture2D';
 import { Settings as StageSettings } from '@awayjs/stage';
 import { RenderEntity } from './base/RenderEntity';
@@ -110,10 +110,10 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		// 	(this._abstractionPool[key] as _Render_RenderableBase)._onInvalidateMaterial();
 	}
 
-	public init(node: INode, group: RenderGroup): void {
-		super.init(node, group);
+	public init(node: INode, pool: RenderPool): void {
+		super.init(node, pool);
 
-		node.view.stage.addEventListener(StageEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
+		pool.view.stage.addEventListener(StageEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 
 		if (this._parentNode) {
 			this._parentNode.addEventListener(ContainerNodeEvent.INVALIDATE_MATRIX3D, this._onInvalidateSceneTransform);
@@ -121,7 +121,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		}
 
 		// for check filters/blends changes
-		(<IRenderContainer> node.container)._renderObjects[group.id] = this;
+		(<IRenderContainer> node.container)._renderObjects[pool.id] = this;
 
 		this.texture = new ImageTexture2D();
 	}
@@ -270,7 +270,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		const enter: boolean = super.enterNode(node);
 
 		if (enter && node.boundsVisible)
-			this.applyEntity(node.getBoundsPrimitive(PickGroup.getInstance()));
+			this.applyEntity(node.getBoundsPrimitive(PickGroup.getPool(this.rootView)));
 
 		return enter;
 	}
@@ -306,7 +306,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		this._style.image.clear();
 		this._style.image = null;
 
-		(<ContainerNode> this._asset).view.stage.removeEventListener(StageEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
+		this.view.stage.removeEventListener(StageEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 
 		if (this._parentNode) {
 			this._parentNode.removeEventListener(ContainerNodeEvent.INVALIDATE_MATRIX3D, this._onInvalidateSceneTransform);
@@ -316,7 +316,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		const container: IRenderContainer = <IRenderContainer> (<ContainerNode> this._asset).container;
 
 		if (container)
-			delete container._renderObjects[this.group.id];
+			delete container._renderObjects[this.pool.id];
 
 		super.onClear();
 	}

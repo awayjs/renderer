@@ -26,7 +26,7 @@ export class LineElements extends ElementsBase {
 	public scaleMode: LineScaleMode = LineScaleMode.HAIRLINE;
 	public dimension: number = 3;
 
-	public getThicknessScale(node: ContainerNode, strokeFlag: boolean): Vector3D {
+	public getThicknessScale(view: View, node: ContainerNode, strokeFlag: boolean): Vector3D {
 		if (!strokeFlag && this.scaleMode == LineScaleMode.HAIRLINE) {
 			this._thicknessScale.identity();
 		} else {
@@ -35,8 +35,8 @@ export class LineElements extends ElementsBase {
 			else
 				this._thicknessScale.identity();
 
-			this._thicknessScale.x *= node.view.focalLength * node.view.pixelRatio / 1000;
-			this._thicknessScale.y *= node.view.focalLength / 1000;
+			this._thicknessScale.x *= view.focalLength * view.pixelRatio / 1000;
+			this._thicknessScale.y *= view.focalLength / 1000;
 
 			if (this.scaleMode == LineScaleMode.NORMAL) {
 				this._thicknessScale.x = (!strokeFlag || this.half_thickness * this._thicknessScale.x > 0.5)
@@ -122,6 +122,7 @@ export class LineElements extends ElementsBase {
 	}
 
 	public getBoxBounds(
+		view: View,
 		node: ContainerNode = null,
 		strokeFlag: boolean = false,
 		matrix3D: Matrix3D = null,
@@ -178,7 +179,7 @@ export class LineElements extends ElementsBase {
 
 				LineElementsUtils.mergeThinkness(
 					box,
-					this.getThicknessScale(node, strokeFlag),
+					this.getThicknessScale(view, node, strokeFlag),
 					matrix3D
 				);
 
@@ -190,7 +191,7 @@ export class LineElements extends ElementsBase {
 			this.positions,
 			this.indices,
 			matrix3D,
-			this.getThicknessScale(node, strokeFlag),
+			this.getThicknessScale(view, node, strokeFlag),
 			cache,
 			target,
 			count,
@@ -213,6 +214,7 @@ export class LineElements extends ElementsBase {
 	}
 
 	public hitTestPoint(
+		view: View,
 		node: ContainerNode,
 		x: number, y: number, z: number,
 		box: Box,
@@ -222,7 +224,7 @@ export class LineElements extends ElementsBase {
 		idx_offset: number = 0): boolean
 	// eslint-disable-next-line brace-style
 	{
-		const scale: Vector3D = this.getThicknessScale(node, true);
+		const scale: Vector3D = this.getThicknessScale(view, node, true);
 		const thickness: number = (scale.x + scale.y) / 2;//approx hack for now
 
 		return LineElementsUtils.hitTest(
@@ -439,6 +441,7 @@ export class LineElements extends ElementsBase {
 	}
 
 	public testCollision(
+		view: View,
 		collision: PickingCollision,
 		box: Box,
 		closestFlag: boolean,
@@ -448,7 +451,7 @@ export class LineElements extends ElementsBase {
 	// eslint-disable-next-line brace-style
 	{
 		//TODO: peform correct line collision calculations
-		const scale: Vector3D = this.getThicknessScale(collision.containerNode, true);
+		const scale: Vector3D = this.getThicknessScale(view, collision.containerNode, true);
 		const thickness: number = (scale.x + scale.y) / 2;//approx hack for now
 
 		const rayEntryDistance: number = -collision.rayPosition.z / collision.rayDirection.z;

@@ -27,8 +27,8 @@ export class _Render_ElementsBase extends AssetBase implements IAbstractionPool 
 		this.abstractions = new AbstractionSet(this);
 		this.renderer = renderer;
 		this.stage = renderer.view.stage;
-		this._materialStore = renderer.group.materialStore;
-		this._materialClassPool = renderer.group.materialClassPool;
+		this._materialStore = renderer.pool.group.materialStore;
+		this._materialClassPool = renderer.pool.group.materialClassPool;
 	}
 
 	public requestAbstraction(asset: IAsset): _Render_MaterialBase {

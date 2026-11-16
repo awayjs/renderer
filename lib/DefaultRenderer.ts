@@ -1,7 +1,7 @@
 import { IAssetClass } from '@awayjs/core';
 import { BitmapImage2D, IContextGL } from '@awayjs/stage';
 import { INode, PickGroup } from '@awayjs/view';
-import { RenderGroup } from './RenderGroup';
+import { RenderGroup, RenderPool } from './RenderGroup';
 import { DepthRenderer } from './DepthRenderer';
 import { DistanceRenderer } from './DistanceRenderer';
 import { RendererBase } from './RendererBase';
@@ -53,16 +53,16 @@ export class DefaultRenderer extends RendererBase {
 		this._maskGroup = RenderGroup.getInstance(DefaultRenderer);
 	}
 
-	public init(node: INode, pool: RenderGroup): void {
+	public init(node: INode, pool: RenderPool): void {
 		super.init(node, pool);
 
 		this._depthRenderer = RenderGroup
 			.getInstance(DepthRenderer)
-			.getRenderer(node);
+			.getRenderer(this.view, node);
 
 		this._distanceRenderer = RenderGroup
 			.getInstance(DistanceRenderer)
-			.getRenderer(node);
+			.getRenderer(this.view, node);
 	}
 
 	/**
@@ -72,7 +72,7 @@ export class DefaultRenderer extends RendererBase {
 		const enter: boolean = super.enterNode(node);
 
 		if (enter && node.boundsVisible)
-			this.applyEntity(node.getBoundsPrimitive(PickGroup.getInstance()));
+			this.applyEntity(node.getBoundsPrimitive(PickGroup.getPool(this.view)));
 
 		return enter;
 	}

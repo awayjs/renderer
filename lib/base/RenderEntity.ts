@@ -43,17 +43,17 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 	/**
      *
      */
-	public renderSceneTransform: Matrix3D;
+	public renderSceneTransform: Matrix3D | undefined;
 
 	/**
      *
      */
-	public colorTransform: ColorTransform;
+	public colorTransform: ColorTransform | undefined;
 
 	/**
      *
      */
-	public maskOwners: ContainerNode[];
+	public maskOwners: ContainerNode[] | undefined;
 
 	constructor() {
 		super();
@@ -81,11 +81,11 @@ export class RenderEntity extends AbstractionBase implements IAbstractionPool {
 		if (container)
 			delete container._renderObjects[this.renderer.id];
 
-		this.renderSceneTransform = null;
+		this.renderSceneTransform = undefined;
 
-		this.colorTransform = null;
+		this.colorTransform = undefined;
 
-		this.maskOwners = null;
+		this.maskOwners = undefined;
 
 		super.onClear();
 	}

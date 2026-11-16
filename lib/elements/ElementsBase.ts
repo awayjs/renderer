@@ -293,6 +293,7 @@ export class ElementsBase extends AssetBase implements IElements {
 	}
 
 	public getBoxBounds(
+		view: View,
 		node: ContainerNode = null,
 		strokeFlag: boolean = true,
 		matrix3D: Matrix3D = null,
@@ -316,6 +317,7 @@ export class ElementsBase extends AssetBase implements IElements {
 	}
 
 	public hitTestPoint(
+		view: View,
 		node: ContainerNode,
 		x: number, y: number, z: number,
 		box: Box,
@@ -361,6 +363,7 @@ export class ElementsBase extends AssetBase implements IElements {
 	}
 
 	public testCollision(
+		view: View,
 		collision: PickingCollision,
 		box: Box,
 		closestFlag: boolean,

@@ -1,10 +1,10 @@
 import { IAsset } from '@awayjs/core';
 
-import { INode } from '@awayjs/view';
+import { INode, View } from '@awayjs/view';
 
 export interface IMapper extends IAsset
 {
 	autoUpdate: boolean;
 
-	update(node: INode): void;
+	update(view: View, node: INode): void;
 }

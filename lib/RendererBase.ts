@@ -44,7 +44,7 @@ import { _Render_MaterialBase } from './base/_Render_MaterialBase';
 import { _Render_RenderableBase } from './base/_Render_RenderableBase';
 import { RenderEntity } from './base/RenderEntity';
 import { IMapper } from './base/IMapper';
-import { RenderGroup } from './RenderGroup';
+import { RenderGroup, RenderPool } from './RenderGroup';
 
 import { IRenderEntitySorter } from './sort/IRenderEntitySorter';
 import { RenderableMergeSort } from './sort/RenderableMergeSort';
@@ -228,6 +228,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 	public parentRenderer: RendererBase;
 
+	public rootView: View;
+
 	/**
 	 *
 	 */
@@ -237,8 +239,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		return <ContainerNode> this._asset;
 	}
 
-	public get group(): RenderGroup {
-		return <RenderGroup> this._pool;
+	public get pool(): RenderPool {
+		return <RenderPool> this._pool;
 	}
 
 	public view: View;
@@ -248,8 +250,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	public get blendMode(): string {
 		const containerBlend = <string> this.node.container.blendMode;
 
-		// if (this._parentNode.bitmapMaskNode)
-		// 	return BlendMode.ALPHA;
+		if (this.node.bitmapMaskNode)
+			return BlendMode.ALPHA;
 
 		// native blends
 		if (isNativeBlend(containerBlend))
@@ -277,20 +279,21 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	/**
 	 * Creates a new RendererBase object.
 	 */
-	public init(node: INode, group: RenderGroup): void {
-		super.init(node, group);
+	public init(node: INode, pool: RenderPool): void {
+		super.init(node, pool);
 
 		this._parentNode = node.parent;
 
 		this.style = new Style();
-		this.view = node.view;
+		this.view = pool.view;
 		this.stage = this.view.stage;
+		this.rootView = this.view;
 
 		this.stage.addEventListener(StageEvent.CONTEXT_CREATED, this._onContextUpdateDelegate);
 		this.stage.addEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 		this.view.addEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 
-		this._boundsPicker = PickGroup.getInstance().getBoundsPicker(this.node);
+		this._boundsPicker = PickGroup.getPool(this.rootView).getBoundsPicker(node);
 
 		if (this.stage.context)
 			this._context = <IContextGL> this.stage.context;
@@ -311,6 +314,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this.view = null;
 		this.stage = null;
 		this.style = null;
+		this.rootView = null;
 
 		this._boundsPicker = null;
 		this._activeMasksDirty = false;
@@ -343,7 +347,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		//update mappers
 		const len: number = this._mappers.length;
 		for (let i: number = 0; i < len; i++)
-			this._mappers[i].update(node);
+			this._mappers[i].update(this.view, node);
 	}
 
 	public _addMapper(mapper: IMapper) {
@@ -442,7 +446,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		this._cameraTransform = this.view.projection.transform.matrix3D;
 		this._cameraForward = this.view.projection.transform.forwardVector;
-		this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : this.node.getRoot(true).view.projection.viewFrustumPlanes;
+		this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : this.rootView.projection.viewFrustumPlanes;
 		this._numCullPlanes = this._cullPlanes ? this._cullPlanes.length : 0;
 		this._maskId = (<ContainerNode> this._asset).getMaskId();
 
@@ -690,7 +694,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				<ContainerNode> this._asset,
 				this._cullPlanes,
 				this._numCullPlanes,
-				PickGroup.getInstance()));
+				PickGroup.getPool(this.view)));
 
 		const enter = node._collectionMark != RendererBase._collectionMark
 			&& node.isRenderable()
@@ -706,18 +710,19 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		if (rootNode.renderToImage) {
 			//new node for the container
-			const node: ContainerNode = rootNode.getLocalNode();
-			const boundsPicker: BoundsPicker = PickGroup.getInstance().getBoundsPicker(rootNode);
+			//const node: ContainerNode = rootNode.getLocalNode();
+			const boundsPicker: BoundsPicker = PickGroup.getPool(this.rootView).getBoundsPicker(rootNode);
 
-			if (!boundsPicker._isInFrustumInternal((<ContainerNode> this._asset).getRoot(true), this._cullPlanes, this._numCullPlanes))
+			if (!boundsPicker._isInFrustumInternal((<ContainerNode> this._asset).root, this._cullPlanes, this._numCullPlanes))
 				return;
 
-			const traverser: CacheRenderer = this._traverserGroup.getRenderer<CacheRenderer>(node);
+			const traverser: CacheRenderer = this._traverserGroup.getRenderer<CacheRenderer>(rootNode.getLocalView(this.stage), rootNode);
 
 			traverser.renderableSorter = null;
 			traverser.parentRenderer = this;
+			traverser.rootView = this.rootView;
 			//if (this._invalid) {
-			this._renderEntity = this.abstractions.getAbstraction<RenderEntity>(node);
+			this._renderEntity = this.abstractions.getAbstraction<RenderEntity>(rootNode);
 
 			// project onto camera's z-axis
 			this._renderEntity.zIndex = this._cameraTransform.position
@@ -730,8 +735,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			//save colorTransform (null for CacheRenderer)
 			this._renderEntity.colorTransform = ContainerNode.nullColorTransform;
 
-			//save mask owners
-			this._renderEntity.maskOwners = rootNode.getMaskOwners();
+			//save mask owners (null for CacheRenderer)
+			this._renderEntity.maskOwners = undefined;
+			//this._renderEntity.maskOwners = rootNode.getMaskOwners();
 
 			//apply CacheRenderer as renderable
 			this.applyTraversable(traverser);
@@ -746,9 +752,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		const entity = node.container.getEntity();
 
 		if (entity) {
-			this._pickEntity = PickGroup.getInstance().abstractions.getAbstraction<PickEntity>(node);
+			this._pickEntity = PickGroup.getPool(this.rootView).abstractions.getAbstraction<PickEntity>(node);
 
-			if (!this._pickEntity._isInFrustumInternal((<ContainerNode> this._asset).getRoot(true), this._cullPlanes, this._numCullPlanes))
+			if (!this._pickEntity._isInFrustumInternal(<ContainerNode>(<ContainerNode> this._asset).root, this._cullPlanes, this._numCullPlanes))
 				return;
 
 			this._renderEntity = this.abstractions.getAbstraction<RenderEntity>(node);
@@ -772,7 +778,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		} else {
 			//check if we have a RenderEntity abstraction and if so, clear it!
 			this.abstractions.checkAbstraction(node)?.onClear();
-			PickGroup.getInstance().abstractions.checkAbstraction(node)?.onClear();
+			PickGroup.getPool(this.rootView).abstractions.checkAbstraction(node)?.onClear();
 		}
 	}
 
@@ -814,6 +820,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		const numLayers: number = maskOwners.length;
 		let children: INode[];
+		//let children: IContainer[];
 		let numChildren: number;
 		let first: boolean = true;
 
@@ -840,9 +847,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 				//clears write mask to zero
 				this._context.clear(0, 0, 0, 0, 0, 0, ContextGLClearMask.STENCIL);
-
+				// for (let j: number = 0; j < numChildren; ++j)
+				// 	this._maskGroup.getRenderer(this.view.getNode(children[j])).render(true, 0, 0, newMaskConfig);
 				for (let j: number = 0; j < numChildren; ++j)
-					this._maskGroup.getRenderer(children[j]).render(true, 0, 0, newMaskConfig);
+					this._maskGroup.getRenderer(this.view, children[j]).render(true, 0, 0, newMaskConfig);
 
 			}
 		}
@@ -906,13 +914,15 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		const node: ContainerNode = <ContainerNode> this._asset;
 		const matrix3D = this._renderMatrix;
 		const container = node.container;
-		const rootView = node.getRoot().view;
+		const rootView = this.rootView;
 		const pad = this._paddedBounds;
 
 		const scale = this._boundsScale = Math.min(3, rootView.height * this.stage.pixelRatio * rootView.projection.scale / 1000);
 
 		if (this._parentNode) {
-			matrix3D.copyFrom(this._parentNode.getMatrix3D());
+			matrix3D.identity();
+			//matrix3D.copyFrom(this.node.container.transform.matrix3D);
+			//matrix3D.prepend(this.parentRenderer.node.getMatrix3D());
 		} else {
 			matrix3D.copyFrom(rootView.projection.transform.inverseMatrix3D);
 		}
@@ -920,7 +930,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		if (scale !== 1)
 			matrix3D.appendScale(scale, scale, scale);
 
-		const bounds = this._boundsPicker.getBoxBounds(node, true, true);
+		const bounds = this._boundsPicker.getBoxBounds(node.root, true, true);
 
 		if (!bounds) {
 			console.error('[CachedRenderer] Bounds invalid, supress calculation', node);
@@ -973,7 +983,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			if (this._parentNode) {
 				parentBounds = this.parentRenderer.getPaddedBounds();
 				parentPosition = this.parentRenderer.getParentPosition();
-				this._parentPosition = this._parentNode.getMatrix3D().position.clone();
+				this._parentPosition = new Vector3D();
 				this._parentPosition.scaleBy(scale);
 			} else {
 				parentBounds = new Rectangle(0, 0, this.view.width * this.stage.pixelRatio, this.view.height * this.stage.pixelRatio);
@@ -989,11 +999,11 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				}
 			}
 
-			if (pad.left < -parentPosition.x)
-				pad.left = -parentPosition.x;
+			if (pad.left < parentBounds.left - parentPosition.x)
+				pad.left = parentBounds.left - parentPosition.x;
 
-			if (pad.top < -parentPosition.y)
-				pad.top = -parentPosition.y;
+			if (pad.top < parentBounds.top - parentPosition.y)
+				pad.top = parentBounds.top - parentPosition.y;
 
 			if (pad.right > parentBounds.right - parentPosition.x)
 				pad.right = parentBounds.right - parentPosition.x;
@@ -1001,8 +1011,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			if (pad.bottom > parentBounds.bottom - parentPosition.y)
 				pad.bottom = parentBounds.bottom - parentPosition.y;
 
-			if (pad.width * pad.height == 0) {
-				throw new Error('Cannot have image with size 0 * 0');
+			if (pad.width <= 0 || pad.height <= 0) {
+				console.warn('width and height have to be positive integers');
 			}
 		}
 	}

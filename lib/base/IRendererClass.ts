@@ -1,4 +1,5 @@
 import { IAbstractionClass } from '@awayjs/core';
+import { RenderGroup } from '../RenderGroup';
 
 /**
  *

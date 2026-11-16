@@ -1,6 +1,6 @@
 import { Box, Sphere, Matrix3D, Vector3D, Point, Rectangle, Matrix } from '@awayjs/core';
 
-import { PickingCollision, ContainerNode } from '@awayjs/view';
+import { PickingCollision, ContainerNode, View } from '@awayjs/view';
 
 import {
 	AttributesBuffer,
@@ -174,6 +174,7 @@ export class TriangleElements extends ElementsBase {
 	}
 
 	public getBoxBounds(
+		view: View,
 		node: ContainerNode = null,
 		strokeFlag: boolean = true, matrix3D: Matrix3D = null,
 		cache: Box = null, target: Box = null,
@@ -246,6 +247,7 @@ export class TriangleElements extends ElementsBase {
 	}
 
 	public hitTestPoint(
+		view: View,
 		node: ContainerNode,
 		x: number, y: number, z: number,
 		box: Box, count: number = 0,
@@ -645,6 +647,7 @@ export class TriangleElements extends ElementsBase {
 	}
 
 	public testCollision(
+		view: View,
 		collision: PickingCollision,
 		box: Box, closestFlag: boolean,
 		material: IMaterial, count: number,
