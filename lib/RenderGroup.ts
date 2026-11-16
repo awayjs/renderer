@@ -34,6 +34,7 @@ export class RenderPool extends AbstractionBase implements IAbstractionPool {
 		super();
 		this.abstractions = new AbstractionSet(this);
 	}
+
 	public init(view: View, renderGroup: RenderGroup) {
 		super.init(view, renderGroup, true);
 	}
