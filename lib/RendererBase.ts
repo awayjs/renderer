@@ -234,6 +234,11 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 */
 	public isBitmapMask: boolean = false;
 
+	/**
+	 * Set by ContainerNode while it visits its bitmap mask node after its other content.
+	 */
+	public isBitmapMaskVisit: boolean = false;
+
 	public rootView: View;
 
 	/**
@@ -718,17 +723,12 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	public getTraverser(rootNode: ContainerNode): IPartitionTraverser | void {
 
 		// mask nodes are only drawn by their mask renderer, or as the bitmap mask of their owner
-		const isBitmapMask: boolean = rootNode == (<ContainerNode> this._asset).bitmapMaskNode;
+		// when the owner visits it after all its other content (see ContainerNode.acceptTraverser)
+		const isBitmapMask: boolean = this.isBitmapMaskVisit;
 		if (!isBitmapMask && rootNode.getMaskId() != this._maskId)
 			return;
 
 		if (rootNode.renderToImage) {
-			// skip nodes already collected in this pass (e.g. a bitmap mask that is also a child)
-			if (rootNode._collectionMark == RendererBase._collectionMark)
-				return;
-
-			rootNode._collectionMark = RendererBase._collectionMark;
-
 			//new node for the container
 			//const node: ContainerNode = rootNode.getLocalNode();
 			const boundsPicker: BoundsPicker = PickGroup.getPool(this.rootView).getBoundsPicker(rootNode);
