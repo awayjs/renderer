@@ -76,6 +76,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _parentPosition: Vector3D;
 	private _maskConfig: number;
 	private _maskId: number;
+	private _bitmapMaskRenderer: CacheRenderer;
+	private _bitmapMaskEntity: RenderEntity;
 	private _activeMasksDirty: boolean;
 	private _activeMaskOwners: ContainerNode[];
 	protected _paddedBounds: Rectangle = new Rectangle();
@@ -250,7 +252,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	public get blendMode(): string {
 		const containerBlend = <string> this.node.container.blendMode;
 
-		if (this.node.bitmapMaskNode)
+		// a bitmap mask is drawn last into its owner's cached image,
+		// multiplying the owner's pixels by the mask's alpha
+		if (this.isBitmapMask)
 			return BlendMode.ALPHA;
 
 		// native blends
@@ -258,6 +262,13 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			return containerBlend;
 
 		return BlendMode.LAYER;
+	}
+
+	/**
+	 * True when this renderer draws the bitmap mask of its parent renderer's node.
+	 */
+	public get isBitmapMask(): boolean {
+		return Boolean(this.parentRenderer) && this.parentRenderer.node.bitmapMaskNode == this.node;
 	}
 
 	public get useNonNativeBlend(): boolean {
@@ -453,6 +464,14 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		RendererBase._collectionMark++;
 
 		(<ContainerNode> this._asset).acceptTraverser(this);
+
+		// the bitmap mask has to be applied after all other content of the cached image
+		if (this._bitmapMaskRenderer) {
+			this._renderEntity = this._bitmapMaskEntity;
+			this.applyTraversable(this._bitmapMaskRenderer);
+			this._bitmapMaskRenderer = null;
+			this._bitmapMaskEntity = null;
+		}
 
 		//sort the resulting renderables
 		if (this.renderableSorter) {
@@ -708,7 +727,18 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 	public getTraverser(rootNode: ContainerNode): IPartitionTraverser | void {
 
+		// mask nodes are only drawn by their mask renderer, or as the bitmap mask of their owner
+		const isBitmapMask: boolean = rootNode == (<ContainerNode> this._asset).bitmapMaskNode;
+		if (!isBitmapMask && rootNode.getMaskId() != this._maskId)
+			return;
+
 		if (rootNode.renderToImage) {
+			// skip nodes already collected in this pass (e.g. a bitmap mask that is also a child)
+			if (rootNode._collectionMark == RendererBase._collectionMark)
+				return;
+
+			rootNode._collectionMark = RendererBase._collectionMark;
+
 			//new node for the container
 			//const node: ContainerNode = rootNode.getLocalNode();
 			const boundsPicker: BoundsPicker = PickGroup.getPool(this.rootView).getBoundsPicker(rootNode);
@@ -739,8 +769,17 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._renderEntity.maskOwners = undefined;
 			//this._renderEntity.maskOwners = rootNode.getMaskOwners();
 
-			//apply CacheRenderer as renderable
-			this.applyTraversable(traverser);
+			//apply CacheRenderer as renderable (bitmap masks are deferred to the end of the traversal)
+			if (isBitmapMask) {
+				// keep the mask image in step with the bounds of its owner
+				if (!traverser.getPaddedBounds().equals(this.getPaddedBounds()))
+					traverser.onInvalidate();
+
+				this._bitmapMaskRenderer = traverser;
+				this._bitmapMaskEntity = this._renderEntity;
+			} else {
+				this.applyTraversable(traverser);
+			}
 
 			return traverser;
 		}
@@ -1010,6 +1049,11 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 			if (pad.bottom > parentBounds.bottom - parentPosition.y)
 				pad.bottom = parentBounds.bottom - parentPosition.y;
+
+			// a bitmap mask covers the whole image of its owner, so that owner pixels
+			// outside the mask's own bounds are multiplied by zero alpha
+			if (this.isBitmapMask)
+				pad.copyFrom(parentBounds);
 
 			if (pad.width <= 0 || pad.height <= 0) {
 				console.warn('width and height have to be positive integers');
