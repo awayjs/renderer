@@ -1012,10 +1012,20 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				this.stage.filterManager.computeFiltersPadding(pad, container.filters, pad);
 			}
 
-			pad.x = (pad.x - 2) | 0;
-			pad.y = (pad.y - 2) | 0;
-			pad.width = (pad.width + 4) | 0;
-			pad.height = (pad.height + 4) | 0;
+			if (this.blendMode == BlendMode.ALPHA && !this.isBitmapMask) {
+				// no transparent padding for ALPHA, as it would clear the pixels underneath it
+				const right: number = Math.ceil(pad.x + pad.width);
+				const bottom: number = Math.ceil(pad.y + pad.height);
+				pad.x = Math.floor(pad.x);
+				pad.y = Math.floor(pad.y);
+				pad.width = right - pad.x;
+				pad.height = bottom - pad.y;
+			} else {
+				pad.x = (pad.x - 2) | 0;
+				pad.y = (pad.y - 2) | 0;
+				pad.width = (pad.width + 4) | 0;
+				pad.height = (pad.height + 4) | 0;
+			}
 
 			let parentBounds;
 			let parentPosition;
