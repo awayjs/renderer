@@ -961,6 +961,15 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		if (scale !== 1)
 			matrix3D.appendScale(scale, scale, scale);
 
+		if (this.isBitmapMask) {
+			// a bitmap mask covers the whole image of its owner, so that owner pixels
+			// outside the mask's own bounds are multiplied by zero alpha.
+			// Its own bounds are not needed, so skip computing them.
+			matrix3D.invert();
+			pad.copyFrom(this.parentRenderer.getPaddedBounds());
+			return;
+		}
+
 		const bounds = this._boundsPicker.getBoxBounds(node.root, true, true);
 
 		if (!bounds) {
@@ -978,11 +987,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		matrix3D.transformBox(this._bounds, this._bounds);
 		matrix3D.invert();
 
-		if (this.isBitmapMask) {
-			// a bitmap mask covers the whole image of its owner, so that owner pixels
-			// outside the mask's own bounds are multiplied by zero alpha
-			pad.copyFrom(this.parentRenderer.getPaddedBounds());
-		} else if (this.useNonNativeBlend) {
+		if (this.useNonNativeBlend) {
 			//set to bounds of parent
 			const parentBounds = this.parentRenderer.getPaddedBounds();
 
