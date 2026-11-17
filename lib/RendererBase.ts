@@ -63,6 +63,8 @@ import { AbstractionSet } from '@awayjs/core/dist/lib/base/AbstractionSet';
  */
 export class RendererBase extends AbstractionBase implements IPartitionTraverser, IEntityTraverser, IAbstractionPool {
 	private static _store: IAbstraction[] = [];
+	private static _tmpMatrix3D: Matrix3D = new Matrix3D();
+	private static _tmpBox: Box = new Box();
 	public static _collectionMark = 0;
 
 	public readonly abstractions: AbstractionSet;
@@ -74,6 +76,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _boundsPicker: BoundsPicker;
 	private _boundsScale: number = 1;
 	private _parentPosition: Vector3D;
+	private _rootSpacePaddedBounds: Rectangle;
 	private _maskConfig: number;
 	private _maskId: number;
 	private _activeMasksDirty: boolean;
@@ -978,43 +981,72 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			pad.width = (pad.width + 4) | 0;
 			pad.height = (pad.height + 4) | 0;
 
-			let parentBounds;
-			let parentPosition;
+			let parentBounds: Rectangle;
+			this._parentPosition = new Vector3D();
 			if (this._parentNode) {
 				parentBounds = this.parentRenderer.getPaddedBounds();
-				parentPosition = this.parentRenderer.getParentPosition();
-				this._parentPosition = new Vector3D();
-				this._parentPosition.scaleBy(scale);
+
+				// A root parent renderer has its padded bounds in projected view space (the
+				// view's inverse camera transform is applied), while this renderer's bounds are
+				// in scaled root space. Map the parent bounds into root space before clipping,
+				// otherwise any 2d matrix and y-flip on the view (e.g. a SceneImage2D draw
+				// matrix) clips this image against the wrong rectangle.
+				if (!this.parentRenderer._parentNode)
+					parentBounds = this.parentRenderer._getPaddedBoundsInRootSpace(scale);
 			} else {
 				parentBounds = new Rectangle(0, 0, this.view.width * this.stage.pixelRatio, this.view.height * this.stage.pixelRatio);
-				parentPosition = new Vector3D();
-				this._parentPosition = new Vector3D();
-
-				//for SceneImage2D renders, strip out the 2d matrix transform
-				if (this.view.target) {
-					this.view.projection.transform.inverseMatrix3D.transformVector(this._parentPosition, this._parentPosition);
-					this._parentPosition.y = this.view.height - this._parentPosition.y;
-					this._parentPosition.scaleBy(scale);
-
-				}
 			}
 
-			if (pad.left < parentBounds.left - parentPosition.x)
-				pad.left = parentBounds.left - parentPosition.x;
+			if (pad.left < parentBounds.left)
+				pad.left = parentBounds.left;
 
-			if (pad.top < parentBounds.top - parentPosition.y)
-				pad.top = parentBounds.top - parentPosition.y;
+			if (pad.top < parentBounds.top)
+				pad.top = parentBounds.top;
 
-			if (pad.right > parentBounds.right - parentPosition.x)
-				pad.right = parentBounds.right - parentPosition.x;
+			if (pad.right > parentBounds.right)
+				pad.right = parentBounds.right;
 
-			if (pad.bottom > parentBounds.bottom - parentPosition.y)
-				pad.bottom = parentBounds.bottom - parentPosition.y;
+			if (pad.bottom > parentBounds.bottom)
+				pad.bottom = parentBounds.bottom;
 
 			if (pad.width <= 0 || pad.height <= 0) {
 				console.warn('width and height have to be positive integers');
 			}
 		}
+	}
+
+	/**
+	 * Returns the padded bounds of a root renderer mapped from projected view space
+	 * back into root space, scaled by <code>scale</code>.
+	 */
+	public _getPaddedBoundsInRootSpace(scale: number): Rectangle {
+		const pad: Rectangle = this.getPaddedBounds();
+		const matrix3D: Matrix3D = RendererBase._tmpMatrix3D;
+		const box: Box = RendererBase._tmpBox;
+
+		matrix3D.copyFrom(this.rootView.projection.transform.inverseMatrix3D);
+
+		if (this._boundsScale !== 1)
+			matrix3D.appendScale(this._boundsScale, this._boundsScale, this._boundsScale);
+
+		matrix3D.invert();
+
+		if (scale !== 1)
+			matrix3D.appendScale(scale, scale, scale);
+
+		box.x = pad.x;
+		box.y = pad.y;
+		box.z = 0;
+		box.width = pad.width;
+		box.height = pad.height;
+		box.depth = 0;
+
+		matrix3D.transformBox(box, box);
+
+		const out: Rectangle = this._rootSpacePaddedBounds || (this._rootSpacePaddedBounds = new Rectangle());
+		out.setTo(box.x, box.y, box.width, box.height);
+
+		return out;
 	}
 
 	public _initRender(target: Image2D) {
