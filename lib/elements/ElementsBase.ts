@@ -180,8 +180,8 @@ export class ElementsBase extends AssetBase implements IElements {
 
 		for (const name in this._customAttributes) {
 			this._customAttributes[name].dispose();
-			delete this._customAttributes;
 		}
+		delete this._customAttributes;
 	}
 
 	/**
@@ -239,10 +239,12 @@ export class ElementsBase extends AssetBase implements IElements {
 			}
 
 			this._customAttributes[name].set(values, offset);
-		} else if (this._customAttributes[name]) {
-			this.clearVertices(this._customAttributes[name]);
-			this._customAttributesNames.splice(this._customAttributesNames.indexOf(name), 1);
-			delete this._customAttributes[name];
+		} else {
+			if (this._customAttributes[name]) {
+				this.clearVertices(this._customAttributes[name]);
+				this._customAttributesNames.splice(this._customAttributesNames.indexOf(name), 1);
+				delete this._customAttributes[name];
+			}
 			return;
 		}
 
