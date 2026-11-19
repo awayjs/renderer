@@ -228,6 +228,17 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 	public parentRenderer: RendererBase;
 
+	/**
+	 * True when this renderer draws the bitmap mask of its parent renderer's node.
+	 * Set by the parent renderer when it hands out this renderer as a traverser.
+	 */
+	public isBitmapMask: boolean = false;
+
+	/**
+	 * Set by ContainerNode while it visits its bitmap mask node after its other content.
+	 */
+	public isBitmapMaskVisit: boolean = false;
+
 	public rootView: View;
 
 	/**
@@ -250,7 +261,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	public get blendMode(): string {
 		const containerBlend = <string> this.node.container.blendMode;
 
-		if (this.node.bitmapMaskNode)
+		// a bitmap mask is drawn last into its owner's cached image,
+		// multiplying the owner's pixels by the mask's alpha
+		if (this.isBitmapMask)
 			return BlendMode.ALPHA;
 
 		// native blends
@@ -309,6 +322,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this.view.removeEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 
 		this.parentRenderer = null;
+		this.isBitmapMask = false;
 
 		this._parentNode = null;
 		this.view = null;
@@ -708,6 +722,12 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 	public getTraverser(rootNode: ContainerNode): IPartitionTraverser | void {
 
+		// mask nodes are only drawn by their mask renderer, or as the bitmap mask of their owner
+		// when the owner visits it after all its other content (see ContainerNode.acceptTraverser)
+		const isBitmapMask: boolean = this.isBitmapMaskVisit;
+		if (!isBitmapMask && rootNode.getMaskId() != this._maskId)
+			return;
+
 		if (rootNode.renderToImage) {
 			//new node for the container
 			//const node: ContainerNode = rootNode.getLocalNode();
@@ -721,6 +741,13 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			traverser.renderableSorter = null;
 			traverser.parentRenderer = this;
 			traverser.rootView = this.rootView;
+
+			// the bounds and blend of a renderer depend on whether it draws a bitmap mask
+			if (traverser.isBitmapMask != isBitmapMask) {
+				traverser.isBitmapMask = isBitmapMask;
+				traverser.onInvalidate();
+			}
+
 			//if (this._invalid) {
 			this._renderEntity = this.abstractions.getAbstraction<RenderEntity>(rootNode);
 
@@ -739,7 +766,11 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._renderEntity.maskOwners = undefined;
 			//this._renderEntity.maskOwners = rootNode.getMaskOwners();
 
-			//apply CacheRenderer as renderable
+			// keep a bitmap mask image in step with the bounds of its owner
+			if (isBitmapMask && !traverser.getPaddedBounds().equals(this.getPaddedBounds()))
+				traverser.onInvalidate();
+
+			//apply CacheRenderer as renderable (a bitmap mask is visited after all other content)
 			this.applyTraversable(traverser);
 
 			return traverser;
@@ -930,6 +961,15 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		if (scale !== 1)
 			matrix3D.appendScale(scale, scale, scale);
 
+		if (this.isBitmapMask) {
+			// a bitmap mask covers the whole image of its owner, so that owner pixels
+			// outside the mask's own bounds are multiplied by zero alpha.
+			// Its own bounds are not needed, so skip computing them.
+			matrix3D.invert();
+			pad.copyFrom(this.parentRenderer.getPaddedBounds());
+			return;
+		}
+
 		const bounds = this._boundsPicker.getBoxBounds(node.root, true, true);
 
 		if (!bounds) {
@@ -973,10 +1013,16 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				this.stage.filterManager.computeFiltersPadding(pad, container.filters, pad);
 			}
 
-			pad.x = (pad.x - 2) | 0;
-			pad.y = (pad.y - 2) | 0;
-			pad.width = (pad.width + 4) | 0;
-			pad.height = (pad.height + 4) | 0;
+			if (this.blendMode == BlendMode.ALPHA) {
+				// no transparent padding for ALPHA, as it would clear the pixels underneath it
+				pad.width = Math.ceil(pad.right) - (pad.x = Math.floor(pad.x));
+				pad.height = Math.ceil(pad.bottom) - (pad.y = Math.floor(pad.y));
+			} else {
+				pad.x = (pad.x - 2) | 0;
+				pad.y = (pad.y - 2) | 0;
+				pad.width = (pad.width + 4) | 0;
+				pad.height = (pad.height + 4) | 0;
+			}
 
 			let parentBounds;
 			let parentPosition;
