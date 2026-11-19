@@ -1015,12 +1015,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 			if (this.blendMode == BlendMode.ALPHA) {
 				// no transparent padding for ALPHA, as it would clear the pixels underneath it
-				const right: number = Math.ceil(pad.x + pad.width);
-				const bottom: number = Math.ceil(pad.y + pad.height);
-				pad.x = Math.floor(pad.x);
-				pad.y = Math.floor(pad.y);
-				pad.width = right - pad.x;
-				pad.height = bottom - pad.y;
+				pad.width = Math.ceil(pad.right) - (pad.x = Math.floor(pad.x));
+				pad.height = Math.ceil(pad.bottom) - (pad.y = Math.floor(pad.y));
 			} else {
 				pad.x = (pad.x - 2) | 0;
 				pad.y = (pad.y - 2) | 0;
