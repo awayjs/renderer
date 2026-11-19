@@ -94,6 +94,11 @@ export class _Render_RenderableBase extends AbstractionBase {
 	public cascaded: boolean;
 
 	/**
+	 * Monotonic display-list order assigned during traverse (for depth encoding / opaque sort).
+	 */
+	public depthOrder: number = 0;
+
+	/**
      *
      * @returns {_Stage_ElementsBase}
      */

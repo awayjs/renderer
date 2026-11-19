@@ -34,7 +34,10 @@ export class _Render_RendererMaterial extends _Render_MaterialPassBase {
 
 		const material = <CacheRenderer> this.material;
 
-		material.render();
+		// Sticky cache: only rebuild RTT when contentDirty (child/material/filter).
+		// Parent scene-transform refreshes the blit quad without re-entering render().
+		if (material.contentDirty || !material.style?.image)
+			material.render();
 
 		this.requiresBlending = true;
 
