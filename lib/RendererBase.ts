@@ -736,7 +736,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			//const node: ContainerNode = rootNode.getLocalNode();
 			const boundsPicker: BoundsPicker = PickGroup.getPool(this.rootView).getBoundsPicker(rootNode);
 
-			if (!boundsPicker._isInFrustumInternal((<ContainerNode> this._asset).root, this._cullPlanes, this._numCullPlanes))
+			// a bitmap mask covers its owner's whole image (see _updateBounds), so it is drawn
+			// even when its own bounds are empty or off screen: an empty mask hides the owner
+			if (!isBitmapMask
+				&& !boundsPicker._isInFrustumInternal((<ContainerNode> this._asset).root, this._cullPlanes, this._numCullPlanes))
 				return;
 
 			const traverser: CacheRenderer = this._traverserGroup.getRenderer<CacheRenderer>(rootNode.getLocalView(this.stage), rootNode);
