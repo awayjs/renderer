@@ -65,6 +65,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private static _store: IAbstraction[] = [];
 	private static _tmpMatrix3D: Matrix3D = new Matrix3D();
 	private static _tmpBox: Box = new Box();
+	private static _tmpFilterPad: Rectangle = new Rectangle();
+	private static _tmpViewportBounds: Rectangle = new Rectangle();
 	public static _collectionMark = 0;
 
 	public readonly abstractions: AbstractionSet;
@@ -75,8 +77,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	protected _parentNode: ContainerNode;
 	private _boundsPicker: BoundsPicker;
 	private _boundsScale: number = 1;
-	private _parentPosition: Vector3D;
-	private _rootSpacePaddedBounds: Rectangle;
 	private _maskConfig: number;
 	private _maskId: number;
 	private _activeMasksDirty: boolean;
@@ -195,13 +195,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._updateBounds();
 
 		return this._boundsScale;
-	}
-
-	public getParentPosition(): Vector3D {
-		if (this._boundsDirty)
-			this._updateBounds();
-
-		return this._parentPosition;
 	}
 
 	/**
@@ -956,13 +949,12 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		const scale = this._boundsScale = Math.min(3, rootView.height * this.stage.pixelRatio * rootView.projection.scale / 1000);
 
-		if (this._parentNode) {
-			matrix3D.identity();
-			//matrix3D.copyFrom(this.node.container.transform.matrix3D);
-			//matrix3D.prepend(this.parentRenderer.node.getMatrix3D());
-		} else {
-			matrix3D.copyFrom(rootView.projection.transform.inverseMatrix3D);
-		}
+		// Every renderer stores _bounds / _paddedBounds in scaled root space,
+		// including the root. Children used to apply only identity * scale here,
+		// while the root also multiplied in the view's inverse camera transform,
+		// so getPaddedBounds() meant something different for a root parent and
+		// each child had to map those bounds back. Compute both the same way.
+		matrix3D.identity();
 
 		if (scale !== 1)
 			matrix3D.appendScale(scale, scale, scale);
@@ -991,6 +983,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._bounds.copyFrom(bounds);
 
 		matrix3D.transformBox(this._bounds, this._bounds);
+
+		// Keep the forward (scaled root-space) transform for descendant filter pads.
+		// matrix3D is inverted next for the cache projection used in _initRender.
+		const boundsMatrix = matrix3D.clone();
 		matrix3D.invert();
 
 		if (this.useNonNativeBlend) {
@@ -1014,6 +1010,14 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				this._bounds.height
 			);
 
+			// getBoxBounds is geometric only, and computeFiltersPadding below only
+			// expands for this container's own filters. A cacheAsBitmap (or blend)
+			// cache must also include filter padding from descendants so a child's
+			// filtered image is not clipped when composited into this cache.
+			// The parent/view clip later in this method is unchanged and still
+			// depends on this pad already containing those extents.
+			this._unionDescendantFilterPadding(node, node.root, boundsMatrix, scale, pad);
+
 			if (container.filters && container.filters.length > 0) {
 				container.filters.forEach((e) => e && (e.imageScale = scale));
 				this.stage.filterManager.computeFiltersPadding(pad, container.filters, pad);
@@ -1031,19 +1035,15 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			}
 
 			let parentBounds: Rectangle;
-			this._parentPosition = new Vector3D();
 			if (this._parentNode) {
+				// Parent pad is already in scaled root space (root and children alike).
 				parentBounds = this.parentRenderer.getPaddedBounds();
-
-				// A root parent renderer has its padded bounds in projected view space (the
-				// view's inverse camera transform is applied), while this renderer's bounds are
-				// in scaled root space. Map the parent bounds into root space before clipping,
-				// otherwise any 2d matrix and y-flip on the view (e.g. a SceneImage2D draw
-				// matrix) clips this image against the wrong rectangle.
-				if (!this.parentRenderer._parentNode)
-					parentBounds = this.parentRenderer._getPaddedBoundsInRootSpace(scale);
 			} else {
-				parentBounds = new Rectangle(0, 0, this.view.width * this.stage.pixelRatio, this.view.height * this.stage.pixelRatio);
+				// No parent cache: clip against the viewport, mapped from view
+				// space into scaled root space so a view with a 2d matrix or
+				// y-flip (e.g. SceneImage2D.draw) still clips against the visible
+				// rectangle rather than a transformed one.
+				parentBounds = this._getViewportBoundsInScaledRootSpace(scale);
 			}
 
 			if (pad.left < parentBounds.left)
@@ -1065,15 +1065,79 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	}
 
 	/**
-	 * Returns the padded bounds of a root renderer mapped from projected view space
-	 * back into root space, scaled by <code>scale</code>.
+	 * Unions filter padding from every descendant that has filters into <code>pad</code>.
+	 * <code>boundsMatrix</code> must be the same scaled root-space transform already
+	 * applied to <code>this._bounds</code>.
 	 */
-	public _getPaddedBoundsInRootSpace(scale: number): Rectangle {
-		const pad: Rectangle = this.getPaddedBounds();
-		const matrix3D: Matrix3D = RendererBase._tmpMatrix3D;
-		const box: Box = RendererBase._tmpBox;
+	private _unionDescendantFilterPadding(
+		node: ContainerNode,
+		root: INode,
+		boundsMatrix: Matrix3D,
+		scale: number,
+		pad: Rectangle
+	): void {
+		const pickGroup = PickGroup.getPool(this.rootView);
+		const childBox = RendererBase._tmpBox;
+		const childPad = RendererBase._tmpFilterPad;
 
-		matrix3D.copyFrom(this.rootView.projection.transform.inverseMatrix3D);
+		for (let i = 0; i < node.numChildNodes; i++) {
+			const child = node.getChildAt(i);
+			if (!child)
+				continue;
+
+			const filters = child.container && child.container.filters;
+			if (filters && filters.length > 0) {
+				const bounds = pickGroup.getBoundsPicker(child).getBoxBounds(root, true, true);
+
+				if (bounds && !isNaN(bounds.width) && !isNaN(bounds.height)) {
+					childBox.copyFrom(bounds);
+					boundsMatrix.transformBox(childBox, childBox);
+					childPad.setTo(childBox.x, childBox.y, childBox.width, childBox.height);
+
+					filters.forEach((e) => e && (e.imageScale = scale));
+					this.stage.filterManager.computeFiltersPadding(childPad, filters, childPad);
+
+					if (childPad.left < pad.left)
+						pad.left = childPad.left;
+					if (childPad.top < pad.top)
+						pad.top = childPad.top;
+					if (childPad.right > pad.right)
+						pad.right = childPad.right;
+					if (childPad.bottom > pad.bottom)
+						pad.bottom = childPad.bottom;
+				}
+			}
+
+			if (child.numChildNodes > 0)
+				this._unionDescendantFilterPadding(child, root, boundsMatrix, scale, pad);
+		}
+	}
+
+	/**
+	 * Maps the view-space viewport <code>(0, 0, view.width * pixelRatio,
+	 * view.height * pixelRatio)</code> into scaled root space.
+	 *
+	 * A root renderer previously stored its pad in projected view space
+	 * (inverseMatrix3D * scale) and clipped it against this viewport
+	 * rectangle directly. Children then mapped that pad back with
+	 * invert(inverseMatrix3D * parentScale) * scale. Applying the same
+	 * mapping to the viewport itself yields the clip rect in scaled root
+	 * space, including when the view has a 2d matrix or y-flip (for
+	 * example a SceneImage2D.draw matrix). When inverseMatrix3D is
+	 * identity this is the viewport unchanged, not a second scale.
+	 */
+	private _getViewportBoundsInScaledRootSpace(scale: number): Rectangle {
+		const box: Box = RendererBase._tmpBox;
+		const matrix3D: Matrix3D = RendererBase._tmpMatrix3D;
+
+		box.x = 0;
+		box.y = 0;
+		box.z = 0;
+		box.width = this.view.width * this.stage.pixelRatio;
+		box.height = this.view.height * this.stage.pixelRatio;
+		box.depth = 0;
+
+		matrix3D.copyFrom(this.view.projection.transform.inverseMatrix3D);
 
 		if (this._boundsScale !== 1)
 			matrix3D.appendScale(this._boundsScale, this._boundsScale, this._boundsScale);
@@ -1083,16 +1147,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		if (scale !== 1)
 			matrix3D.appendScale(scale, scale, scale);
 
-		box.x = pad.x;
-		box.y = pad.y;
-		box.z = 0;
-		box.width = pad.width;
-		box.height = pad.height;
-		box.depth = 0;
-
 		matrix3D.transformBox(box, box);
 
-		const out: Rectangle = this._rootSpacePaddedBounds || (this._rootSpacePaddedBounds = new Rectangle());
+		const out: Rectangle = RendererBase._tmpViewportBounds;
 		out.setTo(box.x, box.y, box.width, box.height);
 
 		return out;
