@@ -52,6 +52,7 @@ import { _Render_Renderer, CacheRenderer } from './CacheRenderer';
 import { _Render_ElementsBase } from './base/_Render_ElementsBase';
 import { Style } from './base/Style';
 import { StyleEvent } from './events/StyleEvent';
+import { RendererEvent } from './events/RendererEvent';
 import { IRenderable } from './base/IRenderable';
 import { AbstractionSet } from '@awayjs/core/dist/lib/base/AbstractionSet';
 
@@ -85,12 +86,15 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _unclippedPaddedBounds: Rectangle = new Rectangle();
 	private _bounds: Box = new Box();
 	protected _style: Style;
-	private _boundsDirty: boolean = true;
-	private _unclippedBoundsDirty: boolean = true;
+	protected _boundsDirty: boolean = true;
+	protected _unclippedBoundsDirty: boolean = true;
 	private _childRenderers: RendererBase[] = [];
 	private _syncMark: number = 0;
-	protected _childStructureMark: number = -1;
+	protected _childListDirty: boolean = true;
+	private _parentClipBounds: Rectangle = new Rectangle();
 	private static _syncStack: ContainerNode[] = [];
+	private _invalidatePadsEvent: RendererEvent;
+	private _onChildInvalidatePads: (event: RendererEvent) => void;
 	private _mappers: Array<IMapper> = new Array<IMapper>();
 	private _elementsPools: Record<string, _Render_ElementsBase> = {};
 
@@ -183,22 +187,19 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	}
 
 	public getPaddedBounds(): Rectangle {
-		if (this._boundsDirty)
-			this._updateBounds();
+		this._updatePaddedBoundsIfNeeded();
 
 		return this._paddedBounds;
 	}
 
 	public getBounds(): Box {
-		if (this._boundsDirty)
-			this._updateBounds();
+		this._updatePaddedBoundsIfNeeded();
 
 		return this._bounds;
 	}
 
 	public getBoundsScale(): number {
-		if (this._boundsDirty)
-			this._updateBounds();
+		this._updatePaddedBoundsIfNeeded();
 
 		return this._boundsScale;
 	}
@@ -207,10 +208,29 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	 *
 	 */
 	public get style(): Style {
-		if (this._boundsDirty)
-			this._updateBounds();
+		this._updatePaddedBoundsIfNeeded();
 
 		return this._style;
+	}
+
+	/**
+	 * Re-clip against the parent cache when its pad has changed, even if this
+	 * node's own unclipped pad is still valid. Hierarchical invalidation
+	 * walks down from the node that changed, so a sibling that grew the
+	 * parent union would otherwise leave this clip stale.
+	 */
+	private _updatePaddedBoundsIfNeeded(): void {
+		if (!this._boundsDirty && this._parentRenderer) {
+			const parentBounds = this._parentRenderer.getPaddedBounds();
+			if (parentBounds.x != this._parentClipBounds.x
+				|| parentBounds.y != this._parentClipBounds.y
+				|| parentBounds.width != this._parentClipBounds.width
+				|| parentBounds.height != this._parentClipBounds.height)
+				this._boundsDirty = true;
+		}
+
+		if (this._boundsDirty)
+			this._updateBounds();
 	}
 
 	public set style(value: Style) {
@@ -234,23 +254,34 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		return this._parentRenderer;
 	}
 
-	public set parentRenderer(value: RendererBase) {
-		if (this._parentRenderer == value)
+	/**
+	 * Attach this cache as a direct child-cache of <code>parent</code>, or
+	 * pass <code>null</code> to detach. Matches ContainerNode.setParent:
+	 * list membership and parent notification live here, not in a setter.
+	 */
+	public setParent(parent: RendererBase): void {
+		if (this._parentRenderer == parent)
 			return;
 
 		if (this._parentRenderer) {
+			this.removeEventListener(RendererEvent.INVALIDATE_PADS, this._parentRenderer._onChildInvalidatePads);
+
 			const list = this._parentRenderer._childRenderers;
 			const index = list.indexOf(this);
-			const last = list.length - 1;
-			list[index] = list[last];
-			list.pop();
+			if (index != -1) {
+				const last = list.length - 1;
+				list[index] = list[last];
+				list.pop();
+			}
 			this._parentRenderer._unclippedBoundsDirty = true;
 			this._parentRenderer._boundsDirty = true;
 		}
 
-		this._parentRenderer = value;
+		this._parentRenderer = parent;
 
 		if (this._parentRenderer) {
+			this.addEventListener(RendererEvent.INVALIDATE_PADS, this._parentRenderer._onChildInvalidatePads);
+
 			const list = this._parentRenderer._childRenderers;
 			if (list.indexOf(this) == -1)
 				list.push(this);
@@ -318,6 +349,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._onInvalidateProperties = (_event: StyleEvent) => this._onInvalidateStyle();
 		this._onSizeInvalidateDelegate = (event: ViewEvent | StageEvent) => this.onSizeInvalidate(event);
 		this._onContextUpdateDelegate = (event: StageEvent) => this.onContextUpdate(event);
+		this._onChildInvalidatePads = (_event: RendererEvent) => this.onInvalidate();
 	}
 
 	/**
@@ -352,15 +384,15 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this.stage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 		this.view.removeEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 
-		this.parentRenderer = null;
+		this.setParent(null);
 		this.isBitmapMask = false;
 
-		const childRenderers = this._childRenderers;
-		for (let i = 0; i < childRenderers.length; i++) {
-			if (childRenderers[i]._parentRenderer == this)
-				childRenderers[i]._parentRenderer = null;
+		const leftover = this._childRenderers.slice();
+		this._childRenderers.length = 0;
+		for (let i = 0; i < leftover.length; i++) {
+			if (leftover[i].parentRenderer == this)
+				leftover[i].setParent(null);
 		}
-		childRenderers.length = 0;
 
 		this._parentNode = null;
 		this.view = null;
@@ -396,15 +428,11 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._boundsDirty = true;
 		this._unclippedBoundsDirty = true;
 
-		const childRenderers = this._childRenderers;
-		for (let i = 0; i < childRenderers.length; i++)
-			childRenderers[i]._invalidateClippedBounds();
-
-		// A child's unclipped pad can change after the parent already unioned
-		// it (for example when the child's local view is sized). Dirty the
-		// parent cache so it re-unions, without walking back down to this node.
-		if (this._parentRenderer)
-			this._parentRenderer.onInvalidate();
+		// A bitmap mask is not parented to its owner in the partition tree,
+		// so ContainerNode.invalidate() cannot reach the owner cache.
+		if (this.isBitmapMask)
+			this.dispatchEvent(this._invalidatePadsEvent
+				|| (this._invalidatePadsEvent = new RendererEvent(RendererEvent.INVALIDATE_PADS)));
 	}
 
 	public update(node: INode): void {
@@ -744,6 +772,12 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._depthTextureDirty = true;
 
 		this.onInvalidate();
+
+		// The local view's size event is not a ContainerNode invalidation,
+		// so it does not bubble to the parent cache.
+		if (this._parentRenderer && !this.isBitmapMask)
+			this.dispatchEvent(this._invalidatePadsEvent
+				|| (this._invalidatePadsEvent = new RendererEvent(RendererEvent.INVALIDATE_PADS)));
 	}
 
 	/**
@@ -792,7 +826,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			const traverser: CacheRenderer = this._traverserGroup.getRenderer<CacheRenderer>(rootNode.getLocalView(this.stage), rootNode);
 
 			traverser.renderableSorter = null;
-			traverser.parentRenderer = this;
+			traverser.setParent(this);
 			traverser.rootView = this.rootView;
 
 			// the bounds and blend of a renderer depend on whether it draws a bitmap mask
@@ -1094,6 +1128,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			// Its own bounds are not needed, so skip computing them.
 			matrix3D.invert();
 			pad.copyFrom(this.parentRenderer.getPaddedBounds());
+			this._parentClipBounds.copyFrom(pad);
 			return;
 		}
 
@@ -1117,6 +1152,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 			this._style.image = <Image2D> this.parentRenderer.style.image;
 			this._style.sampler = new ImageSampler(false, false, false);
+			this._parentClipBounds.copyFrom(parentBounds);
 			return;
 		}
 
@@ -1187,14 +1223,17 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		if (pad.bottom > parentBounds.bottom)
 			pad.bottom = parentBounds.bottom;
+
+		this._parentClipBounds.copyFrom(parentBounds);
 	}
 
 	/**
 	 * Rebuilds the direct child-cache list from descendants that render to an
 	 * image. Nested caches are not entered: their pads already include their
 	 * own descendants. Mask nodes are skipped, matching BoundsPicker, because
-	 * they are not drawn into the owner's cache. Called when a cache renderer
-	 * is created or invalidated, not from _updateBounds.
+	 * they are not drawn into the owner's cache. Called from init, and from
+	 * onInvalidate / render when INVALIDATE_STRUCTURE has marked the list
+	 * dirty, not from _updateBounds.
 	 */
 	protected _syncChildRenderers(): void {
 		const mark = ++RendererBase._childSyncMark;
@@ -1213,7 +1252,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 			if (child.renderToImage) {
 				const renderer: RendererBase = this._traverserGroup.getRenderer(child.getLocalView(this.stage), child);
-				renderer.parentRenderer = this;
+				renderer.setParent(this);
 				renderer._syncMark = mark;
 			} else {
 				for (let i = child.numChildNodes - 1; i >= 0; i--)
@@ -1232,31 +1271,14 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			if (child._syncMark == mark || child.isBitmapMask) {
 				list[write++] = child;
 			} else if (child._parentRenderer == this) {
-				child._parentRenderer = null;
+				child.setParent(null);
 			}
 		}
 		list.length = write;
 
-		// Record the mark after the walk: renderToImage / getMaskId may
-		// increment it the first time they run during this sync.
-		this._childStructureMark = ContainerNode.structureMark;
+		this._childListDirty = false;
 		this._unclippedBoundsDirty = true;
 		this._boundsDirty = true;
-	}
-
-	/**
-	 * A change to this renderer's clipped pad invalidates the clip of each
-	 * child cache, recursively, without recomputing unclipped pads.
-	 */
-	private _invalidateClippedBounds(): void {
-		if (this._boundsDirty)
-			return;
-
-		this._boundsDirty = true;
-
-		const list = this._childRenderers;
-		for (let i = 0; i < list.length; i++)
-			list[i]._invalidateClippedBounds();
 	}
 
 	public _initRender(target: Image2D) {

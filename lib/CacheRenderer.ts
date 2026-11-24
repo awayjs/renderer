@@ -45,6 +45,8 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 	private _onTextureInvalidate: (event: AssetEvent) => void;
 	private _onInvalidateSceneTransform: (event: ContainerNodeEvent) => void;
 	private _onInvalidateColorTransform: (event: ContainerNodeEvent) => void;
+	private _onInvalidateStructure: (event: ContainerNodeEvent) => void;
+	private _isRendering: boolean = false;
 
 	public animateUVs: boolean = false;
 
@@ -95,6 +97,12 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		this._onTextureInvalidate = (event: AssetEvent) => this.invalidate();
 		this._onInvalidateSceneTransform = (event: ContainerNodeEvent) => this.onInvalidateSceneTransform();
 		this._onInvalidateColorTransform = (event: ContainerNodeEvent) => this.onInvalidateColorTransform();
+		this._onInvalidateStructure = (_event: ContainerNodeEvent) => {
+			// Only mark the list dirty. Bounds stay as they are until the
+			// next init / onInvalidate / render sync rebuilds the list —
+			// getter flips (renderToImage, getMaskId) can fire mid-draw.
+			this._childListDirty = true;
+		};
 
 		this._traverserGroup = RenderGroup.getInstance(CacheRenderer);
 		this._maskGroup = RenderGroup.getInstance(DefaultRenderer);
@@ -120,6 +128,8 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 			this._parentNode.addEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
 		}
 
+		(<ContainerNode> node).addEventListener(ContainerNodeEvent.INVALIDATE_STRUCTURE, this._onInvalidateStructure);
+
 		// for check filters/blends changes
 		(<IRenderContainer> node.container)._renderObjects[pool.id] = this;
 
@@ -136,88 +146,90 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		mipmapSelector: number = 0,
 		maskConfig: number = 0
 	): void {
-		// renderToImage / mask getters may bump structureMark after
-		// onInvalidate, so catch a stale child-cache list here, before
-		// this cache draws, and rebuild bounds/image if the list changed.
-		if (this._childStructureMark != ContainerNode.structureMark)
-			this._syncChildRenderers();
-		this.getPaddedBounds();
+		this._isRendering = true;
+		try {
+			if (this._childListDirty)
+				this._syncChildRenderers();
+			this.getPaddedBounds();
 
-		const container = this.node.container;
+			const container = this.node.container;
 
-		const stage = this.stage;
-		const useNonNativeBlend = this.useNonNativeBlend;
-		const targetImage = <Image2D> (useNonNativeBlend ? this.parentRenderer.style.image : this._style.image);
+			const stage = this.stage;
+			const useNonNativeBlend = this.useNonNativeBlend;
+			const targetImage = <Image2D> (useNonNativeBlend ? this.parentRenderer.style.image : this._style.image);
 
-		if (!targetImage) {
-			return super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
+			if (!targetImage) {
+				return super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
+			}
+
+			// WE MUST store older render target config,
+			// because node can have cached child, that can be filtered
+			this.stage.pushRenderTargetConfig();
+
+			const msaa = stage.context.glVersion === 2 && StageSettings.ENABLE_MULTISAMPLE_TEXTURE;
+
+			// we not require use TMP texture when not have MSAA
+			const sourceImage: Image2D = (msaa)
+				? stage.filterManager.popTemp(targetImage.width, targetImage.height, true)
+				: targetImage;
+
+			//for DefaultRenderer when child has a blendmode applied
+			if (useNonNativeBlend) {
+				const proj = this.parentRenderer.view.projection;
+				this.parentRenderer.view.projection = new PerspectiveProjection();
+				this.parentRenderer.view.target = targetImage;
+				//this.parentRenderer.disableClear = true;
+				this.parentRenderer._initRender(targetImage);
+				this.parentRenderer.executeRender();
+				this.parentRenderer.resetHead();
+				//this.parentRenderer.disableClear = false;
+				this.parentRenderer.view.target = null;
+				this.parentRenderer.view.projection = proj;
+				this._disableClear = true;
+			}
+
+			this._initRender(sourceImage);
+			super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
+
+			if (targetImage.width * targetImage.height === 0) {
+				throw new Error('Cannot have image with size 0 * 0');
+			}
+
+			//@ts-ignore
+			const filters = container.filters;
+			const scale = this.getBoundsScale();
+			if (filters && filters.length > 0) {
+				filters.forEach((e) => e && (e.imageScale = scale));
+				stage.filterManager.applyFilters(
+					sourceImage,
+					targetImage, // because we use source as filter target - we not require copy
+					targetImage.rect,
+					targetImage.rect,
+					filters
+				);
+			} else if (msaa) {
+				// this is fast, it should only call blitFramebuffer,
+				// same as in regular MSAA
+				stage.filterManager.copyPixels(
+					sourceImage,
+					targetImage,
+					targetImage.rect,
+					targetImage.rect.topLeft,
+					useNonNativeBlend,
+					useNonNativeBlend ? <string> container.blendMode : ''
+				);
+			}
+
+			if (msaa) {
+				stage.filterManager.pushTemp(sourceImage);
+			}
+
+			// pop render target after any filters,
+			// required for deep filters (when node with filter has filtered child)
+			this.stage.popRenderTarget();
+		} finally {
+			this._isRendering = false;
 		}
-
-		// WE MUST store older render target config,
-		// because node can have cached child, that can be filtered
-		this.stage.pushRenderTargetConfig();
-
-		const msaa = stage.context.glVersion === 2 && StageSettings.ENABLE_MULTISAMPLE_TEXTURE;
-
-		// we not require use TMP texture when not have MSAA
-		const sourceImage: Image2D = (msaa)
-			? stage.filterManager.popTemp(targetImage.width, targetImage.height, true)
-			: targetImage;
-
-		//for DefaultRenderer when child has a blendmode applied
-		if (useNonNativeBlend) {
-			const proj = this.parentRenderer.view.projection;
-			this.parentRenderer.view.projection = new PerspectiveProjection();
-			this.parentRenderer.view.target = targetImage;
-			//this.parentRenderer.disableClear = true;
-			this.parentRenderer._initRender(targetImage);
-			this.parentRenderer.executeRender();
-			this.parentRenderer.resetHead();
-			//this.parentRenderer.disableClear = false;
-			this.parentRenderer.view.target = null;
-			this.parentRenderer.view.projection = proj;
-			this._disableClear = true;
-		}
-
-		this._initRender(sourceImage);
-		super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
-
-		if (targetImage.width * targetImage.height === 0) {
-			throw new Error('Cannot have image with size 0 * 0');
-		}
-
-		//@ts-ignore
-		const filters = container.filters;
-		const scale = this.getBoundsScale();
-		if (filters && filters.length > 0) {
-			filters.forEach((e) => e && (e.imageScale = scale));
-			stage.filterManager.applyFilters(
-				sourceImage,
-				targetImage, // because we use source as filter target - we not require copy
-				targetImage.rect,
-				targetImage.rect,
-				filters
-			);
-		} else if (msaa) {
-			// this is fast, it should only call blitFramebuffer,
-			// same as in regular MSAA
-			stage.filterManager.copyPixels(
-				sourceImage,
-				targetImage,
-				targetImage.rect,
-				targetImage.rect.topLeft,
-				useNonNativeBlend,
-				useNonNativeBlend ? <string> container.blendMode : ''
-			);
-		}
-
-		if (msaa) {
-			stage.filterManager.pushTemp(sourceImage);
-		}
-
-		// pop render target after any filters,
-		// required for deep filters (when node with filter has filtered child)
-		this.stage.popRenderTarget();
 	}
 
 	public _updateBounds(): void {
@@ -299,7 +311,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 	public onInvalidate(): void {
 		super.onInvalidate();
 
-		if (this._childStructureMark != ContainerNode.structureMark)
+		if (this._childListDirty && !this._isRendering)
 			this._syncChildRenderers();
 
 		for (const key in this._renderObjects)
@@ -338,6 +350,8 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 			this._parentNode.removeEventListener(ContainerNodeEvent.INVALIDATE_MATRIX3D, this._onInvalidateSceneTransform);
 			this._parentNode.removeEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
 		}
+
+		(<ContainerNode> this._asset).removeEventListener(ContainerNodeEvent.INVALIDATE_STRUCTURE, this._onInvalidateStructure);
 
 		const container: IRenderContainer = <IRenderContainer> (<ContainerNode> this._asset).container;
 
