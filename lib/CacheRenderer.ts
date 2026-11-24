@@ -124,6 +124,10 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		(<IRenderContainer> node.container)._renderObjects[pool.id] = this;
 
 		this.texture = new ImageTexture2D();
+
+		// Child caches must be registered before the first getPaddedBounds
+		// (which can run as soon as this renderer is applied as a renderable).
+		this._syncChildRenderers();
 	}
 
 	public render(
@@ -277,6 +281,8 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 
 	public onInvalidate(): void {
 		super.onInvalidate();
+
+		this._syncChildRenderers();
 
 		for (const key in this._renderObjects)
 			this._renderObjects[key]._onInvalidateElements();
