@@ -1161,8 +1161,13 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		// Empty content stays 0x0. The 2px safety and parent/viewport clip
 		// would turn a point pad into a negative rectangle when the clip
 		// does not contain the origin.
-		if (pad.width == 0 && pad.height == 0)
+		if (pad.width == 0 && pad.height == 0) {
+			// Record the parent clip so getPaddedBounds does not treat a
+			// stale (0,0,0,0) as a mismatch and rerun every access.
+			if (this._parentRenderer)
+				this._parentClipBounds.copyFrom(this._parentRenderer.getPaddedBounds());
 			return;
+		}
 
 		// 2px safety (or ALPHA snap) belongs on this cache's RTT, not on the
 		// unclipped pad a parent unions, or the parent would pad twice.
@@ -1261,20 +1266,15 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		}
 
 		const list = this._childRenderers;
-		let write = 0;
-		for (let i = 0; i < list.length; i++) {
+		// Backwards: setParent(null) swap-removes from this list.
+		for (let i = list.length - 1; i >= 0; i--) {
 			const child = list[i];
 			// Bitmap-mask renderers are not visited by the walk (mask nodes
 			// are skipped), so they never receive _syncMark. Keep them: the
-			// union already ignores isBitmapMask, and dropping them would
-			// null parentRenderer, crashing the next getPaddedBounds().
-			if (child._syncMark == mark || child.isBitmapMask) {
-				list[write++] = child;
-			} else if (child._parentRenderer == this) {
+			// union already ignores isBitmapMask.
+			if (child._syncMark != mark && !child.isBitmapMask)
 				child.setParent(null);
-			}
 		}
-		list.length = write;
 
 		this._childListDirty = false;
 		this._unclippedBoundsDirty = true;
