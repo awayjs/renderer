@@ -1200,12 +1200,13 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		const mark = ++RendererBase._childSyncMark;
 		const root: ContainerNode = <ContainerNode> this._asset;
 		const stack = RendererBase._syncStack;
-		stack.length = 0;
+		// A nested sync (a new child's init) must not empty this walk.
+		const base = stack.length;
 
 		for (let i = 0; i < root.numChildNodes; i++)
 			stack.push(root.getChildAt(i));
 
-		while (stack.length) {
+		while (stack.length > base) {
 			const child = stack.pop();
 			if (child.getMaskId() != -1)
 				continue;

@@ -325,13 +325,12 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 	public onClear(): void {
 
 		this.removeTexture(this._texture);
-		if (this._texture)
-			this._texture.clear();
+		this._texture.clear();
 		this._texture = null;
-		if (this._style && this._style.image)
+		if (this._style.image) {
 			this._style.image.clear();
-		if (this._style)
 			this._style.image = null;
+		}
 
 		this.view.stage.removeEventListener(StageEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 
