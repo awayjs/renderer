@@ -136,6 +136,13 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		mipmapSelector: number = 0,
 		maskConfig: number = 0
 	): void {
+		// renderToImage / mask getters may bump structureMark after
+		// onInvalidate, so catch a stale child-cache list here, before
+		// this cache draws, and rebuild bounds/image if the list changed.
+		if (this._childStructureMark != ContainerNode.structureMark)
+			this._syncChildRenderers();
+		this.getPaddedBounds();
+
 		const container = this.node.container;
 
 		const stage = this.stage;
@@ -219,6 +226,16 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		const image =  <Image2D> this._style.image;
 		const pad = this._paddedBounds;
 
+		// Empty content has a 0x0 pad. Leave the image unset; render() already
+		// returns early when there is no target, and a 0x0 image would throw.
+		if (pad.width == 0 && pad.height == 0) {
+			if (image) {
+				image.clear();
+				this._style.image = null;
+			}
+			return;
+		}
+
 		if (image) {
 			(<Image2D> this._style.image)._setSize(pad.width, pad.height);
 		} else {
@@ -282,7 +299,8 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 	public onInvalidate(): void {
 		super.onInvalidate();
 
-		this._syncChildRenderers();
+		if (this._childStructureMark != ContainerNode.structureMark)
+			this._syncChildRenderers();
 
 		for (const key in this._renderObjects)
 			this._renderObjects[key]._onInvalidateElements();
@@ -307,10 +325,13 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 	public onClear(): void {
 
 		this.removeTexture(this._texture);
-		this._texture.clear();
+		if (this._texture)
+			this._texture.clear();
 		this._texture = null;
-		this._style.image.clear();
-		this._style.image = null;
+		if (this._style && this._style.image)
+			this._style.image.clear();
+		if (this._style)
+			this._style.image = null;
 
 		this.view.stage.removeEventListener(StageEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 

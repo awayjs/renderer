@@ -89,6 +89,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _unclippedBoundsDirty: boolean = true;
 	private _childRenderers: RendererBase[] = [];
 	private _syncMark: number = 0;
+	protected _childStructureMark: number = -1;
+	private static _syncStack: ContainerNode[] = [];
 	private _mappers: Array<IMapper> = new Array<IMapper>();
 	private _elementsPools: Record<string, _Render_ElementsBase> = {};
 
@@ -1011,24 +1013,31 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		const scale = this._boundsScale = Math.min(3, rootView.height * this.stage.pixelRatio * rootView.projection.scale / 1000);
 
-		const bounds = this._boundsPicker.getBoxBounds(node.root, true, true);
-
-		this._bounds.copyFrom(bounds);
-
 		matrix3D.identity();
 
 		if (scale !== 1)
 			matrix3D.appendScale(scale, scale, scale);
 
-		matrix3D.transformBox(this._bounds, this._bounds);
-		matrix3D.invert();
+		const bounds = this._boundsPicker.getBoxBounds(node.root, true, true);
 
-		pad.setTo(
-			this._bounds.x,
-			this._bounds.y,
-			this._bounds.width,
-			this._bounds.height
-		);
+		if (bounds) {
+			this._bounds.copyFrom(bounds);
+			matrix3D.transformBox(this._bounds, this._bounds);
+			pad.setTo(
+				this._bounds.x,
+				this._bounds.y,
+				this._bounds.width,
+				this._bounds.height
+			);
+		} else {
+			// Empty subtree: no geometry yet (empty cache, empty filtered
+			// sprite, or a node just after reparent). Resolve to an empty
+			// pad that a parent union ignores, then still fold in any
+			// child caches that do have content.
+			pad.setTo(0, 0, 0, 0);
+		}
+
+		matrix3D.invert();
 
 		const children = this._childRenderers;
 		for (let i = 0; i < children.length; i++) {
@@ -1037,6 +1046,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				continue;
 
 			const childPad = child.getUnclippedPaddedBounds();
+
+			// An empty child pad must not pull the union to the origin.
+			if (childPad.width == 0 && childPad.height == 0)
+				continue;
 
 			if (childPad.left < pad.left)
 				pad.left = childPad.left;
@@ -1048,7 +1061,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				pad.bottom = childPad.bottom;
 		}
 
-		if (container.filters && container.filters.length > 0) {
+		if (container.filters && container.filters.length > 0 && (pad.width != 0 || pad.height != 0)) {
 			container.filters.forEach((e) => e && (e.imageScale = scale));
 			this.stage.filterManager.computeFiltersPadding(pad, container.filters, pad);
 		}
@@ -1108,6 +1121,12 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		}
 
 		pad.copyFrom(this._unclippedPaddedBounds);
+
+		// Empty content stays 0x0. The 2px safety and parent/viewport clip
+		// would turn a point pad into a negative rectangle when the clip
+		// does not contain the origin.
+		if (pad.width == 0 && pad.height == 0)
+			return;
 
 		// 2px safety (or ALPHA snap) belongs on this cache's RTT, not on the
 		// unclipped pad a parent unions, or the parent would pad twice.
@@ -1180,7 +1199,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	protected _syncChildRenderers(): void {
 		const mark = ++RendererBase._childSyncMark;
 		const root: ContainerNode = <ContainerNode> this._asset;
-		const stack: ContainerNode[] = [];
+		const stack = RendererBase._syncStack;
+		stack.length = 0;
 
 		for (let i = 0; i < root.numChildNodes; i++)
 			stack.push(root.getChildAt(i));
@@ -1204,7 +1224,11 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		let write = 0;
 		for (let i = 0; i < list.length; i++) {
 			const child = list[i];
-			if (child._syncMark == mark) {
+			// Bitmap-mask renderers are not visited by the walk (mask nodes
+			// are skipped), so they never receive _syncMark. Keep them: the
+			// union already ignores isBitmapMask, and dropping them would
+			// null parentRenderer, crashing the next getPaddedBounds().
+			if (child._syncMark == mark || child.isBitmapMask) {
 				list[write++] = child;
 			} else if (child._parentRenderer == this) {
 				child._parentRenderer = null;
@@ -1212,6 +1236,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		}
 		list.length = write;
 
+		// Record the mark after the walk: renderToImage / getMaskId may
+		// increment it the first time they run during this sync.
+		this._childStructureMark = ContainerNode.structureMark;
 		this._unclippedBoundsDirty = true;
 		this._boundsDirty = true;
 	}
