@@ -52,6 +52,7 @@ import { _Render_Renderer, CacheRenderer } from './CacheRenderer';
 import { _Render_ElementsBase } from './base/_Render_ElementsBase';
 import { Style } from './base/Style';
 import { StyleEvent } from './events/StyleEvent';
+import { RendererEvent } from './events/RendererEvent';
 import { IRenderable } from './base/IRenderable';
 import { AbstractionSet } from '@awayjs/core/dist/lib/base/AbstractionSet';
 
@@ -65,6 +66,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private static _store: IAbstraction[] = [];
 	private static _tmpMatrix3D: Matrix3D = new Matrix3D();
 	private static _tmpBox: Box = new Box();
+	private static _tmpViewportBounds: Rectangle = new Rectangle();
+	private static _childSyncMark: number = 0;
 	public static _collectionMark = 0;
 
 	public readonly abstractions: AbstractionSet;
@@ -75,16 +78,23 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	protected _parentNode: ContainerNode;
 	private _boundsPicker: BoundsPicker;
 	private _boundsScale: number = 1;
-	private _parentPosition: Vector3D;
-	private _rootSpacePaddedBounds: Rectangle;
 	private _maskConfig: number;
 	private _maskId: number;
 	private _activeMasksDirty: boolean;
 	private _activeMaskOwners: ContainerNode[];
 	protected _paddedBounds: Rectangle = new Rectangle();
+	private _unclippedPaddedBounds: Rectangle = new Rectangle();
 	private _bounds: Box = new Box();
 	protected _style: Style;
-	private _boundsDirty: boolean = true;
+	protected _boundsDirty: boolean = true;
+	protected _unclippedBoundsDirty: boolean = true;
+	private _childRenderers: RendererBase[] = [];
+	private _syncMark: number = 0;
+	protected _childListDirty: boolean = true;
+	private _parentClipBounds: Rectangle = new Rectangle();
+	private static _syncStack: ContainerNode[] = [];
+	private _invalidatePadsEvent: RendererEvent;
+	private _onChildInvalidatePads: (event: RendererEvent) => void;
 	private _mappers: Array<IMapper> = new Array<IMapper>();
 	private _elementsPools: Record<string, _Render_ElementsBase> = {};
 
@@ -177,41 +187,50 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	}
 
 	public getPaddedBounds(): Rectangle {
-		if (this._boundsDirty)
-			this._updateBounds();
+		this._updatePaddedBoundsIfNeeded();
 
 		return this._paddedBounds;
 	}
 
 	public getBounds(): Box {
-		if (this._boundsDirty)
-			this._updateBounds();
+		this._updatePaddedBoundsIfNeeded();
 
 		return this._bounds;
 	}
 
 	public getBoundsScale(): number {
-		if (this._boundsDirty)
-			this._updateBounds();
+		this._updatePaddedBoundsIfNeeded();
 
 		return this._boundsScale;
-	}
-
-	public getParentPosition(): Vector3D {
-		if (this._boundsDirty)
-			this._updateBounds();
-
-		return this._parentPosition;
 	}
 
 	/**
 	 *
 	 */
 	public get style(): Style {
-		if (this._boundsDirty)
-			this._updateBounds();
+		this._updatePaddedBoundsIfNeeded();
 
 		return this._style;
+	}
+
+	/**
+	 * Re-clip against the parent cache when its pad has changed, even if this
+	 * node's own unclipped pad is still valid. Hierarchical invalidation
+	 * walks down from the node that changed, so a sibling that grew the
+	 * parent union would otherwise leave this clip stale.
+	 */
+	private _updatePaddedBoundsIfNeeded(): void {
+		if (!this._boundsDirty && this._parentRenderer) {
+			const parentBounds = this._parentRenderer.getPaddedBounds();
+			if (parentBounds.x != this._parentClipBounds.x
+				|| parentBounds.y != this._parentClipBounds.y
+				|| parentBounds.width != this._parentClipBounds.width
+				|| parentBounds.height != this._parentClipBounds.height)
+				this._boundsDirty = true;
+		}
+
+		if (this._boundsDirty)
+			this._updateBounds();
 	}
 
 	public set style(value: Style) {
@@ -229,7 +248,47 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._onInvalidateStyle();
 	}
 
-	public parentRenderer: RendererBase;
+	private _parentRenderer: RendererBase;
+
+	public get parentRenderer(): RendererBase {
+		return this._parentRenderer;
+	}
+
+	/**
+	 * Attach this cache as a direct child-cache of <code>parent</code>, or
+	 * pass <code>null</code> to detach. Matches ContainerNode.setParent:
+	 * list membership and parent notification live here, not in a setter.
+	 */
+	public setParent(parent: RendererBase): void {
+		if (this._parentRenderer == parent)
+			return;
+
+		if (this._parentRenderer) {
+			this.removeEventListener(RendererEvent.INVALIDATE_PADS, this._parentRenderer._onChildInvalidatePads);
+
+			const list = this._parentRenderer._childRenderers;
+			const index = list.indexOf(this);
+			if (index != -1) {
+				const last = list.length - 1;
+				list[index] = list[last];
+				list.pop();
+			}
+			this._parentRenderer._unclippedBoundsDirty = true;
+			this._parentRenderer._boundsDirty = true;
+		}
+
+		this._parentRenderer = parent;
+
+		if (this._parentRenderer) {
+			this.addEventListener(RendererEvent.INVALIDATE_PADS, this._parentRenderer._onChildInvalidatePads);
+
+			const list = this._parentRenderer._childRenderers;
+			if (list.indexOf(this) == -1)
+				list.push(this);
+			this._parentRenderer._unclippedBoundsDirty = true;
+			this._parentRenderer._boundsDirty = true;
+		}
+	}
 
 	/**
 	 * True when this renderer draws the bitmap mask of its parent renderer's node.
@@ -290,6 +349,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._onInvalidateProperties = (_event: StyleEvent) => this._onInvalidateStyle();
 		this._onSizeInvalidateDelegate = (event: ViewEvent | StageEvent) => this.onSizeInvalidate(event);
 		this._onContextUpdateDelegate = (event: StageEvent) => this.onContextUpdate(event);
+		this._onChildInvalidatePads = (_event: RendererEvent) => this.onInvalidate();
 	}
 
 	/**
@@ -324,8 +384,15 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this.stage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 		this.view.removeEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 
-		this.parentRenderer = null;
+		this.setParent(null);
 		this.isBitmapMask = false;
+
+		const leftover = this._childRenderers.slice();
+		this._childRenderers.length = 0;
+		for (let i = 0; i < leftover.length; i++) {
+			if (leftover[i].parentRenderer == this)
+				leftover[i].setParent(null);
+		}
 
 		this._parentNode = null;
 		this.view = null;
@@ -348,6 +415,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		}
 
 		this._boundsDirty = true;
+		this._unclippedBoundsDirty = true;
 
 		this._disableColor = false;
 		this._disableClear = false;
@@ -358,6 +426,13 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		super.onInvalidate();
 
 		this._boundsDirty = true;
+		this._unclippedBoundsDirty = true;
+
+		// A bitmap mask is not parented to its owner in the partition tree,
+		// so ContainerNode.invalidate() cannot reach the owner cache.
+		if (this.isBitmapMask)
+			this.dispatchEvent(this._invalidatePadsEvent
+				|| (this._invalidatePadsEvent = new RendererEvent(RendererEvent.INVALIDATE_PADS)));
 	}
 
 	public update(node: INode): void {
@@ -697,6 +772,12 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._depthTextureDirty = true;
 
 		this.onInvalidate();
+
+		// The local view's size event is not a ContainerNode invalidation,
+		// so it does not bubble to the parent cache.
+		if (this._parentRenderer && !this.isBitmapMask)
+			this.dispatchEvent(this._invalidatePadsEvent
+				|| (this._invalidatePadsEvent = new RendererEvent(RendererEvent.INVALIDATE_PADS)));
 	}
 
 	/**
@@ -745,7 +826,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			const traverser: CacheRenderer = this._traverserGroup.getRenderer<CacheRenderer>(rootNode.getLocalView(this.stage), rootNode);
 
 			traverser.renderableSorter = null;
-			traverser.parentRenderer = this;
+			traverser.setParent(this);
 			traverser.rootView = this.rootView;
 
 			// the bounds and blend of a renderer depend on whether it draws a bitmap mask
@@ -945,24 +1026,98 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._renderObjects[key]._onInvalidateStyle();
 	}
 
-	protected _updateBounds(): void {
-		this._boundsDirty = false;
+	/**
+	 * Geometric bounds plus own and descendant filter padding, in scaled root
+	 * space, with no parent or viewport clip. A parent renderer unions this
+	 * rectangle instead of walking the node's descendants. Must not read
+	 * parentRenderer.getPaddedBounds(): the parent computes its unclipped pad
+	 * first, then the child applies the parent clip in _updateBounds.
+	 */
+	public getUnclippedPaddedBounds(): Rectangle {
+		if (!this._unclippedBoundsDirty)
+			return this._unclippedPaddedBounds;
+
+		this._unclippedBoundsDirty = false;
 
 		const node: ContainerNode = <ContainerNode> this._asset;
 		const matrix3D = this._renderMatrix;
 		const container = node.container;
 		const rootView = this.rootView;
+		const pad = this._unclippedPaddedBounds;
+
+		const scale = this._boundsScale = Math.min(3, rootView.height * this.stage.pixelRatio * rootView.projection.scale / 1000);
+
+		matrix3D.identity();
+
+		if (scale !== 1)
+			matrix3D.appendScale(scale, scale, scale);
+
+		const bounds = this._boundsPicker.getBoxBounds(node.root, true, true);
+
+		if (bounds) {
+			this._bounds.copyFrom(bounds);
+			matrix3D.transformBox(this._bounds, this._bounds);
+			pad.setTo(
+				this._bounds.x,
+				this._bounds.y,
+				this._bounds.width,
+				this._bounds.height
+			);
+		} else {
+			// Empty subtree: no geometry yet (empty cache, empty filtered
+			// sprite, or a node just after reparent). Resolve to an empty
+			// pad that a parent union ignores, then still fold in any
+			// child caches that do have content.
+			pad.setTo(0, 0, 0, 0);
+		}
+
+		matrix3D.invert();
+
+		const children = this._childRenderers;
+		for (let i = 0; i < children.length; i++) {
+			const child = children[i];
+			if (child.isBitmapMask)
+				continue;
+
+			const childPad = child.getUnclippedPaddedBounds();
+
+			// An empty child pad must not pull the union to the origin.
+			if (childPad.width == 0 && childPad.height == 0)
+				continue;
+
+			if (childPad.left < pad.left)
+				pad.left = childPad.left;
+			if (childPad.top < pad.top)
+				pad.top = childPad.top;
+			if (childPad.right > pad.right)
+				pad.right = childPad.right;
+			if (childPad.bottom > pad.bottom)
+				pad.bottom = childPad.bottom;
+		}
+
+		if (container.filters && container.filters.length > 0 && (pad.width != 0 || pad.height != 0)) {
+			container.filters.forEach((e) => e && (e.imageScale = scale));
+			this.stage.filterManager.computeFiltersPadding(pad, container.filters, pad);
+		}
+
+		return pad;
+	}
+
+	protected _updateBounds(): void {
+		this._boundsDirty = false;
+
+		const matrix3D = this._renderMatrix;
+		const rootView = this.rootView;
 		const pad = this._paddedBounds;
 
 		const scale = this._boundsScale = Math.min(3, rootView.height * this.stage.pixelRatio * rootView.projection.scale / 1000);
 
-		if (this._parentNode) {
-			matrix3D.identity();
-			//matrix3D.copyFrom(this.node.container.transform.matrix3D);
-			//matrix3D.prepend(this.parentRenderer.node.getMatrix3D());
-		} else {
-			matrix3D.copyFrom(rootView.projection.transform.inverseMatrix3D);
-		}
+		// Every renderer stores _bounds / _paddedBounds in scaled root space,
+		// including the root. Children used to apply only identity * scale here,
+		// while the root also multiplied in the view's inverse camera transform,
+		// so getPaddedBounds() meant something different for a root parent and
+		// each child had to map those bounds back. Compute both the same way.
+		matrix3D.identity();
 
 		if (scale !== 1)
 			matrix3D.appendScale(scale, scale, scale);
@@ -973,25 +1128,16 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			// Its own bounds are not needed, so skip computing them.
 			matrix3D.invert();
 			pad.copyFrom(this.parentRenderer.getPaddedBounds());
+			this._parentClipBounds.copyFrom(pad);
 			return;
 		}
 
-		const bounds = this._boundsPicker.getBoxBounds(node.root, true, true);
-
-		if (!bounds) {
-			console.error('[CachedRenderer] Bounds invalid, supress calculation', node);
-			return;
+		if (this._unclippedBoundsDirty) {
+			this.getUnclippedPaddedBounds();
+		} else {
+			// _initRender expects the inverted scale matrix left by a bounds update.
+			matrix3D.invert();
 		}
-
-		if (isNaN(bounds.width) || isNaN(bounds.height)) {
-			console.error('[CachedRenderer] Bounds invalid (NaN), supress calculation', node);
-			return;
-		}
-
-		this._bounds.copyFrom(bounds);
-
-		matrix3D.transformBox(this._bounds, this._bounds);
-		matrix3D.invert();
 
 		if (this.useNonNativeBlend) {
 			//set to bounds of parent
@@ -1006,96 +1152,133 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 			this._style.image = <Image2D> this.parentRenderer.style.image;
 			this._style.sampler = new ImageSampler(false, false, false);
-		} else {
-			pad.setTo(
-				this._bounds.x,
-				this._bounds.y,
-				this._bounds.width,
-				this._bounds.height
-			);
-
-			if (container.filters && container.filters.length > 0) {
-				container.filters.forEach((e) => e && (e.imageScale = scale));
-				this.stage.filterManager.computeFiltersPadding(pad, container.filters, pad);
-			}
-
-			if (this.blendMode == BlendMode.ALPHA) {
-				// no transparent padding for ALPHA, as it would clear the pixels underneath it
-				pad.width = Math.ceil(pad.right) - (pad.x = Math.floor(pad.x));
-				pad.height = Math.ceil(pad.bottom) - (pad.y = Math.floor(pad.y));
-			} else {
-				pad.x = (pad.x - 2) | 0;
-				pad.y = (pad.y - 2) | 0;
-				pad.width = (pad.width + 4) | 0;
-				pad.height = (pad.height + 4) | 0;
-			}
-
-			let parentBounds: Rectangle;
-			this._parentPosition = new Vector3D();
-			if (this._parentNode) {
-				parentBounds = this.parentRenderer.getPaddedBounds();
-
-				// A root parent renderer has its padded bounds in projected view space (the
-				// view's inverse camera transform is applied), while this renderer's bounds are
-				// in scaled root space. Map the parent bounds into root space before clipping,
-				// otherwise any 2d matrix and y-flip on the view (e.g. a SceneImage2D draw
-				// matrix) clips this image against the wrong rectangle.
-				if (!this.parentRenderer._parentNode)
-					parentBounds = this.parentRenderer._getPaddedBoundsInRootSpace(scale);
-			} else {
-				parentBounds = new Rectangle(0, 0, this.view.width * this.stage.pixelRatio, this.view.height * this.stage.pixelRatio);
-			}
-
-			if (pad.left < parentBounds.left)
-				pad.left = parentBounds.left;
-
-			if (pad.top < parentBounds.top)
-				pad.top = parentBounds.top;
-
-			if (pad.right > parentBounds.right)
-				pad.right = parentBounds.right;
-
-			if (pad.bottom > parentBounds.bottom)
-				pad.bottom = parentBounds.bottom;
-
-			if (pad.width <= 0 || pad.height <= 0) {
-				console.warn('width and height have to be positive integers');
-			}
+			this._parentClipBounds.copyFrom(parentBounds);
+			return;
 		}
+
+		pad.copyFrom(this._unclippedPaddedBounds);
+
+		// Empty content stays 0x0. The 2px safety and parent/viewport clip
+		// would turn a point pad into a negative rectangle when the clip
+		// does not contain the origin.
+		if (pad.width == 0 && pad.height == 0) {
+			// Record the parent clip so getPaddedBounds does not treat a
+			// stale (0,0,0,0) as a mismatch and rerun every access.
+			if (this._parentRenderer)
+				this._parentClipBounds.copyFrom(this._parentRenderer.getPaddedBounds());
+			return;
+		}
+
+		// 2px safety (or ALPHA snap) belongs on this cache's RTT, not on the
+		// unclipped pad a parent unions, or the parent would pad twice.
+		if (this.blendMode == BlendMode.ALPHA) {
+			// no transparent padding for ALPHA, as it would clear the pixels underneath it
+			pad.width = Math.ceil(pad.right) - (pad.x = Math.floor(pad.x));
+			pad.height = Math.ceil(pad.bottom) - (pad.y = Math.floor(pad.y));
+		} else {
+			pad.x = (pad.x - 2) | 0;
+			pad.y = (pad.y - 2) | 0;
+			pad.width = (pad.width + 4) | 0;
+			pad.height = (pad.height + 4) | 0;
+		}
+
+		let parentBounds: Rectangle;
+		if (this._parentNode) {
+			// Parent pad is already in scaled root space (root and children alike).
+			parentBounds = this.parentRenderer.getPaddedBounds();
+		} else {
+			// No parent cache: clip against the viewport, mapped from view
+			// space into scaled root space so a view with a 2d matrix or
+			// y-flip (e.g. SceneImage2D.draw) still clips against the visible
+			// rectangle rather than a transformed one.
+			const box: Box = RendererBase._tmpBox;
+			const map: Matrix3D = RendererBase._tmpMatrix3D;
+
+			box.x = 0;
+			box.y = 0;
+			box.z = 0;
+			box.width = this.view.width * this.stage.pixelRatio;
+			box.height = this.view.height * this.stage.pixelRatio;
+			box.depth = 0;
+
+			map.copyFrom(this.view.projection.transform.inverseMatrix3D);
+
+			if (this._boundsScale !== 1)
+				map.appendScale(this._boundsScale, this._boundsScale, this._boundsScale);
+
+			map.invert();
+
+			if (scale !== 1)
+				map.appendScale(scale, scale, scale);
+
+			map.transformBox(box, box);
+
+			parentBounds = RendererBase._tmpViewportBounds;
+			parentBounds.setTo(box.x, box.y, box.width, box.height);
+		}
+
+		if (pad.left < parentBounds.left)
+			pad.left = parentBounds.left;
+
+		if (pad.top < parentBounds.top)
+			pad.top = parentBounds.top;
+
+		if (pad.right > parentBounds.right)
+			pad.right = parentBounds.right;
+
+		if (pad.bottom > parentBounds.bottom)
+			pad.bottom = parentBounds.bottom;
+
+		this._parentClipBounds.copyFrom(parentBounds);
 	}
 
 	/**
-	 * Returns the padded bounds of a root renderer mapped from projected view space
-	 * back into root space, scaled by <code>scale</code>.
+	 * Rebuilds the direct child-cache list from descendants that render to an
+	 * image. Nested caches are not entered: their pads already include their
+	 * own descendants. Mask nodes are skipped, matching BoundsPicker, because
+	 * they are not drawn into the owner's cache. Called from init, and from
+	 * onInvalidate / render when INVALIDATE_STRUCTURE has marked the list
+	 * dirty, not from _updateBounds.
 	 */
-	public _getPaddedBoundsInRootSpace(scale: number): Rectangle {
-		const pad: Rectangle = this.getPaddedBounds();
-		const matrix3D: Matrix3D = RendererBase._tmpMatrix3D;
-		const box: Box = RendererBase._tmpBox;
+	protected _syncChildRenderers(): void {
+		const mark = ++RendererBase._childSyncMark;
+		const root: ContainerNode = <ContainerNode> this._asset;
+		const stack = RendererBase._syncStack;
+		// A nested sync (a new child's init) must not empty this walk.
+		const base = stack.length;
 
-		matrix3D.copyFrom(this.rootView.projection.transform.inverseMatrix3D);
+		for (let i = 0; i < root.numChildNodes; i++)
+			stack.push(root.getChildAt(i));
 
-		if (this._boundsScale !== 1)
-			matrix3D.appendScale(this._boundsScale, this._boundsScale, this._boundsScale);
+		while (stack.length > base) {
+			const child = stack.pop();
+			if (child.getMaskId() != -1)
+				continue;
 
-		matrix3D.invert();
+			if (child.renderToImage) {
+				const renderer: RendererBase = this._traverserGroup.getRenderer(child.getLocalView(this.stage), child);
+				renderer.setParent(this);
+				renderer._syncMark = mark;
+			} else {
+				for (let i = child.numChildNodes - 1; i >= 0; i--)
+					stack.push(child.getChildAt(i));
+			}
+		}
 
-		if (scale !== 1)
-			matrix3D.appendScale(scale, scale, scale);
+		const list = this._childRenderers;
+		// Backwards: setParent(null) swap-removes from this list.
+		for (let i = list.length - 1; i >= 0; i--) {
+			const child = list[i];
+			// Bitmap-mask renderers are not visited by the walk (mask nodes
+			// are skipped), so they never receive _syncMark. Keep them: the
+			// union already ignores isBitmapMask.
+			if (child._syncMark != mark && !child.isBitmapMask)
+				child.setParent(null);
+		}
 
-		box.x = pad.x;
-		box.y = pad.y;
-		box.z = 0;
-		box.width = pad.width;
-		box.height = pad.height;
-		box.depth = 0;
-
-		matrix3D.transformBox(box, box);
-
-		const out: Rectangle = this._rootSpacePaddedBounds || (this._rootSpacePaddedBounds = new Rectangle());
-		out.setTo(box.x, box.y, box.width, box.height);
-
-		return out;
+		this._childListDirty = false;
+		this._unclippedBoundsDirty = true;
+		this._boundsDirty = true;
 	}
 
 	public _initRender(target: Image2D) {

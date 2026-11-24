@@ -44,6 +44,7 @@ export { LineScaleMode } from './lib/elements/LineScaleMode';
 export { PassEvent } from './lib/events/PassEvent';
 export { MaterialEvent } from './lib/events/MaterialEvent';
 export { StyleEvent } from './lib/events/StyleEvent';
+export { RendererEvent } from './lib/events/RendererEvent';
 export { ElementsEvent } from './lib/events/ElementsEvent';
 
 export { IMaterialFactory } from './lib/factories/IMaterialFactory';
