@@ -983,10 +983,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._bounds.copyFrom(bounds);
 
 		matrix3D.transformBox(this._bounds, this._bounds);
-
-		// Keep the forward (scaled root-space) transform for descendant filter pads.
-		// matrix3D is inverted next for the cache projection used in _initRender.
-		const boundsMatrix = matrix3D.clone();
 		matrix3D.invert();
 
 		if (this.useNonNativeBlend) {
@@ -1016,7 +1012,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			// filtered image is not clipped when composited into this cache.
 			// The parent/view clip later in this method is unchanged and still
 			// depends on this pad already containing those extents.
-			this._unionDescendantFilterPadding(node, node.root, boundsMatrix, scale, pad);
+			this._unionDescendantFilterPadding(node, node.root, scale, pad);
 
 			if (container.filters && container.filters.length > 0) {
 				container.filters.forEach((e) => e && (e.imageScale = scale));
@@ -1066,13 +1062,13 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 	/**
 	 * Unions filter padding from every descendant that has filters into <code>pad</code>.
-	 * <code>boundsMatrix</code> must be the same scaled root-space transform already
-	 * applied to <code>this._bounds</code>.
+	 * Child boxes are scaled by <code>scale</code> into the same scaled root space
+	 * already applied to <code>this._bounds</code>. Mask nodes are skipped, matching
+	 * BoundsPicker, because they are not drawn into the owner's cache.
 	 */
 	private _unionDescendantFilterPadding(
 		node: ContainerNode,
 		root: INode,
-		boundsMatrix: Matrix3D,
 		scale: number,
 		pad: Rectangle
 	): void {
@@ -1082,7 +1078,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		for (let i = 0; i < node.numChildNodes; i++) {
 			const child = node.getChildAt(i);
-			if (!child)
+			if (!child || child.getMaskId() != -1)
 				continue;
 
 			const filters = child.container && child.container.filters;
@@ -1091,7 +1087,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 				if (bounds && !isNaN(bounds.width) && !isNaN(bounds.height)) {
 					childBox.copyFrom(bounds);
-					boundsMatrix.transformBox(childBox, childBox);
+					childBox.x *= scale;
+					childBox.y *= scale;
+					childBox.width *= scale;
+					childBox.height *= scale;
 					childPad.setTo(childBox.x, childBox.y, childBox.width, childBox.height);
 
 					filters.forEach((e) => e && (e.imageScale = scale));
@@ -1109,7 +1108,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			}
 
 			if (child.numChildNodes > 0)
-				this._unionDescendantFilterPadding(child, root, boundsMatrix, scale, pad);
+				this._unionDescendantFilterPadding(child, root, scale, pad);
 		}
 	}
 
