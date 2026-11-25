@@ -13,7 +13,6 @@ import {
 } from '@awayjs/stage';
 import {
 	ContainerNode,
-	ContainerNodeEvent,
 	HierarchicalProperty,
 	INode,
 	PickGroup
@@ -43,8 +42,6 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 	private _texture: ImageTexture2D;
 	private _textures: ITexture[] = [];
 	private _onTextureInvalidate: (event: AssetEvent) => void;
-	private _onInvalidateSceneTransform: (event: ContainerNodeEvent) => void;
-	private _onInvalidateColorTransform: (event: ContainerNodeEvent) => void;
 
 	public animateUVs: boolean = false;
 
@@ -93,8 +90,6 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		super();
 
 		this._onTextureInvalidate = (event: AssetEvent) => this.invalidate();
-		this._onInvalidateSceneTransform = (event: ContainerNodeEvent) => this.onInvalidateSceneTransform();
-		this._onInvalidateColorTransform = (event: ContainerNodeEvent) => this.onInvalidateColorTransform();
 
 		this._traverserGroup = RenderGroup.getInstance(CacheRenderer);
 		this._maskGroup = RenderGroup.getInstance(DefaultRenderer);
@@ -114,11 +109,6 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		super.init(node, pool);
 
 		pool.view.stage.addEventListener(StageEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
-
-		if (this._parentNode) {
-			this._parentNode.addEventListener(ContainerNodeEvent.INVALIDATE_MATRIX3D, this._onInvalidateSceneTransform);
-			this._parentNode.addEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
-		}
 
 		// for check filters/blends changes
 		(<IRenderContainer> node.container)._renderObjects[pool.id] = this;
@@ -307,11 +297,6 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		this._style.image = null;
 
 		this.view.stage.removeEventListener(StageEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
-
-		if (this._parentNode) {
-			this._parentNode.removeEventListener(ContainerNodeEvent.INVALIDATE_MATRIX3D, this._onInvalidateSceneTransform);
-			this._parentNode.removeEventListener(ContainerNodeEvent.INVALIDATE_COLOR_TRANSFORM, this._onInvalidateColorTransform);
-		}
 
 		const container: IRenderContainer = <IRenderContainer> (<ContainerNode> this._asset).container;
 
