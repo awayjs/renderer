@@ -75,7 +75,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	protected _parentNode: ContainerNode;
 	private _boundsPicker: BoundsPicker;
 	private _boundsScale: number = 1;
-	private _parentPosition: Vector3D;
 	private _rootSpacePaddedBounds: Rectangle;
 	private _maskConfig: number;
 	private _maskId: number;
@@ -195,13 +194,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._updateBounds();
 
 		return this._boundsScale;
-	}
-
-	public getParentPosition(): Vector3D {
-		if (this._boundsDirty)
-			this._updateBounds();
-
-		return this._parentPosition;
 	}
 
 	/**
@@ -958,8 +950,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		if (this._parentNode) {
 			matrix3D.identity();
-			//matrix3D.copyFrom(this.node.container.transform.matrix3D);
-			//matrix3D.prepend(this.parentRenderer.node.getMatrix3D());
 		} else {
 			matrix3D.copyFrom(rootView.projection.transform.inverseMatrix3D);
 		}
@@ -1031,7 +1021,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			}
 
 			let parentBounds: Rectangle;
-			this._parentPosition = new Vector3D();
+
 			if (this._parentNode) {
 				parentBounds = this.parentRenderer.getPaddedBounds();
 
