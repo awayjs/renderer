@@ -62,7 +62,7 @@ import { AbstractionSet } from '@awayjs/core/dist/lib/base/AbstractionSet';
  * @class away.render.RendererBase
  */
 export class RendererBase extends AbstractionBase implements IPartitionTraverser, IEntityTraverser, IAbstractionPool {
-	private static _store: IAbstraction[] = [];
+	private static _store: RenderEntity[] = [];
 	private static _tmpMatrix3D: Matrix3D = new Matrix3D();
 	private static _tmpBox: Box = new Box();
 	public static _collectionMark = 0;
@@ -116,6 +116,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	protected _maskGroup: RenderGroup;
 	private _pickEntity: PickEntity;
 	private _renderEntity: RenderEntity;
+	private _parent: RendererBase | undefined;
+	private _children: RendererBase[] = [];
+	private _numChildren: number = 0;
 
 	/**
 	 *
@@ -219,7 +222,19 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._onInvalidateStyle();
 	}
 
-	public parentRenderer: RendererBase;
+	public get parent(): RendererBase | undefined {
+		return this._parent;
+	};
+
+	public setParent(parent: RendererBase | undefined) {
+		if (this._parent)
+			this._parent.removeChild(this);
+
+		this._parent = parent;
+
+		if (this._parent)
+			this._parent.addChild(this);
+	}
 
 	/**
 	 * True when this renderer draws the bitmap mask of its parent renderer's node.
@@ -312,7 +327,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this.stage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 		this.view.removeEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 
-		this.parentRenderer = null;
+		this.setParent(undefined);
 		this.isBitmapMask = false;
 
 		this.view = null;
@@ -347,6 +362,24 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._boundsDirty = true;
 	}
 
+	public addChild(child: RendererBase): void {
+		this._children.push(child);
+
+		this._numChildren++;
+	}
+
+	public removeChild(child: RendererBase): void {
+		this._numChildren--;
+
+		const index = this._children.indexOf(child);
+
+		if (index === this._numChildren) {
+			this._children.pop()
+		} else {
+			this._children.splice(index, 1)[0];
+		}
+	}
+
 	public update(node: INode): void {
 		//update mappers
 		const len: number = this._mappers.length;
@@ -374,11 +407,11 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			|| (this._elementsPools[elements.assetType] = new (RenderGroup.getRenderElementsClass(elements))(this));
 	}
 
-	public requestAbstraction(asset: IAsset): IAbstraction {
-		return RendererBase._store.length ? RendererBase._store.pop() : new RenderEntity();
+	public requestAbstraction(asset: IAsset): RenderEntity {
+		return RendererBase._store.length ? <RenderEntity> RendererBase._store.pop() : new RenderEntity();
 	}
 
-	public storeAbstraction(abstraction: IAbstraction): void {
+	public storeAbstraction(abstraction: RenderEntity): void {
 		RendererBase._store.push(abstraction);
 	}
 
@@ -710,18 +743,18 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		return enter;
 	}
 
-	public getTraverser(rootNode: ContainerNode): IPartitionTraverser | void {
+	public getTraverser(node: ContainerNode): IPartitionTraverser | void {
 
 		// mask nodes are only drawn by their mask renderer, or as the bitmap mask of their owner
 		// when the owner visits it after all its other content (see ContainerNode.acceptTraverser)
 		const isBitmapMask: boolean = this.isBitmapMaskVisit;
-		if (!isBitmapMask && rootNode.getMaskId() != this._maskId)
+		if (!isBitmapMask && node.getMaskId() != this._maskId)
 			return;
 
-		if (rootNode.renderToImage) {
+		if (node.renderToImage) {
 			//new node for the container
-			//const node: ContainerNode = rootNode.getLocalNode();
-			const boundsPicker: BoundsPicker = PickGroup.getPool(this.rootView).getBoundsPicker(rootNode);
+			//const node: ContainerNode = node.getLocalNode();
+			const boundsPicker: BoundsPicker = PickGroup.getPool(this.rootView).getBoundsPicker(node);
 
 			// a bitmap mask covers its owner's whole image (see _updateBounds), so it is drawn
 			// even when its own bounds are empty or off screen: an empty mask hides the owner
@@ -729,35 +762,31 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				&& !boundsPicker._isInFrustumInternal((<ContainerNode> this._asset).root, this._cullPlanes, this._numCullPlanes))
 				return;
 
-			const traverser: CacheRenderer = this._traverserGroup.getRenderer<CacheRenderer>(rootNode.getLocalView(this.stage), rootNode);
+			const traverser: CacheRenderer = this._traverserGroup.getRenderer<CacheRenderer>(node.getLocalView(this.stage), node);
 
 			traverser.renderableSorter = null;
-			traverser.parentRenderer = this;
+			traverser.setParent(this);
 			traverser.rootView = this.rootView;
 
 			// the bounds and blend of a renderer depend on whether it draws a bitmap mask
-			if (traverser.isBitmapMask != isBitmapMask) {
-				traverser.isBitmapMask = isBitmapMask;
-				traverser.onInvalidate();
-			}
+			traverser.isBitmapMask = isBitmapMask;
 
 			//if (this._invalid) {
-			this._renderEntity = this.abstractions.getAbstraction<RenderEntity>(rootNode);
+			this._renderEntity = this.abstractions.getAbstraction<RenderEntity>(node);
 
 			// project onto camera's z-axis
 			this._renderEntity.zIndex = this._cameraTransform.position
-				.subtract(rootNode.getPosition())
-				.dotProduct(this._cameraForward) + rootNode.container.zOffset;
+				.subtract(node.getPosition())
+				.dotProduct(this._cameraForward) + node.container.zOffset;
 
 			//save sceneTransform
-			this._renderEntity.renderSceneTransform = rootNode.getRenderMatrix3D(this._cameraTransform);
+			this._renderEntity.renderSceneTransform = node.getRenderMatrix3D(this._cameraTransform);
 
 			//save colorTransform (null for CacheRenderer)
 			this._renderEntity.colorTransform = ContainerNode.nullColorTransform;
 
 			//save mask owners (null for CacheRenderer)
 			this._renderEntity.maskOwners = undefined;
-			//this._renderEntity.maskOwners = rootNode.getMaskOwners();
 
 			// keep a bitmap mask image in step with the bounds of its owner
 			if (isBitmapMask && !traverser.getPaddedBounds().equals(this.getPaddedBounds()))
@@ -953,18 +982,29 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			// outside the mask's own bounds are multiplied by zero alpha.
 			// Its own bounds are not needed, so skip computing them.
 			matrix3D.invert();
-			pad.copyFrom(this.parentRenderer.getPaddedBounds());
+			pad.copyFrom(this.parent.getPaddedBounds());
 			return;
 		}
 
-		this._bounds.copyFrom(this._boundsPicker.getBoxBounds(node.root, true, true));
+		if (this._numChildren > 0) {
+			pad.setTo(0, 0, 0, 0);
+
+			for (let i = 0; i < this._numChildren; i++)
+				pad.union(this._children[i].getPaddedBounds(), pad);
+
+			this._bounds.setTo(pad.x, pad.y, 0, pad.width, pad.height, 0);
+		} else {
+			this._bounds.copyFrom(this._boundsPicker.getBoxBounds(node.root, true, true));
+		}
+
+		
 
 		matrix3D.transformBox(this._bounds, this._bounds);
 		matrix3D.invert();
 
 		if (this.useNonNativeBlend) {
 			//set to bounds of parent
-			const parentBounds = this.parentRenderer.getPaddedBounds();
+			const parentBounds = this.parent.getPaddedBounds();
 
 			pad.setTo(
 				parentBounds.x,
@@ -973,7 +1013,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				parentBounds.height
 			);
 
-			this._style.image = <Image2D> this.parentRenderer.style.image;
+			this._style.image = <Image2D> this.parent.style.image;
 			this._style.sampler = new ImageSampler(false, false, false);
 		} else {
 			pad.setTo(

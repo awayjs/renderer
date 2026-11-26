@@ -126,7 +126,7 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 
 		const stage = this.stage;
 		const useNonNativeBlend = this.useNonNativeBlend;
-		const targetImage = <Image2D> (useNonNativeBlend ? this.parentRenderer.style.image : this._style.image);
+		const targetImage = <Image2D> (useNonNativeBlend ? this.parent.style.image : this._style.image);
 
 		if (!targetImage) {
 			return super.render(enableDepthAndStencil, surfaceSelector, mipmapSelector, maskConfig);
@@ -145,16 +145,16 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 
 		//for DefaultRenderer when child has a blendmode applied
 		if (useNonNativeBlend) {
-			const proj = this.parentRenderer.view.projection;
-			this.parentRenderer.view.projection = new PerspectiveProjection();
-			this.parentRenderer.view.target = targetImage;
-			//this.parentRenderer.disableClear = true;
-			this.parentRenderer._initRender(targetImage);
-			this.parentRenderer.executeRender();
-			this.parentRenderer.resetHead();
-			//this.parentRenderer.disableClear = false;
-			this.parentRenderer.view.target = null;
-			this.parentRenderer.view.projection = proj;
+			const proj = this.parent.view.projection;
+			this.parent.view.projection = new PerspectiveProjection();
+			this.parent.view.target = targetImage;
+			//this.parent.disableClear = true;
+			this.parent._initRender(targetImage);
+			this.parent.executeRender();
+			this.parent.resetHead();
+			//this.parent.disableClear = false;
+			this.parent.view.target = null;
+			this.parent.view.projection = proj;
 			this._disableClear = true;
 		}
 
