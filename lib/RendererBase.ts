@@ -79,6 +79,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _activeMasksDirty: boolean;
 	private _activeMaskOwners: ContainerNode[];
 	protected _paddedBounds: Rectangle = new Rectangle();
+	protected _unclippedPaddedBounds: Rectangle = new Rectangle();
 	private _bounds: Box = new Box();
 	protected _style: Style;
 	private _boundsDirty: boolean = true;
@@ -181,6 +182,13 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._updateBounds();
 
 		return this._paddedBounds;
+	}
+
+	public getUnclippedPaddedBounds(): Rectangle {
+		if (this._boundsDirty)
+			this._updateBounds();
+
+		return this._unclippedPaddedBounds;
 	}
 
 	public getBounds(): Box {
@@ -771,6 +779,19 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			// the bounds and blend of a renderer depend on whether it draws a bitmap mask
 			traverser.isBitmapMask = isBitmapMask;
 
+			// Translation can change the viewport-clipped pad in root space even when
+			// the 3x3 is unchanged. Recache when the clipped pad's size changes
+			// (more or less of the cache is in view). A full position compare would
+			// also recache every move of a cache that still overflows the view.
+			if (!isBitmapMask) {
+				const pad = traverser._paddedBounds;
+				const ow = pad.width, oh = pad.height;
+				traverser._boundsDirty = true;
+				traverser.getPaddedBounds();
+				if (pad.width !== ow || pad.height !== oh)
+					traverser.onInvalidate();
+			}
+
 			//if (this._invalid) {
 			this._renderEntity = this.abstractions.getAbstraction<RenderEntity>(node);
 
@@ -983,6 +1004,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			// Its own bounds are not needed, so skip computing them.
 			matrix3D.invert();
 			pad.copyFrom(this.parent.getPaddedBounds());
+			this._unclippedPaddedBounds.copyFrom(pad);
 			return;
 		}
 
@@ -1001,6 +1023,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				parentBounds.width,
 				parentBounds.height
 			);
+			this._unclippedPaddedBounds.copyFrom(pad);
 
 			this._style.image = <Image2D> this.parent.style.image;
 			this._style.sampler = new ImageSampler(false, false, false);
@@ -1031,11 +1054,20 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			// Expand by descendant cache pads (already in scaled root space).
 			// Bitmap masks copy this renderer's pads, so they must not be unioned.
 			for (let i = 0; i < this._numChildren; i++) {
-				if (this._children[i].isBitmapMask)
+				const child = this._children[i];
+				if (child.isBitmapMask)
 					continue;
 
-				pad.union(this._children[i].getPaddedBounds(), pad);
+				const cw = child._paddedBounds.width, ch = child._paddedBounds.height;
+				child._boundsDirty = true;
+				pad.union(child.getUnclippedPaddedBounds(), pad);
+				// A child's clipped pad may have changed even if the child is not
+				// visited this frame (it is composed from inside this cache).
+				if (child._paddedBounds.width !== cw || child._paddedBounds.height !== ch)
+					child.onInvalidate();
 			}
+
+			this._unclippedPaddedBounds.copyFrom(pad);
 
 			const rootBounds: Rectangle = new Rectangle(0, 0, rootView.width * this.stage.pixelRatio, rootView.height * this.stage.pixelRatio);
 
