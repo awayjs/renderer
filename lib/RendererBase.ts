@@ -986,18 +986,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			return;
 		}
 
-		if (this._numChildren > 0) {
-			pad.setTo(0, 0, 0, 0);
-
-			for (let i = 0; i < this._numChildren; i++)
-				pad.union(this._children[i].getPaddedBounds(), pad);
-
-			this._bounds.setTo(pad.x, pad.y, 0, pad.width, pad.height, 0);
-		} else {
-			this._bounds.copyFrom(this._boundsPicker.getBoxBounds(node.root, true, true));
-		}
-
-		
+		this._bounds.copyFrom(this._boundsPicker.getBoxBounds(node.root, true, true));
 
 		matrix3D.transformBox(this._bounds, this._bounds);
 		matrix3D.invert();
@@ -1037,6 +1026,15 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				pad.y = (pad.y - 2) | 0;
 				pad.width = (pad.width + 4) | 0;
 				pad.height = (pad.height + 4) | 0;
+			}
+
+			// Expand by descendant cache pads (already in scaled root space).
+			// Bitmap masks copy this renderer's pads, so they must not be unioned.
+			for (let i = 0; i < this._numChildren; i++) {
+				if (this._children[i].isBitmapMask)
+					continue;
+
+				pad.union(this._children[i].getPaddedBounds(), pad);
 			}
 
 			const rootBounds: Rectangle = new Rectangle(0, 0, rootView.width * this.stage.pixelRatio, rootView.height * this.stage.pixelRatio);
