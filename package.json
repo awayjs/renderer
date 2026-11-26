@@ -25,7 +25,7 @@
     "prebuild": "npm run clean:dist",
     "build": "npm run tsc:build && npm run rollup",
     "copyVersionToIndex": "node ./copyVersionToIndex && git add ./index.ts && git commit -m \"update version number in index.ts\"",
-    "version": "npm run copyVersionToIndex && npm run build",
+    "version": "npm run gitdiff && npm run eslint:commit && npm run copyVersionToIndex && npm run build || exit 0",
     "postversion": "git push && git push --tags && npm publish"
   },
   "keywords": [
