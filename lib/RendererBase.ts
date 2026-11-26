@@ -82,10 +82,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	protected _unclippedPaddedBounds: Rectangle = new Rectangle();
 	protected _boundsTx: number = NaN;
 	protected _boundsTy: number = NaN;
-	protected _contentX: number = 0;
-	protected _contentY: number = 0;
-	protected _contentW: number = 0;
-	protected _contentH: number = 0;
+	protected _contentBounds: Rectangle = new Rectangle();
 	private _bounds: Box = new Box();
 	protected _style: Style;
 	private _boundsDirty: boolean = true;
@@ -797,13 +794,13 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				if (raw[12] !== traverser._boundsTx || raw[13] !== traverser._boundsTy) {
 					const pad = traverser._paddedBounds;
 					const ow = pad.width, oh = pad.height;
-					const cx = traverser._contentX, cy = traverser._contentY;
-					const cw = traverser._contentW, ch = traverser._contentH;
+					const content = traverser._contentBounds;
+					const cx = content.x, cy = content.y, cw = content.width, ch = content.height;
 					traverser._boundsDirty = true;
 					traverser.getPaddedBounds();
 					if (pad.width !== ow || pad.height !== oh
-						|| traverser._contentX !== cx || traverser._contentY !== cy
-						|| traverser._contentW !== cw || traverser._contentH !== ch)
+						|| content.x !== cx || content.y !== cy
+						|| content.width !== cw || content.height !== ch)
 						traverser.onInvalidate();
 				}
 			}
@@ -1079,16 +1076,16 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 				const cpad = child._paddedBounds;
 				const cow = cpad.width, coh = cpad.height;
-				const ccx = child._contentX, ccy = child._contentY;
-				const ccw = child._contentW, cch = child._contentH;
+				const ccontent = child._contentBounds;
+				const ccx = ccontent.x, ccy = ccontent.y, ccw = ccontent.width, cch = ccontent.height;
 				child._boundsDirty = true;
 				pad.union(child.getUnclippedPaddedBounds(), pad);
 				// A child's clipped pad or content window may have changed even
 				// if the child is not visited this frame (it is composed from
 				// inside this cache).
 				if (cpad.width !== cow || cpad.height !== coh
-					|| child._contentX !== ccx || child._contentY !== ccy
-					|| child._contentW !== ccw || child._contentH !== cch)
+					|| ccontent.x !== ccx || ccontent.y !== ccy
+					|| ccontent.width !== ccw || ccontent.height !== cch)
 					child.onInvalidate();
 			}
 
@@ -1132,10 +1129,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			const iy = Math.max(b.y, rootBounds.top);
 			const ir = Math.min(b.x + b.width, rootBounds.right);
 			const ib = Math.min(b.y + b.height, rootBounds.bottom);
-			this._contentX = ix - b.x;
-			this._contentY = iy - b.y;
-			this._contentW = Math.max(0, ir - ix);
-			this._contentH = Math.max(0, ib - iy);
+			this._contentBounds.setTo(ix - b.x, iy - b.y, Math.max(0, ir - ix), Math.max(0, ib - iy));
 
 			if (pad.width <= 0 || pad.height <= 0) {
 				console.warn('width and height have to be positive integers');
