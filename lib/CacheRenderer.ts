@@ -206,10 +206,9 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		const pad = this._paddedBounds;
 
 		if (image) {
-			// Pad geometry may be refreshed on a translation to test the view clip
-			// without recaching. Only resize the image once we are actually recaching.
-			if (this._invalid)
-				(<Image2D> this._style.image)._setSize(pad.width, pad.height);
+			// _setSize is a no-op when the size is unchanged, so a pad refresh
+			// that only tests the view clip does not clear the texture.
+			image._setSize(pad.width, pad.height);
 		} else {
 
 			this._style.image = new Image2D(pad.width, pad.height, false);

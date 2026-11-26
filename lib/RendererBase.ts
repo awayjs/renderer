@@ -80,6 +80,12 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _activeMaskOwners: ContainerNode[];
 	protected _paddedBounds: Rectangle = new Rectangle();
 	protected _unclippedPaddedBounds: Rectangle = new Rectangle();
+	protected _boundsTx: number = NaN;
+	protected _boundsTy: number = NaN;
+	protected _contentX: number = 0;
+	protected _contentY: number = 0;
+	protected _contentW: number = 0;
+	protected _contentH: number = 0;
 	private _bounds: Box = new Box();
 	protected _style: Style;
 	private _boundsDirty: boolean = true;
@@ -779,17 +785,27 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			// the bounds and blend of a renderer depend on whether it draws a bitmap mask
 			traverser.isBitmapMask = isBitmapMask;
 
-			// Translation can change the viewport-clipped pad in root space even when
-			// the 3x3 is unchanged. Recache when the clipped pad's size changes
-			// (more or less of the cache is in view). A full position compare would
-			// also recache every move of a cache that still overflows the view.
+			// Translation can change the viewport-clipped pad in root space even
+			// when the 3x3 is unchanged. Refresh the pad only when the node's
+			// scene translation has changed since the last bounds pass, and
+			// recache when the clipped pad size changes or the visible window of
+			// the unpadded content in content space changes. Comparing the
+			// padded window offset (pad - unclipped) would also recache every
+			// move of a cache whose filter pad still overflows the view.
 			if (!isBitmapMask) {
-				const pad = traverser._paddedBounds;
-				const ow = pad.width, oh = pad.height;
-				traverser._boundsDirty = true;
-				traverser.getPaddedBounds();
-				if (pad.width !== ow || pad.height !== oh)
-					traverser.onInvalidate();
+				const raw = node.getMatrix3D()._rawData;
+				if (raw[12] !== traverser._boundsTx || raw[13] !== traverser._boundsTy) {
+					const pad = traverser._paddedBounds;
+					const ow = pad.width, oh = pad.height;
+					const cx = traverser._contentX, cy = traverser._contentY;
+					const cw = traverser._contentW, ch = traverser._contentH;
+					traverser._boundsDirty = true;
+					traverser.getPaddedBounds();
+					if (pad.width !== ow || pad.height !== oh
+						|| traverser._contentX !== cx || traverser._contentY !== cy
+						|| traverser._contentW !== cw || traverser._contentH !== ch)
+						traverser.onInvalidate();
+				}
 			}
 
 			//if (this._invalid) {
@@ -990,6 +1006,9 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		const container = node.container;
 		const rootView = this.rootView;
 		const pad = this._paddedBounds;
+		const raw = node.getMatrix3D()._rawData;
+		this._boundsTx = raw[12];
+		this._boundsTy = raw[13];
 
 		const scale = this._boundsScale = Math.min(3, rootView.height * this.stage.pixelRatio * rootView.projection.scale / 1000);
 
@@ -1058,12 +1077,18 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				if (child.isBitmapMask)
 					continue;
 
-				const cw = child._paddedBounds.width, ch = child._paddedBounds.height;
+				const cpad = child._paddedBounds;
+				const cow = cpad.width, coh = cpad.height;
+				const ccx = child._contentX, ccy = child._contentY;
+				const ccw = child._contentW, cch = child._contentH;
 				child._boundsDirty = true;
 				pad.union(child.getUnclippedPaddedBounds(), pad);
-				// A child's clipped pad may have changed even if the child is not
-				// visited this frame (it is composed from inside this cache).
-				if (child._paddedBounds.width !== cw || child._paddedBounds.height !== ch)
+				// A child's clipped pad or content window may have changed even
+				// if the child is not visited this frame (it is composed from
+				// inside this cache).
+				if (cpad.width !== cow || cpad.height !== coh
+					|| child._contentX !== ccx || child._contentY !== ccy
+					|| child._contentW !== ccw || child._contentH !== cch)
 					child.onInvalidate();
 			}
 
@@ -1101,6 +1126,16 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 			if (pad.bottom > rootBounds.bottom)
 				pad.bottom = rootBounds.bottom;
+
+			const b = this._bounds;
+			const ix = Math.max(b.x, rootBounds.left);
+			const iy = Math.max(b.y, rootBounds.top);
+			const ir = Math.min(b.x + b.width, rootBounds.right);
+			const ib = Math.min(b.y + b.height, rootBounds.bottom);
+			this._contentX = ix - b.x;
+			this._contentY = iy - b.y;
+			this._contentW = Math.max(0, ir - ix);
+			this._contentH = Math.max(0, ib - iy);
 
 			if (pad.width <= 0 || pad.height <= 0) {
 				console.warn('width and height have to be positive integers');
