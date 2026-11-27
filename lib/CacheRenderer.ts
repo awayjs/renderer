@@ -268,6 +268,27 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 	}
 
 	public onInvalidate(): void {
+		const dirty = (<ContainerNode> this._asset)._hierarchicalPropsDirty;
+		// Skip a content recache when the node was invalidated only for
+		// SCENE_POSITION (translation). Other abstractions still update
+		// through the normal ContainerNode.invalidate() path. Recache if any
+		// other content-relevant hierarchical bit is set, or if invalidate()
+		// was called with no scene-position bit (filters, cache mode, etc.).
+		const recacheBits = HierarchicalProperty.SCENE_TRANSFORM
+			| HierarchicalProperty.MASKS
+			| HierarchicalProperty.MASK_ID
+			| HierarchicalProperty.COLOR_TRANSFORM
+			| HierarchicalProperty.SCALE9;
+		if ((dirty & HierarchicalProperty.SCENE_POSITION)
+			&& !(dirty & recacheBits)) {
+			this._boundsDirty = true;
+			return;
+		}
+
+		this.invalidateCache();
+	}
+
+	public invalidateCache(): void {
 		super.onInvalidate();
 
 		for (const key in this._renderObjects)

@@ -80,12 +80,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _activeMaskOwners: ContainerNode[];
 	protected _paddedBounds: Rectangle = new Rectangle();
 	protected _unclippedPaddedBounds: Rectangle = new Rectangle();
-	protected _boundsTx: number = NaN;
-	protected _boundsTy: number = NaN;
 	protected _contentBounds: Rectangle = new Rectangle();
 	private _bounds: Box = new Box();
 	protected _style: Style;
-	private _boundsDirty: boolean = true;
+	protected _boundsDirty: boolean = true;
 	private _mappers: Array<IMapper> = new Array<IMapper>();
 	private _elementsPools: Record<string, _Render_ElementsBase> = {};
 
@@ -365,6 +363,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._disableColor = false;
 		this._disableClear = false;
 		this._renderBlended = true;
+	}
+
+	public invalidateCache(): void {
+		this.onInvalidate();
 	}
 
 	public onInvalidate(): void {
@@ -782,27 +784,19 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			// the bounds and blend of a renderer depend on whether it draws a bitmap mask
 			traverser.isBitmapMask = isBitmapMask;
 
-			// Translation can change the viewport-clipped pad in root space even
-			// when the 3x3 is unchanged. Refresh the pad only when the node's
-			// scene translation has changed since the last bounds pass, and
-			// recache when the clipped pad size changes or the visible window of
-			// the unpadded content in content space changes. Comparing the
-			// padded window offset (pad - unclipped) would also recache every
-			// move of a cache whose filter pad still overflows the view.
-			if (!isBitmapMask) {
-				const raw = node.getMatrix3D()._rawData;
-				if (raw[12] !== traverser._boundsTx || raw[13] !== traverser._boundsTy) {
-					const pad = traverser._paddedBounds;
-					const ow = pad.width, oh = pad.height;
-					const content = traverser._contentBounds;
-					const cx = content.x, cy = content.y, cw = content.width, ch = content.height;
-					traverser._boundsDirty = true;
-					traverser.getPaddedBounds();
-					if (pad.width !== ow || pad.height !== oh
-						|| content.x !== cx || content.y !== cy
-						|| content.width !== cw || content.height !== ch)
-						traverser.onInvalidate();
-				}
+			// Position-only invalidation marks pads dirty. Refresh here (not
+			// in IHP) and recache only if the clipped pad size or unpadded
+			// content window changed.
+			if (!isBitmapMask && traverser._boundsDirty) {
+				const pad = traverser._paddedBounds;
+				const ow = pad.width, oh = pad.height;
+				const content = traverser._contentBounds;
+				const cx = content.x, cy = content.y, cw = content.width, ch = content.height;
+				traverser.getPaddedBounds();
+				if (pad.width !== ow || pad.height !== oh
+					|| content.x !== cx || content.y !== cy
+					|| content.width !== cw || content.height !== ch)
+					traverser.invalidateCache();
 			}
 
 			//if (this._invalid) {
@@ -1003,9 +997,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		const container = node.container;
 		const rootView = this.rootView;
 		const pad = this._paddedBounds;
-		const raw = node.getMatrix3D()._rawData;
-		this._boundsTx = raw[12];
-		this._boundsTy = raw[13];
 
 		const scale = this._boundsScale = Math.min(3, rootView.height * this.stage.pixelRatio * rootView.projection.scale / 1000);
 
