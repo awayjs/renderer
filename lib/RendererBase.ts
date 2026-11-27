@@ -79,6 +79,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _activeMasksDirty: boolean;
 	private _activeMaskOwners: ContainerNode[];
 	protected _paddedBounds: Rectangle = new Rectangle();
+	protected _contentBounds: Rectangle = new Rectangle();
 	private _bounds: Box = new Box();
 	protected _style: Style;
 	protected _boundsDirty: boolean = true;
@@ -227,13 +228,25 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	};
 
 	public setParent(parent: RendererBase | undefined) {
-		if (this._parent)
+		if (this._parent === parent)
+			return;
+
+		if (this._parent) {
 			this._parent.removeChild(this);
+			this._parent._boundsDirty = true;
+		}
 
 		this._parent = parent;
 
-		if (this._parent)
+		if (this._parent) {
 			this._parent.addChild(this);
+			this._parent._boundsDirty = true;
+			// Pad size can stay the same when a descendant cache is first
+			// attached (the union was already as large as the child's pad).
+			// Recache so the parent image includes the child, not just
+			// refresh bounds.
+			this._parent.invalidateCache();
+		}
 	}
 
 	/**
@@ -776,13 +789,19 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			traverser.isBitmapMask = isBitmapMask;
 
 			// Position-only invalidation marks pads dirty. Refresh here (not
-			// in IHP) and recache only if the (possibly view-clipped) pad size
-			// changed.
+			// in IHP) and recache if the (possibly view-clipped) pad size or
+			// the clipped content window changed. Size alone misses a pad
+			// clipped on both sides of the motion axis, whose width stays at
+			// the view width while the visible content shifts.
 			if (!isBitmapMask && traverser._boundsDirty) {
 				const pad = traverser._paddedBounds;
 				const ow = pad.width, oh = pad.height;
+				const content = traverser._contentBounds;
+				const cx = content.x, cy = content.y, cw = content.width, ch = content.height;
 				traverser.getPaddedBounds();
-				if (pad.width !== ow || pad.height !== oh)
+				if (pad.width !== ow || pad.height !== oh
+					|| content.x !== cx || content.y !== cy
+					|| content.width !== cw || content.height !== ch)
 					traverser.invalidateCache();
 			}
 
@@ -1053,12 +1072,16 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				const cpad = child._paddedBounds;
 				const wasDirty = child._boundsDirty;
 				const cow = cpad.width, coh = cpad.height;
+				const ccontent = child._contentBounds;
+				const ccx = ccontent.x, ccy = ccontent.y, ccw = ccontent.width, cch = ccontent.height;
 				pad.union(child.getPaddedBounds(), pad);
 				// A nested cache may not be visited this frame (it is composed
 				// from inside this cache). Recache it if a pad refresh changed
-				// its size; do not go through onInvalidate(), which can mis-
-				// classify after getMatrix3D() has already cleared dirty bits.
-				if (wasDirty && (cpad.width !== cow || cpad.height !== coh))
+				// its clipped size or content window. Use invalidateCache()
+				// rather than onInvalidate().
+				if (wasDirty && (cpad.width !== cow || cpad.height !== coh
+					|| ccontent.x !== ccx || ccontent.y !== ccy
+					|| ccontent.width !== ccw || ccontent.height !== cch))
 					child.invalidateCache();
 			}
 
@@ -1086,7 +1109,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			// Only clip an axis when the unclipped pad exceeds the view on
 			// that axis. Smaller caches keep their full pad even when partly
 			// off-screen, so a translation does not resize the texture.
-			if (pad.width > rootBounds.width) {
+			const clipX = pad.width > rootBounds.width;
+			const clipY = pad.height > rootBounds.height;
+
+			if (clipX) {
 				if (pad.left < rootBounds.left)
 					pad.left = rootBounds.left;
 
@@ -1094,12 +1120,21 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 					pad.right = rootBounds.right;
 			}
 
-			if (pad.height > rootBounds.height) {
+			if (clipY) {
 				if (pad.top < rootBounds.top)
 					pad.top = rootBounds.top;
 
 				if (pad.bottom > rootBounds.bottom)
 					pad.bottom = rootBounds.bottom;
+			}
+
+			if (clipX || clipY) {
+				const b = this._bounds;
+				const ix = Math.max(b.x, rootBounds.left);
+				const iy = Math.max(b.y, rootBounds.top);
+				const ir = Math.min(b.x + b.width, rootBounds.right);
+				const ib = Math.min(b.y + b.height, rootBounds.bottom);
+				this._contentBounds.setTo(ix - b.x, iy - b.y, Math.max(0, ir - ix), Math.max(0, ib - iy));
 			}
 
 			if (pad.width <= 0 || pad.height <= 0) {

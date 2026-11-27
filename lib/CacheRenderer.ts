@@ -268,24 +268,21 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 	}
 
 	public onInvalidate(): void {
-		const dirty = (<ContainerNode> this._asset)._hierarchicalPropsDirty;
-		// Skip a content recache when the node was invalidated only for
-		// SCENE_POSITION (translation). Other abstractions still update
-		// through the normal ContainerNode.invalidate() path. Recache if any
-		// other content-relevant hierarchical bit is set, or if invalidate()
-		// was called with no scene-position bit (filters, cache mode, etc.).
-		const recacheBits = HierarchicalProperty.SCENE_TRANSFORM
-			| HierarchicalProperty.MASKS
-			| HierarchicalProperty.MASK_ID
-			| HierarchicalProperty.COLOR_TRANSFORM
-			| HierarchicalProperty.SCALE9;
-		if ((dirty & HierarchicalProperty.SCENE_POSITION)
-			&& !(dirty & recacheBits)) {
+		const node: ContainerNode = <ContainerNode> this._asset;
+		// A position-only notify uses AssetBase.invalidate() without setting
+		// the node's _invalid. Skip a content recache in that case. A later
+		// same-tick this.invalidate() still recaches. A bitmap mask's image
+		// depends on where it sits in the owner's pad, so it always recaches.
+		if (!this.isBitmapMask && !node.invalid) {
 			this._boundsDirty = true;
-			return;
+		} else {
+			this.invalidateCache();
 		}
-
-		this.invalidateCache();
+		// A mask may not be a child of its owner, so the node's invalidate()
+		// bubble does not reach the owner. After the owner has visited this
+		// renderer as its bitmap mask, this.parent is the owner renderer.
+		if (this.parent && (this.isBitmapMask || node.container.maskId != -1))
+			this.parent.invalidateCache();
 	}
 
 	public invalidateCache(): void {
