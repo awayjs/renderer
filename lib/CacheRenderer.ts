@@ -271,8 +271,10 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		const node: ContainerNode = <ContainerNode> this._asset;
 		// A position-only notify uses AssetBase.invalidate() without setting
 		// the node's _invalid. Skip a content recache in that case. A later
-		// same-tick this.invalidate() still recaches. A bitmap mask's image
-		// depends on where it sits in the owner's pad, so it always recaches.
+		// same-tick this.invalidate() still recaches. A cached owner with
+		// script or timeline masks sets _invalid from its own transform
+		// listener (the mask is baked in). A bitmap mask's image depends
+		// on where it sits in the owner's pad, so it always recaches.
 		if (!this.isBitmapMask && !node.invalid) {
 			this._boundsDirty = true;
 		} else {

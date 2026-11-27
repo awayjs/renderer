@@ -38,7 +38,6 @@ import {
 	BoundsPicker,
 	PickGroup,
 	PickEntity,
-	HierarchicalProperty,
 } from '@awayjs/view';
 
 import { _Render_MaterialBase } from './base/_Render_MaterialBase';
@@ -822,22 +821,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 			//save mask owners (null for CacheRenderer)
 			this._renderEntity.maskOwners = undefined;
-
-			// A stencil / script mask in another branch has no CacheRenderer,
-			// so it cannot notify this owner. Recache if a mask of this node
-			// has not recomputed since it moved.
-			const masks = node.getMasks(true);
-			// getMasks appends the scrollRect node last; that is not a
-			// script/timeline mask of this owner.
-			const maskCount = masks ? masks.length - (node.scrollRect ? 1 : 0) : 0;
-			for (let i = 0; i < maskCount; i++) {
-				const mask = masks[i];
-				if (mask && (mask._hierarchicalPropsDirty
-					& (HierarchicalProperty.SCENE_POSITION | HierarchicalProperty.SCENE_TRANSFORM))) {
-					traverser.invalidateCache();
-					break;
-				}
-			}
 
 			// keep a bitmap mask image in step with the bounds of its owner
 			if (isBitmapMask && !traverser.getPaddedBounds().equals(this.getPaddedBounds()))
