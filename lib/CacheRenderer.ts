@@ -206,8 +206,8 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		const pad = this._paddedBounds;
 
 		if (image) {
-			// _setSize is a no-op when the size is unchanged, so a pad refresh
-			// that only tests the view clip does not clear the texture.
+			// no-op when the size is unchanged, so a pad-only refresh does not
+			// dispose the texture
 			image._setSize(pad.width, pad.height);
 		} else {
 

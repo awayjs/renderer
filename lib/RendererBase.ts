@@ -79,8 +79,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _activeMasksDirty: boolean;
 	private _activeMaskOwners: ContainerNode[];
 	protected _paddedBounds: Rectangle = new Rectangle();
-	protected _unclippedPaddedBounds: Rectangle = new Rectangle();
-	protected _contentBounds: Rectangle = new Rectangle();
 	private _bounds: Box = new Box();
 	protected _style: Style;
 	protected _boundsDirty: boolean = true;
@@ -183,13 +181,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			this._updateBounds();
 
 		return this._paddedBounds;
-	}
-
-	public getUnclippedPaddedBounds(): Rectangle {
-		if (this._boundsDirty)
-			this._updateBounds();
-
-		return this._unclippedPaddedBounds;
 	}
 
 	public getBounds(): Box {
@@ -785,17 +776,13 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			traverser.isBitmapMask = isBitmapMask;
 
 			// Position-only invalidation marks pads dirty. Refresh here (not
-			// in IHP) and recache only if the clipped pad size or unpadded
-			// content window changed.
+			// in IHP) and recache only if the (possibly view-clipped) pad size
+			// changed.
 			if (!isBitmapMask && traverser._boundsDirty) {
 				const pad = traverser._paddedBounds;
 				const ow = pad.width, oh = pad.height;
-				const content = traverser._contentBounds;
-				const cx = content.x, cy = content.y, cw = content.width, ch = content.height;
 				traverser.getPaddedBounds();
-				if (pad.width !== ow || pad.height !== oh
-					|| content.x !== cx || content.y !== cy
-					|| content.width !== cw || content.height !== ch)
+				if (pad.width !== ow || pad.height !== oh)
 					traverser.invalidateCache();
 			}
 
@@ -1011,7 +998,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			// Its own bounds are not needed, so skip computing them.
 			matrix3D.invert();
 			pad.copyFrom(this.parent.getPaddedBounds());
-			this._unclippedPaddedBounds.copyFrom(pad);
 			return;
 		}
 
@@ -1030,7 +1016,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				parentBounds.width,
 				parentBounds.height
 			);
-			this._unclippedPaddedBounds.copyFrom(pad);
 
 			this._style.image = <Image2D> this.parent.style.image;
 			this._style.sampler = new ImageSampler(false, false, false);
@@ -1066,21 +1051,16 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 					continue;
 
 				const cpad = child._paddedBounds;
+				const wasDirty = child._boundsDirty;
 				const cow = cpad.width, coh = cpad.height;
-				const ccontent = child._contentBounds;
-				const ccx = ccontent.x, ccy = ccontent.y, ccw = ccontent.width, cch = ccontent.height;
-				child._boundsDirty = true;
-				pad.union(child.getUnclippedPaddedBounds(), pad);
-				// A child's clipped pad or content window may have changed even
-				// if the child is not visited this frame (it is composed from
-				// inside this cache).
-				if (cpad.width !== cow || cpad.height !== coh
-					|| ccontent.x !== ccx || ccontent.y !== ccy
-					|| ccontent.width !== ccw || ccontent.height !== cch)
-					child.onInvalidate();
+				pad.union(child.getPaddedBounds(), pad);
+				// A nested cache may not be visited this frame (it is composed
+				// from inside this cache). Recache it if a pad refresh changed
+				// its size; do not go through onInvalidate(), which can mis-
+				// classify after getMatrix3D() has already cleared dirty bits.
+				if (wasDirty && (cpad.width !== cow || cpad.height !== coh))
+					child.invalidateCache();
 			}
-
-			this._unclippedPaddedBounds.copyFrom(pad);
 
 			const rootBounds: Rectangle = new Rectangle(0, 0, rootView.width * this.stage.pixelRatio, rootView.height * this.stage.pixelRatio);
 
@@ -1103,24 +1083,24 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				rootBounds.setTo(box.x, box.y, box.width, box.height);
 			}
 
-			if (pad.left < rootBounds.left)
-				pad.left = rootBounds.left;
+			// Only clip an axis when the unclipped pad exceeds the view on
+			// that axis. Smaller caches keep their full pad even when partly
+			// off-screen, so a translation does not resize the texture.
+			if (pad.width > rootBounds.width) {
+				if (pad.left < rootBounds.left)
+					pad.left = rootBounds.left;
 
-			if (pad.top < rootBounds.top)
-				pad.top = rootBounds.top;
+				if (pad.right > rootBounds.right)
+					pad.right = rootBounds.right;
+			}
 
-			if (pad.right > rootBounds.right)
-				pad.right = rootBounds.right;
+			if (pad.height > rootBounds.height) {
+				if (pad.top < rootBounds.top)
+					pad.top = rootBounds.top;
 
-			if (pad.bottom > rootBounds.bottom)
-				pad.bottom = rootBounds.bottom;
-
-			const b = this._bounds;
-			const ix = Math.max(b.x, rootBounds.left);
-			const iy = Math.max(b.y, rootBounds.top);
-			const ir = Math.min(b.x + b.width, rootBounds.right);
-			const ib = Math.min(b.y + b.height, rootBounds.bottom);
-			this._contentBounds.setTo(ix - b.x, iy - b.y, Math.max(0, ir - ix), Math.max(0, ib - iy));
+				if (pad.bottom > rootBounds.bottom)
+					pad.bottom = rootBounds.bottom;
+			}
 
 			if (pad.width <= 0 || pad.height <= 0) {
 				console.warn('width and height have to be positive integers');
