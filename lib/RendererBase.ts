@@ -38,6 +38,7 @@ import {
 	BoundsPicker,
 	PickGroup,
 	PickEntity,
+	HierarchicalProperty,
 } from '@awayjs/view';
 
 import { _Render_MaterialBase } from './base/_Render_MaterialBase';
@@ -822,6 +823,22 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			//save mask owners (null for CacheRenderer)
 			this._renderEntity.maskOwners = undefined;
 
+			// A stencil / script mask in another branch has no CacheRenderer,
+			// so it cannot notify this owner. Recache if a mask of this node
+			// has not recomputed since it moved.
+			const masks = node.getMasks(true);
+			// getMasks appends the scrollRect node last; that is not a
+			// script/timeline mask of this owner.
+			const maskCount = masks ? masks.length - (node.scrollRect ? 1 : 0) : 0;
+			for (let i = 0; i < maskCount; i++) {
+				const mask = masks[i];
+				if (mask && (mask._hierarchicalPropsDirty
+					& (HierarchicalProperty.SCENE_POSITION | HierarchicalProperty.SCENE_TRANSFORM))) {
+					traverser.invalidateCache();
+					break;
+				}
+			}
+
 			// keep a bitmap mask image in step with the bounds of its owner
 			if (isBitmapMask && !traverser.getPaddedBounds().equals(this.getPaddedBounds()))
 				traverser.onInvalidate();
@@ -1111,6 +1128,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			// off-screen, so a translation does not resize the texture.
 			const clipX = pad.width > rootBounds.width;
 			const clipY = pad.height > rootBounds.height;
+			const unclippedX = pad.x;
+			const unclippedY = pad.y;
 
 			if (clipX) {
 				if (pad.left < rootBounds.left)
@@ -1129,12 +1148,16 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			}
 
 			if (clipX || clipY) {
-				const b = this._bounds;
-				const ix = Math.max(b.x, rootBounds.left);
-				const iy = Math.max(b.y, rootBounds.top);
-				const ir = Math.min(b.x + b.width, rootBounds.right);
-				const ib = Math.min(b.y + b.height, rootBounds.bottom);
-				this._contentBounds.setTo(ix - b.x, iy - b.y, Math.max(0, ir - ix), Math.max(0, ib - iy));
+				// Intersection of the unclipped pad with the view, relative
+				// to the unclipped pad origin, so a move that keeps the
+				// clipped size at the view size still changes the window
+				// (including a glow halo that extends past the view while
+				// the unpadded content stays inside it).
+				this._contentBounds.setTo(
+					pad.x - unclippedX,
+					pad.y - unclippedY,
+					pad.width,
+					pad.height);
 			}
 
 			if (pad.width <= 0 || pad.height <= 0) {
