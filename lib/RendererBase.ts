@@ -79,7 +79,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _activeMasksDirty: boolean;
 	private _activeMaskOwners: ContainerNode[];
 	protected _paddedBounds: Rectangle = new Rectangle();
-	protected _contentBounds: Rectangle = new Rectangle();
 	private _bounds: Box = new Box();
 	protected _style: Style;
 	protected _boundsDirty: boolean = true;
@@ -789,19 +788,14 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			traverser.isBitmapMask = isBitmapMask;
 
 			// Position-only invalidation marks pads dirty. Refresh here (not
-			// in IHP) and recache if the (possibly view-clipped) pad size or
-			// the clipped content window changed. Size alone misses a pad
-			// clipped on both sides of the motion axis, whose width stays at
-			// the view width while the visible content shifts.
+			// in IHP) and recache if the (possibly view-clipped) pad size
+			// changed. A content-window shift on a still-clipped pad is a
+			// translation, not a size change.
 			if (!isBitmapMask && traverser._boundsDirty) {
 				const pad = traverser._paddedBounds;
 				const ow = pad.width, oh = pad.height;
-				const content = traverser._contentBounds;
-				const cx = content.x, cy = content.y, cw = content.width, ch = content.height;
 				traverser.getPaddedBounds();
-				if (pad.width !== ow || pad.height !== oh
-					|| content.x !== cx || content.y !== cy
-					|| content.width !== cw || content.height !== ch)
+				if (pad.width !== ow || pad.height !== oh)
 					traverser.invalidateCache();
 			}
 
@@ -1072,16 +1066,12 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				const cpad = child._paddedBounds;
 				const wasDirty = child._boundsDirty;
 				const cow = cpad.width, coh = cpad.height;
-				const ccontent = child._contentBounds;
-				const ccx = ccontent.x, ccy = ccontent.y, ccw = ccontent.width, cch = ccontent.height;
 				pad.union(child.getPaddedBounds(), pad);
 				// A nested cache may not be visited this frame (it is composed
 				// from inside this cache). Recache it if a pad refresh changed
-				// its clipped size or content window. Use invalidateCache()
-				// rather than onInvalidate().
-				if (wasDirty && (cpad.width !== cow || cpad.height !== coh
-					|| ccontent.x !== ccx || ccontent.y !== ccy
-					|| ccontent.width !== ccw || ccontent.height !== cch))
+				// its clipped size. Use invalidateCache() rather than
+				// onInvalidate().
+				if (wasDirty && (cpad.width !== cow || cpad.height !== coh))
 					child.invalidateCache();
 			}
 
@@ -1106,13 +1096,12 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				rootBounds.setTo(box.x, box.y, box.width, box.height);
 			}
 
-			// Only clip an axis when the unclipped pad exceeds the view on
-			// that axis. Smaller caches keep their full pad even when partly
-			// off-screen, so a translation does not resize the texture.
+			// Clip an axis only when the full padded bounds (filters
+			// included) exceed the view on that axis. Smaller caches keep
+			// their full pad even when partly off-screen, so a translation
+			// does not resize the texture.
 			const clipX = pad.width > rootBounds.width;
 			const clipY = pad.height > rootBounds.height;
-			const unclippedX = pad.x;
-			const unclippedY = pad.y;
 
 			if (clipX) {
 				if (pad.left < rootBounds.left)
@@ -1130,19 +1119,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 					pad.bottom = rootBounds.bottom;
 			}
 
-			if (clipX || clipY) {
-				// Intersection of the unclipped pad with the view, relative
-				// to the unclipped pad origin, so a move that keeps the
-				// clipped size at the view size still changes the window
-				// (including a glow halo that extends past the view while
-				// the unpadded content stays inside it).
-				this._contentBounds.setTo(
-					pad.x - unclippedX,
-					pad.y - unclippedY,
-					pad.width,
-					pad.height);
-			}
-
 			if (pad.width <= 0 || pad.height <= 0) {
 				console.warn('width and height have to be positive integers');
 			}
@@ -1156,7 +1132,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		const view = this.view;
 		const proj = view.projection;
 
-		matrix3D._rawData[14] = -1000;
+		matrix3D.setPosition(matrix3D._rawData[12], matrix3D._rawData[13], -1000);
 
 		// without this we will handle empty image when target is big (scale > +3)
 		proj.far = 4000;
