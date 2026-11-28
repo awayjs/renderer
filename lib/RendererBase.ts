@@ -79,6 +79,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _activeMasksDirty: boolean;
 	private _activeMaskOwners: ContainerNode[];
 	protected _paddedBounds: Rectangle = new Rectangle();
+	protected _contentBounds: Rectangle = new Rectangle();
 	private _bounds: Box = new Box();
 	protected _style: Style;
 	protected _boundsDirty: boolean = true;
@@ -788,14 +789,17 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			traverser.isBitmapMask = isBitmapMask;
 
 			// Position-only invalidation marks pads dirty. Refresh here (not
-			// in IHP) and recache if the (possibly view-clipped) pad size
-			// changed. A content-window shift on a still-clipped pad is a
-			// translation, not a size change.
+			// in IHP) and recache if the clipped pad size changed, or if the
+			// pad is clipped on an axis and the visible window on that axis
+			// changed. An unclipped cache still skips a position-only move.
 			if (!isBitmapMask && traverser._boundsDirty) {
 				const pad = traverser._paddedBounds;
 				const ow = pad.width, oh = pad.height;
+				const content = traverser._contentBounds;
+				const cx = content.x, cy = content.y;
 				traverser.getPaddedBounds();
-				if (pad.width !== ow || pad.height !== oh)
+				if (pad.width !== ow || pad.height !== oh
+					|| content.x !== cx || content.y !== cy)
 					traverser.invalidateCache();
 			}
 
@@ -1066,12 +1070,15 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				const cpad = child._paddedBounds;
 				const wasDirty = child._boundsDirty;
 				const cow = cpad.width, coh = cpad.height;
+				const ccontent = child._contentBounds;
+				const ccx = ccontent.x, ccy = ccontent.y;
 				pad.union(child.getPaddedBounds(), pad);
 				// A nested cache may not be visited this frame (it is composed
 				// from inside this cache). Recache it if a pad refresh changed
-				// its clipped size. Use invalidateCache() rather than
-				// onInvalidate().
-				if (wasDirty && (cpad.width !== cow || cpad.height !== coh))
+				// its clipped size or a clipped-axis window. Use
+				// invalidateCache() rather than onInvalidate().
+				if (wasDirty && (cpad.width !== cow || cpad.height !== coh
+					|| ccontent.x !== ccx || ccontent.y !== ccy))
 					child.invalidateCache();
 			}
 
@@ -1102,6 +1109,8 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			// does not resize the texture.
 			const clipX = pad.width > rootBounds.width;
 			const clipY = pad.height > rootBounds.height;
+			const unclippedX = pad.x;
+			const unclippedY = pad.y;
 
 			if (clipX) {
 				if (pad.left < rootBounds.left)
@@ -1118,6 +1127,15 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				if (pad.bottom > rootBounds.bottom)
 					pad.bottom = rootBounds.bottom;
 			}
+
+			// Recache on a move only when the full padded bounds (filters
+			// included) are clipped on that axis, using the same clip test
+			// as above. Store 0 on an unclipped axis.
+			this._contentBounds.setTo(
+				clipX ? pad.x - unclippedX : 0,
+				clipY ? pad.y - unclippedY : 0,
+				pad.width,
+				pad.height);
 
 			if (pad.width <= 0 || pad.height <= 0) {
 				console.warn('width and height have to be positive integers');
