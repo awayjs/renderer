@@ -206,7 +206,9 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 		const pad = this._paddedBounds;
 
 		if (image) {
-			(<Image2D> this._style.image)._setSize(pad.width, pad.height);
+			// no-op when the size is unchanged, so a pad-only refresh does not
+			// dispose the texture
+			image._setSize(pad.width, pad.height);
 		} else {
 
 			this._style.image = new Image2D(pad.width, pad.height, false);
@@ -266,6 +268,26 @@ export class CacheRenderer extends RendererBase implements IMaterial, IRenderabl
 	}
 
 	public onInvalidate(): void {
+		const node: ContainerNode = <ContainerNode> this._asset;
+		// A position-only notify uses AssetBase.invalidate() without setting
+		// the node's _invalid. Skip a content recache in that case. A later
+		// same-tick this.invalidate() still recaches. A cached owner with
+		// script or timeline masks is marked _invalid from IHP when it or
+		// its mask moves (the mask is baked in). A bitmap mask's image
+		// depends on where it sits in the owner's pad, so it always recaches.
+		if (!this.isBitmapMask && !node.invalid) {
+			this._boundsDirty = true;
+		} else {
+			this.invalidateCache();
+		}
+		// A mask may not be a child of its owner, so the node's invalidate()
+		// bubble does not reach the owner. After the owner has visited this
+		// renderer as its bitmap mask, this.parent is the owner renderer.
+		if (this.parent && (this.isBitmapMask || node.container.maskId != -1))
+			this.parent.invalidateCache();
+	}
+
+	public invalidateCache(): void {
 		super.onInvalidate();
 
 		for (const key in this._renderObjects)

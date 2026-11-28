@@ -79,9 +79,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	private _activeMasksDirty: boolean;
 	private _activeMaskOwners: ContainerNode[];
 	protected _paddedBounds: Rectangle = new Rectangle();
+	protected _contentBounds: Rectangle = new Rectangle();
 	private _bounds: Box = new Box();
 	protected _style: Style;
-	private _boundsDirty: boolean = true;
+	protected _boundsDirty: boolean = true;
 	private _mappers: Array<IMapper> = new Array<IMapper>();
 	private _elementsPools: Record<string, _Render_ElementsBase> = {};
 
@@ -227,13 +228,25 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 	};
 
 	public setParent(parent: RendererBase | undefined) {
-		if (this._parent)
+		if (this._parent === parent)
+			return;
+
+		if (this._parent) {
 			this._parent.removeChild(this);
+			this._parent._boundsDirty = true;
+		}
 
 		this._parent = parent;
 
-		if (this._parent)
+		if (this._parent) {
 			this._parent.addChild(this);
+			this._parent._boundsDirty = true;
+			// Pad size can stay the same when a descendant cache is first
+			// attached (the union was already as large as the child's pad).
+			// Recache so the parent image includes the child, not just
+			// refresh bounds.
+			this._parent.invalidateCache();
+		}
 	}
 
 	/**
@@ -327,7 +340,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this.stage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 		this.view.removeEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 
-		this.setParent(undefined);
 		this.isBitmapMask = false;
 
 		this.view = null;
@@ -354,6 +366,10 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._disableColor = false;
 		this._disableClear = false;
 		this._renderBlended = true;
+	}
+
+	public invalidateCache(): void {
+		this.onInvalidate();
 	}
 
 	public onInvalidate(): void {
@@ -483,11 +499,17 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		this._cameraTransform = this.view.projection.transform.matrix3D;
 		this._cameraForward = this.view.projection.transform.forwardVector;
-		this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : this.rootView.projection.viewFrustumPlanes;
+		this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : this.view.projection.viewFrustumPlanes;
 		this._numCullPlanes = this._cullPlanes ? this._cullPlanes.length : 0;
 		this._maskId = (<ContainerNode> this._asset).getMaskId();
 
 		RendererBase._collectionMark++;
+
+		// a cleared child stays registered until now, so its pad still counts
+		// while the bounds are read ahead of this traversal
+		for (let i = this._numChildren - 1; i >= 0; i--)
+			if (!this._children[i]._asset)
+				this._children[i].setParent(undefined);
 
 		(<ContainerNode> this._asset).acceptTraverser(this);
 
@@ -771,6 +793,21 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			// the bounds and blend of a renderer depend on whether it draws a bitmap mask
 			traverser.isBitmapMask = isBitmapMask;
 
+			// Position-only invalidation marks pads dirty. Refresh here (not
+			// in IHP) and recache if the clipped pad size changed, or if the
+			// pad is clipped on an axis and the visible window on that axis
+			// changed. An unclipped cache still skips a position-only move.
+			if (!isBitmapMask && traverser._boundsDirty) {
+				const pad = traverser._paddedBounds;
+				const ow = pad.width, oh = pad.height;
+				const content = traverser._contentBounds;
+				const cx = content.x, cy = content.y;
+				traverser.getPaddedBounds();
+				if (pad.width !== ow || pad.height !== oh
+					|| content.x !== cx || content.y !== cy)
+					traverser.invalidateCache();
+			}
+
 			//if (this._invalid) {
 			this._renderEntity = this.abstractions.getAbstraction<RenderEntity>(node);
 
@@ -1031,10 +1068,23 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 			// Expand by descendant cache pads (already in scaled root space).
 			// Bitmap masks copy this renderer's pads, so they must not be unioned.
 			for (let i = 0; i < this._numChildren; i++) {
-				if (this._children[i].isBitmapMask)
+				const child = this._children[i];
+				if (child.isBitmapMask)
 					continue;
 
-				pad.union(this._children[i].getPaddedBounds(), pad);
+				const cpad = child._paddedBounds;
+				const wasDirty = child._boundsDirty;
+				const cow = cpad.width, coh = cpad.height;
+				const ccontent = child._contentBounds;
+				const ccx = ccontent.x, ccy = ccontent.y;
+				pad.union(child._asset ? child.getPaddedBounds() : child._paddedBounds, pad);
+				// A nested cache may not be visited this frame (it is composed
+				// from inside this cache). Recache it if a pad refresh changed
+				// its clipped size or a clipped-axis window. Use
+				// invalidateCache() rather than onInvalidate().
+				if (wasDirty && (cpad.width !== cow || cpad.height !== coh
+					|| ccontent.x !== ccx || ccontent.y !== ccy))
+					child.invalidateCache();
 			}
 
 			const rootBounds: Rectangle = new Rectangle(0, 0, rootView.width * this.stage.pixelRatio, rootView.height * this.stage.pixelRatio);
@@ -1058,17 +1108,39 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				rootBounds.setTo(box.x, box.y, box.width, box.height);
 			}
 
-			if (pad.left < rootBounds.left)
-				pad.left = rootBounds.left;
+			// Clip an axis only when the full padded bounds (filters
+			// included) exceed the view on that axis. Smaller caches keep
+			// their full pad even when partly off-screen, so a translation
+			// does not resize the texture.
+			const clipX = pad.width > rootBounds.width;
+			const clipY = pad.height > rootBounds.height;
+			const unclippedX = pad.x;
+			const unclippedY = pad.y;
 
-			if (pad.top < rootBounds.top)
-				pad.top = rootBounds.top;
+			if (clipX) {
+				if (pad.left < rootBounds.left)
+					pad.left = rootBounds.left;
 
-			if (pad.right > rootBounds.right)
-				pad.right = rootBounds.right;
+				if (pad.right > rootBounds.right)
+					pad.right = rootBounds.right;
+			}
 
-			if (pad.bottom > rootBounds.bottom)
-				pad.bottom = rootBounds.bottom;
+			if (clipY) {
+				if (pad.top < rootBounds.top)
+					pad.top = rootBounds.top;
+
+				if (pad.bottom > rootBounds.bottom)
+					pad.bottom = rootBounds.bottom;
+			}
+
+			// Recache on a move only when the full padded bounds (filters
+			// included) are clipped on that axis, using the same clip test
+			// as above. Store 0 on an unclipped axis.
+			this._contentBounds.setTo(
+				clipX ? pad.x - unclippedX : 0,
+				clipY ? pad.y - unclippedY : 0,
+				pad.width,
+				pad.height);
 
 			if (pad.width <= 0 || pad.height <= 0) {
 				console.warn('width and height have to be positive integers');
@@ -1083,7 +1155,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		const view = this.view;
 		const proj = view.projection;
 
-		matrix3D._rawData[14] = -1000;
+		matrix3D.setPosition(matrix3D._rawData[12], matrix3D._rawData[13], -1000);
 
 		// without this we will handle empty image when target is big (scale > +3)
 		proj.far = 4000;
