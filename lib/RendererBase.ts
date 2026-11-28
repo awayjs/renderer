@@ -500,15 +500,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 
 		this._cameraTransform = this.view.projection.transform.matrix3D;
 		this._cameraForward = this.view.projection.transform.forwardVector;
-		// Cull a cache render against the pad frustum, not the stage.
-		// An unclipped pad can extend off-screen; stage culling would
-		// leave those texels empty, and a later move does not recache
-		// when pad size is unchanged.
-		this._cullPlanes = this._customCullPlanes
-			? this._customCullPlanes
-			: (this.view.target
-				? this.view.projection.viewFrustumPlanes
-				: this.rootView.projection.viewFrustumPlanes);
+		this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : this.view.projection.viewFrustumPlanes;
 		this._numCullPlanes = this._cullPlanes ? this._cullPlanes.length : 0;
 		this._maskId = (<ContainerNode> this._asset).getMaskId();
 
