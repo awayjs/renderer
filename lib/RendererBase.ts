@@ -340,7 +340,6 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this.stage.removeEventListener(StageEvent.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 		this.view.removeEventListener(ViewEvent.INVALIDATE_SIZE, this._onSizeInvalidateDelegate);
 
-		this.setParent(undefined);
 		this.isBitmapMask = false;
 
 		this.view = null;
@@ -505,6 +504,12 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 		this._maskId = (<ContainerNode> this._asset).getMaskId();
 
 		RendererBase._collectionMark++;
+
+		// a cleared child stays registered until now, so its pad still counts
+		// while the bounds are read ahead of this traversal
+		for (let i = this._numChildren - 1; i >= 0; i--)
+			if (!this._children[i]._asset)
+				this._children[i].setParent(undefined);
 
 		(<ContainerNode> this._asset).acceptTraverser(this);
 
@@ -1072,7 +1077,7 @@ export class RendererBase extends AbstractionBase implements IPartitionTraverser
 				const cow = cpad.width, coh = cpad.height;
 				const ccontent = child._contentBounds;
 				const ccx = ccontent.x, ccy = ccontent.y;
-				pad.union(child.getPaddedBounds(), pad);
+				pad.union(child._asset ? child.getPaddedBounds() : child._paddedBounds, pad);
 				// A nested cache may not be visited this frame (it is composed
 				// from inside this cache). Recache it if a pad refresh changed
 				// its clipped size or a clipped-axis window. Use
